@@ -99,7 +99,7 @@ and revisions go back into the markdown.
       lead-brake → surprise buildup → re-plan → brake sequence, no collision, mid-range
       condition) and extract the moment-by-moment numbers and belief snapshots for ch. 02
 
-## Parked idea (Jonas, 2026-08-22): an interactive parameter-play tool
+## Interactive parameter-play tool (Jonas, 2026-08-22; tier 1 built 2026-08-23)
 
 Jonas wants, later, a tool where a user manipulates parameters or choices and sees the
 result in real time. Feasibility thinking (Claude, same date), three tiers:
@@ -119,8 +119,11 @@ result in real time. Feasibility thinking (Claude, same date), three tiers:
    baseline + 7 ablations × full grids, so "pseudo-live" sliders that snap to the
    nearest precomputed condition would work today for rear-end.
 
-Recommendation when picked up: build 1 first (an afternoon, immediately useful in
-seminars), then 2; treat 3 as a data browser over the deposit rather than a simulator.
+Status: **tier 1 is built** — `tools/czb_explorer/` (static page, client-side closed
+form verified against `src/comfortzone` via generated reference values + node test;
+Dockerfile tested: builds and serves). Run locally by opening `index.html` or
+`python -m http.server -d tools/czb_explorer`; deploy with the Dockerfile. Tiers 2 and 3
+remain future work; treat 3 as a data browser over the deposit rather than a simulator.
 
 ## Explicitly out of scope right now
 

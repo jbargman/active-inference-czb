@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comfort-zone boundary explorer</title>
+<style>
+  :root {
+    --purple: #472CBE; --blue: #36B7F6; --teal: #2BAE9A; --pink: #C95B9B;
+    --ink: #222; --grey: #6B7280; --beige: #F0EDE6; --rule: #D5D1C8;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; color: var(--ink);
+         margin: 0; background: #fff; }
+  header { border-bottom: 3px solid var(--purple); padding: 14px 22px 10px; }
+  header h1 { font-size: 20px; margin: 0 0 2px; }
+  header p { margin: 0; color: var(--grey); font-size: 12.5px; }
+  #check { float: right; font-size: 12px; padding: 4px 10px; border-radius: 12px;
+           margin-top: 4px; }
+  .ok  { background: #e6f7ef; color: #0a7a4b; border: 1px solid #0a7a4b; }
+  .bad { background: #fdecec; color: #b3261e; border: 1px solid #b3261e; }
+  main { padding: 14px 22px; max-width: 1180px; margin: 0 auto; }
+  .controls { display: flex; flex-wrap: wrap; gap: 18px 28px; align-items: flex-end;
+              background: var(--beige); border-radius: 10px; padding: 12px 16px; }
+  .ctl { min-width: 235px; flex: 1; }
+  .ctl label { display: block; font-size: 12.5px; font-weight: bold; }
+  .ctl .val { color: var(--purple); }
+  .ctl input[type=range] { width: 100%; accent-color: var(--purple); }
+  .ctl .hint { font-size: 11px; color: var(--grey); }
+  .presets { display: flex; gap: 8px; flex-wrap: wrap; }
+  .presets button { font-size: 12px; padding: 6px 10px; border: 1px solid var(--purple);
+                    background: #fff; color: var(--purple); border-radius: 6px;
+                    cursor: pointer; }
+  .presets button:hover { background: var(--purple); color: #fff; }
+  .panels { display: flex; flex-wrap: wrap; gap: 22px; margin-top: 18px; }
+  .panel { flex: 1; min-width: 480px; }
+  .panel h2 { font-size: 14px; margin: 0 0 6px; }
+  canvas { border: 1px solid var(--rule); width: 100%; height: auto; }
+  table { border-collapse: collapse; font-size: 13px; margin-top: 6px; }
+  th, td { padding: 4px 14px 4px 0; text-align: right; }
+  th { color: var(--purple); border-bottom: 1.5px solid var(--purple);
+       text-align: right; }
+  td:first-child, th:first-child { text-align: left; }
+  footer { color: var(--grey); font-size: 11.5px; margin: 22px 0 30px;
+           border-top: 1px solid var(--rule); padding-top: 8px; }
+</style>
+</head>
+<body>
+<header>
+  <span id="check" class="bad">checking…</span>
+  <h1>Comfort-zone boundary explorer</h1>
+  <p>Closed-form car-following boundary from the active-inference preference function
+     (Schumann et al. 2026, SI Eqs. 49–51) — handbook chapters 07 and 11.
+     Steady following: lead at the same speed, nobody braking yet.</p>
+</header>
+<main>
+  <div class="controls">
+    <div class="ctl">
+      <label>Assumed worst-case lead braking:
+        <span class="val" id="aOvMinVal"></span></label>
+      <input type="range" id="aOvMin" min="-9" max="-1" step="0.5" value="-6">
+      <div class="hint">what the driver plans for the lead to be capable of
+        (&minus;6 = hard stop; &minus;3 = trusting)</div>
+    </div>
+    <div class="ctl">
+      <label>Reaction-time budget:
+        <span class="val" id="tReactVal"></span></label>
+      <input type="range" id="tReact" min="0.2" max="2" step="0.1" value="1">
+      <div class="hint">the delay the driver budgets for their own response</div>
+    </div>
+    <div class="ctl">
+      <label>Comfort deceleration limit:
+        <span class="val" id="aReqVal"></span></label>
+      <input type="range" id="aReq" min="1" max="8" step="0.5" value="4">
+      <div class="hint">hardest braking the driver is prepared to plan around
+        (8 = physical limit &rarr; the dread boundary)</div>
+    </div>
+    <div class="ctl">
+      <label>Presets and comparison</label>
+      <div class="presets">
+        <button id="pBase" title="a_OV,min −6, t 1.0, comfort 4">Baseline</button>
+        <button id="pHurry" title="t_react 1.0 → 0.6">Hurried</button>
+        <button id="pTrust" title="a_OV,min −6 → −3">Trusting the lead</button>
+        <button id="pSnap" title="Freeze current curves in grey for comparison">
+          Snapshot</button>
+      </div>
+      <div class="hint">presets reproduce handbook ch. 07: 1.67 / 1.27 / 0.42 s
+        at 15 m/s</div>
+    </div>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <h2>Boundary as time headway vs speed</h2>
+      <canvas id="thwChart" width="560" height="400"></canvas>
+    </div>
+    <div class="panel">
+      <h2>Required deceleration over the state space, with boundaries</h2>
+      <canvas id="fieldMap" width="560" height="400"></canvas>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Critical time headway [s]</h2>
+    <table id="numbers"></table>
+  </div>
+
+  <footer>
+    Boundary values are conditional on the assumptions shown in the sliders —
+    quote them together (project rule, HANDOFF §7). The grey band marks typically
+    observed following headways (1–2 s). JS math is verified against the Python
+    implementation (<code>src/comfortzone</code>) on load — the badge top right;
+    regenerate <code>reference.js</code> with <code>generate_reference.py</code>
+    after changing either side.
+  </footer>
+</main>
+<script src="czb_math.js"></script>
+<script src="reference.js"></script>
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const state = { aOvMin: -6, tReact: 1.0, aReq: 4.0, snapshot: null };
+
+/* ---- self-check against the Python reference ---- */
+(function check() {
+  let maxErr = 0;
+  for (const c of CZB_REFERENCE.cases) {
+    const dx = CZB.criticalGap(c.v, c.v, c.aOvMin, c.tReact, c.aReq);
+    maxErr = Math.max(maxErr, Math.abs(dx - c.dx));
+  }
+  const el = $("check");
+  if (maxErr < 1e-4 && Math.abs(CZB.L - CZB_REFERENCE.L) < 1e-9) {
+    el.textContent = "✓ matches Python reference (" +
+      CZB_REFERENCE.cases.length + " cases)";
+    el.className = "ok";
+  } else {
+    el.textContent = "✗ MISMATCH vs Python reference — do not trust values";
+    el.className = "bad";
+  }
+})();
+
+/* ---- shared drawing helpers ---- */
+function axes(ctx, W, H, m, xlim, ylim, xlab, ylab, xticks, yticks) {
+  ctx.clearRect(0, 0, W, H);
+  ctx.strokeStyle = "#999"; ctx.lineWidth = 1;
+  ctx.strokeRect(m.l, m.t, W - m.l - m.r, H - m.t - m.b);
+  ctx.fillStyle = "#444"; ctx.font = "11px Arial";
+  const x2px = (x) => m.l + (x - xlim[0]) / (xlim[1] - xlim[0]) * (W - m.l - m.r);
+  const y2px = (y) => H - m.b - (y - ylim[0]) / (ylim[1] - ylim[0]) * (H - m.t - m.b);
+  ctx.textAlign = "center";
+  for (const t of xticks) {
+    ctx.fillText(String(t), x2px(t), H - m.b + 14);
+    ctx.strokeStyle = "#eee";
+    ctx.beginPath(); ctx.moveTo(x2px(t), m.t); ctx.lineTo(x2px(t), H - m.b); ctx.stroke();
+  }
+  ctx.textAlign = "right";
+  for (const t of yticks) {
+    ctx.fillText(String(t), m.l - 6, y2px(t) + 4);
+    ctx.strokeStyle = "#eee";
+    ctx.beginPath(); ctx.moveTo(m.l, y2px(t)); ctx.lineTo(W - m.r, y2px(t)); ctx.stroke();
+  }
+  ctx.textAlign = "center"; ctx.fillStyle = "#222";
+  ctx.fillText(xlab, (m.l + W - m.r) / 2, H - 6);
+  ctx.save(); ctx.translate(12, (m.t + H - m.b) / 2); ctx.rotate(-Math.PI / 2);
+  ctx.fillText(ylab, 0, 0); ctx.restore();
+  return { x2px, y2px };
+}
+
+/* ---- panel 1: THW* vs speed ---- */
+function drawThw() {
+  const cv = $("thwChart"), ctx = cv.getContext("2d");
+  const W = cv.width, H = cv.height, m = { l: 46, r: 12, t: 10, b: 34 };
+  const xlim = [5, 35], ylim = [0, 6];
+  const p = axes(ctx, W, H, m, xlim, ylim, "speed [m/s]", "critical THW* [s]",
+                 [5, 10, 15, 20, 25, 30, 35], [0, 1, 2, 3, 4, 5, 6]);
+  // typical-following band
+  ctx.fillStyle = "rgba(150,150,150,0.15)";
+  ctx.fillRect(p.x2px(5), p.y2px(2), p.x2px(35) - p.x2px(5), p.y2px(1) - p.y2px(2));
+  ctx.fillStyle = "#888"; ctx.font = "10px Arial"; ctx.textAlign = "left";
+  ctx.fillText("typical observed following THW", p.x2px(5.6), p.y2px(1.86));
+
+  const curve = (aOvMin, tReact, aReq, color, dash, label, ly) => {
+    ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.setLineDash(dash);
+    ctx.beginPath();
+    for (let v = 5; v <= 35.001; v += 0.25) {
+      const thw = Math.min(CZB.criticalThw(v, v, aOvMin, tReact, aReq), 6.4);
+      const X = p.x2px(v), Y = p.y2px(Math.max(thw, 0));
+      v === 5 ? ctx.moveTo(X, Y) : ctx.lineTo(X, Y);
+    }
+    ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = color; ctx.font = "11px Arial"; ctx.textAlign = "left";
+    ctx.fillText(label, p.x2px(5.6), ly);
+  };
+  if (state.snapshot) {
+    const s = state.snapshot;
+    curve(s.aOvMin, s.tReact, 8, "#bbb", [2, 3], "", 0);
+    curve(s.aOvMin, s.tReact, s.aReq, "#bbb", [6, 4],
+          "snapshot (" + s.aOvMin + ", " + s.tReact + " s, " + s.aReq + ")", 66);
+  }
+  curve(state.aOvMin, state.tReact, 8, "#C95B9B", [],
+        "dread boundary (8 m/s²)", 30);
+  curve(state.aOvMin, state.tReact, state.aReq, "#472CBE", [7, 4],
+        "comfort boundary (" + state.aReq.toFixed(1) + " m/s²)", 48);
+}
+
+/* ---- panel 2: required-deceleration field ---- */
+function colorFor(a) {
+  if (!isFinite(a)) return [40, 40, 46];
+  const stops = [
+    [0, [230, 244, 234]], [2, [140, 205, 165]], [4, [250, 220, 110]],
+    [6, [244, 150, 80]], [8, [214, 70, 70]], [12, [90, 30, 60]],
+  ];
+  const t = Math.min(Math.max(a, 0), 12);
+  for (let i = 1; i < stops.length; i++) {
+    if (t <= stops[i][0]) {
+      const f = (t - stops[i - 1][0]) / (stops[i][0] - stops[i - 1][0]);
+      return stops[i - 1][1].map((c, k) => Math.round(c + f * (stops[i][1][k] - c)));
+    }
+  }
+  return stops[stops.length - 1][1];
+}
+
+function drawField() {
+  const cv = $("fieldMap"), ctx = cv.getContext("2d");
+  const W = cv.width, H = cv.height, m = { l: 46, r: 12, t: 10, b: 34 };
+  const xlim = [5, 35], ylim = [5, 140];
+  const p = axes(ctx, W, H, m, xlim, ylim, "speed [m/s]  (lead at the same speed)",
+                 "separation of vehicle centers Δx [m]",
+                 [5, 10, 15, 20, 25, 30, 35], [20, 40, 60, 80, 100, 120, 140]);
+  const iw = Math.round(W - m.l - m.r), ih = Math.round(H - m.t - m.b);
+  const img = ctx.createImageData(iw, ih);
+  for (let j = 0; j < ih; j++) {
+    const dx = ylim[1] - (j / (ih - 1)) * (ylim[1] - ylim[0]);
+    for (let i = 0; i < iw; i++) {
+      const v = xlim[0] + (i / (iw - 1)) * (xlim[1] - xlim[0]);
+      const a = CZB.aRequired(v, dx, v, state.aOvMin, state.tReact);
+      const [r, g, b] = colorFor(a);
+      const k = 4 * (j * iw + i);
+      img.data[k] = r; img.data[k + 1] = g; img.data[k + 2] = b; img.data[k + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, m.l, m.t);
+  // boundary contours from the closed form (independent route)
+  const contour = (aReq, color, dash, label) => {
+    ctx.strokeStyle = color; ctx.lineWidth = 2.2; ctx.setLineDash(dash);
+    ctx.beginPath();
+    let started = false;
+    for (let v = 5; v <= 35.001; v += 0.25) {
+      const dx = CZB.criticalGap(v, v, state.aOvMin, state.tReact, aReq);
+      if (dx < ylim[0] || dx > ylim[1]) { started = false; continue; }
+      const X = p.x2px(v), Y = p.y2px(dx);
+      started ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y);
+      started = true;
+    }
+    ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = color; ctx.font = "bold 11px Arial"; ctx.textAlign = "right";
+    const dxEnd = CZB.criticalGap(34, 34, state.aOvMin, state.tReact, aReq);
+    if (dxEnd > ylim[0] && dxEnd < ylim[1] - 4)
+      ctx.fillText(label, p.x2px(34), p.y2px(dxEnd) - 5);
+  };
+  contour(8, "#7A1F4E", [], "dread (8)");
+  contour(state.aReq, "#2B1E8A", [7, 4], "comfort (" + state.aReq.toFixed(1) + ")");
+}
+
+/* ---- numbers table ---- */
+function drawTable() {
+  const speeds = [10, 15, 20, 25, 30];
+  let html = "<tr><th>speed</th><th>dread (8 m/s²)</th><th>comfort (" +
+             state.aReq.toFixed(1) + " m/s²)</th></tr>";
+  for (const v of speeds) {
+    const d = CZB.criticalThw(v, v, state.aOvMin, state.tReact, 8);
+    const c = CZB.criticalThw(v, v, state.aOvMin, state.tReact, state.aReq);
+    html += "<tr><td>" + v + " m/s</td><td>" + d.toFixed(2) +
+            " s</td><td>" + c.toFixed(2) + " s</td></tr>";
+  }
+  $("numbers").innerHTML = html;
+}
+
+/* ---- wiring ---- */
+function readAndDraw() {
+  state.aOvMin = parseFloat($("aOvMin").value);
+  state.tReact = parseFloat($("tReact").value);
+  state.aReq = parseFloat($("aReq").value);
+  $("aOvMinVal").textContent = state.aOvMin.toFixed(1) + " m/s²";
+  $("tReactVal").textContent = state.tReact.toFixed(1) + " s";
+  $("aReqVal").textContent = state.aReq.toFixed(1) + " m/s²";
+  drawThw(); drawField(); drawTable();
+}
+function setSliders(aOvMin, tReact, aReq) {
+  $("aOvMin").value = aOvMin; $("tReact").value = tReact; $("aReq").value = aReq;
+  readAndDraw();
+}
+for (const id of ["aOvMin", "tReact", "aReq"])
+  $(id).addEventListener("input", readAndDraw);
+$("pBase").onclick = () => setSliders(-6, 1.0, 4);
+$("pHurry").onclick = () => setSliders(-6, 0.6, 4);
+$("pTrust").onclick = () => setSliders(-3, 1.0, 4);
+$("pSnap").onclick = () => {
+  state.snapshot = { aOvMin: state.aOvMin, tReact: state.tReact, aReq: state.aReq };
+  readAndDraw();
+};
+readAndDraw();
+</script>
+</body>
+</html>
