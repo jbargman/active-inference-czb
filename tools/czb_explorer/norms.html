@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Norm-tournament sandbox</title>
+<style>
+  :root {
+    --purple: #472CBE; --teal: #2BAE9A; --pink: #C95B9B;
+    --ink: #222; --grey: #6B7280; --beige: #F0EDE6; --rule: #D5D1C8;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; color: var(--ink); margin: 0; }
+  header { border-bottom: 3px solid var(--purple); padding: 14px 22px 10px; }
+  header h1 { font-size: 20px; margin: 0 0 2px; }
+  header p { margin: 0; color: var(--grey); font-size: 12.5px; }
+  nav { float: right; font-size: 12.5px; margin-top: 6px; }
+  nav a { color: var(--purple); margin-left: 14px; text-decoration: none; }
+  nav a:hover { text-decoration: underline; }
+  nav .here { font-weight: bold; }
+  main { padding: 14px 22px; max-width: 1180px; margin: 0 auto; }
+  .controls { display: flex; flex-wrap: wrap; gap: 14px 26px; align-items: flex-end;
+              background: var(--beige); border-radius: 10px; padding: 12px 16px; }
+  .ctl { min-width: 165px; flex: 1; }
+  .ctl label { display: block; font-size: 12px; font-weight: bold; }
+  .ctl .val { color: var(--purple); }
+  .ctl input[type=range] { width: 100%; accent-color: var(--purple); }
+  .ctl .hint { font-size: 10.5px; color: var(--grey); }
+  .buttons button { font-size: 12px; padding: 6px 10px; border: 1px solid var(--purple);
+            background: #fff; color: var(--purple); border-radius: 6px; cursor: pointer; }
+  .buttons button:hover { background: var(--purple); color: #fff; }
+  .buttons label { font-size: 12px; }
+  .panels { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 16px;
+            align-items: flex-start; }
+  canvas { border: 1px solid var(--rule); }
+  #stats { font-size: 13px; margin-top: 10px; }
+  #stats b { color: var(--purple); }
+  .explain { font-size: 13px; color: #333; max-width: 900px; line-height: 1.45; }
+  footer { color: var(--grey); font-size: 11.5px; margin: 22px 0 30px;
+           border-top: 1px solid var(--rule); padding-top: 8px; }
+</style>
+</head>
+<body>
+<header>
+  <nav><a href="index.html">Boundary explorer</a>
+       <a class="here" href="norms.html">Norm sandbox</a>
+       <a href="model_browser.html">Model browser</a></nav>
+  <h1>Norm-tournament sandbox</h1>
+  <p>How the driver model imagines other vehicles: every particle's other-vehicle
+     state advances by a weighted lottery over candidate moves — the norms live
+     inside the swarm's own motion (handbook chapter 06).</p>
+</header>
+<main>
+  <div class="controls">
+    <div class="ctl">
+      <label>Other vehicle's lateral position: <span class="val" id="y0Val"></span></label>
+      <input type="range" id="y0" min="-0.4" max="2.2" step="0.05" value="0">
+      <div class="hint">0 = lane center; drag past the lane edge to violate</div>
+    </div>
+    <div class="ctl">
+      <label>Move scale per step: <span class="val" id="sigmaVal"></span></label>
+      <input type="range" id="sigma" min="0.03" max="0.4" step="0.01" value="0.12">
+      <div class="hint">assumed variability (the w_sd_model dial's role)</div>
+    </div>
+    <div class="ctl">
+      <label>Candidates per step N: <span class="val" id="nNormVal"></span></label>
+      <input type="range" id="nNorm" min="2" max="64" step="2" value="32">
+      <div class="hint">N_norm; 1-2 ≈ the "no norm conditioning" ablation</div>
+    </div>
+    <div class="ctl">
+      <label>Foresight steps H: <span class="val" id="hNormVal"></span></label>
+      <input type="range" id="hNorm" min="1" max="40" step="1" value="20">
+      <div class="hint">H_norm: how far ahead a candidate's future is judged</div>
+    </div>
+    <div class="ctl">
+      <label>Marginal-band weight: <span class="val" id="wpVal"></span></label>
+      <input type="range" id="wp" min="-5" max="-0.5" step="0.25" value="-3">
+      <div class="hint">weigh_particles, log scale</div>
+    </div>
+    <div class="ctl">
+      <label>Gross-violation factor: <span class="val" id="fvfVal"></span></label>
+      <input type="range" id="fvf" min="-4" max="0" step="0.25" value="-2">
+      <div class="hint">full_violation_factor, log scale</div>
+    </div>
+    <div class="ctl buttons">
+      <label><input type="checkbox" id="showRaw" checked> show raw-noise fan (bias off)</label><br>
+      <button id="reroll" style="margin-top:6px">Re-roll</button>
+    </div>
+  </div>
+
+  <div class="panels">
+    <div>
+      <h2 style="font-size:14px;margin:0 0 6px">Compliance weight W(y)</h2>
+      <canvas id="wplot" width="170" height="430"></canvas>
+    </div>
+    <div style="flex:1;min-width:600px">
+      <h2 style="font-size:14px;margin:0 0 6px">The fan of imagined futures (4 s ahead)</h2>
+      <canvas id="fan" width="760" height="430"></canvas>
+      <div id="stats"></div>
+    </div>
+  </div>
+
+  <div class="explain">
+    <p><b>What you are looking at.</b> Purple: trajectories sampled with the norm
+    tournament — at every step, propose N candidate moves, score each by compliance
+    <i>now</i>, <i>one step ahead</i>, and <i>H steps ahead</i> (the worse of "now" and the
+    future average wins — the trust cap), then draw one by lottery. Grey: the same noise
+    with the bias off. Dashed lines: lane extent (teal) and the marginal band (pink).</p>
+    <p><b>Three things to try.</b> (1) Start at lane center: the biased fan hugs the lane
+    while raw noise sprays — this is why the model driver stays relaxed behind a
+    well-behaved lead. (2) Drag the start past the marginal band: the shared "now" score
+    caps every candidate, the lottery goes near-uniform, and the fan opens like raw noise
+    — trust revoked on evidence. (3) Watch the violator's purple fan lean back toward the
+    lane: hypotheses that re-enter the normal region regain their bias and are recaptured
+    — the swarm expects violators to eventually return to normality.</p>
+    <p><b>What this is not.</b> An illustrative lateral-only reimplementation of the real
+    sampling rule (<code>src/common/dynamics.py::forward_tar_agent</code> in the authors'
+    code) with simplified dynamics — for intuition, not for numbers. Its qualitative
+    properties are checked by <code>test_norms.mjs</code>.</p>
+  </div>
+
+  <footer>Rear-end norm geometry (lane 3.65 m, vehicle 1.72 m); weights as shipped:
+    marginal 10⁻³, gross 10⁻³·10⁻². Handbook chapter 06 has the mechanism in full;
+    chapter 10 discusses estimating these weights from data.</footer>
+</main>
+<script src="norm_math.js"></script>
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+let seed = 7;
+const P = { ...NORM.defaults };
+
+function drawWeight(p) {
+  const cv = $("wplot"), ctx = cv.getContext("2d");
+  const W = cv.width, H = cv.height, m = { l: 40, r: 8, t: 8, b: 30 };
+  const ylim = [-3.2, 3.2], xlim = [-5.2, 0.2];   // log10 W
+  ctx.clearRect(0, 0, W, H);
+  ctx.strokeStyle = "#999"; ctx.strokeRect(m.l, m.t, W - m.l - m.r, H - m.t - m.b);
+  const y2px = (y) => H - m.b - (y - ylim[0]) / (ylim[1] - ylim[0]) * (H - m.t - m.b);
+  const x2px = (x) => m.l + (x - xlim[0]) / (xlim[1] - xlim[0]) * (W - m.l - m.r);
+  ctx.fillStyle = "#444"; ctx.font = "10px Arial"; ctx.textAlign = "center";
+  for (const t of [0, -2, -4]) ctx.fillText("10" + (t ? "⁻" + (-t) : "⁰"), x2px(t), H - m.b + 13);
+  ctx.textAlign = "right";
+  for (const t of [-3, -2, -1, 0, 1, 2, 3]) ctx.fillText(t, m.l - 4, y2px(t) + 3);
+  ctx.strokeStyle = "#2BAE9A"; ctx.setLineDash([4, 3]);
+  const aw = NORM.halfLane(p);
+  for (const e of [aw, -aw]) { ctx.beginPath(); ctx.moveTo(m.l, y2px(e)); ctx.lineTo(W - m.r, y2px(e)); ctx.stroke(); }
+  ctx.strokeStyle = "#C95B9B";
+  for (const e of [aw + 0.2 * p.d, -(aw + 0.2 * p.d)]) { ctx.beginPath(); ctx.moveTo(m.l, y2px(e)); ctx.lineTo(W - m.r, y2px(e)); ctx.stroke(); }
+  ctx.setLineDash([]);
+  ctx.strokeStyle = "#472CBE"; ctx.lineWidth = 2; ctx.beginPath();
+  let started = false;
+  for (let y = ylim[0]; y <= ylim[1]; y += 0.02) {
+    const lw = Math.log10(NORM.weight(y, p));
+    const X = x2px(Math.max(lw, xlim[0])), Y = y2px(y);
+    started ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); started = true;
+  }
+  ctx.stroke(); ctx.lineWidth = 1;
+  ctx.fillStyle = "#222"; ctx.textAlign = "center";
+  ctx.fillText("weight (log)", (m.l + W - m.r) / 2, H - 6);
+}
+
+function drawFan(p, y0, showRaw) {
+  const cv = $("fan"), ctx = cv.getContext("2d");
+  const W = cv.width, H = cv.height, m = { l: 40, r: 10, t: 8, b: 30 };
+  const xlim = [0, p.steps * 0.2], ylim = [-3.2, 3.2];
+  ctx.clearRect(0, 0, W, H);
+  ctx.strokeStyle = "#999"; ctx.strokeRect(m.l, m.t, W - m.l - m.r, H - m.t - m.b);
+  const x2px = (x) => m.l + (x - xlim[0]) / (xlim[1] - xlim[0]) * (W - m.l - m.r);
+  const y2px = (y) => H - m.b - (y - ylim[0]) / (ylim[1] - ylim[0]) * (H - m.t - m.b);
+  ctx.fillStyle = "#444"; ctx.font = "10px Arial"; ctx.textAlign = "center";
+  for (let t = 0; t <= xlim[1] + 0.001; t += 1) ctx.fillText(t.toFixed(0), x2px(t), H - m.b + 13);
+  ctx.textAlign = "right";
+  for (const t of [-3, -2, -1, 0, 1, 2, 3]) ctx.fillText(t, m.l - 4, y2px(t) + 3);
+  const aw = NORM.halfLane(p);
+  ctx.setLineDash([4, 3]);
+  ctx.strokeStyle = "#2BAE9A";
+  for (const e of [aw, -aw]) { ctx.beginPath(); ctx.moveTo(m.l, y2px(e)); ctx.lineTo(W - m.r, y2px(e)); ctx.stroke(); }
+  ctx.strokeStyle = "#C95B9B";
+  for (const e of [aw + 0.2 * p.d, -(aw + 0.2 * p.d)]) { ctx.beginPath(); ctx.moveTo(m.l, y2px(e)); ctx.lineTo(W - m.r, y2px(e)); ctx.stroke(); }
+  ctx.setLineDash([]);
+  const plot = (fans, color, alpha) => {
+    ctx.strokeStyle = color; ctx.globalAlpha = alpha; ctx.lineWidth = 0.8;
+    for (const tr of fans) {
+      ctx.beginPath();
+      tr.forEach((y, i) => { const X = x2px(i * 0.2), Y = y2px(Math.max(-3.2, Math.min(3.2, y)));
+                             i ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); });
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  };
+  let raw = null;
+  if (showRaw) { raw = NORM.fan(y0, false, p, seed + 1); plot(raw, "#8a8f98", 0.28); }
+  const biased = NORM.fan(y0, true, p, seed);
+  plot(biased, "#472CBE", 0.32);
+  ctx.fillStyle = "#222"; ctx.textAlign = "center";
+  ctx.fillText("imagined time ahead [s]", (m.l + W - m.r) / 2, H - 6);
+  ctx.save(); ctx.translate(11, (m.t + H - m.b) / 2); ctx.rotate(-Math.PI / 2);
+  ctx.fillText("lateral position [m]", 0, 0); ctx.restore();
+
+  const inLane = (tr) => Math.abs(tr[tr.length - 1]) < aw;
+  const fb = biased.filter(inLane).length / biased.length;
+  let s = "<b>" + (fb * 100).toFixed(0) + "%</b> of norm-biased futures end in lane";
+  if (raw) {
+    const fr = raw.filter(inLane).length / raw.length;
+    s += " vs <b>" + (fr * 100).toFixed(0) + "%</b> of raw-noise futures";
+  }
+  $("stats").innerHTML = s + " (" + p.nTraj + " each, 4 s ahead)";
+}
+
+function read() {
+  P.sigma = parseFloat($("sigma").value);
+  P.nNorm = parseInt($("nNorm").value);
+  P.hNorm = parseInt($("hNorm").value);
+  P.wp = Math.pow(10, parseFloat($("wp").value));
+  P.fvf = Math.pow(10, parseFloat($("fvf").value));
+  const y0 = parseFloat($("y0").value);
+  $("y0Val").textContent = y0.toFixed(2) + " m";
+  $("sigmaVal").textContent = P.sigma.toFixed(2) + " m";
+  $("nNormVal").textContent = String(P.nNorm);
+  $("hNormVal").textContent = String(P.hNorm);
+  $("wpVal").textContent = "10^" + $("wp").value;
+  $("fvfVal").textContent = "10^" + $("fvf").value;
+  drawWeight(P);
+  drawFan(P, y0, $("showRaw").checked);
+}
+for (const id of ["y0", "sigma", "nNorm", "hNorm", "wp", "fvf"])
+  $(id).addEventListener("input", read);
+$("showRaw").addEventListener("change", read);
+$("reroll").onclick = () => { seed = (seed * 16807 + 11) % 2147483647; read(); };
+read();
+</script>
+</body>
+</html>

@@ -17,6 +17,10 @@
   header p { margin: 0; color: var(--grey); font-size: 12.5px; }
   #check { float: right; font-size: 12px; padding: 4px 10px; border-radius: 12px;
            margin-top: 4px; }
+  nav { float: right; font-size: 12.5px; margin: 8px 16px 0 0; }
+  nav a { color: var(--purple); margin-left: 14px; text-decoration: none; }
+  nav a:hover { text-decoration: underline; }
+  nav .here { font-weight: bold; }
   .ok  { background: #e6f7ef; color: #0a7a4b; border: 1px solid #0a7a4b; }
   .bad { background: #fdecec; color: #b3261e; border: 1px solid #b3261e; }
   main { padding: 14px 22px; max-width: 1180px; margin: 0 auto; }
@@ -48,6 +52,9 @@
 <body>
 <header>
   <span id="check" class="bad">checking…</span>
+  <nav><a class="here" href="index.html">Boundary explorer</a>
+       <a href="norms.html">Norm sandbox</a>
+       <a href="model_browser.html">Model browser</a></nav>
   <h1>Comfort-zone boundary explorer</h1>
   <p>Closed-form car-following boundary from the active-inference preference function
      (Schumann et al. 2026, SI Eqs. 49–51) — handbook chapters 07 and 11.

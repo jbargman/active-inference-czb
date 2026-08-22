@@ -1,6 +1,9 @@
-# Comfort-zone boundary explorer
+# Comfort-zone explorer tools
 
-An interactive page for playing with the closed-form comfort-zone boundary of the
+Three static, client-side pages sharing one navigation bar — run and deploy them
+together (see Run it below):
+
+- **`index.html` — boundary explorer (tier 1).** An interactive page for playing with the closed-form comfort-zone boundary of the
 active-inference driver model (handbook chapters 07 and 11): move the assumptions —
 assumed worst-case lead braking, reaction-time budget, comfort deceleration limit — and
 watch the boundary move, as headway-vs-speed curves, as contours on the
@@ -8,9 +11,23 @@ required-deceleration field, and as numbers. Presets reproduce the handbook's
 extra-motive examples; Snapshot freezes the current curves in grey for before/after
 comparison.
 
-Tier 1 of the tool plan in `notes/TODO_understanding_pack.md`: static, client-side only,
-genuinely real-time. Tiers 2 (norm-tournament sandbox) and 3 (precomputed closed-loop
-browser) are future work.
+- **`norms.html` — norm-tournament sandbox (tier 2).** How the driver model imagines
+  other vehicles: the swarm's norm-biased sampling rule, live. Drag the other vehicle
+  across the lane edge and watch trust being extended, revoked, and regained; every
+  factor of the tournament (candidates, foresight, geometry weights) is a slider.
+  The math (`norm_math.js`) is an illustrative lateral-only reimplementation of
+  `forward_tar_agent` (handbook ch. 06); its qualitative properties are checked by
+  `test_norms.mjs`.
+- **`model_browser.html` — model browser (tier 3).** The closed loop is far too slow
+  for live sliders (~18 s CPU per simulated timestep), so this page browses what the
+  authors already ran: all 224 rear-end runs of the OSF deposit — the baseline grid
+  plus all seven Figure-6 ablations — as per-condition response-time histograms,
+  outcome bars, and a collision grid, each comparable against baseline; plus rate
+  tables for the oncoming and intersection scenarios. Data (`data_model.js`, ~130 KB)
+  is precomputed by `build_data.py` from the deposit and committed, so the pages work
+  without the 3.1 GB archive.
+
+This completes all three tiers of the tool plan in `notes/TODO_understanding_pack.md`.
 
 ## Run it
 

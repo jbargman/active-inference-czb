@@ -10,7 +10,9 @@
 
 FROM nginx:alpine
 
-COPY index.html czb_math.js reference.js /usr/share/nginx/html/
+COPY index.html norms.html model_browser.html \
+     czb_math.js reference.js norm_math.js data_model.js \
+     /usr/share/nginx/html/
 
 # Container hygiene: unprivileged nginx would need extra config; the default
 # alpine image is acceptable for an internal tool. Health check for

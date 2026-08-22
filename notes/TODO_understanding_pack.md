@@ -99,7 +99,7 @@ and revisions go back into the markdown.
       lead-brake → surprise buildup → re-plan → brake sequence, no collision, mid-range
       condition) and extract the moment-by-moment numbers and belief snapshots for ch. 02
 
-## Interactive parameter-play tool (Jonas, 2026-08-22; tier 1 built 2026-08-23)
+## Interactive parameter-play tool (Jonas, 2026-08-22; all three tiers built 2026-08-23)
 
 Jonas wants, later, a tool where a user manipulates parameters or choices and sees the
 result in real time. Feasibility thinking (Claude, same date), three tiers:
@@ -119,11 +119,16 @@ result in real time. Feasibility thinking (Claude, same date), three tiers:
    baseline + 7 ablations × full grids, so "pseudo-live" sliders that snap to the
    nearest precomputed condition would work today for rear-end.
 
-Status: **tier 1 is built** — `tools/czb_explorer/` (static page, client-side closed
-form verified against `src/comfortzone` via generated reference values + node test;
-Dockerfile tested: builds and serves). Run locally by opening `index.html` or
-`python -m http.server -d tools/czb_explorer`; deploy with the Dockerfile. Tiers 2 and 3
-remain future work; treat 3 as a data browser over the deposit rather than a simulator.
+Status: **all three tiers built** in `tools/czb_explorer/` (static, client-side,
+one nav bar; Dockerfile tested):
+- tier 1 `index.html` — boundary explorer, JS closed form verified against
+  `src/comfortzone` (700 reference cases, in-page badge + `test_node.mjs`);
+- tier 2 `norms.html` — norm-tournament sandbox (illustrative reimplementation of
+  `forward_tar_agent`; property-tested by `test_norms.mjs`);
+- tier 3 `model_browser.html` — browser over the OSF deposit as precomputed data
+  (`build_data.py` → `data_model.js`, 130 KB committed): all 224 rear-end runs,
+  baseline + 7 ablations, RT histograms/outcomes/collision grid vs baseline, plus
+  oncoming and intersection rate tables. As planned, a data browser, not a simulator.
 
 ## Explicitly out of scope right now
 
