@@ -1,0 +1,23 @@
+# Third-party material, restored per external/README.md (not ours to redistribute;
+# the OSF deposit alone is 3.1 GB)
+external/*
+!external/README.md
+
+# Published papers: copyrighted PDFs (112 MB) and text extracted from them.
+# The index (papers/README.md) is tracked; the papers are re-downloaded per its links.
+papers/*
+!papers/README.md
+notes/paper_text/
+
+# Generated outputs (rebuild with the scripts next to them)
+docs/handbook/word/
+docs/handbook/pdf/
+presentation/*.pptx
+presentation/_chalmers-template.pptx
+
+# Python
+__pycache__/
+*.pyc
+
+# In-progress simulation checkpoints
+*.partial
