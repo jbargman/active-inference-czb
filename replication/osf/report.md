@@ -30,15 +30,15 @@ diagnosed in notes/03).
 
 ## Comfort-zone calibration on their trajectories
 
-- fitted level c = 67.94, onset-matching score 0.855 (n = 896)
+- fitted level c = 66.92, onset-matching score 0.855 (n = 896)
 - onset error at fitted c: median 0.0 s, IQR 0.2 s (n matched = 771)
 
 ### Within-scenario transfer (speed split)
 
 | direction | fitted c | held-out score at fitted c | held-out best score | held-out best c |
 |---|---|---|---|---|
-| fit_low_eval_high | 0.868 | 0.709 | 0.796 | 64.11 |
-| fit_high_eval_low | 64.11 | 0.916 | 0.916 | 0.868 |
+| fit_low_eval_high | 0.6628 | 0.702 | 0.796 | 64.14 |
+| fit_high_eval_low | 64.14 | 0.916 | 0.916 | 0.6628 |
 
 ## Caveats
 

@@ -71,17 +71,46 @@ def test_preference_shape():
     check("deficit is exactly 0 in free driving with no vehicle ahead", d_free < 1e-9,
           f"{d_free:.3e}")
 
-    # with a vehicle ahead the tau^-1 term contributes a constant floor, because the SI
-    # preference is centred on tau^-1 = 0.2 s^-1 rather than on 0
+    # The tau^-1 term. The released code (reward.py:272) clamps tau^-1 to at least 0.2 s^-1
+    # before the Gaussian, so steady following (tau^-1 = 0) costs nothing; the SI's
+    # symmetric form leaves a constant residual 0.5 (mu/sd)^2 = 1.28 whenever a vehicle is
+    # ahead. Both forms are kept (docs/method_review.md section 5, item 2); the default is
+    # the code's.
     d_ahead = float(np.ravel(pragmatic_deficit(obs(1e4), p))[0])
-    check("a vehicle far ahead leaves a constant tau^-1 floor, not zero",
-          abs(d_ahead - 0.5 * (p.tau_inv_mu / p.tau_inv_sd) ** 2) < 1e-6, f"{d_ahead:.3f}")
-
-    # steady following: small, constant residual from the tau^-1 preference
+    check("[code form] a vehicle far ahead at equal speed costs exactly zero",
+          d_ahead < 1e-9, f"{d_ahead:.3e}")
     d_follow = float(np.ravel(pragmatic_deficit(obs(26.7), p))[0])
-    expected = 0.5 * (p.tau_inv_mu / p.tau_inv_sd) ** 2
-    check("steady following leaves only the tau^-1 residual",
-          abs(d_follow - expected) < 1e-6, f"{d_follow:.3f} vs {expected:.3f}")
+    check("[code form] steady following inside the margin has zero deficit",
+          d_follow < 1e-9, f"{d_follow:.3e}")
+    from aidriver.preferences import log_preference_terms
+    o_close = obs(26.7, v=18.0)          # closing at 3 m/s over ~22.5 m: tau^-1 = 0.13
+    c_close = float(np.ravel(log_preference_terms(o_close, p)["collision"])[0])
+    check("[code form] closing slower than TTC 5 s costs nothing in the tau^-1 term",
+          abs(c_close) < 1e-9, f"{c_close:.3e}")
+    o_fast = obs(26.7, v=23.0)           # closing at 8 m/s: tau^-1 = 0.36 > 0.2
+    c_fast = float(np.ravel(log_preference_terms(o_fast, p)["collision"])[0])
+    check("[code form] closing faster than TTC 5 s is penalised in the tau^-1 term",
+          c_fast < -1e-3, f"{c_fast:.3f}")
+
+    p_si = p.si_variant()
+    expected = 0.5 * (p_si.tau_inv_mu / p_si.tau_inv_sd) ** 2
+    d_si = float(np.ravel(pragmatic_deficit(obs(26.7), p_si))[0])
+    check("[SI form] steady following leaves the constant tau^-1 residual 1.28",
+          abs(d_si - expected) < 1e-6, f"{d_si:.3f} vs {expected:.3f}")
+    check("[SI form] g_LL is the SI's -5000; code form uses Table 1's -15000",
+          p_si.g_leave_road == -5000.0 and p.g_leave_road == -15000.0)
+
+    # control-effort term, released-code form: positive a doubled, total acceleration
+    from aidriver.preferences import log_accel_pref
+    la_neg = float(log_accel_pref(-1.0, p)); la_pos = float(log_accel_pref(1.0, p))
+    check("[code form] +1 m/s^2 costs as much as -2 m/s^2 (positive accel doubled)",
+          abs(la_pos - float(log_accel_pref(-2.0, p))) < 1e-12 and la_pos < la_neg)
+    la_lat = float(log_accel_pref(0.0, p, a_lat=1.0))
+    check("[code form] lateral acceleration enters the effort term",
+          abs(la_lat - la_neg) < 1e-12, f"{la_lat:.3f} vs {la_neg:.3f}")
+    check("[SI form] effort term is N(a_long | 0, sigma_a) only",
+          abs(float(log_accel_pref(1.0, p_si)) - float(log_accel_pref(-1.0, p_si))) < 1e-12
+          and abs(float(log_accel_pref(0.0, p_si, a_lat=1.0)) - float(log_accel_pref(0.0, p_si))) < 1e-12)
 
 
 def test_running_min():

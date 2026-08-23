@@ -20,15 +20,52 @@ Two things in the SI that are easy to miss and that matter a great deal:
 
   * `p_coll` is not only a collision cost. When there is *no* collision and the other vehicle
     is ahead, it is a Gaussian preference over **inverse tau**, tau^-1 = phi_dot / phi, with
-    mean 0.2 s^-1 (i.e. TTC ~ 5 s) and sd 0.125 s^-1. This is the smooth term that shapes
-    ordinary car following; without it there is no gradient pulling the driver towards a
-    comfortable following distance, and the model only reacts once a collision is predicted.
+    mean 0.2 s^-1 (i.e. TTC ~ 5 s) and sd 0.125 s^-1. In the released code this term is
+    one-sided (see below): it penalises closing faster than TTC 5 s and is silent
+    otherwise, so it bounds the approach rate rather than pulling toward a following
+    distance.
   * `p_coll` is defined recursively as a running minimum over the horizon, so every timestep
     after a collision stays punished (the model has no collision mechanics and vehicles would
     otherwise phase through each other).
 
-Parameter note: the SI gives g_LL = -5000 whereas Table 1 of the main article gives -15000.
-We follow the SI, since the SI defines the functional form these constants enter.
+Where the released code and the Supplementary Information disagree
+----------------------------------------------------------------------
+Revision 2026-08-23. A review of the authors' released code (commit 5b47bf6 of
+tud-hri/Active-Inference-Collision-Avoidance) and their OSF deposit, written up in
+`docs/method_review.md` (section 5, "Where the released code differs from the paper and
+the SI"), found that the preference function the deposited results were generated with is
+not the one the SI describes. This module now follows the **code**, because the code is
+what produced the published numbers and what our comfort-zone calibration is validated
+against (notes/05 section 4b). The SI forms remain available through `PreferenceParams`
+flags so that the two can be compared; `PreferenceParams.si_variant()` returns them.
+
+  1. Inverse-tau preference (SI Eq. 48 vs `src/rear_end_test/reward.py:272`).
+     The SI writes a symmetric Gaussian N(tau^-1 | 0.2, 0.125). The code clamps
+     tau^-1 to max(tau^-1, 0.2) before evaluating the Gaussian, so only closing *faster*
+     than TTC 5 s is penalised; steady following (tau^-1 = 0) and opening gaps cost nothing.
+     Consequence: the SI form gives a constant residual of 0.5 * (0.2/0.125)^2 = 1.28 log
+     units per step whenever a vehicle is ahead and pulls the agent toward the lead; the
+     code form gives zero and no pull. Flag: `tau_inv_one_sided` (default True = code).
+  2. Off-road cost g_LL (SI 2.4: -5000; article Table 1 and
+     `simulation_rear_end.py:335`: -15000). Default is now -15000.
+  3. Control-effort term (SI Eq. 44 vs `reward.py:166,173`). The SI writes
+     N(a_long | 0, sigma_a). The code first doubles positive longitudinal accelerations,
+     then penalises the *total* acceleration sqrt(a_lat^2 + a_long^2). Flags:
+     `double_positive_accel`, `effort_uses_total_accel` (both default True = code).
+     `obs["a_lat"]` is optional and defaults to 0, which is exact for straight following.
+  4. Collision severity (SI Eq. 48 vs `reward.py:285-289`). The SI writes
+     v_ego - v_nu cos(theta_ego - theta_nu), which is not floored and goes negative for a
+     faster lead; the code uses |v_ego cos(theta_ego) - v_nu cos(theta_nu)|. We use the
+     code form. Flag: `severity_absolute` (default True = code).
+
+Not reproduced here, and documented as such: the code's heading penalty (inert below
+45 degrees), and its two stateful lane-change terms (an aborted-lane-change penalty of
+3 g_LC and a per-step penalty after nine steps straddling the lane line;
+`reward.py:221,231`). They depend on the ego's lateral history within a rollout and do
+not fit a pointwise preference over observations; they do not affect straight-line
+following, which is what the comfort-zone field is evaluated on.
+
+Everything else in this module still follows SI section 2.4, which the code agrees with.
 """
 from __future__ import annotations
 
@@ -56,21 +93,41 @@ class PreferenceParams:
     # --- inverse tau (comfortable time-to-collision) -------------------------------
     tau_inv_mu: float = 0.2         # s^-1  (TTC ~ 5 s), from Markkula et al.
     tau_inv_sd: float = 0.125       # s^-1
+    # One-sided as in the released code (reward.py:272): only tau^-1 > tau_inv_mu costs.
+    # False restores the SI's symmetric Gaussian (SI Eq. 48). See module notes, item 1.
+    tau_inv_one_sided: bool = True
+    # --- control effort: released-code form (reward.py:166,173); module notes, item 3 ----
+    double_positive_accel: bool = True      # a_long > 0 is doubled before the Gaussian
+    effort_uses_total_accel: bool = True    # penalise sqrt(a_lat^2 + a_long^2), not a_long
     # --- road geometry -------------------------------------------------------------
     lane_width: float = 3.65        # w
     lane_centre: float = 0.0
-    # --- costs (log-probability units; SI parameter list) -------------------------
+    # --- costs (log-probability units) ---------------------------------------------
     g_lane_boundary: float = -1000.0   # g_LC
-    g_leave_road: float = -5000.0      # g_LL  (SI value; Table 1 of the article says -15000)
+    # g_LL: -15000 in the article's Table 1 and in the released code
+    # (simulation_rear_end.py:335); the SI's -5000 is a documentation error. Module
+    # notes, item 2.
+    g_leave_road: float = -15000.0
     g_collision: float = -10000.0      # g_C   at 10 m/s relative impact speed
     collision_ref_speed: float = 10.0
     severity_floor: float = 0.2        # SI: cost factor is 0.2 + 0.8 * dv / 10
+    # Severity uses |v_ego cos(theta_ego) - v_nu cos(theta_nu)| as in the released code
+    # (reward.py:285-289); False restores the SI's unfloored signed form. Module notes, item 4.
+    severity_absolute: bool = True
     # --- safety margin (p_safe) ----------------------------------------------------
     a_other_min: float = -6.0       # a_OV,min -- calibrated per scenario (see module notes)
     a_max: float = 8.0              # |a_max| the ego can achieve
     response_time: float = 1.0      # t_react [s]
     # --- vehicle -------------------------------------------------------------------
     vehicle: BicycleParams = field(default_factory=BicycleParams)
+
+    def si_variant(self) -> "PreferenceParams":
+        """The preference function as the Supplementary Information describes it (SI 2.4),
+        for comparison with the released-code form that is the default. See module notes."""
+        from dataclasses import replace
+        return replace(self, tau_inv_one_sided=False, double_positive_accel=False,
+                       effort_uses_total_accel=False, severity_absolute=False,
+                       g_leave_road=-5000.0)
 
     def max_log_preference(self) -> float:
         """
@@ -95,7 +152,18 @@ def log_speed_pref(v, p: PreferenceParams):
     return _log_gauss(v, p.v_desired, p.sigma_v)
 
 
-def log_accel_pref(a, p: PreferenceParams):
+def log_accel_pref(a, p: PreferenceParams, a_lat=0.0):
+    """
+    Control-effort preference on acceleration. Released-code form by default
+    (reward.py:166,173): positive longitudinal accelerations are doubled, then the total
+    acceleration sqrt(a_lat^2 + a_long^2) enters N(. | 0, sigma_a). With both flags False
+    this is the SI's N(a_long | 0, sigma_a). Module notes, item 3.
+    """
+    a = np.asarray(a, dtype=float)
+    if p.double_positive_accel:
+        a = np.where(a > 0, 2.0 * a, a)
+    if p.effort_uses_total_accel:
+        a = np.sqrt(np.asarray(a_lat, dtype=float) ** 2 + a ** 2)
     return _log_gauss(a, 0.0, p.sigma_a)
 
 
@@ -147,10 +215,16 @@ def _severity(v_ego, v_other, theta_ego, theta_other, p: PreferenceParams):
     20% of g_C. (A purely quadratic scaling would make a gentle crash cheaper than sustained
     hard braking, and the model would choose to crash -- observed while developing this.)
     """
-    dv = (np.asarray(v_ego, dtype=float)
-          - np.asarray(v_other, dtype=float)
-          * np.cos(np.asarray(theta_ego, dtype=float)
-                   - np.asarray(theta_other, dtype=float)))
+    v_ego = np.asarray(v_ego, dtype=float)
+    v_other = np.asarray(v_other, dtype=float)
+    th, th_o = np.asarray(theta_ego, dtype=float), np.asarray(theta_other, dtype=float)
+    if p.severity_absolute:
+        # Released-code form (reward.py:285-289): absolute difference of the longitudinal
+        # speed components. Module notes, item 4.
+        dv = np.abs(v_ego * np.cos(th) - v_other * np.cos(th_o))
+    else:
+        # SI Eq. 48 as written: signed, not floored.
+        dv = v_ego - v_other * np.cos(th - th_o)
     return p.severity_floor + (1.0 - p.severity_floor) * dv / p.collision_ref_speed
 
 
@@ -172,8 +246,10 @@ def log_collision_pref(obs: dict, p: PreferenceParams):
       * **other vehicle behind or alongside** (dx <= lf+lr): no cost.
       * **other vehicle ahead, no collision**: a Gaussian preference over inverse tau,
             tau^-1 ~ N(0.2 s^-1, 0.125 s^-1),
-        normalised so that its maximum is 0. This is what makes ordinary following
-        comfortable at TTC ~ 5 s.
+        normalised so that its maximum is 0. In the released code (and here by default)
+        the Gaussian is one-sided -- tau^-1 is clamped to at least 0.2 -- so it only
+        penalises closing faster than TTC 5 s; with `tau_inv_one_sided=False` it is the
+        SI's symmetric form, which also penalises steady following (module notes, item 1).
 
     The running minimum over the horizon (Eq. 47) is a property of a rollout, not of a single
     observation, so it is applied separately by `apply_running_min`.
@@ -191,6 +267,11 @@ def log_collision_pref(obs: dict, p: PreferenceParams):
     ahead = dx > veh.length
 
     log_coll = p.g_collision * _severity(v, v_other, th, th_o, p)
+    if p.tau_inv_one_sided:
+        # Released-code form (reward.py:272): tau^-1 = max(tau^-1, mu), so the Gaussian
+        # only bites when closing faster than the preferred TTC. Steady following and
+        # opening gaps cost exactly zero. Module notes, item 1.
+        tau_inv = np.maximum(tau_inv, p.tau_inv_mu)
     log_tau = (_log_gauss(tau_inv, p.tau_inv_mu, p.tau_inv_sd)
                - (-np.log(p.tau_inv_sd) - 0.5 * LOG_2PI))   # max normalised to 0
     return np.where(collided, log_coll, np.where(ahead, log_tau, 0.0))
@@ -268,6 +349,8 @@ def log_preference_terms(obs: dict, p: PreferenceParams) -> dict:
 
     `obs` keys (all broadcastable to a common shape):
         v, a, omega        ego speed / longitudinal acceleration / steering rate
+        a_lat              ego lateral acceleration (optional, default 0; enters the
+                           control-effort term in the released-code form)
         y                  ego lateral position
         dx, dy             other vehicle position relative to the ego
         v_other, a_other   other vehicle speed / acceleration
@@ -279,7 +362,8 @@ def log_preference_terms(obs: dict, p: PreferenceParams) -> dict:
         obs["tau_inv"] = inverse_tau(obs["dx"], obs["v"], obs.get("v_other", 0.0), p)
     terms = {
         "speed": log_speed_pref(np.asarray(obs["v"], dtype=float), p),
-        "accel": log_accel_pref(np.asarray(obs.get("a", 0.0), dtype=float), p),
+        "accel": log_accel_pref(np.asarray(obs.get("a", 0.0), dtype=float), p,
+                                a_lat=np.asarray(obs.get("a_lat", 0.0), dtype=float)),
         "steer": log_steer_pref(np.asarray(obs.get("omega", 0.0), dtype=float), p),
         "lateral": log_lateral_pref(np.asarray(obs.get("y", p.lane_centre), dtype=float), p),
         "collision": log_collision_pref(obs, p),

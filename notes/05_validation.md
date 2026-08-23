@@ -42,12 +42,19 @@ to 7.0 s over 136 runs that braked at all), so matching at one condition is clos
 coincidence. It also brakes much harder than the paper reports and collides in 34% of all
 runs. Dispersion, not central tendency, is what is wrong with it.
 
-The two discrepancies in Track A have a common and identified cause: `find_parameters`
+> **Erratum 2026-08-23.** The paragraph that followed here attributed Track A's two discrepancies (0.92 s
+> vs 1.4 s; swerving where the paper brakes) to the saturated `a_tar_min` lookup. Withdrawn:
+> the authors' deposited runs of this very condition (`Exp_10`) show 0.8 s (31/32 seeds) and
+> a lane change in 78% — Track A agrees with the authors' model; the paper's Fig. 3a example
+> does not represent the deposit. See `docs/method_review.md` §3.1 and §4.3, and the erratum
+> at the top of `03_replication.md`. The original text is kept below for the record.
+
+~~The two discrepancies in Track A have a common and identified cause: `find_parameters`
 saturates for this condition and returns `a_tar_min = −8 m/s²`, the most pessimistic possible
 assumption about how hard the lead vehicle might brake (details in `03_replication.md` §Track
 A). A more pessimistic assumption makes the model react earlier *and* prefer swerving, which
 is exactly the pattern observed. This is a limitation of the released calibration table, not
-of the model.
+of the model.~~
 
 ## 1b. The second case — front-to-rear, v0 = 25 m/s, time gap 1.0 s (Fig. 3b)
 
@@ -73,11 +80,13 @@ captured.
 
 **Why this matters for the Fig. 3a discrepancy.** Track A responds early and swerves at *both*
 conditions. At Fig. 3b that is correct behavior; at Fig. 3a it is not, because the paper brakes
-only there. That asymmetry is exactly what the saturated `a_tar_min = −8 m/s²` calibration
-predicts: a model that assumes the lead vehicle might brake maximally is biased toward earlier
-and more evasive responses, which is harmless when swerving is the right answer and wrong when
-it is not. It is evidence for the diagnosis in `03_replication.md` rather than a second,
-separate discrepancy.
+only there.
+
+> **Erratum 2026-08-23.** The rest of this paragraph originally read the asymmetry as evidence for the
+> `a_tar_min` calibration diagnosis. It is not: the deposit shows that the authors' model
+> also responds early and swerves at the Fig. 3a condition, so there is no asymmetry between
+> Track A and the authors' model — only between the paper's worked example and both. See
+> the erratum in §1.
 
 Cost note: 644 s for 18 timesteps at batch 2, i.e. roughly 18 s per simulated step per run.
 
@@ -249,11 +258,38 @@ boundary is robust and the *level* is not a sensitive quantity; whether that hol
 scenarios where the field rises gradually (lateral clearance) is exactly what the
 cross-scenario test will show.
 
-Incidental but pleasing: the shortest-gap condition (25 m/s, THW 0.668 s) starts 11 cm
-inside the closed-form dread boundary (THW* = 0.672 s), and in the authors' own runs the
-model refuses the condition — 72% of seeds leave the road before the lead ever brakes, and
-9.4% collide. The static boundary and the reference implementation agree that the state is
-untenable.
+Incidental: the shortest-gap condition (25 m/s, THW 0.668 s) starts 11 cm inside the
+closed-form dread boundary (THW* = 0.672 s), and in the authors' own runs 72% of seeds leave
+the road and 9.4% collide.
+
+> **Erratum 2026-08-23.** This paragraph originally said the seeds leave the road "before the lead ever
+> brakes" and read that as the model "refusing" the condition. Wrong: checked directly from
+> the deposit's true states, no seed in any of the 28 conditions deviates laterally or
+> changes speed before the lead brakes at 0.8 s. The departures happen during the avoidance
+> (median 3.2 s into the run for this condition), mostly to the left, beyond the adjacent
+> lane — and they occur in 44–72% of seeds at *every* gap at 25 m/s, including 3.5 s, so
+> they say nothing about the dread boundary. See `docs/method_review.md` §4.1 and
+> `replication/osf/review/offroad.csv`.
+
+**Benign-following surprise in the authors' own runs (added 2026-08-23).** The deposit stores
+the pragmatic-value components per executed step. Before the lead brakes (steps 0–3), the
+authors' surprise signal ε is far from zero and grades with the initial gap — at 15 m/s:
+98 800 per step at the 0.5 s gap, 68 100 at 1.5 s, 27 900 at 2.5 s, 6 200 at 3.5 s — with
+essentially all of it from the collision/safety term. This is the comfort-zone field of
+`04_comfort_zone_method.md` evaluated by the reference implementation itself, and it is the
+closest thing to independent support the method has so far. It also means the authors'
+accumulator reaches 18–44% of its threshold before the event at gaps ≤ 1.5 s; the
+consequences for their response-time results are in `docs/method_review.md` §4.2. Numbers:
+`replication/osf/review/benign_eps.csv`.
+
+**Preference function aligned with the released code (2026-08-23).** The ε used for the
+calibration above was originally computed with the SI's symmetric τ⁻¹ term and g_LL = −5000.
+`src/aidriver/preferences.py` now follows the code (one-sided τ⁻¹, g_LL = −15000, code-form
+control-effort and severity terms; module notes there). Re-running `validate_osf.py` leaves
+the calibration result unchanged — score 0.855, median onset error 0.0 s, IQR 0.2 s, 771 of
+896 matched; fitted level 66.9 instead of 67.9 — and the residual inside the comfort zone is
+now exactly 0 instead of the constant 1.28. The SI-form outputs are archived in
+`replication/osf_si_form/`.
 
 Not yet used from the deposit: the `Results_oncoming` and `Results_intersection` folders
 (the faithful scenario definitions our `LateralIncursionScenario` lacks are implicit in
@@ -282,17 +318,20 @@ Ziraldo et al. human data for comparison.
 
 | | reproduced | partially | not reproduced / not attempted |
 |---|---|---|---|
-| **Track A** | architecture runs end to end; **Fig. 3b case in full** (response time 0.80 s vs ~0.6–0.8 s, brake + swerve) | Fig. 3a case: response time 0.92 s vs 1.4 s, swerves where the paper brakes | full sweep; lateral incursion; intersection; ablations |
+| **Track A** | architecture runs end to end; **Fig. 3b case in full** (response time 0.80 s vs ~0.6–0.8 s, brake + swerve); **Fig. 3a case against the deposit** (0.80–1.04 s vs 0.8–1.0 s; lane change in 3/4 vs 78%) | Fig. 3a case against the paper's example: 0.92 s vs 1.4 s, swerves where the example brakes — the example does not represent the deposit | full sweep; lateral incursion; intersection; ablations |
 | **Track B** | preference function (verified against SI); belief tracking; surprise zero-floor; static comfort-zone boundary; **maneuver choice vs speed**; **braking magnitude vs urgency** | response time vs time gap (direction only) | response time magnitude; collision rates; maneuver choice vs time gap; lateral incursion; intersection |
 
-Two numbers to carry forward. **Track A reproduces the Fig. 3b case (0.80 s against ~0.6–0.8 s,
-with the correct brake-and-swerve maneuver) but gives 0.92 s against 1.4 s at Fig. 3a, where it
-also swerves though the paper brakes.** Reproducing one condition and not the other, in the
-direction a more pessimistic `a_tar_min` predicts, is stronger support for the calibration
-diagnosis than either result alone would be, and it is fixable by regenerating the
-free-following calibration over the paper's actual parameter range. **Track B reproduces 2 of the 6 published relations** — the two that rest on the
-preference function rather than on response timing — which localizes its remaining defect to
-the evidence-accumulation stage instead of leaving it as a general "does not work".
+Two numbers to carry forward. **Track A reproduces the authors' deposited runs at both
+conditions** (Fig. 3b: 0.80 s against a deposit median of 1.4 s, IQR 1.0–2.0, minimum 0.8;
+Fig. 3a: 0.80–1.04 s against 0.8 s in 31/32 seeds, with the same lane-change preference).
+Where it differs from the paper's text, so does the deposit. **Track B reproduces 2 of the 6
+published relations** — the two that rest on the preference function rather than on response
+timing — which localizes its remaining defect to the evidence-accumulation stage instead of
+leaving it as a general "does not work".
+
+> **Erratum 2026-08-23.** This paragraph originally read the Fig. 3a/3b asymmetry as support for the
+> calibration-table diagnosis and called it "fixable by regenerating the free-following
+> calibration". Withdrawn; see §1 and `docs/method_review.md` §3.1.
 
 That split matters for the comfort-zone work: the method in `04_comfort_zone_method.md` depends
 on the preference function and the static field, both of which fall in the reproduced column.

@@ -1,23 +1,23 @@
 {
   "n_trials": 896,
   "n_with_onset": 896,
-  "level": 67.94052822426352,
+  "level": 66.91572552375055,
   "score": 0.8554289142171566,
   "onset_error_median_s": 0.0,
   "onset_error_iqr_s": 0.2,
   "n_matched": 771,
   "transfer": {
     "fit_low_eval_high": {
-      "fitted_level": 0.8680114448183185,
-      "heldout_score_at_fitted": 0.7091346153846154,
+      "fitted_level": 0.6628074925618672,
+      "heldout_score_at_fitted": 0.7019230769230769,
       "heldout_score_at_local_best": 0.7961630695443646,
-      "heldout_local_best_level": 64.11161429426734
+      "heldout_local_best_level": 64.14451868073647
     },
     "fit_high_eval_low": {
-      "fitted_level": 64.11161429426734,
+      "fitted_level": 64.14451868073647,
       "heldout_score_at_fitted": 0.9158653846153846,
       "heldout_score_at_local_best": 0.9158653846153846,
-      "heldout_local_best_level": 0.8680114448183185
+      "heldout_local_best_level": 0.6628074925618672
     }
   }
 }

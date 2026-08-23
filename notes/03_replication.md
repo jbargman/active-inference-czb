@@ -8,11 +8,23 @@ front-to-rear scenario. This is the actual replication.
 mechanism inspectable and to support the comfort-zone work.
 
 Bottom line: Track A runs and reproduces the qualitative result with a brake response time
-of **0.92 s** against the paper's **1.4 s** for the same condition; the discrepancy traces to
-a calibration table shipped with the code that does not cover the paper's operating range.
-Track B reproduces the mechanisms and the static preference function faithfully (verified
-against the Supplementary Information) but its closed-loop response timing is **not** yet
-quantitative — diagnosis below.
+of **0.92 s** against the paper's **1.4 s** for the same condition. Track B reproduces the
+mechanisms and the static preference function as the Supplementary Information describes
+them, but its closed-loop response timing is **not** yet quantitative — diagnosis below.
+
+> **Erratum 2026-08-23.** The original bottom line attributed the 0.92 s vs 1.4 s difference to "a
+> calibration table shipped with the code that does not cover the paper's operating range".
+> That diagnosis is withdrawn. The authors' OSF deposit for the same condition (`Exp_10`, 32
+> seeds) gives a brake response time of 0.8 s in 31 seeds and 1.0 s in one, a re-plan 0.6 s
+> after lead onset in all 32, and a lane change in 78% of seeds — Track A matches the
+> authors' own runs on every count. The 1.4 s brake-only example in the paper's Fig. 3a is
+> not representative of the deposited data, and the calibration table saturates in the
+> deposit exactly as it does here (the authors' script calls the same lookup). Details and
+> numbers: `docs/method_review.md` §3.1 and §4.3. A second correction: the SI's preference
+> function differs from the released code in several places (one-sided τ⁻¹ term,
+> g_LL = −15000, control-effort form, speed grid {10, 15, 20, 25}); Track B followed the
+> SI, and `src/aidriver/preferences.py` now follows the code (module notes there;
+> `docs/method_review.md` §5).
 
 ---
 
@@ -71,6 +83,12 @@ a delay, accumulates evidence, re-plans, and executes a coordinated avoidance ma
 response is clearly *not* instantaneous, which is the mechanism the paper is arguing for.
 
 **What is not, and why.** Two related causes, both traceable to the released artifacts:
+
+> **Erratum 2026-08-23.** The two bullets below describe a real property of the released calibration
+> table, but they do not explain a discrepancy between Track A and the authors' model,
+> because there is none: Track A matches the deposited runs of this condition (see the
+> erratum at the top of this file). The saturation described here is present in the
+> authors' deposit too. Kept as documentation of the table; the causal claim is withdrawn.
 
 - **The shipped calibration table does not cover the paper's operating range.**
   `Results_following/Analysis_following.xlsx` is a coarse grid: speeds {10, 20, 30} m/s,
@@ -199,12 +217,21 @@ study. Closing it is a tractable but non-trivial piece of work — see "next ste
 
 ### Honest summary
 
-If the goal is *using* the published model, Track A is the route and it works. If the goal is
-*understanding and extending* it — which is what the comfort-zone work needs — Track B's
-preference function and surprise machinery are correct and tested, and its closed-loop
-controller needs the parameter-calibration step before it can be trusted for response-timing
-claims. The comfort-zone method in `04_comfort_zone_method.md` deliberately depends only on
-the parts that are verified.
+If the goal is *using* the published model, Track A is the route and it works — and, as of
+2026-08-23, it is known to reproduce the authors' deposited runs to the timestep. If the goal
+is *understanding and extending* it — which is what the comfort-zone work needs — Track B's
+preference function and surprise machinery implement the SI, which turned out not to be what
+the code does (see `docs/method_review.md` §5); the preference module has since been aligned
+with the code. Track B's closed-loop controller is not trusted for response-timing claims.
+The comfort-zone method in `04_comfort_zone_method.md` deliberately depends only on the
+parts that are verified.
+
+> **Erratum 2026-08-23.** The surprise level Track B shows in benign driving (around 10⁵ per step, described
+> above as a defect) is of the same order as the authors' own model in the deposit
+> (5–10 × 10⁴ per step before the lead brakes, entirely from the collision/safety term;
+> `docs/method_review.md` §4.2). The level is not the defect; the authors' model starts its
+> accumulator at zero 0.8 s before the event, which is why spontaneous re-plans do not show
+> in their runs.
 
 ---
 

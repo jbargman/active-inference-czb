@@ -167,7 +167,15 @@ they change results and are easy to trip over.
 - **The Supplementary Information matters more than the article** for anything to do with the
   preference function. SI §2.4, Eqs. 44–52. Two things are impossible to guess from the article
   alone: `p_lat` is triangular and lane-structured, and `p_coll` contains an inverse-tau
-  preference that shapes ordinary car following.
+  preference. **But the released code matters more than the SI** (added 2026-08-23): the
+  code's τ⁻¹ term is one-sided (no pull toward the lead), g_LL is −15000, the control-effort
+  term doubles positive acceleration and uses total acceleration, and the speed grid is
+  {10, 15, 20, 25}. `src/aidriver/preferences.py` follows the code and documents each
+  difference; the full list is `docs/method_review.md` §5. Do not "fix" the code to match
+  the SI.
+- **The calibration-table diagnosis in the notes is withdrawn** (2026-08-23). Track A matches
+  the authors' deposited runs; the paper's Fig. 3a example does not. Errata are in
+  `notes/03` and `notes/05`; the argument is in `docs/method_review.md` §3.1 and §4.3.
 - **`external/aica/` has exactly one local patch** (a hardcoded `device='cuda'`). Documented in
   `replication/PATCHES.md`. Do not let other edits accumulate there silently.
 - **Do not quote absolute comfort-zone boundary values without stating `a_OV,min` and
@@ -183,6 +191,7 @@ they change results and are easy to trip over.
 | `notes/03_replication.md` | replication report, bug list, practical run notes |
 | `notes/04_comfort_zone_method.md` | **the proposed method** and the study that would validate it |
 | `notes/05_validation.md` | our results against the published values, model and surprise measures |
+| `docs/method_review.md` | review of the published method against its code and deposit (2026-08-23); the document to read before trusting any number quoted from the paper |
 | `docs/data_requirements.pdf` | what data is needed, in what format, from which datasets |
 | `papers/README.md` | all 54 Waymo papers, categorized, with what is missing |
 | `notes/paper_text/` | extracted plain text of every paper, for searching |

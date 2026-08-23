@@ -2,7 +2,11 @@
 Run the independent re-implementation (`src/aidriver`) across the paper's front-to-rear
 sweep, so its behavior can be compared with the published results quantitatively.
 
-Paper sweep (SI 3.1): time gaps {0.5 ... 3.5} s x speeds {10, 15, 25, 35} m/s, 32 repeats
+Paper sweep: time gaps {0.5 ... 3.5} s x speeds {10, 15, 20, 25} m/s, 32 repeats.
+NOTE 2026-08-23: the SI (3.1) lists {10, 15, 25, 35} m/s, but the released code
+(simulation_rear_end.py:496), the Fig. 3c caption and the OSF deposit all use
+{10, 15, 20, 25}; see docs/method_review.md section 5, item 9. The earlier sweep in
+replication/sweep_aidriver.csv was run on the SI grid and has not been re-run.
 (896 simulations). We use fewer repeats to keep this tractable on CPU.
 
 Extracts, per run:
@@ -33,7 +37,7 @@ from aidriver import (  # noqa: E402
 )
 
 TIME_GAPS = [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5]
-SPEEDS = [10.0, 15.0, 25.0, 35.0]
+SPEEDS = [10.0, 15.0, 20.0, 25.0]   # code/deposit grid, not the SI's (see module notes)
 T_BRAKE = 2.0          # shortened from the SI's 5 s; response times are measured relative
                        # to this instant, so the value only affects run length
 
