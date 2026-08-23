@@ -64,6 +64,17 @@ question is how much of each can be built from the parts above.
 
 ## Our proposals
 
+{{R1}}*Added 2026-08-23.* The proposals below have since been developed into a concrete plan,
+`docs/crash_causation_plan.md`: the four mechanisms of Bärgman et al. (2024) — off-road
+glances, too-close following, low deceleration, no response — as switchable components
+around an active-inference response process, crashes generated from the QUADRIS rear-end
+seed scenarios, and a practical-equivalence comparison with the Wu et al. framework. The
+plan also records that the released code already contains the hook an off-road glance
+needs (the gaze state that scales observation precision, `decoder.py`, left over from the
+Engström et al. (2024) model). Read this chapter for the reasoning; read the plan for what
+will actually be built.
+
+
 *Everything from here to the end of the section is [Speculation]: our ideas, stated so
 they can be criticized, not the authors' and not yet built or validated.*
 

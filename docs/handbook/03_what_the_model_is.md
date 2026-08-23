@@ -71,11 +71,12 @@ bug [Paper].
 *Input:* belief cloud, preferences. *Output:* the (kept or replaced) plan; its first step
 goes to the vehicle. [Code: `mpc_discrete.py`]
 
-**7. The surprise account (evidence accumulation).** The response-timing mechanism, and the
+{{R1}}**7. The surprise account (evidence accumulation).** The response-timing mechanism, and the
 piece this project reuses for comfort zones. Each step it receives the gap between what the
-current plan is now expected to deliver and the best that could be expected — exactly zero
-while the plan still works — multiplied by a rate constant and added to a running total.
-Threshold crossed → full re-plan → total resets.
+current plan is now expected to deliver and the best that could be expected — zero only if
+every imagined future works out, which in practice it never quite does (chapter 02) —
+multiplied by a rate constant and added to a running total. Threshold crossed → full
+re-plan → total resets.
 *Input:* the plan's scored shortfall. *Output:* the re-plan trigger. [Paper Eq. 13]
 
 ## Two currencies, one ledger

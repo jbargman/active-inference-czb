@@ -20,18 +20,30 @@ about why.
 
 In steady following (chapter 02, t < 0.8 s), four things characterize the model's state:
 
-- **The surprise account holds at exactly zero.** The current plan delivers the preferred
-  future in essentially every imagined rollout, so nothing accumulates. This exact zero —
-  not "small" — is what makes the comfort zone a defined region rather than a fuzzy one.
+- {{R1}}**The surprise account drifts, slowly.** The current plan delivers the preferred future
+  in most imagined rollouts, but the imagined spread always contains a few futures that end
+  too close, so something accumulates even in steady following: in the authors' own runs,
+  from 2% of the threshold per 0.8 s at a 3.5 s gap to 44% at a 0.5 s gap, all of it from
+  the collision and safety-margin terms [OSF; `docs/method_review.md` §4.2]. What *is*
+  exactly zero is the field evaluated on the realized state (chapter 11) — not "small",
+  exactly zero — and that is what makes the comfort zone a defined region rather than a
+  fuzzy one. The model's own accumulator, by contrast, would re-plan on its own after 2–7 s
+  of uneventful following at gaps of 2 s or less; the published simulations do not show
+  this only because they start 0.8 s before the lead brakes.
 - **Planning is incremental.** The plan is shifted and cheaply patched each step; the
   expensive candidate-generation machinery is dormant. Most timesteps of a normal drive
   never trigger a single full re-plan.
 - **Trust is extended.** The other vehicle has been behaving normally, so predictions
   concentrate on norm-following futures; the long tail of "what if they do something
   wild" is present but carries little weight (chapter 06).
-- **Behavior is shaped by the gentle terms.** Speed preference, pedal smoothness, and lane
-  centering — the low-stakes preference terms — account for what the driver does. The
-  collision and safety-margin terms are satisfied and silent.
+- {{R1}}**Behavior is shaped by the gentle terms — in the realized state.** Speed
+  preference, pedal smoothness, and lane centering — the low-stakes preference terms — are
+  what the driver's actual state is scored against, and on that state the collision and
+  safety-margin terms are satisfied. In the imagined futures they are not quite silent
+  (first bullet), and in the published runs the driver never acts on the gentle terms at
+  all before the event: it follows a fixed reference plan until its first re-plan, so what
+  "normal driving" looks like as *behavior* in this model has not actually been exercised
+  in the published simulations [Code: `EA_init = False`; `docs/method_review.md` §6.2].
 
 What normal driving *is*, in this model: the region of the state space where preferred
 futures remain reachable without doing anything unusual. Keeping the vehicle inside that
@@ -76,11 +88,14 @@ re-implementation reproduced this relation even while its response timing was br
 (`notes/05_validation.md`): choice rests on the preference function, timing on the
 accumulator. They are separable claims, and the model gets them right or wrong separately.
 
-The 25 m/s row also shows the model's honesty about desperation: at the highest speed,
-more than half of all runs (58%, averaged over the gap grid, rising to 72% at the
-shortest gap) end by leaving the road — the least-bad imagined future when neither
-braking nor a clean lane change survives. The paper reports the same qualitative
-behavior for humans as speed and urgency rise [Paper].
+{{R1}}The 25 m/s row also shows something the paper does not mention: at the highest speed,
+more than half of all runs (58%, averaged over the gap grid; 72% at the shortest gap and
+still 53% at the longest) end by leaving the road, almost always during the avoidance
+maneuver and mostly to the left, through and beyond the adjacent lane [OSF;
+`docs/method_review.md` §4.1]. At a 3.5 s gap this is not desperation — moderate braking
+would do — so it is best read as a failure of the lane-change control at speed rather than
+as a human-like choice. The paper describes the model as "favoring swerving" at higher
+speeds [Paper]; the deposit shows where most of those swerves end.
 
 ## What this means for using the model
 
@@ -100,12 +115,14 @@ behavior for humans as speed and urgency rise [Paper].
 
 ## Notes for the mathematically curious
 
-**Level 1 — one objective, two regimes.** The expected-free-energy score of the incumbent
-policy decomposes over preference terms. In the quiet regime the collision and safety
-terms contribute ~0 and the accumulated evidence E stays at 0 because the per-step
-residual ε — best-achievable minus incumbent expected pragmatic value — is exactly 0. In
-the loud regime ε > 0, E integrates it at rate λ, and the re-plan at E ≥ 1 is a
-drift-diffusion first-passage with a model-supplied drift. Maneuver choice is the argmax
+{{R1}}**Level 1 — one objective, two regimes.** The expected-free-energy score of the incumbent
+policy decomposes over preference terms. In the quiet regime the per-step residual ε —
+best-achievable minus incumbent *expected* pragmatic value — is small relative to the
+loud regime but not zero: the expectation runs over 75 noisy rollouts × 30 steps, and the
+collision and safety-margin terms of the worst few dominate it (5 × 10³ to 10⁵ per step
+in the deposit). E therefore drifts at rate λε even before any event. In the loud regime ε
+jumps by a factor of 3–4, E integrates it, and the re-plan at E ≥ 1 is a drift-diffusion
+first-passage with a model-supplied drift and a non-zero starting point. Maneuver choice is the argmax
 over candidate policies of the same score; no separate decision rule exists.
 
 **Level 2 — the numbers above.** Maneuver mix: mean over the 28 baseline rear-end

@@ -70,10 +70,13 @@ a red light and cutting the corner [Code].
 **5. Calibrated safety assumptions.** The safety-margin preference asks "would ordinary
 braking still save me if the other vehicle did its worst?" — which requires assuming what
 "its worst" is. That assumed worst-case deceleration is calibrated per scenario against a
-free-following study rather than shared [SI]. Our replication found this to be the
-sharpest practical edge: the calibration table shipped with the code does not span all
-operating ranges, and outside its range the parameter saturates and the model turns
-uniformly over-cautious (`notes/03_replication.md`).
+free-following study rather than shared [SI]. {{R1}}The calibration table shipped with the
+code covers steady-state headways only up to about 1.0–2.1 s depending on speed, so for
+most of the paper's own rear-end conditions the lookup saturates at the most pessimistic
+value, −8 m/s² [Code: `Analysis_following.xlsx`; `docs/method_review.md` §6.2]. This is a
+property of the authors' published runs as much as of ours; it does not, as an earlier
+draft of this chapter said, explain a difference between our replication and theirs,
+because there is none.
 
 ## The switching checklist
 

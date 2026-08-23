@@ -67,10 +67,10 @@ handbook's chapters keep returning to:
 
 | Package | What it is | Trust level |
 |---|---|---|
-| `src/aidriver/` | readable NumPy mirror of the agent: `preferences.py` (the six terms, SI-verified), `agent.py` (belief + CEM loop), `scenarios.py`, `params.py` | preferences verified; closed-loop timing not trusted (`notes/05_validation.md`) — see also the two parameter traps in `HANDOFF.md` §4 |
+| {{R1}}`src/aidriver/` | readable NumPy mirror of the agent: `preferences.py` (the six terms, aligned with the released code since 2026-08-23; SI forms kept behind flags, every difference documented in the module notes), `agent.py` (belief + CEM loop), `scenarios.py`, `params.py` | preferences verified against code and deposit; closed-loop timing not trusted (`notes/05_validation.md`) — see also the two parameter traps in `HANDOFF.md` §4 |
 | `src/surprise/` | the surprise-measure library (three families + the two Waymo measures), one interface across belief types | property-tested, 31 tests |
 | `src/comfortzone/` | the CZB method: `field.py` (field, closed-form boundary), `boundary.py` (level sets), `calibrate.py` (field along recorded kinematics; level fitting) | cross-checked closed form; end-to-end dry run on the OSF data |
-| `replication/` | Track A runner + sweep + `validate_osf.py` (the OSF comparison harness of chapter 09, rung 3) | outputs in `replication/osf/` |
+| {{R1}}`replication/` | Track A runner + sweep + `validate_osf.py` (the OSF comparison harness of chapter 09, rung 3) + `review_osf.py` (the deposit checks behind `docs/method_review.md`) | outputs in `replication/osf/` and `replication/osf/review/` |
 | `tests/` | 57 property tests — the rung-0 suite | all passing |
 
 ## The data that goes with the code

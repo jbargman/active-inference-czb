@@ -23,11 +23,20 @@ separate theories: a TTC threshold, a headway, a clearance are different *projec
 the same surface, which is, the way we read it, why they never agreed across scenarios in
 the first place.
 
-Two properties make the field the right one rather than an arbitrary score (chapter 02
+{{R1}}Two properties make the field the right one rather than an arbitrary score (chapter 02
 showed both live): it is **exactly zero inside the comfortable region**, so leaving the
-zone is a defined event; and it is **the same quantity whose accumulation times the
-model's responses**, so the boundary (static picture) and the decision to act (dynamic
-picture) are one object, not two glued theories.
+zone is a defined event; and it is **built from the same preference function whose
+expected shortfall times the model's responses**, so the boundary (static picture) and
+the decision to act (dynamic picture) come from one object, not two glued theories. One
+honest qualification, added after the method review: the model's own accumulated quantity
+is the shortfall *expected over noisy imagined futures*, and that expectation is not zero
+inside the zone — it grades smoothly with the gap (from 99 000 to 5 000 per step across
+the authors' rear-end conditions) and would trigger spontaneous re-plans in uneventful
+following [OSF; `docs/method_review.md` §4.2]. The field used here is the same preference
+evaluated *pointwise on the realized state*, which is what recorded human kinematics give
+us and what has the exact zero. The two agree on where the boundary lies; they differ on
+what happens well inside it, and the authors' gap-graded expectation is, if anything,
+independent evidence that their preference function encodes a comfort zone.
 
 The classic constructs map without remainder: the *dread-zone* boundary is where no
 achievable action restores the preferred future (a physics fact, one parameter away from

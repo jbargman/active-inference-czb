@@ -40,23 +40,46 @@ HEADBG = colors.HexColor("#E8EDF4")
 CODEBG = colors.HexColor("#F4F6F9")
 
 
+def _register_fonts():
+    """Use Arial (metric-compatible with Helvetica, full Unicode coverage) when the Windows
+    font files are present, so Greek letters, super/subscripts and combining marks render.
+    Falls back to the built-in Helvetica otherwise."""
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
+    from reportlab.lib.fonts import addMapping
+    fdir = r"C:\Windows\Fonts"
+    files = {"Body": "arial.ttf", "Body-Bold": "arialbd.ttf",
+             "Body-Italic": "ariali.ttf", "Body-BoldItalic": "arialbi.ttf"}
+    try:
+        for name, fn in files.items():
+            pdfmetrics.registerFont(TTFont(name, os.path.join(fdir, fn)))
+        addMapping("Body", 0, 0, "Body"); addMapping("Body", 1, 0, "Body-Bold")
+        addMapping("Body", 0, 1, "Body-Italic"); addMapping("Body", 1, 1, "Body-BoldItalic")
+        return "Body", "Body-Bold"
+    except Exception:
+        return "Helvetica", "Helvetica-Bold"
+
+
+BODY, BOLD = _register_fonts()
+
+
 def styles():
     ss = getSampleStyleSheet()
-    base = dict(fontName="Helvetica", fontSize=9.3, leading=13.2,
+    base = dict(fontName=BODY, fontSize=9.3, leading=13.2,
                 alignment=TA_LEFT, textColor=colors.HexColor("#1A1A1A"))
     s = {
         "body": ParagraphStyle("body", **base, spaceAfter=5),
-        "h1": ParagraphStyle("h1", fontName="Helvetica-Bold", fontSize=17, leading=21,
+        "h1": ParagraphStyle("h1", fontName=BOLD, fontSize=17, leading=21,
                              textColor=NAVY, spaceAfter=3),
-        "h2": ParagraphStyle("h2", fontName="Helvetica-Bold", fontSize=12.5, leading=16,
+        "h2": ParagraphStyle("h2", fontName=BOLD, fontSize=12.5, leading=16,
                              textColor=NAVY, spaceBefore=13, spaceAfter=3),
-        "h3": ParagraphStyle("h3", fontName="Helvetica-Bold", fontSize=10.3, leading=14,
+        "h3": ParagraphStyle("h3", fontName=BOLD, fontSize=10.3, leading=14,
                              textColor=STEEL, spaceBefore=9, spaceAfter=2),
         "sub": ParagraphStyle("sub", **{**base, "fontSize": 9.5, "textColor": GREY},
                               spaceAfter=2),
-        "cell": ParagraphStyle("cell", fontName="Helvetica", fontSize=7.9, leading=9.8,
+        "cell": ParagraphStyle("cell", fontName=BODY, fontSize=7.9, leading=9.8,
                                alignment=TA_LEFT),
-        "cellh": ParagraphStyle("cellh", fontName="Helvetica-Bold", fontSize=7.9,
+        "cellh": ParagraphStyle("cellh", fontName=BOLD, fontSize=7.9,
                                 leading=9.8, alignment=TA_LEFT),
         "quote": ParagraphStyle("quote", **{**base, "textColor": GREY}, leftIndent=10),
         "li": ParagraphStyle("li", **base, spaceAfter=1),
@@ -65,8 +88,22 @@ def styles():
 
 
 # ------------------------------------------------------------------ inline markdown
+# Unicode super/subscript characters -> ReportLab <super>/<sub> markup (font-independent).
+_SUP = str.maketrans("⁻⁰¹²³⁴⁵⁶⁷⁸⁹", "-0123456789")
+_SUB = str.maketrans("₀₁₂₃₄₅₆₇₈₉ₙ", "0123456789n")
+
+
+REVISION_MARKS = {"{{R1}}": "#B00020"}   # revision round -> color (round 1: 2026-08-23)
+
+
 def inline(text: str) -> str:
-    """Convert inline markdown to ReportLab mini-HTML, escaping the rest."""
+    """Convert inline markdown to ReportLab mini-HTML, escaping the rest.
+
+    A paragraph containing a revision mark such as ``{{R1}}`` is rendered in that round's
+    color with the mark removed, so reviewers can see what changed in a given round."""
+    for mark, color in REVISION_MARKS.items():
+        if mark in text:
+            return f'<font color="{color}">' + inline(text.replace(mark, "")) + "</font>"
     out, i, n = [], 0, len(text)
     while i < n:
         ch = text[i]
@@ -95,6 +132,18 @@ def inline(text: str) -> str:
                 out.append(f'<font color="#2B4C7E">{inline(m.group(1))}</font>')
                 i += m.end(); continue
             out.append(html.escape(ch)); i += 1
+        elif ord(ch) in _SUP:
+            j = i
+            while j < n and ord(text[j]) in _SUP:
+                j += 1
+            out.append("<super>" + html.escape(text[i:j].translate(_SUP)) + "</super>")
+            i = j
+        elif ord(ch) in _SUB:
+            j = i
+            while j < n and ord(text[j]) in _SUB:
+                j += 1
+            out.append("<sub>" + html.escape(text[i:j].translate(_SUB)) + "</sub>")
+            i = j
         else:
             out.append(html.escape(ch)); i += 1
     return "".join(out)
@@ -125,7 +174,7 @@ def build_table(rows, avail_width, st):
     # header wraps mid-word ("Symb / ol") no matter how short the body cells are
     mins = []
     for c in range(ncol):
-        longest = max(stringWidth(w, "Helvetica-Bold", 7.9)
+        longest = max(stringWidth(w, BOLD, 7.9)
                       for w in (header[c].split() or [""])) if header[c] else 0
         mins.append(longest + 9)
 
@@ -290,7 +339,7 @@ def build(md_path: str, pdf_path: str, footer: str):
 
     def decorate(canv, d):
         canv.saveState()
-        canv.setFont("Helvetica", 7.3)
+        canv.setFont(BODY, 7.3)
         canv.setFillColor(GREY)
         canv.drawString(left, 11 * mm, footer)
         canv.drawRightString(A4[0] - right, 11 * mm, f"{canv.getPageNumber()}")

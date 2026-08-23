@@ -40,6 +40,33 @@ def versioned(path: Path) -> Path:
         n += 1
 
 
+REVISION_MARKS = {"{{R1}}": (0xB0, 0x00, 0x20)}   # revision round -> RGB (round 1: 2026-08-23)
+
+
+def color_revisions(docx_path: Path) -> int:
+    """Color every paragraph (body or table cell) that carries a revision mark, and strip
+    the mark. Pandoc cannot color text from markdown, so this is done on the built file.
+    Returns the number of paragraphs marked."""
+    import docx
+    from docx.shared import RGBColor
+    d = docx.Document(str(docx_path))
+    paras = list(d.paragraphs)
+    for t in d.tables:
+        for row in t.rows:
+            for cell in row.cells:
+                paras.extend(cell.paragraphs)
+    n = 0
+    for para in paras:
+        for mark, rgb in REVISION_MARKS.items():
+            if mark in para.text:
+                for run in para.runs:
+                    run.text = run.text.replace(mark, "")
+                    run.font.color.rgb = RGBColor(*rgb)
+                n += 1
+    d.save(str(docx_path))
+    return n
+
+
 def build_docx(md: Path) -> Path:
     OUT_DOCX.mkdir(exist_ok=True)
     out = OUT_DOCX / (md.stem + ".docx")
@@ -54,9 +81,12 @@ def build_docx(md: Path) -> Path:
             subprocess.run(cmd[:3] + [str(out)] + cmd[4:], check=True,
                            capture_output=True, text=True)
             print("  locked -> wrote", out.name)
-            return out
-        print(e.stderr)
-        raise
+        else:
+            print(e.stderr)
+            raise
+    n = color_revisions(out)
+    if n:
+        print("  {} revision-marked paragraphs colored".format(n))
     return out
 
 

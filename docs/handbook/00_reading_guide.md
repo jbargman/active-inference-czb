@@ -2,7 +2,17 @@
 
 *Part of the WaymoActiveInference understanding pack. Markdown is the source of truth;
 the Word and PDF versions are generated from it (`docs/handbook/build_handbook.py`).
-Draft for comment, 2026-08-22.*
+Draft for comment, 2026-08-22; revised 2026-08-23.*
+
+{{R1}}**Revision marks.** Passages in dark red were changed on 2026-08-23, after a review of the
+published method against its released code and data (`docs/method_review.md`). The review
+found that the authors' code differs from the Supplementary Information in several
+places (the inverse-tau term is one-sided, the off-road cost is −15000, the
+control-effort term has a different form), that the surprise signal is far from zero
+during ordinary following in the authors' own runs, and that the paper's worked example for
+the rear-end scenario does not represent the authors' deposited data. The handbook's
+text has been corrected where it relied on the SI or on that example; the corrections are
+marked so that a reader of the 2026-08-22 draft can see what moved.
 
 ## What this handbook is
 
@@ -19,7 +29,9 @@ its provenance:
 - **[Paper]** — the published article
 - **[SI]** — its Supplementary Information (where most of the actual definitions live)
 - **[Code]** — the authors' released code (`external/aica/`), which is the ground truth when
-  the paper is ambiguous
+  the paper is ambiguous — {{R1}}and, as it turned out, also when the paper and the SI are
+  unambiguous but do not match what the code does (`docs/method_review.md` §5 lists the
+  differences)
 - **[OSF]** — the authors' own simulation output (`external/gs4bu-osfstorage-archive/`),
   which lets us show real numbers rather than sketches
 - **[Speculation]** — our own ideas and proposals, which are ours and not the authors'

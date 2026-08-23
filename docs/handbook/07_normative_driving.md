@@ -31,7 +31,7 @@ comfort-zone method exploits, chapter 11).
 | **Pedal effort** | acceleration should be mostly gentle | tolerance (sd 0.1 m/s²) | smaller → smoother driving, later/harder emergency trade-off felt |
 | **Steering effort** | the wheel should be mostly still | tolerance (sd 0.02 rad/s) | smaller → steering escapes score worse, braking favored |
 | **Lane position** | stay centered in a real lane | lane geometry; lane-change cost; road-leave cost | the scenario-shaped term — see below |
-| **Closing rate** (inverse-tau) | do not sit close-and-closing on the vehicle ahead | preferred inverse-tau level and width | this quietly shapes *ordinary following distance* — it is why the model keeps a civilized headway even with the safety term satisfied [SI Eq. 47] |
+| {{R1}}**Closing rate** (inverse-tau) | do not close on the vehicle ahead faster than a TTC of about 5 s | preferred inverse-tau level and width | one-sided in the released code: closing slower than that, holding the gap, or falling back costs nothing, so this term bounds the *approach rate* and does not shape the following distance itself [Code: `reward.py`; the SI's symmetric form would, and an earlier draft of this row said so] |
 | **Collision & safety margin** | collisions are unacceptable, scaled by severity — and so are states from which only heroic braking would save me | collision cost; severity floor; assumed worst-case lead braking; assumed own reaction time (1 s) | the comfort-zone term — see below |
 
 ![The six preference terms](figures/preference_terms.png)
@@ -133,11 +133,16 @@ the six add. "Zero cost" is the mode of each distribution; the cost of a departu
 the log-density drop. The additive decomposition is what lets an exceedance be blamed on
 a term: the residual ε (chapter 02) is a sum of per-term residuals.
 
-**Level 2 — forms and numbers.** Speed, pedal, steering: Gaussians with sds 0.5 m/s,
-0.1 m/s², 0.02 rad/s around desired speed / 0 / 0. Lane: triangular within-lane density
-with hard log-costs −1000 (lane boundary), −15000 (road edge as shipped in the OSF
-configs; our mirror uses −5000 [Code difference noted]), lane-structured per scenario
-(SI Eq. 52). Inverse-tau: Gaussian on 1/τ with mean 0.2 s⁻¹, sd 0.125 s⁻¹ (SI Eq. 47).
+{{R1}}**Level 2 — forms and numbers.** Speed, pedal, steering: Gaussians with sds 0.5 m/s,
+0.1 m/s², 0.02 rad/s around desired speed / 0 / 0 — with two code-only twists on the
+pedal term: positive accelerations are doubled before the Gaussian, and the quantity
+penalized is the total acceleration √(a_lat² + a_long²), not the longitudinal component
+[Code: `reward.py:166,173`; neither is in the SI]. Lane: triangular within-lane density
+with hard log-costs −1000 (lane boundary) and −15000 (road edge; the SI's −5000 is a
+documentation error), lane-structured per scenario (SI Eq. 52). Inverse-tau: Gaussian on
+1/τ with mean 0.2 s⁻¹, sd 0.125 s⁻¹, evaluated on max(1/τ, 0.2) so that it is one-sided
+[Code: `reward.py:272`; SI Eq. 48 writes it symmetric]. Our mirror (`src/aidriver/
+preferences.py`) follows the code for all of these and keeps the SI forms behind flags.
 Collision: cost −10000 scaled by severity = max(Δv/10 m/s, 0.2) — the floor is SI
 Eq. 48, not a fudge. Safety margin (SI Eqs. 49–51): required deceleration under the
 counterfactual (lead brakes at min(observed, assumed worst); own response after

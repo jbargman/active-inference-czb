@@ -36,12 +36,19 @@ Our driver does not know the script. What it has instead:
 
 ## The event, moment by moment
 
-**t = 0.0 to 0.6 s — nothing happens, and that is the point.** Steady following. The
-belief cloud tracks the lead within a whisker; the hypotheses about its acceleration hover
-around zero. The plan (keep cruising) delivers the preferred future in every rolled-out
-hypothesis, so each step adds zero to the surprise account. The model perceives, predicts,
-and confirms — silently. This silence is not idleness; it is the model's definition of
-comfort, and chapter 11 turns exactly this silence into a measurable boundary.
+{{R1}}**t = 0.0 to 0.6 s — nothing happens, and that is almost the point.** Steady following.
+The belief cloud tracks the lead within a whisker; the hypotheses about its acceleration
+hover around zero. The plan (keep cruising) delivers the preferred future in *most*
+rolled-out hypotheses — but not all. The imagined futures carry noise on the lead's
+acceleration, and over a 6 s horizon a fraction of them end too close or with a collision,
+so each step deposits a non-trivial amount into the surprise account even now: about
+68 000 units per step in this condition, which is 7.6% of the re-plan threshold per step
+[OSF: `v` components in `Exp_10`; `docs/method_review.md` §4.2]. By the time the lead
+brakes, the account already stands at 0.31 of the way to a re-plan. Left alone, this driver
+would re-plan spontaneously after about 2.6 s of nothing happening. The *realized* state —
+the gap and the speeds as they actually are — is comfortable, and the comfort-zone field of
+chapter 11 evaluated on it is exactly zero; it is the *imagined* spread that is not
+silent. Keeping these two apart matters for everything that follows.
 
 **t = 0.8 s — the lead starts braking.** The script fires: the lead's deceleration ramps
 toward −6 m/s². In the very next belief update, the hypothesis cloud has already snapped to
@@ -49,14 +56,15 @@ the new reality — the believed lead deceleration jumps to −2 m/s² with almo
 spread. This is worth pausing on: the model has *detected* the braking essentially
 immediately. Detection is not the bottleneck.
 
-**t = 0.8 to 1.2 s — knowing is not yet acting.** The driver knows the lead is braking, but
+{{R1}}**t = 0.8 to 1.2 s — knowing is not yet acting.** The driver knows the lead is braking, but
 its plan is still "keep cruising", and a plan is not abandoned just because the world
 changed — it is abandoned when it stops delivering the preferred future. Each new step now
 rolls the belief cloud forward and finds the planned future degrading: the predicted gap
 shrinks, the predicted safety margin erodes, predicted collisions appear among the
-hypotheses. Each step therefore deposits a growing amount of surprise into the account. The
-account climbs from zero — 0.8 s of "the plan is going stale" that has nothing to do with
-sensory sluggishness.
+hypotheses. The per-step deposit rises from 68 000 to 197 000 and then 267 000 [OSF]. The
+account climbs from 0.31 — 0.6 s of "the plan is going stale" that has nothing to do with
+sensory sluggishness, on top of the 0.8 s of pre-conflict drift that got it a third of the
+way there.
 
 **t = 1.4 s — the account is full: re-plan.** The accumulated surprise crosses its
 threshold, and for exactly one timestep the model does the expensive thing: it discards the

@@ -56,14 +56,20 @@ comfortable headways therefore pin down the assumption without touching any conf
 data. Calibrate on the quiet regime, predict the loud one — the same separation chapter
 05 describes behaviorally, used as an inference principle.
 
-The cautionary half of the story is ours: this project's replication found the shipped
-lookup table does not span all of the paper's own operating range, and outside its range
-the interpolation clamps to the table edge — the parameter silently saturates at its
-most pessimistic value, and the model turns uniformly over-cautious
-(`notes/03_replication.md`). The lesson generalizes: **a calibration is only as good as
-its coverage**, and coverage failures do not announce themselves — the model still runs,
-just wrongly. Checking that a calibration table brackets every condition you intend to
-simulate is a one-line assertion that would have saved this project a week.
+{{R1}}The cautionary half of the story is ours: the shipped lookup table covers steady-state
+headways only up to about 1.0–2.1 s depending on speed, and outside that range the
+interpolation clamps to the table edge — the parameter silently saturates at its most
+pessimistic value, −8 m/s², for most of the paper's own rear-end conditions
+(`docs/method_review.md` §6.2). The authors' published runs carry the same saturation;
+an earlier draft of this chapter blamed it for a replication discrepancy that turned out
+not to exist. The lesson still generalizes: **a calibration is only as good as its
+coverage**, and coverage failures do not announce themselves — the model still runs, just
+not the way its documentation says. Checking that a calibration table brackets every
+condition you intend to simulate is a one-line assertion. A second lesson from the same
+episode: **the calibration is only exercised if the simulation gives it time** — with the
+lead braking 0.6 s into the run and the driver following a fixed reference plan until its
+first re-plan, the "stable following" the table was built to produce never occurs in the
+published runs.
 
 ## Identifiability: the central danger of fitting this model
 
