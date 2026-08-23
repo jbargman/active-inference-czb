@@ -1,0 +1,15 @@
+{
+  "n_trials": 896,
+  "lambda_best": 5.623413251903491e-06,
+  "within_0p2": 0.6941964285714286,
+  "within_0p6": 0.8627232142857143,
+  "median_err_s": -0.2,
+  "mad_s": 0.2,
+  "level_best": 100000.0,
+  "level_within_0p2": 0.0,
+  "level_mad_s": 1.0,
+  "eps_before_lead_onset_median": 0.0,
+  "eps_before_lead_onset_max": 69399.96337890625,
+  "pedal_delay_s": 0.2,
+  "eps_definition": "pointwise code-form field + zero-noise constant-acceleration prediction channel, H=6 s"
+}
