@@ -14,6 +14,17 @@ the rear-end scenario does not represent the authors' deposited data. The handbo
 text has been corrected where it relied on the SI or on that example; the corrections are
 marked so that a reader of the 2026-08-22 draft can see what moved.
 
+{{R2}}**Revision round 2.** Passages in dark blue were added on 2026-08-25, after the
+crash-causation study (`docs/crash_causation_plan.md`, `docs/crash_causation_results.md`)
+turned several of chapter 08's proposals into built and tested machinery. The main
+lessons folded back in: the dormant gaze system has now been exercised in the closed loop,
+and it gates *evidence*, not *inference* — a driver who has registered the conflict keeps
+accumulating toward a response during an off-road glance (chapters 06 and 08); the model
+can be dropped into externally defined scenarios by replaying a recorded lead vehicle
+(chapter 04); a cheap open-loop surrogate of the response timing has been validated
+against the closed loop across 23 scenarios (chapters 09 and 12); and the practical cost
+figures are revised (chapter 03).
+
 ## What this handbook is
 
 This handbook explains the active-inference driver model of Schumann et al. (2026, Nature

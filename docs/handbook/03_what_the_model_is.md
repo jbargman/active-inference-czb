@@ -113,9 +113,13 @@ behavior and uncertainty-driven slowing (chapter 08).
   trust are all deliberate departures.
 - The other vehicle is **not intelligent**: it follows a script and never reacts to our
   driver (chapter 06). There is no negotiation or interaction in the published model.
-- It is **not fast**: one simulated timestep costs roughly 18 s of CPU in our environment;
-  the code is written for GPU. Everything in this project's comfort-zone method avoids
-  running the loop for that reason (chapter 11).
+- It is **not fast**: the code is written for GPU, and on CPU one simulated timestep of a
+  batched run has cost us anywhere from under a second to tens of seconds. {{R2}}Revised
+  after the tier-2 campaign of 2026-08-24/25: a 45-step scenario with four parallel
+  repeats has taken between 3 minutes and 4 hours on this machine, median around 10
+  minutes in uncontended runs — wildly variable, with no clean predictor. Plan batches as
+  restartable and measure before extrapolating. Everything in this project's comfort-zone
+  method still avoids running the loop (chapter 11).
 
 ---
 

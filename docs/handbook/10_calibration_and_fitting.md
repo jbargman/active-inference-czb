@@ -56,6 +56,20 @@ comfortable headways therefore pin down the assumption without touching any conf
 data. Calibrate on the quiet regime, predict the loud one — the same separation chapter
 05 describes behaviorally, used as an inference principle.
 
+{{R2}}Two further provenance routes earned their place in the crash-causation study
+(2026-08-25). **Digitized** — a distribution extracted from a published figure when the
+underlying data are unshareable; legitimate only with an independent cross-check, and the
+study's two are the pattern: the glance histogram's value axis was calibrated by tick
+geometry *and* by the requirement that the drawn distribution sum to one (they agreed
+within 0.9%), and the deceleration counts had to sum to the paper's stated n = 45
+exactly, or the extraction script fails (`replication/causation/digitize_b24.py`).
+**Arbitrated** — a *convention* (not a parameter) that the model itself can decide when
+the full implementation is consulted: the accumulator's starting level was resolved by
+running the closed loop rather than by fitting or by argument, and the losing convention
+stays in the outputs as a tested sensitivity. Conventions resolved by arbitration should
+be so labeled, with the arbitration's scope stated — this one holds for windows opening
+near the conflict, and says nothing about long run-ins.
+
 {{R1}}The cautionary half of the story is ours: the shipped lookup table covers steady-state
 headways only up to about 1.0–2.1 s depending on speed, and outside that range the
 interpolation clamps to the table edge — the parameter silently saturates at its most

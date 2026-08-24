@@ -40,7 +40,8 @@ def versioned(path: Path) -> Path:
         n += 1
 
 
-REVISION_MARKS = {"{{R1}}": (0xB0, 0x00, 0x20)}   # revision round -> RGB (round 1: 2026-08-23)
+REVISION_MARKS = {"{{R1}}": (0xB0, 0x00, 0x20),   # revision round -> RGB (round 1: 2026-08-23)
+                  "{{R2}}": (0x10, 0x30, 0x8A)}   # round 2: 2026-08-25, crash-causation study
 
 
 def color_revisions(docx_path: Path) -> int:

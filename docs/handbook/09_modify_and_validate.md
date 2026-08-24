@@ -70,6 +70,20 @@ any mismatch can be attributed to the mechanism under test rather than to a brok
 foundation. For the comfort-zone program specifically, rung 4 is the cross-scenario
 transfer test of chapter 11.
 
+{{R2}}**A pattern worth naming: surrogate plus arbiter (added 2026-08-25).** When a study
+needs thousands of model evaluations and the loop costs minutes to hours each, build a
+cheap surrogate of the quantity you need, then *arbitrate* it against the full model on a
+stratified subset before letting it carry the population. The crash-causation study did
+this for response onsets: an open-loop surrogate (preference field plus accumulator) was
+compared with the closed loop on 23 scenarios spanning 1.3–35.5 m/s and matched to a
+median absolute difference of 0.55 s — after which the surrogate ran the 5 000-scenario
+comparison the loop never could. Two disciplines made the validation worth something:
+the arbitration also *settled a modeling convention* (the accumulator's starting level,
+which a surrogate must assume and the full model decides), and the residual offset
+(+0.30 s median) was reported rather than folded back in — an untuned surrogate within a
+stated error is a stronger claim than a tuned one on zero
+(`docs/crash_causation_results.md` §5).
+
 ## Worked example: the recipes for this project's live proposals
 
 | Change | Seam | Rung 1 observable | Rung 2 ablation | Rung 3 must-not-move | Rung 4 target |

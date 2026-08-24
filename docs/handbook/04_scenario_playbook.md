@@ -110,6 +110,19 @@ The honest summary of effort: steps 1–3 are days, steps 4–7 are where the sc
 scientific content lives, and skipping the argument for any of 4–7 produces a model that
 runs but persuades nobody.
 
+{{R2}}**A shortcut demonstrated since (2026-08-25): replaying recorded scenarios.** When the
+new "scenario" is a set of externally defined trajectories rather than a scripted world —
+recorded conflicts, generated seed scenarios — the other vehicle's script (step 2) can be
+replaced wholesale by a *replay* of its speed profile, leaving the driver and its
+generative model untouched. The crash-causation study did exactly this to run the model
+on the QUADRIS rear-end seeds (`replication/causation/tier2_rear_end.py`: a dynamics
+subclass swapped into the loaded module, the authors' files unedited). Two lessons came
+with it. First, external seeds force a **desired-speed decision**: the driver's desired
+speed must be set from the data (this project's convention: the speed the recorded
+follower later reached), or a stopped follower has no motive to move at all. Second,
+count **road departures** as their own outcome class from the start — the high-speed
+lane-change failure mode of chapter 05 appears in replayed scenarios too.
+
 ---
 
 ## Notes for the mathematically curious

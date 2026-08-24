@@ -71,7 +71,11 @@ handbook's chapters keep returning to:
 | `src/surprise/` | the surprise-measure library (three families + the two Waymo measures), one interface across belief types | property-tested, 31 tests |
 | `src/comfortzone/` | the CZB method: `field.py` (field, closed-form boundary), `boundary.py` (level sets), `calibrate.py` (field along recorded kinematics; level fitting) | cross-checked closed form; end-to-end dry run on the OSF data |
 | {{R1}}`replication/` | Track A runner + sweep + `validate_osf.py` (the OSF comparison harness of chapter 09, rung 3) + `review_osf.py` (the deposit checks behind `docs/method_review.md`) | outputs in `replication/osf/` and `replication/osf/review/` |
-| `tests/` | 57 property tests — the rung-0 suite | all passing |
+| {{R2}}`src/quadris/` | QUADRIS seed handling: loading, weight-proportional stratified sampling, the Wu metrics | property-tested |
+| {{R2}}`src/causation/` | the five crash-causation components and the two response processes behind one interface; the tier-1 onset surrogate is closed-loop-validated (median abs. difference 0.55 s over 23 scenarios; `docs/crash_causation_results.md` §5) | property-tested |
+| {{R2}}`src/equivalence/` | reusable Wu et al. (2026) binning/ROPE equivalence testing, reproduces the paper's worked θ example | property-tested |
+| {{R2}}`replication/causation/` | the study's runners: figure digitizer (`digitize_b24.py`), condition runner (`run_quadris.py`), tier-2 closed-loop adapter (`tier2_rear_end.py` — lead replay, forcible gaze schedule, checkpointing), arbiter analysis (`tier2_compare.py`) | outputs in `out/` and `tier2/` |
+| {{R2}}`tests/` | 103 property tests across the three suites (31 surprise, 33 comfort zone, 39 causation/equivalence) — the rung-0 suite | all passing |
 
 ## The data that goes with the code
 

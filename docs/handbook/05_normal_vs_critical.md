@@ -29,7 +29,14 @@ In steady following (chapter 02, t < 0.8 s), four things characterize the model'
   exactly zero — and that is what makes the comfort zone a defined region rather than a
   fuzzy one. The model's own accumulator, by contrast, would re-plan on its own after 2–7 s
   of uneventful following at gaps of 2 s or less; the published simulations do not show
-  this only because they start 0.8 s before the lead brakes.
+  this only because they start 0.8 s before the lead brakes. {{R2}}How much this
+  pre-conflict drift matters for response timing has since been measured (2026-08-25):
+  for simulation windows that open a few seconds before a conflict at ordinary headways,
+  very little — the closed loop's onsets match a drift-free surrogate that starts its
+  account at zero to a median 0.30 s across 23 scenarios, and a
+  "driver-arriving-mid-cycle" half-threshold start over-corrects by a second
+  (`docs/crash_causation_results.md` §5). The drift is a real property with small
+  near-conflict consequences; designs with long benign run-ins are where it would bite.
 - **Planning is incremental.** The plan is shifted and cheaply patched each step; the
   expensive candidate-generation machinery is dormant. Most timesteps of a normal drive
   never trigger a single full re-plan.

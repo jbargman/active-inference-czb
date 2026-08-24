@@ -14,6 +14,17 @@ the rear-end scenario does not represent the authors' deposited data. The handbo
 text has been corrected where it relied on the SI or on that example; the corrections are
 marked so that a reader of the 2026-08-22 draft can see what moved.
 
+{{R2}}**Revision round 2.** Passages in dark blue were added on 2026-08-25, after the
+crash-causation study (`docs/crash_causation_plan.md`, `docs/crash_causation_results.md`)
+turned several of chapter 08's proposals into built and tested machinery. The main
+lessons folded back in: the dormant gaze system has now been exercised in the closed loop,
+and it gates *evidence*, not *inference* — a driver who has registered the conflict keeps
+accumulating toward a response during an off-road glance (chapters 06 and 08); the model
+can be dropped into externally defined scenarios by replaying a recorded lead vehicle
+(chapter 04); a cheap open-loop surrogate of the response timing has been validated
+against the closed loop across 23 scenarios (chapters 09 and 12); and the practical cost
+figures are revised (chapter 03).
+
 ## What this handbook is
 
 This handbook explains the active-inference driver model of Schumann et al. (2026, Nature
@@ -537,9 +548,13 @@ behavior and uncertainty-driven slowing (chapter 08).
   trust are all deliberate departures.
 - The other vehicle is **not intelligent**: it follows a script and never reacts to our
   driver (chapter 06). There is no negotiation or interaction in the published model.
-- It is **not fast**: one simulated timestep costs roughly 18 s of CPU in our environment;
-  the code is written for GPU. Everything in this project's comfort-zone method avoids
-  running the loop for that reason (chapter 11).
+- It is **not fast**: the code is written for GPU, and on CPU one simulated timestep of a
+  batched run has cost us anywhere from under a second to tens of seconds. {{R2}}Revised
+  after the tier-2 campaign of 2026-08-24/25: a 45-step scenario with four parallel
+  repeats has taken between 3 minutes and 4 hours on this machine, median around 10
+  minutes in uncontended runs — wildly variable, with no clean predictor. Plan batches as
+  restartable and measure before extrapolating. Everything in this project's comfort-zone
+  method still avoids running the loop (chapter 11).
 
 ---
 
@@ -677,6 +692,19 @@ The honest summary of effort: steps 1–3 are days, steps 4–7 are where the sc
 scientific content lives, and skipping the argument for any of 4–7 produces a model that
 runs but persuades nobody.
 
+{{R2}}**A shortcut demonstrated since (2026-08-25): replaying recorded scenarios.** When the
+new "scenario" is a set of externally defined trajectories rather than a scripted world —
+recorded conflicts, generated seed scenarios — the other vehicle's script (step 2) can be
+replaced wholesale by a *replay* of its speed profile, leaving the driver and its
+generative model untouched. The crash-causation study did exactly this to run the model
+on the QUADRIS rear-end seeds (`replication/causation/tier2_rear_end.py`: a dynamics
+subclass swapped into the loaded module, the authors' files unedited). Two lessons came
+with it. First, external seeds force a **desired-speed decision**: the driver's desired
+speed must be set from the data (this project's convention: the speed the recorded
+follower later reached), or a stopped follower has no motive to move at all. Second,
+count **road departures** as their own outcome class from the start — the high-speed
+lane-change failure mode of chapter 05 appears in replayed scenarios too.
+
 ---
 
 ## Notes for the mathematically curious
@@ -735,7 +763,14 @@ In steady following (chapter 02, t < 0.8 s), four things characterize the model'
   exactly zero — and that is what makes the comfort zone a defined region rather than a
   fuzzy one. The model's own accumulator, by contrast, would re-plan on its own after 2–7 s
   of uneventful following at gaps of 2 s or less; the published simulations do not show
-  this only because they start 0.8 s before the lead brakes.
+  this only because they start 0.8 s before the lead brakes. {{R2}}How much this
+  pre-conflict drift matters for response timing has since been measured (2026-08-25):
+  for simulation windows that open a few seconds before a conflict at ordinary headways,
+  very little — the closed loop's onsets match a drift-free surrogate that starts its
+  account at zero to a median 0.30 s across 23 scenarios, and a
+  "driver-arriving-mid-cycle" half-threshold start over-corrects by a second
+  (`docs/crash_causation_results.md` §5). The drift is a real property with small
+  near-conflict consequences; designs with long benign run-ins are where it would bite.
 - **Planning is incremental.** The plan is shifted and cheaply patched each step; the
   expensive candidate-generation machinery is dormant. Most timesteps of a normal drive
   never trigger a single full re-plan.
@@ -965,6 +1000,16 @@ word. In *planning roll-outs* the tournament runs 30 steps with no observations 
 correct it — so norms shape the entire 6-second fan of imagined futures, which is where
 they influence decisions. One mechanism, two exposures; the second is where the
 behavioral consequences (relaxed following, late-but-not-too-late alarm) come from.
+
+{{R2}}A third exposure has since been demonstrated (2026-08-25): **coasting through an
+occlusion**. When the observation channel is degraded — an off-road glance, forced
+through the code's own gaze gate — the same norm-shaped transition carries the cloud
+forward essentially uncorrected, and everything downstream keeps consuming it: a driver
+who saw the lead start to brake and then looked away keeps *inferring* the conflict's
+development from the coasting belief, keeps accumulating evidence, and can commit to
+braking mid-glance. The belief machinery is not a passive sensor buffer; it is a
+short-horizon simulator that runs with or without fresh input, with behavioral
+consequences chapter 08 spells out.
 
 Two dials size the raw variation the tournament chooses among (`a_sd_model`,
 `w_sd_model`): how much acceleration and steering wobble the driver attributes to
@@ -1266,6 +1311,13 @@ needs (the gaze state that scales observation precision, `decoder.py`, left over
 Engström et al. (2024) model). Read this chapter for the reasoning; read the plan for what
 will actually be built.
 
+{{R2}}*Updated 2026-08-25.* The plan has been executed: the components are built (plus a
+fifth, the abnormal-acceleration follower of the QUADRIS generation paper), the input
+distributions are digitized from the published figures, and the comparison against the
+5 000-scenario reference has run. `docs/crash_causation_results.md` is now the document of
+record; the section "What has been learned by building it" below carries what changed in
+this chapter's claims.
+
 
 *Everything from here to the end of the section is [Speculation]: our ideas, stated so
 they can be criticized, not the authors' and not yet built or validated.*
@@ -1311,6 +1363,42 @@ to the looked-but-failed-to-see literature and to our LTAP/OD comfort-zone data.
 For each proposal the validation ladder of chapter 09 applies: mechanism check in
 simulation, signature check against published aggregate curves, then — only if those hold
 — parameter fitting to individual data.
+
+## What has been learned by building it
+
+{{R2}}*Added 2026-08-25; the full account is `docs/crash_causation_results.md` [Repo].*
+
+{{R2}}**The gaze system gates evidence, not inference — demonstrated.** Forcing off-road
+glances through the code's own `I_factor` observation gate in the closed loop produced
+the chapter's sharpest finding: a driver who has already registered the lead's braking
+keeps responding *during* the glance, at essentially the attentive onset, even under an
+effectively total observation blackout. The belief cloud coasts forward on its own
+norm-shaped prediction (chapter 06) and the accumulator keeps filling from remembered,
+extrapolated evidence — looking away blocks new observations, not inference. The CBM of
+Bärgman et al. (2024) assumes the opposite (no accumulation while eyes are off, response
+only 0.5 s after eyes return), so the two architectures diverge exactly when a glance
+begins *after* conflict-onset registration, and coincide when the glance covers the
+onset. This is a testable behavioral distinction that neither paper states, visible only
+by running both.
+
+{{R2}}**As a response process inside a causation model, the active-inference driver holds
+its own.** With the counterfactual done right (original follower profiles with braking
+removed), glances placed as a renewal process rather than anchored, and the fifth
+component included, the active-inference conditions sit at the same equivalence distance
+from the QUADRIS reference as the CBM control — and the two miss differently: active
+inference over-produces the mildest crashes but reproduces the reference's dominant
+non-braking crash character; the CBM over-produces moderate severities and cannot. Its
+attentive onsets are later and far more variable than the CBM's fixed rule (median 1.25 s
+versus 0.50 s after the τ⁻¹ = 0.2 s⁻¹ anchor), a difference confirmed — not an artifact —
+by the closed loop.
+
+{{R2}}**The response-timing surrogate is validated.** The cheap open-loop surrogate
+(pointwise preference field plus accumulator, chapter 12) matches the full closed loop's
+attentive onsets to a median absolute difference of 0.55 s across 23 scenarios spanning
+1.3–35.5 m/s, with the accumulator's zero start validated against the "arriving
+mid-cycle" alternative for windows that open near the conflict. Proposal 1's epistemic
+half — the model *choosing* its glances by pricing them — remains unexercised; the forced-
+schedule route is what has been tested.
 
 ## The honest limits of the enterprise
 
@@ -1419,6 +1507,20 @@ model meets human data (response-time curves, glance statistics, comfort-zone on
 any mismatch can be attributed to the mechanism under test rather than to a broken
 foundation. For the comfort-zone program specifically, rung 4 is the cross-scenario
 transfer test of chapter 11.
+
+{{R2}}**A pattern worth naming: surrogate plus arbiter (added 2026-08-25).** When a study
+needs thousands of model evaluations and the loop costs minutes to hours each, build a
+cheap surrogate of the quantity you need, then *arbitrate* it against the full model on a
+stratified subset before letting it carry the population. The crash-causation study did
+this for response onsets: an open-loop surrogate (preference field plus accumulator) was
+compared with the closed loop on 23 scenarios spanning 1.3–35.5 m/s and matched to a
+median absolute difference of 0.55 s — after which the surrogate ran the 5 000-scenario
+comparison the loop never could. Two disciplines made the validation worth something:
+the arbitration also *settled a modeling convention* (the accumulator's starting level,
+which a surrogate must assume and the full model decides), and the residual offset
+(+0.30 s median) was reported rather than folded back in — an untuned surrogate within a
+stated error is a stronger claim than a tuned one on zero
+(`docs/crash_causation_results.md` §5).
 
 ## Worked example: the recipes for this project's live proposals
 
@@ -1532,6 +1634,20 @@ behavior. A driver who assumed worse would follow further back *all the time*; o
 comfortable headways therefore pin down the assumption without touching any conflict
 data. Calibrate on the quiet regime, predict the loud one — the same separation chapter
 05 describes behaviorally, used as an inference principle.
+
+{{R2}}Two further provenance routes earned their place in the crash-causation study
+(2026-08-25). **Digitized** — a distribution extracted from a published figure when the
+underlying data are unshareable; legitimate only with an independent cross-check, and the
+study's two are the pattern: the glance histogram's value axis was calibrated by tick
+geometry *and* by the requirement that the drawn distribution sum to one (they agreed
+within 0.9%), and the deceleration counts had to sum to the paper's stated n = 45
+exactly, or the extraction script fails (`replication/causation/digitize_b24.py`).
+**Arbitrated** — a *convention* (not a parameter) that the model itself can decide when
+the full implementation is consulted: the accumulator's starting level was resolved by
+running the closed loop rather than by fitting or by argument, and the losing convention
+stays in the outputs as a tested sensitivity. Conventions resolved by arbitration should
+be so labeled, with the arbitration's scope stated — this one holds for windows opening
+near the conflict, and says nothing about long run-ins.
 
 {{R1}}The cautionary half of the story is ours: the shipped lookup table covers steady-state
 headways only up to about 1.0–2.1 s depending on speed, and outside that range the
@@ -1926,7 +2042,11 @@ handbook's chapters keep returning to:
 | `src/surprise/` | the surprise-measure library (three families + the two Waymo measures), one interface across belief types | property-tested, 31 tests |
 | `src/comfortzone/` | the CZB method: `field.py` (field, closed-form boundary), `boundary.py` (level sets), `calibrate.py` (field along recorded kinematics; level fitting) | cross-checked closed form; end-to-end dry run on the OSF data |
 | {{R1}}`replication/` | Track A runner + sweep + `validate_osf.py` (the OSF comparison harness of chapter 09, rung 3) + `review_osf.py` (the deposit checks behind `docs/method_review.md`) | outputs in `replication/osf/` and `replication/osf/review/` |
-| `tests/` | 57 property tests — the rung-0 suite | all passing |
+| {{R2}}`src/quadris/` | QUADRIS seed handling: loading, weight-proportional stratified sampling, the Wu metrics | property-tested |
+| {{R2}}`src/causation/` | the five crash-causation components and the two response processes behind one interface; the tier-1 onset surrogate is closed-loop-validated (median abs. difference 0.55 s over 23 scenarios; `docs/crash_causation_results.md` §5) | property-tested |
+| {{R2}}`src/equivalence/` | reusable Wu et al. (2026) binning/ROPE equivalence testing, reproduces the paper's worked θ example | property-tested |
+| {{R2}}`replication/causation/` | the study's runners: figure digitizer (`digitize_b24.py`), condition runner (`run_quadris.py`), tier-2 closed-loop adapter (`tier2_rear_end.py` — lead replay, forcible gaze schedule, checkpointing), arbiter analysis (`tier2_compare.py`) | outputs in `out/` and `tier2/` |
+| {{R2}}`tests/` | 103 property tests across the three suites (31 surprise, 33 comfort zone, 39 causation/equivalence) — the rung-0 suite | all passing |
 
 ## The data that goes with the code
 

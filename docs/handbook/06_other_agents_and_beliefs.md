@@ -121,6 +121,16 @@ correct it — so norms shape the entire 6-second fan of imagined futures, which
 they influence decisions. One mechanism, two exposures; the second is where the
 behavioral consequences (relaxed following, late-but-not-too-late alarm) come from.
 
+{{R2}}A third exposure has since been demonstrated (2026-08-25): **coasting through an
+occlusion**. When the observation channel is degraded — an off-road glance, forced
+through the code's own gaze gate — the same norm-shaped transition carries the cloud
+forward essentially uncorrected, and everything downstream keeps consuming it: a driver
+who saw the lead start to brake and then looked away keeps *inferring* the conflict's
+development from the coasting belief, keeps accumulating evidence, and can commit to
+braking mid-glance. The belief machinery is not a passive sensor buffer; it is a
+short-horizon simulator that runs with or without fresh input, with behavioral
+consequences chapter 08 spells out.
+
 Two dials size the raw variation the tournament chooses among (`a_sd_model`,
 `w_sd_model`): how much acceleration and steering wobble the driver attributes to
 "vehicles in general". Chapter 04 showed the steering dial is the one number that

@@ -74,6 +74,13 @@ needs (the gaze state that scales observation precision, `decoder.py`, left over
 Engström et al. (2024) model). Read this chapter for the reasoning; read the plan for what
 will actually be built.
 
+{{R2}}*Updated 2026-08-25.* The plan has been executed: the components are built (plus a
+fifth, the abnormal-acceleration follower of the QUADRIS generation paper), the input
+distributions are digitized from the published figures, and the comparison against the
+5 000-scenario reference has run. `docs/crash_causation_results.md` is now the document of
+record; the section "What has been learned by building it" below carries what changed in
+this chapter's claims.
+
 
 *Everything from here to the end of the section is [Speculation]: our ideas, stated so
 they can be criticized, not the authors' and not yet built or validated.*
@@ -119,6 +126,42 @@ to the looked-but-failed-to-see literature and to our LTAP/OD comfort-zone data.
 For each proposal the validation ladder of chapter 09 applies: mechanism check in
 simulation, signature check against published aggregate curves, then — only if those hold
 — parameter fitting to individual data.
+
+## What has been learned by building it
+
+{{R2}}*Added 2026-08-25; the full account is `docs/crash_causation_results.md` [Repo].*
+
+{{R2}}**The gaze system gates evidence, not inference — demonstrated.** Forcing off-road
+glances through the code's own `I_factor` observation gate in the closed loop produced
+the chapter's sharpest finding: a driver who has already registered the lead's braking
+keeps responding *during* the glance, at essentially the attentive onset, even under an
+effectively total observation blackout. The belief cloud coasts forward on its own
+norm-shaped prediction (chapter 06) and the accumulator keeps filling from remembered,
+extrapolated evidence — looking away blocks new observations, not inference. The CBM of
+Bärgman et al. (2024) assumes the opposite (no accumulation while eyes are off, response
+only 0.5 s after eyes return), so the two architectures diverge exactly when a glance
+begins *after* conflict-onset registration, and coincide when the glance covers the
+onset. This is a testable behavioral distinction that neither paper states, visible only
+by running both.
+
+{{R2}}**As a response process inside a causation model, the active-inference driver holds
+its own.** With the counterfactual done right (original follower profiles with braking
+removed), glances placed as a renewal process rather than anchored, and the fifth
+component included, the active-inference conditions sit at the same equivalence distance
+from the QUADRIS reference as the CBM control — and the two miss differently: active
+inference over-produces the mildest crashes but reproduces the reference's dominant
+non-braking crash character; the CBM over-produces moderate severities and cannot. Its
+attentive onsets are later and far more variable than the CBM's fixed rule (median 1.25 s
+versus 0.50 s after the τ⁻¹ = 0.2 s⁻¹ anchor), a difference confirmed — not an artifact —
+by the closed loop.
+
+{{R2}}**The response-timing surrogate is validated.** The cheap open-loop surrogate
+(pointwise preference field plus accumulator, chapter 12) matches the full closed loop's
+attentive onsets to a median absolute difference of 0.55 s across 23 scenarios spanning
+1.3–35.5 m/s, with the accumulator's zero start validated against the "arriving
+mid-cycle" alternative for windows that open near the conflict. Proposal 1's epistemic
+half — the model *choosing* its glances by pricing them — remains unexercised; the forced-
+schedule route is what has been tested.
 
 ## The honest limits of the enterprise
 
