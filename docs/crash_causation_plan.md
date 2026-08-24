@@ -262,6 +262,11 @@ This plan is a separate document because the method review is a review of a publ
 
 ## 11 Tier-1 first results (100 seeds, stand-in distributions)
 
+*Superseded 2026-08-24: `docs/crash_causation_results.md` carries the current results —
+digitized real distributions, the no-brake counterfactual, process glance placement, the
+abnormal-acceleration fifth component, and the sensitivity ladder. This section remains as
+the record of the first pass and of what each later correction changed.*
+
 *Added 2026-08-23, from the completed conditions A–D run (`replication/causation/out/`; full
 tables in `out/summary.md`, configurations in the per-condition .json files). One warning governs
 everything in this section: the glance and maximum-deceleration distributions are the labelled

@@ -1,0 +1,79 @@
+{
+  "label": "condition B",
+  "config": {
+    "response_model": "active_inference",
+    "ai_lambda": 5.6e-06,
+    "ai_threshold": 1.0,
+    "ai_pedal_delay": 0.2,
+    "ai_accumulator_init": "zero",
+    "ai_onset_method": "accumulator",
+    "ai_level": 66.9,
+    "ai_prediction": "constant_accel",
+    "ai_horizon_s": 6.0,
+    "cbm_delay": 0.5,
+    "cbm_anchor_tau_inv": 0.2,
+    "glances_on": true,
+    "glance_anchor": "process",
+    "glance_anchor_tau_inv": 0.2,
+    "glance_evidence_weight": 0.0,
+    "glance_obs_precision_factor": 1000.0,
+    "glance_distribution": "replication/causation/data/b24_fig1_glances_shrp2.csv",
+    "glance_point_mass_on_road": null,
+    "glance_process_on_road_mean": null,
+    "glance_sweep": "marginal",
+    "too_close_note": "inherent in seed initial state",
+    "decel_cap_on": true,
+    "decel_distribution": "replication/causation/data/b24_fig3_decel.csv",
+    "a_max": 8.0,
+    "jerk": -23.04,
+    "no_response_on": true,
+    "no_response_share": 0.1,
+    "abnormal_on": true,
+    "abnormal_share": 0.092,
+    "abnormal_accel": 1.8,
+    "abnormal_from": "lead_onset",
+    "dt": 0.05,
+    "t_extra": 10.0,
+    "pre_response_speed": "no_brake",
+    "seed": 0,
+    "components_enabled": [
+      "glances",
+      "decel_cap",
+      "no_response",
+      "abnormal_accel"
+    ]
+  },
+  "glances": {
+    "source": "csv:b24_fig1_glances_shrp2.csv",
+    "on_road": 0.8,
+    "n_bins": 37,
+    "longest_s": 3.75,
+    "mean_offroad_s": 0.8942376635649534
+  },
+  "decel": {
+    "source": "csv:b24_fig3_decel.csv",
+    "bins": [
+      3.75,
+      5.25,
+      6.75,
+      8.25,
+      9.75,
+      11.25
+    ],
+    "probability": [
+      0.1333,
+      0.2444,
+      0.2667,
+      0.2444,
+      0.0889,
+      0.0222
+    ],
+    "mean_ms2": 6.716666966666966
+  },
+  "response": {
+    "model": "active_inference_tier1",
+    "a_other_min": -6.0,
+    "field": "code-form preference function, pointwise on seed kinematics, plus the zero-noise constant-acceleration prediction channel (cfg.ai_prediction)"
+  },
+  "n_seeds": 100
+}

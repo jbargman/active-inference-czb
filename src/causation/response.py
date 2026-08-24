@@ -103,7 +103,13 @@ class ActiveInferenceResponse:
             hit = eps >= cfg.ai_level
             t_dec = pre.first_time(hit)
         else:
-            E = np.cumsum(cfg.ai_lambda * eps * cfg.dt)
+            # "stationary" starts the accumulator at half the threshold: in the closed-loop
+            # model the account drifts even in benign following and cycles 0 -> 1, so a
+            # driver arriving from long steady following sits at a random phase with mean
+            # 0.5 (docs/method_review.md §4.2). Tier 1's pointwise field has no benign
+            # drift, so the phase must be supplied; 0.5 is the mean-phase bound.
+            e0 = 0.5 * cfg.ai_threshold if cfg.ai_accumulator_init == "stationary" else 0.0
+            E = e0 + np.cumsum(cfg.ai_lambda * eps * cfg.dt)
             t_dec = pre.first_time(E >= cfg.ai_threshold)
         if not np.isfinite(t_dec):
             return np.nan

@@ -49,7 +49,10 @@ def reference_metrics(seeds) -> pd.DataFrame:
 
 def assess(ref: pd.DataFrame, gen: pd.DataFrame, label: str, n_bins: int = 5) -> str:
     g = gen[gen.w_crash > 0]
+    # v_rel is the assumption-free severity primitive; the reference's dv_lead was derived
+    # from it under the equal-mass assumption, so 2*dv_lead recovers it exactly
     specs = [MetricSpec("P_inj", ref.p_inj.to_numpy(), g.p_inj.to_numpy(), ref.omega.to_numpy(), g.w_crash.to_numpy()),
+             MetricSpec("v_rel [m/s]", 2.0 * ref.dv_lead.to_numpy(), g.v_rel_impact.to_numpy(), ref.omega.to_numpy(), g.w_crash.to_numpy()),
              MetricSpec("dv_lead [m/s]", ref.dv_lead.to_numpy(), g.dv_lead.to_numpy(), ref.omega.to_numpy(), g.w_crash.to_numpy()),
              MetricSpec("t_nr [s]", ref.t_nr.to_numpy(), g.t_nr.to_numpy(), ref.omega.to_numpy(), g.w_crash.to_numpy()),
              MetricSpec("a_l,min [m/s^2]", ref.a_l_min.to_numpy(), g.a_l_min.to_numpy(), ref.omega.to_numpy(), g.w_crash.to_numpy()),
@@ -65,7 +68,12 @@ def main() -> None:
     ap.add_argument("--n-seeds", type=int, default=100)
     ap.add_argument("--conditions", nargs="*", default=list("ABCD"))
     ap.add_argument("--assess-only", action="store_true")
-    ap.add_argument("--pre-response", default="original", choices=["original", "constant"])
+    ap.add_argument("--pre-response", default="original",
+                    choices=["original", "constant", "no_brake", "no_brake_all"])
+    ap.add_argument("--abnormal", action="store_true",
+                    help="enable the Wu et al. (2025a) abnormal-acceleration component")
+    ap.add_argument("--ai-init", default=None, choices=["zero", "stationary"],
+                    help="active-inference accumulator start (stationary = half threshold)")
     ap.add_argument("--rng", type=int, default=0)
     ap.add_argument("--ref", default="all", choices=["all", "sample"])
     # glance-anchor sensitivity (docs/crash_causation_plan.md section 6c): rerun a condition
@@ -106,6 +114,10 @@ def main() -> None:
             overrides["glance_distribution"] = args.glance_csv
         if args.decel_csv is not None:
             overrides["decel_distribution"] = args.decel_csv
+        if args.abnormal:
+            overrides["abnormal_on"] = True
+        if args.ai_init is not None:
+            overrides["ai_accumulator_init"] = args.ai_init
         cfg = CausationConfig.condition(c, **overrides)
         path = OUT / "cond_{}{}.csv".format(c, tag)
         if not args.assess_only:
@@ -127,8 +139,12 @@ def main() -> None:
     lines.append("| condition | response | components | seeds crashing (any bin) | weighted crash prob | avoided seeds | mean P_inj (Eq.10 weights) | mean P_inj reference |")
     lines.append("|---|---|---|---|---|---|---|---|")
     ref_pinj = float((ref.p_inj * ref.omega).sum() / ref.omega.sum())
+    def shares(cfg):
+        return dict(no_response_share=cfg.no_response_share if cfg.no_response_on else 0.0,
+                    abnormal_share=cfg.abnormal_share if cfg.abnormal_on else 0.0)
+
     for c, (cfg, df) in results.items():
-        agg = aggregate(df, cfg.no_response_share if cfg.no_response_on else 0.0)
+        agg = aggregate(df, **shares(cfg))
         pc = agg.groupby("seed_id").p_crash_seed.first()
         resp = agg[~agg.no_response]
         w_pinj = float((agg.p_inj * agg.w_crash).sum() / max(agg.w_crash.sum(), 1e-12))
@@ -143,12 +159,12 @@ def main() -> None:
                 c, att.rt_vs_anchor.median(), att.rt_vs_anchor.quantile(.25), att.rt_vs_anchor.quantile(.75), int(att.groupby("seed_id").t_onset.first().isna().sum())))
     lines.append("")
     for c, (cfg, df) in results.items():
-        agg = aggregate(df, cfg.no_response_share if cfg.no_response_on else 0.0)
+        agg = aggregate(df, **shares(cfg))
         if (agg.w_crash > 0).sum() < 10:
             lines.append("\nCondition {}: fewer than 10 crash records; no equivalence test.\n".format(c)); continue
         lines.append("\n" + assess(ref, agg, "Condition {} vs reference (Wu Eq. 10 weights)".format(c)))
         if pc_C is not None and c != "C":
-            agg_e = aggregate(df, cfg.no_response_share if cfg.no_response_on else 0.0, exposure_pc=pc_C)
+            agg_e = aggregate(df, exposure_pc=pc_C, **shares(cfg))
             if (agg_e.w_crash > 0).sum() >= 10:
                 lines.append("\n" + assess(ref, agg_e, "Condition {} vs reference (exposure weights, omega / p_c under C)".format(c)))
     (OUT / "summary{}.md".format(tag)).write_text("\n".join(lines), encoding="utf-8")

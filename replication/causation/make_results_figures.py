@@ -53,10 +53,14 @@ plt.rcParams.update({
 
 
 def load_cond(tag: str, c: str):
+    """Aggregate with the shares recorded in the run's own sidecar json (CLI overrides
+    such as --abnormal are not in the named-condition defaults)."""
+    import json
     df = pd.read_csv(OUT / f"cond_{c}{tag}.csv")
-    cfg = CausationConfig.condition(c)
-    share = cfg.no_response_share if cfg.no_response_on else 0.0
-    return aggregate(df, share)
+    cfg = json.loads((OUT / f"cond_{c}{tag}.json").read_text())["config"]
+    return aggregate(df,
+                     no_response_share=cfg["no_response_share"] if cfg["no_response_on"] else 0.0,
+                     abnormal_share=cfg.get("abnormal_share", 0.0) if cfg.get("abnormal_on") else 0.0)
 
 
 def whist(ax, x, w, bins, color, label, fill=False):
@@ -106,10 +110,13 @@ def fig_metrics(tag: str):
     ref = pd.read_csv(OUT / "reference_all.csv")
     B = load_cond(tag, "B")
     C = load_cond(tag, "C")
+    # v_rel is the assumption-free severity primitive; the reference's dv_lead was derived
+    # from it under equal masses, so 2*dv_lead recovers it exactly
+    ref = ref.assign(v_rel_impact=2.0 * ref.dv_lead)
     panels = [
-        ("dv_lead", "lead delta-v [m/s]", np.linspace(0, 12, 25)),
+        ("v_rel_impact", "relative speed at impact [m/s]", np.linspace(0, 24, 25)),
         ("t_nr", "no-return time before impact [s]", np.linspace(-1.8, 0, 25)),
-        ("a_f_min", "follower min acceleration [m/s²]", np.linspace(-11, 0.5, 24)),
+        ("a_f_min", "follower min acceleration [m/s²]", np.linspace(-11, 2.5, 28)),
     ]
     fig, axes = plt.subplots(1, 3, figsize=(7.4, 2.6), constrained_layout=True)
     for ax, (colname, xlabel, bins) in zip(axes, panels):

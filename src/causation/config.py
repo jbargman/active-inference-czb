@@ -46,16 +46,28 @@ class CausationConfig:
     no_response_on: bool = False
     no_response_share: float = 0.10              # share of all generated crashes, mixed in post hoc (Bärgman 2024 §2.2.4)
 
+    # ---- component 5: abnormal acceleration (Wu et al. 2025a) ----------------------------
+    # distracted/non-responding followers who ignore the lead and hold a constant positive
+    # acceleration; 9.2% of the QUADRIS-generation crashes, fitted mean 1.8 m/s^2. Mixed in
+    # post hoc at the crash level like component 4. The paper samples an onset-time
+    # distribution fitted to PCM data (parameters unpublished); "lead_onset" applies the
+    # acceleration from the lead's braking onset, "start" from t = 0.
+    abnormal_on: bool = False
+    abnormal_share: float = 0.092
+    abnormal_accel: float = 1.8                  # [m/s^2]
+    abnormal_from: str = "lead_onset"            # "lead_onset" | "start"
+
     # ---- simulation -----------------------------------------------------------------------
     dt: float = 0.05                             # [s]
     t_extra: float = 10.0                        # simulate this long past the seed's original impact [s]
-    pre_response_speed: str = "original"         # follower before responding: "original" (generator's car following) | "constant" (CBM)
+    pre_response_speed: str = "original"         # "original" | "constant" (CBM) | "no_brake" (original with braking removed from lead onset; recommended) | "no_brake_all"
     seed: int = 0
 
     def describe(self) -> dict:
         d = asdict(self)
         d["components_enabled"] = [k for k, v in {"glances": self.glances_on, "decel_cap": self.decel_cap_on,
-                                                   "no_response": self.no_response_on}.items() if v]
+                                                   "no_response": self.no_response_on,
+                                                   "abnormal_accel": self.abnormal_on}.items() if v]
         return d
 
     @classmethod

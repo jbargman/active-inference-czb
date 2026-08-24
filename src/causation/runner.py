@@ -23,7 +23,7 @@ from .decel import DecelerationDistribution, standin_shrp2_max_decel, fixed_dece
 from .glances import (GlanceDistribution, GlanceSchedule, standin_shrp2_glances,
                       anchored_schedules, marginal_overshot_schedules, process_schedules)
 from .response import make_response, anchor_time
-from .simulate import pre_response, execute_braking
+from .simulate import pre_response, execute_braking, execute_abnormal
 
 
 def _t_nr(out, v_l, dt) -> float:
@@ -83,7 +83,7 @@ def run_seed(seed: Seed, cfg: CausationConfig, g: GlanceDistribution | None = No
                 t_lead_onset=pre.t_lead_onset, t_anchor=t_anchor,
                 schedule=sch.label, glance_end=max([e for _, e in sch.intervals], default=np.nan),
                 d_max=float(d_max), prob=float(sch.probability * p_d),
-                no_response=False, crashed=bool(out.crashed), t_onset=out.t_onset,
+                no_response=False, abnormal=False, crashed=bool(out.crashed), t_onset=out.t_onset,
                 rt_vs_anchor=(out.t_onset - t_anchor) if np.isfinite(t_anchor) else np.nan,
                 t_impact=out.t_impact, v_rel_impact=out.v_rel_impact, dv_lead=dv,
                 p_inj=p_inj_mais2(dv), a_f_min=out.a_f_min, min_gap=out.min_gap,
@@ -91,18 +91,28 @@ def run_seed(seed: Seed, cfg: CausationConfig, g: GlanceDistribution | None = No
                 t_nr=_t_nr(out, pre.v_l, cfg.dt),
             )
             records.append(rec)
+    def _posthoc(schedule_label, out, no_response, abnormal):
+        dv = delta_v_lead(out.v_rel_impact) if out.crashed else 0.0
+        return dict(seed_id=seed.seed_id, omega=seed.weight, v_f0=seed.v_f0, d0=seed.d0,
+                    thw0=seed.d0 / max(seed.v_f0, 0.1), t_crash_orig=seed.t_crash_orig,
+                    t_lead_onset=pre.t_lead_onset, t_anchor=t_anchor, schedule=schedule_label,
+                    glance_end=np.nan, d_max=np.nan, prob=np.nan, no_response=no_response,
+                    abnormal=abnormal, crashed=bool(out.crashed), t_onset=np.nan,
+                    rt_vs_anchor=np.nan, t_impact=out.t_impact,
+                    v_rel_impact=out.v_rel_impact, dv_lead=dv,
+                    p_inj=p_inj_mais2(dv), a_f_min=out.a_f_min if abnormal else 0.0,
+                    min_gap=out.min_gap,
+                    a_l_min=float(np.min(np.gradient(pre.v_l, cfg.dt))),
+                    t_nr=_t_nr(out, pre.v_l, cfg.dt))
+
     if cfg.no_response_on:
         out = execute_braking(pre, None, 1.0, cfg.jerk, cfg.dt)
-        dv = delta_v_lead(out.v_rel_impact) if out.crashed else 0.0
-        records.append(dict(seed_id=seed.seed_id, omega=seed.weight, v_f0=seed.v_f0, d0=seed.d0,
-                            thw0=seed.d0 / max(seed.v_f0, 0.1), t_crash_orig=seed.t_crash_orig,
-                            t_lead_onset=pre.t_lead_onset, t_anchor=t_anchor, schedule="no response",
-                            glance_end=np.nan, d_max=np.nan, prob=np.nan, no_response=True,
-                            crashed=bool(out.crashed), t_onset=np.nan, rt_vs_anchor=np.nan,
-                            t_impact=out.t_impact, v_rel_impact=out.v_rel_impact, dv_lead=dv,
-                            p_inj=p_inj_mais2(dv), a_f_min=0.0, min_gap=out.min_gap,
-                            a_l_min=float(np.min(np.gradient(pre.v_l, cfg.dt))),
-                            t_nr=_t_nr(out, pre.v_l, cfg.dt)))
+        records.append(_posthoc("no response", out, True, False))
+    if cfg.abnormal_on:
+        t_a = pre.t_lead_onset if (cfg.abnormal_from == "lead_onset"
+                                   and np.isfinite(pre.t_lead_onset)) else 0.0
+        out = execute_abnormal(pre, t_a, cfg.abnormal_accel, cfg.dt)
+        records.append(_posthoc("abnormal acceleration", out, False, True))
     return records
 
 
@@ -130,30 +140,34 @@ def run_condition(seeds: list[Seed], cfg: CausationConfig, out_csv: Path, label:
 
 
 def aggregate(df: pd.DataFrame, no_response_share: float = 0.0,
-              exposure_pc: pd.Series | None = None) -> pd.DataFrame:
+              exposure_pc: pd.Series | None = None, abnormal_share: float = 0.0) -> pd.DataFrame:
     """
     Per-seed crash probability and per-record crash weights.
 
     p_c,i = sum of prob over crashed records (responding runs). Crash weight (Wu 2026 Eq. 10):
     omega_i * prob / p_c,i. If `exposure_pc` (a Series seed_id -> crash probability under the
     reference response model) is given, omega_i is first divided by it, which converts the
-    QUADRIS crash weight back to an exposure weight (plan §6b). No-response crashes are then
-    mixed in so that they make up `no_response_share` of the total crash weight (Bärgman 2024).
+    QUADRIS crash weight back to an exposure weight (plan §6b). The post-hoc classes are then
+    mixed in at the crash level: no-response crashes make up `no_response_share` of the total
+    crash weight (Bärgman 2024) and abnormal-acceleration crashes `abnormal_share`
+    (Wu 2025a: 9.2%), so responding crashes carry 1 - no_response_share - abnormal_share.
     """
     df = df.copy()
-    resp = df[~df.no_response]
+    if "abnormal" not in df.columns:                      # outputs from before 2026-08-24
+        df["abnormal"] = False
+    resp = df[~df.no_response & ~df.abnormal]
     pc = resp[resp.crashed].groupby("seed_id").prob.sum().reindex(df.seed_id.unique()).fillna(0.0)
     df["p_crash_seed"] = df.seed_id.map(pc)
     omega = df.omega.copy()
     if exposure_pc is not None:
         omega = omega / df.seed_id.map(exposure_pc).clip(lower=1e-6)
     df["w_crash"] = 0.0
-    m = (~df.no_response) & df.crashed
+    m = (~df.no_response) & (~df.abnormal) & df.crashed
     df.loc[m, "w_crash"] = omega[m] * df.prob[m] / df.p_crash_seed[m].clip(lower=1e-12)
-    if no_response_share > 0 and df.no_response.any():
-        w_resp = df.loc[m, "w_crash"].sum()
-        nr = df.no_response & df.crashed
-        k = nr.sum()
-        if k and w_resp > 0:
-            df.loc[nr, "w_crash"] = (no_response_share / (1 - no_response_share)) * w_resp * (omega[nr] / omega[nr].sum())
+    w_resp = df.loc[m, "w_crash"].sum()
+    s_rest = 1.0 - no_response_share - abnormal_share
+    for share, mask in ((no_response_share, df.no_response & df.crashed),
+                        (abnormal_share, df.abnormal & df.crashed)):
+        if share > 0 and mask.any() and w_resp > 0:
+            df.loc[mask, "w_crash"] = (share / s_rest) * w_resp * (omega[mask] / omega[mask].sum())
     return df

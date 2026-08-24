@@ -148,8 +148,78 @@ def test_equivalence():
           p_inj_mais2(0) == 0 and p_inj_mais2(5) < p_inj_mais2(10))
 
 
+# ------------------------------------------------- no-brake counterfactual + component 5
+def test_no_brake_and_abnormal():
+    from causation.simulate import execute_abnormal
+    # follower: accelerates 0-1 s, brakes hard after the lead's onset at 1.0 s
+    t = np.arange(0.0, 6.0 + 1e-9, 0.05)
+    v_l = np.maximum(15.0 + np.where(t > 1.0, -6.0 * (t - 1.0), 0.0), 0.0)
+    x_l = 25.0 + np.concatenate([[0], np.cumsum(0.5 * (v_l[1:] + v_l[:-1]) * 0.05)])
+    v_f = 14.0 + np.where(t <= 1.0, 1.0 * t, 1.0) + np.where(t > 2.0, -5.0 * (t - 2.0), 0.0)
+    v_f = np.maximum(v_f, 0.0)
+    x_f = np.concatenate([[0], np.cumsum(0.5 * (v_f[1:] + v_f[:-1]) * 0.05)])
+    s = Seed(seed_id=998, weight=1.0, t=t, v_lead=v_l, v_f0=float(v_f[0]), d0=25.0,
+             v_f_orig=v_f, d_orig=x_l - x_f, lead_delta_v_orig=1.0)
+    dt = 0.05
+    orig = pre_response(s, dt, 2.0, "original")
+    nb = pre_response(s, dt, 2.0, "no_brake")
+    on = orig.t <= orig.t_lead_onset + 1e-9
+    check("no_brake: profile equals original up to the lead's onset",
+          np.allclose(nb.v_f[on], orig.v_f[on]))
+    check("no_brake: no deceleration after the lead's onset",
+          np.min(np.diff(nb.v_f)[orig.t[1:] > orig.t_lead_onset]) > -1e-9)
+    check("no_brake: the acceleration phase is preserved",
+          np.allclose(np.diff(nb.v_f)[orig.t[1:] <= 1.0], np.diff(orig.v_f)[orig.t[1:] <= 1.0]))
+    nba = pre_response(s, dt, 2.0, "no_brake_all")
+    check("no_brake_all: no deceleration anywhere", np.min(np.diff(nba.v_f)) > -1e-9)
+    check("no_brake counterfactual crashes where the braking original avoided",
+          np.isfinite(nb.t_crash_noresponse))
+    # abnormal acceleration: +1.8 m/s^2 from the lead onset, ignoring the lead
+    out = execute_abnormal(nb, t_a=float(nb.t_lead_onset), a_abn=1.8, dt=dt)
+    check("abnormal acceleration crashes", out.crashed)
+    k = np.searchsorted(out.t, nb.t_lead_onset) + 2
+    a_at = (out.v_f[k] - out.v_f[k - 1]) / dt
+    check("abnormal applies +1.8 m/s^2 after its onset", abs(a_at - 1.8) < 1e-6, a_at)
+    braking = execute_braking(nb, float(nb.t_lead_onset) + 0.5, 8.0, -23.04, dt)
+    check("abnormal impact is harder than a braking response's",
+          out.v_rel_impact > braking.v_rel_impact)
+    # two-class post-hoc mixture in aggregate
+    import pandas as pd
+    rows = []
+    for i in range(4):
+        rows.append(dict(seed_id=i, omega=1.0, prob=1.0, crashed=True,
+                         no_response=False, abnormal=False))
+        rows.append(dict(seed_id=i, omega=1.0, prob=np.nan, crashed=True,
+                         no_response=True, abnormal=False))
+        rows.append(dict(seed_id=i, omega=1.0, prob=np.nan, crashed=True,
+                         no_response=False, abnormal=True))
+    agg = aggregate(pd.DataFrame(rows), no_response_share=0.10, abnormal_share=0.092)
+    tot = agg.w_crash.sum()
+    check("no-response class carries its share of total crash weight",
+          abs(agg.loc[agg.no_response, "w_crash"].sum() / tot - 0.10) < 1e-9)
+    check("abnormal class carries its share of total crash weight",
+          abs(agg.loc[agg.abnormal, "w_crash"].sum() / tot - 0.092) < 1e-9)
+    # stationary accumulator start responds no later than the zero start
+    cfg0 = CausationConfig(response_model="active_inference", pre_response_speed="no_brake")
+    cfg5 = CausationConfig(response_model="active_inference", pre_response_speed="no_brake",
+                           ai_accumulator_init="stationary")
+    from causation.response import make_response
+    from causation.glances import GlanceSchedule as GS
+    m0, m5 = make_response(cfg0), make_response(cfg5)
+    m0.prepare(nb, cfg0); m5.prepare(nb, cfg5)
+    t0, t5 = m0.onset(nb, GS([], 1.0, "attentive"), cfg0), m5.onset(nb, GS([], 1.0, "attentive"), cfg5)
+    check("stationary accumulator start responds no later than zero start",
+          (not np.isfinite(t0)) or (np.isfinite(t5) and t5 <= t0 + 1e-9), f"{t5} vs {t0}")
+    # v_rel is the primitive: recorded dv_lead is half of it (equal-mass convention)
+    recs = run_seed(s, CausationConfig(response_model="cbm", pre_response_speed="no_brake"))
+    crashed = [r for r in recs if r["crashed"]]
+    check("recorded dv_lead is v_rel_impact/2 for every crash record",
+          all(abs(r["dv_lead"] - r["v_rel_impact"] / 2) < 1e-9 for r in crashed))
+
+
 if __name__ == "__main__":
-    for fn in [test_glances, test_simulation, test_config_discipline, test_aggregation, test_equivalence]:
+    for fn in [test_glances, test_simulation, test_config_discipline, test_aggregation, test_equivalence,
+               test_no_brake_and_abnormal]:
         print("\n--- {} ---".format(fn.__name__))
         fn()
     print("\n{} passed, {} failed".format(len(PASS), len(FAIL)))

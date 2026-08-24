@@ -40,6 +40,14 @@ def pre_response(seed: Seed, dt: float, t_extra: float, mode: str = "original") 
            recorded series. Needed for the creeping/queue seeds in which the generator's
            follower accelerates into a lead that never brakes; with a constant speed those
            seeds cannot crash at all. Tier 1 has no car-following model of its own.
+           Caveat: 49/100 sampled seeds' original followers brake at some point, so this
+           mode embeds part of the generator's evasive action in the counterfactual.
+    mode = "no_brake": follow the original profile, but remove the follower's braking
+           (acceleration clamped at >= 0) from the LEAD's braking onset onward — braking
+           before the lead does anything is car-following regulation, braking after it is
+           the evasive action the counterfactual must exclude. Keeps the accelerating
+           creeping/queue seeds intact. The recommended counterfactual since 2026-08-24.
+    mode = "no_brake_all": as no_brake but clamped from t = 0 (sensitivity for the rule).
     """
     t_end = seed.t_crash_orig + t_extra
     t = np.arange(0.0, t_end + dt / 2, dt)
@@ -49,6 +57,15 @@ def pre_response(seed: Seed, dt: float, t_extra: float, mode: str = "original") 
         v_f = np.full_like(t, seed.v_f0)
     else:
         v_f = np.interp(t, seed.t, seed.v_f_orig, left=seed.v_f_orig[0], right=seed.v_f_orig[-1])
+    if mode in ("no_brake", "no_brake_all") and seed.v_f_orig is not None:
+        a_l_ = np.gradient(v_l, dt)
+        t_lead_on = float(t[np.argmax(a_l_ < -0.1)]) if (a_l_ < -0.1).any() else np.inf
+        t_clamp = 0.0 if mode == "no_brake_all" else t_lead_on
+        v_nb = v_f.copy()
+        for i in range(1, len(t)):
+            if t[i] > t_clamp:
+                v_nb[i] = v_nb[i - 1] + max(v_f[i] - v_f[i - 1], 0.0)
+        v_f = v_nb
     x_f = np.concatenate([[0.0], np.cumsum(0.5 * (v_f[1:] + v_f[:-1]) * dt)])
     gap = x_l - x_f
     with np.errstate(divide="ignore", invalid="ignore"):
@@ -107,3 +124,26 @@ def execute_braking(pre: PreResponseKinematics, t_onset: float | None, d_max: fl
     a_min = float(a.min()) if responding else 0.0
     return Outcome(crashed, t_imp, max(v_rel, 0.0), float(t_onset) if responding else np.nan,
                    a_min, float(gap[: (np.argmax(gap <= 0) + 1) if crashed else n].min()), t, v_f, gap)
+
+
+def execute_abnormal(pre: PreResponseKinematics, t_a: float, a_abn: float, dt: float) -> Outcome:
+    """The abnormal-acceleration follower of Wu et al. (2025a): from t_a the follower
+    ignores the lead entirely and applies a constant acceleration a_abn (their fitted mean:
+    1.8 m/s^2) until impact. Before t_a it follows the pre-response profile."""
+    t, v_l, x_l = pre.t, pre.v_l, pre.x_l
+    n = len(t)
+    v_f = np.empty(n); x_f = np.empty(n); a = np.zeros(n)
+    v_f[0], x_f[0] = pre.v_f[0], 0.0
+    crashed, t_imp, v_rel = False, np.nan, 0.0
+    for i in range(1, n):
+        v_new = v_f[i - 1] + a_abn * dt if t[i] >= t_a else pre.v_f[i]
+        a[i] = (v_new - v_f[i - 1]) / dt
+        x_f[i] = x_f[i - 1] + 0.5 * (v_f[i - 1] + v_new) * dt
+        v_f[i] = v_new
+        if x_l[i] - x_f[i] <= 0 and not crashed:
+            crashed, t_imp, v_rel = True, float(t[i]), float(v_f[i] - v_l[i])
+            v_f[i:] = v_f[i]; x_f[i:] = x_f[i]
+            break
+    gap = x_l - x_f
+    return Outcome(crashed, t_imp, max(v_rel, 0.0), np.nan, float(a.min()),
+                   float(gap[: (np.argmax(gap <= 0) + 1) if crashed else n].min()), t, v_f, gap)
