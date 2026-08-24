@@ -68,7 +68,13 @@ def main() -> None:
     ap.add_argument("--pre-response", default="original", choices=["original", "constant"])
     ap.add_argument("--rng", type=int, default=0)
     ap.add_argument("--ref", default="all", choices=["all", "sample"])
+    # glance-anchor sensitivity (docs/crash_causation_plan.md section 6c): rerun a condition
+    # with the glance placement changed; outputs get "_<tag>" appended so the default runs
+    # are never overwritten
+    ap.add_argument("--glance-anchor", default=None, choices=["tau_inv", "lead_onset", "crash", "process"])
+    ap.add_argument("--tag", default="", help="suffix for cond_<X> output files and summary.md")
     args = ap.parse_args()
+    tag = ("_" + args.tag) if args.tag else ""
     OUT.mkdir(parents=True, exist_ok=True)
 
     all_seeds = load_synthetic()
@@ -89,8 +95,11 @@ def main() -> None:
 
     results = {}
     for c in args.conditions:
-        cfg = CausationConfig.condition(c, pre_response_speed=args.pre_response, seed=args.rng)
-        path = OUT / "cond_{}.csv".format(c)
+        overrides = dict(pre_response_speed=args.pre_response, seed=args.rng)
+        if args.glance_anchor is not None:
+            overrides["glance_anchor"] = args.glance_anchor
+        cfg = CausationConfig.condition(c, **overrides)
+        path = OUT / "cond_{}{}.csv".format(c, tag)
         if not args.assess_only:
             print("condition", c, "...", flush=True)
             df = run_condition(seeds, cfg, path, label="condition {}".format(c))
@@ -98,7 +107,9 @@ def main() -> None:
             df = pd.read_csv(path)
         results[c] = (cfg, df)
 
-    lines = ["# Tier-1 results: {} seeds, pre-response = {}\n".format(args.n_seeds, args.pre_response),
+    lines = ["# Tier-1 results: {} seeds, pre-response = {}{}\n".format(
+                 args.n_seeds, args.pre_response,
+                 ", glance anchor = {}".format(args.glance_anchor) if args.glance_anchor else ""),
              "Generated {}. Distributions: glances and decelerations are STAND-INS unless the .json says otherwise.\n".format(pd.Timestamp.now().date())]
     # exposure: crash probability per seed under condition C if available
     pc_C = None
@@ -132,7 +143,7 @@ def main() -> None:
             agg_e = aggregate(df, cfg.no_response_share if cfg.no_response_on else 0.0, exposure_pc=pc_C)
             if (agg_e.w_crash > 0).sum() >= 10:
                 lines.append("\n" + assess(ref, agg_e, "Condition {} vs reference (exposure weights, omega / p_c under C)".format(c)))
-    (OUT / "summary.md").write_text("\n".join(lines), encoding="utf-8")
+    (OUT / "summary{}.md".format(tag)).write_text("\n".join(lines), encoding="utf-8")
     print("\n".join(lines))
 
 

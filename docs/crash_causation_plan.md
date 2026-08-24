@@ -246,8 +246,8 @@ Two tier-1 design points found during implementation, both documented in the cod
 | 3 | Tier 1, conditions A–D, 100 seeds; sanity checks; first tables | **done** (section 11) |
 | 4 | Equivalence module (`src/equivalence/`, reusable), ROPE decisions, per-bin diagnostics | **done** (bootstrap HDIs; the paper's parametric posterior draws remain an open hook) |
 | 5 | Real glance and deceleration distributions plugged in, results regenerated | waiting on section 8 items 1–2 |
-| 6 | Tier 2 adapter: lead replay, gaze schedule through `I_factor`, per-seed batching, checkpointing; 5-seed smoke test | next implementation step |
-| 7 | Tier 2 on 20 seeds; per-seed comparison with tier 1; decide who carries the 5 000 | after 6 |
+| 6 | Tier 2 adapter: lead replay, gaze schedule through `I_factor`, per-seed batching, checkpointing; 5-seed smoke test | **done 2026-08-24** (section 11.4; glance gate exercised on one seed, both mild and hard) |
+| 7 | Tier 2 on 20 seeds; per-seed comparison with tier 1; decide who carries the 5 000 | next; multi-day restartable CPU job or a short GPU one (section 11.4 point 4); needs the desired-speed convention decision for low-speed seeds |
 | 8 | Results document alongside this plan | after 5 |
 
 Steps 1–4 give a complete, defensible first result without touching the expensive model. Step 5 is where the active inference driver proper enters, and it is the step most likely to surface surprises.
@@ -336,11 +336,107 @@ How to read this, in order of importance:
   its HDIs are correspondingly wide; A's purpose is the avoided-fraction read-out, not the
   equivalence test.
 
-### 11.3 What this changes in the plan
+### 11.3 The glance anchor, tested across all 100 seeds
+
+Section 6c argued the anchor question from construction; the three placements are now run
+on the same 100 seeds (conditions C and D; `out/summary_process.md`, `out/summary_crash.md`;
+runner flag `--glance-anchor`). Weighted crash probability and the P_inj equivalence
+statistic θ (Eq. 10 weights):
+
+| glance placement | crash prob, C (CBM) | crash prob, D (act. inf.) | P_inj θ, C | P_inj θ, D |
+|---|---|---|---|---|
+| overshot at τ⁻¹ = 0.2 s⁻¹ | 0.006 | 0.015 | 0.89 | 1.20 |
+| renewal process (assumption-free) | 0.007 | 0.026 | **0.31** | 1.04 |
+| crash-anchored | 0.023 | 0.028 | 0.84 | 0.87 |
+
+Three conclusions:
+
+1. **Crash-anchoring inflates crash probability roughly four-fold for the CBM** (0.006 →
+   0.023) and about 1.9-fold for the active inference driver — the conditioning-on-outcome
+   bias of section 6c point 1, now quantified at population level rather than on the single
+   illustrative seed. Its θ values look no worse, which is itself the warning: the bias
+   inflates *how often* crashes happen more than it distorts *which* crashes happen, so the
+   equivalence test alone would not catch it.
+2. **For the CBM, the overshot-at-anchor construction reproduces the renewal process's
+   crash probability almost exactly** (0.006 versus 0.007) — the Markkula-claims shortcut
+   works as advertised for a response model that reacts at a fixed delay. For the active
+   inference driver it does not transfer as cleanly (0.015 versus 0.026): glances placed
+   anywhere in the scenario interact with its evidence accumulation, which the
+   anchor-locked placement cannot represent. For condition D the process implementation
+   should be the default, as section 6c recommended.
+3. **Process glances move the CBM control markedly closer to the reference** (P_inj θ 0.89
+   → 0.31, Θ 0.48 → 0.12) — consistent with QUADRIS having been generated with
+   renewal-style glance behavior, and a hint that part of the section 11.2 failures is the
+   glance *placement* model rather than the stand-in *duration* distribution. Still not
+   equivalent, and stand-ins still apply.
+
+The response-onset metric is unaffected by the anchor choice (D's median stays 1.25 s
+after the reporting anchor under all three placements), confirming that the anchor's
+reporting role (section 6c point 3) is separable from its placement role.
+
+### 11.4 Tier-2 smoke test: the closed-loop driver on five QUADRIS seeds
+
+*Added 2026-08-24. The tier-2 adapter (work-plan step 6) is built —
+`replication/causation/tier2_rear_end.py`: the authors' closed-loop model with the
+scripted lead replaced by a replay of the seed's lead-speed profile, a forcible gaze
+schedule acting through the code's own `I_factor` observation gate, checkpointing, and
+seed-level restart. The authors' files are untouched; the replay dynamics and run loop are
+swapped into the loaded module namespace. Lead replay was verified against the seed
+profiles step by step. Run: the five v_f0-quintile seeds of the tier-1 sample, attentive,
+four repeats each (`tier2/smoke_results.csv`).*
+
+| seed | v_f0 [m/s] | tier-1 onset [s] | tier-2 onset [s] | tier-1 outcome | tier-2 outcome (4 repeats) |
+|---|---|---|---|---|---|
+| 3456 | 0.0 | 3.65 | no response | avoided | trivially avoided — the agent never moves |
+| 2387 | 1.7 | 3.60 | 5.2–5.4 | avoided | avoided (brakes to a stop) |
+| 1722 | 6.7 | 4.05 | 3.2 | crashed (some bins) | avoided, min gaps 0.9–1.7 m |
+| 4799 | 14.0 | 2.30 | 2.4 | crashed | 3/4 avoided with a lane change, 1/4 crash |
+| 871 | 35.5 | 1.65 | 1.4–2.2 | crashed | 4/4 crash, high impact speeds, all leave the road |
+
+Findings, in decreasing order of consequence:
+
+1. **Onsets agree where the model is in its element.** For the seeds inside or near the
+   calibrated speed range the closed-loop onsets sit within 0.1–0.9 s of the tier-1
+   surrogate (2.4 vs 2.3 s; 1.4–2.2 vs 1.65 s; 3.2 vs 4.05 s), responding slightly
+   earlier and avoiding more — the closed loop can brake harder than the sampled
+   deceleration caps and can swerve, which tier 1 cannot represent. This is the step-7
+   comparison in miniature, and it supports letting tier 1 carry the statistics while
+   tier 2 spot-checks.
+2. **The two out-of-range seeds fail in instructive, distinct ways.** The stopped
+   follower (v_f0 = 0) never moves: its desired speed is initialized to its initial
+   speed, so a creeping-queue seed has no motive to accelerate into the conflict the way
+   the generator's follower did — tier 2 needs a desired-speed convention for QUADRIS
+   seeds before those seeds mean anything (a config decision, now flagged in the
+   adapter). The 35.5 m/s seed — far above the model's 10–25 m/s design range — crashes
+   in all repeats with 15–19 m/s relative impact speed and leaves the road laterally by
+   6–15 m, the documented high-speed lane-change failure mode; road departure must be a
+   separate outcome class in any tier-2 batch (section 5, sanity check 7).
+3. **The glance gate is not the CBM's glance gate, demonstrably.** Forcing a 1.0–3.0 s
+   off-road glance on seed 4799 delays the response by at most one step — onset 2.4–2.6 s,
+   inside the glance — under the authors' default observation-noise factor (3) and under
+   a hard gate (factor 1000) alike. The lead's braking had been registered before the
+   glance began, and the belief then coasts forward on its own norm-shaped prediction, so
+   the accumulator keeps filling from remembered evidence; eyes-off blocks new evidence,
+   not inference. The CBM instead forbids any response until eyes return plus 0.5 s.
+   The two mechanisms therefore diverge exactly when a glance begins after conflict
+   onset — and coincide when the glance covers the onset — which is a testable behavioral
+   distinction between the architectures, and the reason tier 1 carries an explicit
+   evidence gate (weight 0 = CBM) separate from the precision gate. Incidentally, the
+   hard gate produced fewer crashes than the mild one (0/4 versus 2/4) — with four
+   repeats this is anecdote, not result, but it warns against assuming the gate strength
+   maps monotonically onto risk.
+4. **Cost is highly variable and dominated by a few seeds:** 3 minutes to 4 hours per
+   seed (median roughly one hour) on this CPU, with no obvious predictor. The 20-seed
+   step 7 is a multi-day restartable CPU job or a short GPU one.
+
+### 11.5 What this changes in the plan
 
 Nothing structural. The pipeline runs end to end (crash generation, both weightings, θ/Θ
 with per-bin diagnostics), restarts cleanly after interruption, and produces the comparisons
-the protocol calls for. The two actions it sharpens: step 5 (real SHRP2 glance and
+the protocol calls for. One protocol default changes: the renewal-process glance placement
+becomes the reference implementation for the active inference conditions (section 11.3
+point 2), with the anchored overshot kept as the CBM-compatible approximation. The two
+actions it sharpens: step 5 (real SHRP2 glance and
 deceleration distributions) is now clearly the binding step, since the stand-ins plausibly
 dominate every equivalence failure; and the section 6b request for the pre-filter scenario
 set gains urgency, since the exposure-weighting results show how much the crash-conditioned
