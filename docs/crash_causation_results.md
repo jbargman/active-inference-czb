@@ -83,13 +83,12 @@ placement for condition A, which has no glances):
    0.005 with identical components), from timing: the active-inference accumulator's
    attentive onsets sit at a median 1.25 s after the τ⁻¹ = 0.2 s⁻¹ anchor (IQR
    0.50–1.75 s) against the CBM's fixed 0.50 s (section 5).
-3. This factor is, however, **bounded below by the accumulator's starting level**: with
-   the accumulator initialized at half threshold ("stationary", the mean phase a driver
-   would carry out of long steady following) instead of zero, B's crash probability drops
-   to 0.004 — at or below the CBM's. The active-inference crash rate is therefore
-   sensitive to an initialization convention the tier-1 surrogate cannot fix internally
-   (the closed-loop model's benign drift supplies the phase; the surrogate must assume
-   one). Results are reported for both conventions.
+3. The crash rate was initially sensitive to the accumulator's starting level (zero
+   start 0.023 versus 0.004 with a "stationary" half-threshold start), but the tier-2
+   arbiter run has **resolved the convention in favor of the zero start** (section 5):
+   the closed-loop model's own onsets match the zero-start surrogate to a median 0.30 s
+   across 23 seeds and reject the stationary start on 19 of 23. The 0.023 figure stands;
+   the stationary variant remains in the outputs as a tested-and-rejected sensitivity.
 
 ## 4 Comparison with the original data
 
@@ -184,13 +183,38 @@ Attentive onsets: active inference median 1.25 s after the anchor (IQR 0.50–1.
 CBM fixed at 0.50 s. Ten of 100 seeds respond *before* the anchor — all within 0.45 s of
 it, all after the lead's braking onset, concentrated at short initial headways — so the
 active-inference model treats the anchor as nothing special, responding to sub-threshold
-looming when the gap is short. With the stationary accumulator start the whole
-distribution shifts earlier (crash probability 0.023 → 0.004), which brackets the
-response-timing claim: the tier-1 surrogate says the active-inference driver is *slower
-and more variable* than the CBM's rule under the zero start, and *comparable or faster*
-under the stationary start. The closed-loop model, whose benign drift supplies the
-starting phase endogenously, is the arbiter; the tier-2 comparison (plan step 7) should
-settle it.
+looming when the gap is short.
+
+**The arbiter verdict (2026-08-25).** The response-timing claim was initially bracketed
+by the accumulator's starting convention: zero start (the paper's) versus a "stationary"
+half-threshold start representing a driver arriving mid-cycle from long steady following;
+crash probability 0.023 versus 0.004. The tier-2 arbiter run — the full closed-loop model
+on 23 seeds spanning 1.3–35.5 m/s, four repeats each, lead profiles replayed
+(`replication/causation/tier2/arbiter_comparison.csv`) — settles it:
+
+| comparison (attentive onsets, n = 23 seeds) | median difference | median \|difference\| | closer on |
+|---|---|---|---|
+| closed loop − tier-1 zero start | +0.30 s | 0.55 s | **19/23 seeds** |
+| closed loop − tier-1 stationary start | +1.00 s | 1.05 s | 4/23 seeds |
+
+The closed loop behaves like the zero start — if anything it responds slightly *later*
+than the zero-start surrogate, so the stationary correction points the wrong way. The
+scope of the verdict should be stated precisely: it validates the zero start *for this
+study's design*, in which simulation windows open a few seconds before the conflict at
+mostly comfortable headways, so the closed loop's benign drift accumulates little before
+the event. What a driver carries after minutes of continuous short-gap following is a
+question neither tier answers, because both open their windows near the conflict; within
+this design it is a non-issue by construction. Consequently the zero-start results are
+the study's results, and the conclusion stands: **the active-inference response is slower
+and more variable than the CBM's fixed rule** — confirmed, not contradicted, by the
+closed loop.
+
+A deliberate non-action: the +0.30 s median offset between the closed loop and the
+surrogate could be folded into the surrogate as a calibration correction. We do not do
+this. Twenty-three seeds are a thin base to fit on, the offset is well inside the
+response-time dispersion the study is about, and an *untuned* surrogate landing within
+0.55 s median absolute difference is a stronger validation statement than a tuned one
+landing on zero [Opinion].
 
 ## 6 The closed loop is not the CBM with extra steps: the glance-gate finding
 
@@ -262,9 +286,11 @@ are an intermediate exposure extension available now.
    best configurations), and the two miss differently: active inference over-produces
    the mildest crashes; the CBM over-produces moderate ones and cannot reproduce the
    reference's non-braking character, which the active-inference conditions now match.
-3. The active-inference response-timing claim is **bracketed, not settled**: slower than
-   the CBM under the zero accumulator start, comparable under the stationary start. The
-   tier-2 closed loop is the arbiter.
+3. The active-inference response-timing claim is **settled by the tier-2 arbiter**: the
+   closed loop matches the zero-start surrogate (median difference +0.30 s, 19/23 seeds
+   closer) and rejects the stationary start, so the active-inference response is slower
+   and more variable than the CBM's rule, with the tier-1 surrogate validated untuned to
+   a median absolute onset difference of 0.55 s across 1.3–35.5 m/s.
 4. The architectural finding stands: evidence gating versus inference gating during
    off-road glances is a real, behaviorally testable difference between the CBM and
    active inference (section 6).
@@ -280,9 +306,12 @@ are an intermediate exposure extension available now.
   component applies its acceleration from the lead's braking onset instead.
 - 50 process draws per seed (marked for increase); the QUADRIS reference is itself
   model-generated; n = 100 seeds, extendable to the full 5 000 at tier-1 cost.
-- The accumulator-initialization sensitivity (section 3) is the largest open modeling
-  question on the active-inference side; the tier-2 20-seed comparison (plan step 7) is
-  the designed arbiter and the next expensive step.
+- The accumulator-initialization question is closed for this design (section 5); what a
+  driver carries into a conflict after minutes of continuous short-gap following remains
+  outside both tiers' windows, and would matter for study designs with long run-ins.
+- The stopped/creeping-follower seeds (20 of the 100-seed sample) run under the
+  desired-speed convention decided 2026-08-25 (the speed the original follower later
+  reached); their tier-2 batch was launched with this revision.
 
 Regeneration: the tagged commands are in `replication/causation/out/log_nb*.txt`; figures
 by `replication/causation/make_results_figures.py --tag nbp`; this document by

@@ -31,6 +31,7 @@ class CausationConfig:
     glance_point_mass_on_road: float | None = None   # override the distribution's on-road share
     glance_process_on_road_mean: float | None = None  # for anchor="process": mean on-road dwell [s]; None = from the on-road share
     glance_sweep: str = "marginal"               # "marginal" (one run per overshoot, Bärgman App. C) | "joint" (duration x overshoot)
+    glance_process_draws: int = 50               # Monte Carlo draws per seed for anchor="process"
 
     # ---- component 2: too-close -----------------------------------------------------------
     # inherent in the seed's initial gap; nothing to switch. Kept here for the record.

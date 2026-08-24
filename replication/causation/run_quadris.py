@@ -66,6 +66,8 @@ def assess(ref: pd.DataFrame, gen: pd.DataFrame, label: str, n_bins: int = 5) ->
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--n-seeds", type=int, default=100)
+    ap.add_argument("--all-seeds", action="store_true",
+                    help="run every QUADRIS scenario (sampling would bootstrap, not enumerate)")
     ap.add_argument("--conditions", nargs="*", default=list("ABCD"))
     ap.add_argument("--assess-only", action="store_true")
     ap.add_argument("--pre-response", default="original",
@@ -74,6 +76,8 @@ def main() -> None:
                     help="enable the Wu et al. (2025a) abnormal-acceleration component")
     ap.add_argument("--ai-init", default=None, choices=["zero", "stationary"],
                     help="active-inference accumulator start (stationary = half threshold)")
+    ap.add_argument("--process-draws", type=int, default=None,
+                    help="Monte Carlo glance draws per seed for the process placement")
     ap.add_argument("--rng", type=int, default=0)
     ap.add_argument("--ref", default="all", choices=["all", "sample"])
     # glance-anchor sensitivity (docs/crash_causation_plan.md section 6c): rerun a condition
@@ -90,9 +94,9 @@ def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
 
     all_seeds = load_synthetic()
-    seeds = sample_seeds(all_seeds, args.n_seeds, rng=args.rng)
+    seeds = all_seeds if args.all_seeds else sample_seeds(all_seeds, args.n_seeds, rng=args.rng)
     pd.DataFrame([dict(seed_id=s.seed_id, omega=s.weight, v_f0=s.v_f0, d0=s.d0, t_crash=s.t_crash_orig,
-                       dv_lead_orig=s.lead_delta_v_orig) for s in seeds]).to_csv(OUT / "seeds_{}.csv".format(args.n_seeds), index=False)
+                       dv_lead_orig=s.lead_delta_v_orig) for s in seeds]).to_csv(OUT / "seeds_{}.csv".format(len(seeds)), index=False)
     # the reference costs no simulation: use every QUADRIS scenario unless told otherwise
     ref_path = OUT / "reference_all.csv"
     if args.ref == "all":
@@ -118,6 +122,8 @@ def main() -> None:
             overrides["abnormal_on"] = True
         if args.ai_init is not None:
             overrides["ai_accumulator_init"] = args.ai_init
+        if args.process_draws is not None:
+            overrides["glance_process_draws"] = args.process_draws
         cfg = CausationConfig.condition(c, **overrides)
         path = OUT / "cond_{}{}.csv".format(c, tag)
         if not args.assess_only:
@@ -128,7 +134,7 @@ def main() -> None:
         results[c] = (cfg, df)
 
     lines = ["# Tier-1 results: {} seeds, pre-response = {}{}\n".format(
-                 args.n_seeds, args.pre_response,
+                 len(seeds), args.pre_response,
                  ", glance anchor = {}".format(args.glance_anchor) if args.glance_anchor else ""),
              "Generated {}. Distributions: glances and decelerations are STAND-INS unless the .json says otherwise.\n".format(pd.Timestamp.now().date())]
     # exposure: crash probability per seed under condition C if available

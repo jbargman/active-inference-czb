@@ -48,11 +48,12 @@ def _decel_dist(cfg: CausationConfig) -> DecelerationDistribution:
 
 
 def schedules_for(seed: Seed, pre, cfg: CausationConfig, g: GlanceDistribution,
-                  rng: np.random.Generator, n_process_draws: int = 50) -> list[GlanceSchedule]:
+                  rng: np.random.Generator) -> list[GlanceSchedule]:
     if not cfg.glances_on:
         return [GlanceSchedule([], 1.0, "attentive")]
     if cfg.glance_anchor == "process":
-        return process_schedules(g, float(pre.t[-1]), n_process_draws, cfg.glance_process_on_road_mean, rng)
+        return process_schedules(g, float(pre.t[-1]), cfg.glance_process_draws,
+                                 cfg.glance_process_on_road_mean, rng)
     t_anchor = {"tau_inv": lambda: pre.first_time(pre.tau_inv >= cfg.glance_anchor_tau_inv),
                 "lead_onset": lambda: pre.t_lead_onset,
                 "crash": lambda: seed.t_crash_orig}[cfg.glance_anchor]()
