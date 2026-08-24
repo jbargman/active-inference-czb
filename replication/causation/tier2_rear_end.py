@@ -124,6 +124,14 @@ def run_seed(seed: Seed, T: int, batch: int, out_path: Path,
 
     torch.manual_seed(torch_seed)
     Config, config = sim_rear_end.set_config(initial_state, model_params, a_tar_brake=6.0)
+    # desired-speed convention (decided 2026-08-25): the speed the original follower later
+    # reached, not its initial speed — otherwise a stopped/creeping follower has no motive
+    # to accelerate into the conflict the way the generator's follower did. For seeds whose
+    # followers do not accelerate the two conventions coincide (checked: max difference
+    # 0.5 m/s over the 20-seed arbiter batch).
+    v_des = float(np.max(seed.v_f_orig)) if seed.v_f_orig is not None else seed.v_f0
+    Config["v_ego_des"] = v_des + model_params["v_diff"]
+    config["reward"]["v_mu"] = Config["v_ego_des"]
     config["T"] = Config["T"] = T
     config["rollout_batch_size"] = batch
     # the built-in lead script must never fire under replay
