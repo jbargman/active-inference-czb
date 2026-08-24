@@ -1,0 +1,7 @@
+Digitized from Bärgman et al. (2024) Figs. 1 and 3 by replication/causation/digitize_b24.py
+baseline y = 626.30
+tick label center ys: 552.99, 577.88, 602.72, 626.93
+pts per unit: geometry 616.2, normalization 610.5
+SHRP2: 36 nonzero bins, longest drawn bin 3.75 s, conditional mass drawn 1.0000 (geometry route: 0.9907)
+Kungälv: conditional distribution extracted; on-road share set to the same 0.80 (caption: point masses 'very similar')
+fig3 pixel heights [260.0, 479.0, 523.0, 479.0, 173.0, 41.0] -> counts [6, 11, 12, 11, 4, 1]

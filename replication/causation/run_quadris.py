@@ -73,6 +73,10 @@ def main() -> None:
     # are never overwritten
     ap.add_argument("--glance-anchor", default=None, choices=["tau_inv", "lead_onset", "crash", "process"])
     ap.add_argument("--tag", default="", help="suffix for cond_<X> output files and summary.md")
+    # real distributions digitized from Bärgman et al. (2024) Figs. 1 and 3
+    # (replication/causation/digitize_b24.py); default remains the labelled stand-ins
+    ap.add_argument("--glance-csv", default=None, help="CSV for GlanceDistribution.from_csv")
+    ap.add_argument("--decel-csv", default=None, help="CSV for DecelerationDistribution.from_csv")
     args = ap.parse_args()
     tag = ("_" + args.tag) if args.tag else ""
     OUT.mkdir(parents=True, exist_ok=True)
@@ -98,6 +102,10 @@ def main() -> None:
         overrides = dict(pre_response_speed=args.pre_response, seed=args.rng)
         if args.glance_anchor is not None:
             overrides["glance_anchor"] = args.glance_anchor
+        if args.glance_csv is not None:
+            overrides["glance_distribution"] = args.glance_csv
+        if args.decel_csv is not None:
+            overrides["decel_distribution"] = args.decel_csv
         cfg = CausationConfig.condition(c, **overrides)
         path = OUT / "cond_{}{}.csv".format(c, tag)
         if not args.assess_only:

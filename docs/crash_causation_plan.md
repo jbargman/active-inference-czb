@@ -245,10 +245,10 @@ Two tier-1 design points found during implementation, both documented in the cod
 | 2 | `src/causation/` with all components, both response models, config discipline, property tests | **done** (27 tests passing; distributions are stand-ins) |
 | 3 | Tier 1, conditions A–D, 100 seeds; sanity checks; first tables | **done** (section 11) |
 | 4 | Equivalence module (`src/equivalence/`, reusable), ROPE decisions, per-bin diagnostics | **done** (bootstrap HDIs; the paper's parametric posterior draws remain an open hook) |
-| 5 | Real glance and deceleration distributions plugged in, results regenerated | waiting on section 8 items 1–2 |
+| 5 | Real glance and deceleration distributions plugged in, results regenerated | **done 2026-08-24** — digitized from [B24] Figs. 1 and 3 (`replication/causation/digitize_b24.py`; two-route calibration agrees within 0.9%, deceleration counts sum to exactly n = 45); the actual SHRP2 bins would still be better |
 | 6 | Tier 2 adapter: lead replay, gaze schedule through `I_factor`, per-seed batching, checkpointing; 5-seed smoke test | **done 2026-08-24** (section 11.4; glance gate exercised on one seed, both mild and hard) |
 | 7 | Tier 2 on 20 seeds; per-seed comparison with tier 1; decide who carries the 5 000 | next; multi-day restartable CPU job or a short GPU one (section 11.4 point 4); needs the desired-speed convention decision for low-speed seeds |
-| 8 | Results document alongside this plan | after 5 |
+| 8 | Results document alongside this plan | **done 2026-08-24** — `docs/crash_causation_results.md`: method summary, digitized inputs, real-distribution results, statistics and figures against the QUADRIS reference, the anchor study, and the glance-gate finding |
 
 Steps 1–4 give a complete, defensible first result without touching the expensive model. Step 5 is where the active inference driver proper enters, and it is the step most likely to surface surprises.
 
