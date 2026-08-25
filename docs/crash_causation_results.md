@@ -66,21 +66,26 @@ digitized distributions.
 
 ## 3 Crash generation
 
-With the no-brake counterfactual and process glances (the primary configuration; anchored
-placement for condition A, which has no glances):
+**Full population (all 5 000 seeds, 2026-08-25).** With the no-brake counterfactual,
+process glances for the active-inference conditions, anchored glances for the CBM
+control, and 10 process draws per seed:
 
-| condition | response | components | seeds crashing (any draw) | weighted crash prob |
+| condition | response | components | seeds crashing (any draw) | weighted crash probability |
 |---|---|---|---|---|
-| A | active inference | decel. cap | 24/100 | 0.009 |
-| B | active inference | glances, decel. cap, no-response | 99/100 | 0.023 |
-| C | CBM (control) | glances, decel. cap, no-response | 56/100 | 0.005 |
-| D | active inference | glances, decel. cap | 99/100 | 0.023 |
+| A | active inference | decel. cap | 1 635/5 000 | 0.156 |
+| B | active inference | glances, decel. cap, no-response | 3 854/5 000 | 0.280 |
+| C | CBM (control) | glances, decel. cap, no-response | 4 705/5 000 | 0.059 |
+| D | active inference | glances, decel. cap | 3 854/5 000 | 0.280 |
 
-1. **An attentive active-inference driver avoids 76 of 100 QUADRIS crash seeds** across
-   the full deceleration sweep; the 24 that crash in some bin are the kinematically hard
-   core.
-2. **The response process drives a factor ~4–5 in crash probability** (B 0.023 versus C
-   0.005 with identical components), from timing: the active-inference accumulator's
+(The earlier 100-seed tables' "weighted crash prob" column was normalized against the
+full reference weight and is therefore a share, not a rate; the population rates above
+supersede it. Ratios between conditions were and remain comparable.)
+
+1. **An attentive active-inference driver avoids 67% of the QUADRIS crash population**
+   (3 365 of 5 000 seeds) across the full deceleration sweep; the rest are the
+   kinematically hard core, concentrated at short headways.
+2. **The response process drives a factor ~4.7 in crash probability** (B 0.280 versus C
+   0.059 with identical components), from timing: the active-inference accumulator's
    attentive onsets sit at a median 1.25 s after the τ⁻¹ = 0.2 s⁻¹ anchor (IQR
    0.50–1.75 s) against the CBM's fixed 0.50 s (section 5).
 3. The crash rate was initially sensitive to the accumulator's starting level (zero
@@ -92,37 +97,68 @@ placement for condition A, which has no glances):
 
 ## 4 Comparison with the original data
 
-### 4.1 Summary statistics
+### 4.1 Summary statistics (full population)
 
 Weighted medians (weighted mean for P_inj); reference weighted by ω, conditions by the
-Eq. 10 crash weights:
+Eq. 10 crash weights; all conditions on all 5 000 seeds:
 
-| | rel. speed at impact [m/s] | mean P_inj | t_nr [s] | follower a_min [m/s²] |
-|---|---|---|---|---|
-| QUADRIS reference (n = 5 000) | 3.54 | 0.0062 | −0.15 | −1.03 |
-| B: active inference, process glances | 1.88 | 0.0048 | −0.15 | 0.00 |
-| C: CBM, process glances | 4.25 | 0.0055 | −0.20 | −3.75 |
-| B + abnormal acceleration | 2.61 | **0.0063** | −0.15 | 0.00 |
-| C + abnormal acceleration | 4.41 | 0.0069 | −0.20 | −3.75 |
-| B, stationary accumulator | 3.42 | 0.0052 | −0.15 | −2.85 |
+| | rel. speed at impact [m/s] | mean P_inj | follower a_min [m/s²] |
+|---|---|---|---|
+| QUADRIS reference (n = 5 000) | 3.54 | 0.0062 | −1.03 |
+| B: active inference | 3.33 | 0.0052 | −3.46 |
+| C: CBM control | 3.34 | 0.0050 | −3.75 |
+| B + abnormal acceleration | 3.63 | 0.0069 | −0.05 |
+| C + abnormal acceleration | 3.63 | 0.0068 | −3.75 |
+
+The 100-seed sample's over-production of mild crashes (its B median relative impact
+speed was 1.88 m/s) largely dissolves at full population — it was substantially a
+property of the weight-proportional sample, which concentrates on the common, benign
+seeds. Severity medians now sit within 0.2 m/s of the reference for B and C alike, and
+within 0.1 for the abnormal variants; the abnormal component overshoots the mean injury
+risk slightly (+11%) where it landed exactly on it in the sample.
 
 ### 4.2 Distributions
 
 ![Weighted metric distributions: reference vs conditions B and C](causation_figures/fig_metrics.png)
 
-- **Severity (relative speed at impact).** Condition B tracks the reference's tail well
-  and over-produces only the mildest bin; condition C now over-produces *moderate*
-  severities — its fixed 0.5 s response is fast enough that hard crashes are rare but
-  slow enough that many glance draws end in 3–8 m/s impacts.
+- **Severity (relative speed at impact).** At full population both response models track
+  the reference across the entire severity range — the distributions nearly overlay,
+  with B marginally under-producing the extreme tail and C marginally over-producing the
+  2–6 m/s range. (The figure shows the full-population run.)
 - **Urgency (t_nr).** Essentially inherited from the seeds by both models, as before.
-- **Braking (follower minimum acceleration).** The structural mismatch of the first
-  analysis is largely resolved for condition B: with the no-brake counterfactual and
-  process glances, crashes in which the follower never brakes (glance or no-response
-  covering the conflict) now dominate, matching the reference's non-braking spike. The
-  crash-weighted median follower in B does not brake at all — as in the reference.
-  Condition C retains its hard-braking spikes at the deceleration-bin values.
+- **Braking (follower minimum acceleration).** The remaining structural difference.
+  Condition B reproduces — indeed slightly overshoots — the reference's dominant
+  non-braking spike (crashes in which a glance or the no-response class covers the
+  conflict); condition C cannot produce it and instead concentrates on its discrete
+  hard-braking values from the deceleration bins. This is the panel that keeps a_f,min
+  from passing for any configuration, and it separates the two response models more
+  clearly than severity does.
 
-### 4.3 Equivalence statistics and the sensitivity ladder
+### 4.3 Equivalence at full population
+
+Headline θ (Eq. 10 weights, 95% bootstrap HDIs), all 5 000 seeds; full tables in
+`replication/causation/out/summary_fullp.md` and `summary_fullp_abn.md`:
+
+| configuration | P_inj / v_rel θ | t_nr θ | a_f,min θ |
+|---|---|---|---|
+| B: active inference | 0.31 [0.26, 0.35] | 0.38 [0.33, 0.45] | 1.00 |
+| C: CBM control | 0.39 [0.35, 0.42] | 0.43 [0.38, 0.51] | 1.65 |
+| D: glances only | 0.44 [0.39, 0.47] | 0.38 [0.33, 0.45] | 1.13 |
+| **B + abnormal acceleration** | **0.148 [0.116, 0.190]** | 0.42 [0.36, 0.50] | 1.06 |
+| C + abnormal acceleration | 0.209 [0.172, 0.267] | 0.46 [0.41, 0.54] | 1.38 |
+
+Three things changed against the 100-seed sample. First, everything tightened and most
+things improved — the sample's widest HDIs were sampling noise. Second, **the ordering
+reversed: the active-inference conditions are now closer to the reference than the CBM
+control on severity** (B 0.31 versus C 0.39; with the abnormal component 0.148 versus
+0.209) — the control's advantage in the sample did not survive the population. Third,
+the best configuration — active inference with all five components — reaches
+**P_inj θ = 0.148 against a ROPE of 0.10**, still not practically equivalent but by a
+factor of 1.5 rather than the factor of 14 the study started from; its HDI's lower edge
+(0.116) sits just outside the ROPE. The braking distribution (a_f,min) remains the
+structural failure for every configuration, for the reasons of section 4.2.
+
+### The sensitivity ladder (100-seed sample, kept as method history)
 
 No configuration reaches practical equivalence (ROPE 0.10 for θ; full tables in
 `replication/causation/out/summary_nb*.md`), but the distance now has a visible
@@ -257,13 +293,15 @@ do in situations that crashed for the generator's driver", not "what crashes doe
 driver produce in traffic". Three numbers from this study's own runs bound how far the
 two questions are apart:
 
-- **Support loss**: 13 of 100 seeds never crash under the CBM control at any glance or
-  deceleration draw; they drop out of any exposure reweighting entirely.
-- **Effective sample size**: reweighting the remaining 87 seeds to exposure (dividing
-  each weight by its crash probability) leaves an effective sample size of **6.9** —
-  three seeds carry the majority of all exposure weight. Exposure-level claims from
-  crash-only seeds would need orders of magnitude more seeds, concentrated exactly in
-  the benign scenarios the crash filter removed.
+- **Support loss**: at full population, 295 of 5 000 seeds never crash under the CBM
+  control at any glance or deceleration draw; they drop out of any exposure reweighting
+  entirely (13 of 100 in the sample).
+- **Effective sample size**: exposure reweighting (dividing each weight by its crash
+  probability) leaves an effective sample size of **44.7 out of 5 000** (6.9 out of 100
+  in the sample). Fifty times more seeds bought a factor of six in effective size —
+  the reweighting's variance grows with exactly the benign scenarios the crash filter
+  removed, so exposure-level claims stay out of reach of crash-only seeds at any
+  practical n.
 - **Directional bias**: the missing scenarios are the long-headway, mild-conflict ones
   in which crashes occur only through glances or non-response — for a glance-causation
   study, the worst possible region to lose.
@@ -281,11 +319,15 @@ are an intermediate exposure extension available now.
    response processes, digitized real input distributions, a defensible counterfactual,
    process-placed glances, and the full [W26] readout with the assumption-free severity
    metric.
-2. After the methodological corrections, **the active-inference response is no further
-   from the QUADRIS reference than the CBM control is** (P_inj θ ≈ 0.4–0.5 for both
-   best configurations), and the two miss differently: active inference over-produces
-   the mildest crashes; the CBM over-produces moderate ones and cannot reproduce the
-   reference's non-braking character, which the active-inference conditions now match.
+2. At full population, **the active-inference conditions are closer to the QUADRIS
+   reference than the CBM control** on severity (θ 0.31 versus 0.39; with the abnormal
+   component 0.148 versus 0.209), despite generating 4.7 times its crash probability
+   (0.280 versus 0.059) — slower responses produce more crashes, but the *right* crash
+   population. The best configuration misses practical equivalence on severity by a
+   factor of 1.5 (θ = 0.148 against a ROPE of 0.10), down from the factor of 14 the
+   study started at. Only the active-inference conditions reproduce the reference's
+   dominant non-braking crash character; the braking distribution (a_f,min) remains the
+   structural failure for every configuration.
 3. The active-inference response-timing claim is **settled by the tier-2 arbiter**: the
    closed loop matches the zero-start surrogate (median difference +0.42 s, 20/24 seeds
    closer) and rejects the stationary start, so the active-inference response is slower
@@ -304,8 +346,9 @@ are an intermediate exposure extension available now.
   SHRP2 bins would remove the residual digitization error and the truncated glance tail.
   The abnormal-acceleration onset-time distribution of [W25a] is unpublished; the
   component applies its acceleration from the lead's braking onset instead.
-- 50 process draws per seed (marked for increase); the QUADRIS reference is itself
-  model-generated; n = 100 seeds, extendable to the full 5 000 at tier-1 cost.
+- The full-population runs use 10 process draws per seed (seed-level variation dominates
+  at n = 5 000; the 100-seed sensitivity runs used 50). The QUADRIS reference is itself
+  model-generated, so all equivalence statements are relative to that generator.
 - The accumulator-initialization question is closed for this design (section 5); what a
   driver carries into a conflict after minutes of continuous short-gap following remains
   outside both tiers' windows, and would matter for study designs with long run-ins.
