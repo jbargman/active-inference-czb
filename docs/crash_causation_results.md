@@ -86,8 +86,8 @@ placement for condition A, which has no glances):
 3. The crash rate was initially sensitive to the accumulator's starting level (zero
    start 0.023 versus 0.004 with a "stationary" half-threshold start), but the tier-2
    arbiter run has **resolved the convention in favor of the zero start** (section 5):
-   the closed-loop model's own onsets match the zero-start surrogate to a median 0.30 s
-   across 23 seeds and reject the stationary start on 19 of 23. The 0.023 figure stands;
+   the closed-loop model's own onsets match the zero-start surrogate to a median 0.42 s
+   across 24 seeds and reject the stationary start on 20 of 24. The 0.023 figure stands;
    the stationary variant remains in the outputs as a tested-and-rejected sensitivity.
 
 ## 4 Comparison with the original data
@@ -192,10 +192,10 @@ crash probability 0.023 versus 0.004. The tier-2 arbiter run — the full closed
 on 23 seeds spanning 1.3–35.5 m/s, four repeats each, lead profiles replayed
 (`replication/causation/tier2/arbiter_comparison.csv`) — settles it:
 
-| comparison (attentive onsets, n = 23 seeds) | median difference | median \|difference\| | closer on |
+| comparison (attentive onsets, n = 24 seeds) | median difference | median \|difference\| | closer on |
 |---|---|---|---|
-| closed loop − tier-1 zero start | +0.30 s | 0.55 s | **19/23 seeds** |
-| closed loop − tier-1 stationary start | +1.00 s | 1.05 s | 4/23 seeds |
+| closed loop − tier-1 zero start | +0.42 s | 0.55 s | **20/24 seeds** |
+| closed loop − tier-1 stationary start | +1.03 s | 1.08 s | 4/24 seeds |
 
 The closed loop behaves like the zero start — if anything it responds slightly *later*
 than the zero-start surrogate, so the stationary correction points the wrong way. The
@@ -287,7 +287,7 @@ are an intermediate exposure extension available now.
    the mildest crashes; the CBM over-produces moderate ones and cannot reproduce the
    reference's non-braking character, which the active-inference conditions now match.
 3. The active-inference response-timing claim is **settled by the tier-2 arbiter**: the
-   closed loop matches the zero-start surrogate (median difference +0.30 s, 19/23 seeds
+   closed loop matches the zero-start surrogate (median difference +0.42 s, 20/24 seeds
    closer) and rejects the stationary start, so the active-inference response is slower
    and more variable than the CBM's rule, with the tier-1 surrogate validated untuned to
    a median absolute onset difference of 0.55 s across 1.3–35.5 m/s.
@@ -309,9 +309,17 @@ are an intermediate exposure extension available now.
 - The accumulator-initialization question is closed for this design (section 5); what a
   driver carries into a conflict after minutes of continuous short-gap following remains
   outside both tiers' windows, and would matter for study designs with long run-ins.
-- The stopped/creeping-follower seeds (20 of the 100-seed sample) run under the
-  desired-speed convention decided 2026-08-25 (the speed the original follower later
-  reached); their tier-2 batch was launched with this revision.
+- The stopped/creeping-follower seeds (20 of the 100-seed sample) have now run in
+  tier 2 under the desired-speed convention of 2026-08-25 (the speed the original
+  follower later reached), and the result is a finding rather than a fix: these are
+  **both-stationary queue scenarios** — the lead also stands still — whose original
+  crashes came from the generator's abnormal-acceleration mode driving into the queue
+  (56% of both-stationary cases in [W25a]'s own statistics). The closed-loop driver,
+  correctly, stays put: no attentive response process can produce these crashes, because
+  there is no conflict to respond to. They are reachable only through the
+  abnormal-acceleration and no-response components, which is how the tier-1 pipeline
+  treats them; in the arbiter comparison they contribute no attentive onsets and are
+  excluded automatically.
 
 Regeneration: the tagged commands are in `replication/causation/out/log_nb*.txt`; figures
 by `replication/causation/make_results_figures.py --tag nbp`; this document by
