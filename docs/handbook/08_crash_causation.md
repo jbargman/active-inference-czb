@@ -163,6 +163,93 @@ mid-cycle" alternative for windows that open near the conflict. Proposal 1's epi
 half — the model *choosing* its glances by pricing them — remains unexercised; the forced-
 schedule route is what has been tested.
 
+## How strict is "practically equivalent"? Reading a ROPE
+
+{{R3}}*Added 2026-08-26. The calibration behind this section is
+`docs/equivalence_rope_note.md`; the metric-by-metric diagnosis is
+`docs/severity_vs_timing.md` [Repo].*
+
+{{R3}}The comparison in this chapter is scored with a **practical-equivalence test**, and
+that test deserves explaining, because its verdict has been read more harshly than it
+should be. An ordinary significance test asks whether a difference can be detected, and
+with enough data the answer is always yes, since no two distributions are exactly equal.
+An equivalence test reverses the question and asks whether any difference is *small enough
+not to matter*. The **ROPE** — region of practical equivalence — is the written-down
+definition of "small enough". Nothing statistical fixes it; it is a domain judgment about
+what difference would change a decision, and the method's authors say so explicitly.
+
+{{R3}}The machinery is simpler than the notation suggests. Sort the reference crashes by
+severity and cut them into five bands each holding a fifth of the data. Pour the model's
+crashes into the same bands: a perfect model puts a fifth in each. Our best configuration
+puts 17.4%, 20.5%, 21.2%, 22.9% and 18.0%. Two numbers summarize the mismatch. **θ** is
+the worst single band, measured against its proper share — band 4 holds 22.9% where 19.9%
+belongs, an excess of 15%, so θ = 0.148. **Θ** is the total misplaced share, 0.091. In one
+sentence: *no severity band may be off by more than 10% of its proper share, and no more
+than 5% of all the crashes may sit in the wrong band.* For our result, the model misplaces
+about three crashes in every hundred where the rule allows two.
+
+{{R3}}**Is that hard to pass? It was, and for reasons that had nothing to do with the model.**
+The instructive test is to compare the reference with *itself*: draw a large synthetic sample
+from the reference distribution, so the two are identical by construction, and run the test.
+Done that way, our original configuration failed much of the time at five bands and never at
+the twenty bands the method's own bin rule prescribes for a reference this size. A criterion
+that a perfect model cannot pass is measuring the instrument, not the thing.
+
+{{R3}}Three choices around the threshold did that work, and each looked innocuous alone.
+**First**, we weighted every severity band equally, which sounds neutral but is not: in the
+method's own construction bands are weighted by how much injury risk the assessed system
+leaves behind, and a weight of one corresponds to a band carrying a clinically meaningful 2%
+injury risk. QUADRIS rear-end crashes are far milder than that, so equal weighting silently
+held every band to a standard meant for the most consequential ones. **Second**, our
+bootstrap resampled crash *values* in proportion to their weight and then treated the result
+as unweighted, which claims the precision of 5 000 independent scenarios when the weights are
+concentrated enough that they carry the information of roughly 950 — the intervals came out
+about half as wide as they should have been. **Third**, and most consequentially, we treated
+the reference as a *sample* from a larger process rather than as the target set.
+
+{{R3}}**The resolution was to settle what the reference represents.** These 5 000 scenarios
+are the ensemble the comparison is about: every condition faces the identical set, and the
+conclusion concerns the driver models rather than the traffic they were drawn from. Treating
+them as the target population fixes the bands and leaves only the model's own sampling noise,
+which drops the noise floor to about 0.02 — comfortably below any threshold worth using. The
+price is a restriction on what may be claimed: results are statements about *this* ensemble,
+never about crash severity in traffic at large. Given the exposure problem described later in
+this chapter, that restriction was already binding for other reasons.
+
+{{R3}}**Where that leaves our result.** The distance is now measured against a criterion the
+reference can actually resolve. Condition B's severity θ is 0.148 with a 95% interval of
+[0.110, 0.204], the CBM control's is 0.209 [0.176, 0.244], and neither reaches practical
+equivalence at a defensible tolerance. What *is* solid is the comparison: tested as a paired
+difference, with both conditions scored against the same resampled reference, the
+active-inference condition is closer on every single resample. The lesson we would carry
+forward is that overlapping intervals do not settle a comparison when the two estimates share
+their uncertainty — the difference is what needs the interval.
+
+{{R3}}**The other lesson is that the same statistic does not mean the same thing on every
+metric.** θ is built on bands of equal reference weight, which assumes the reference can be
+cut into five equal pieces. Severity is smooth and continuous, so it can, and θ = 0.148 is
+a real statement. The no-return time cannot: it lives on a 0.05 s lattice with only 25
+distinct values in the whole reference, so θ largely measures whether the model lands on
+the same grid points. The follower's braking cannot either: 48% of reference crashes have
+essentially no braking at all, an atom too large to split, and two of the five band edges
+collapse onto the same point — which is what produces the alarming θ = 1.058. Compared on
+bands chosen in advance instead, the non-braking share agrees to within 5%, and the real
+disagreement is a moderate redistribution *within* the braking crashes. The practical rule
+we would now follow: do not apply this statistic to a metric with an atom or a lattice
+without fixing the bands beforehand.
+
+{{R3}}**A result hides inside the puzzle.** It looks paradoxical that severity nearly
+matches while timing and braking do not, since severity is produced by timing and braking.
+The resolution is that in this crash population they are close to independent. Conditions B
+and C differ by a factor of 4.7 in how often they crash, because their response processes
+differ by about 0.75 s in onset — yet their severity quartiles agree to within 0.3 m/s.
+Roughly 71% of the variation in impact speed is inherited from the scenario rather than
+produced by the response. Response timing decides *how many* crashes happen; the scenario,
+and whether the driver brakes at all, decides *how hard* they are. The practical
+consequence is worth keeping: **a driver model validated only against crash severity
+distributions is close to unconstrained in its response timing**, which matters for anyone
+using this kind of comparison to accept a model.
+
 ## The honest limits of the enterprise
 
 A model that produces crashes through interpretable mechanisms is a tool for *reasoning*

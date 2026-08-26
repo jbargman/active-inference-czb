@@ -121,9 +121,163 @@ characterization of what drivers' standards share across situations.
   join later, when the closed-loop issues are resolved, as a bonus rather than a
   dependency.
 
+## From one driver's boundary to a population percentile
+
+{{R3}}*Added 2026-08-26, after reading Jonas's `On CZB as basis for ADAS adaptation`
+(QUADRARUM, May 2026) and agreeing the framing with him. This section states what we think
+the active-inference route buys, precisely enough to be wrong.*
+
+{{R3}}**The end goal is a distribution, not a boundary.** An ADAS has to trigger at some
+specific moment, and the operational proposal in the QUADRARUM document is to set that
+moment at a percentile of the comfort-zone boundary across drivers — say the 80th, so that
+crossing corresponds to entering the fifth of situations that most drivers would already
+find uncomfortable. Everything in this chapter is ultimately in service of producing that
+distribution with credible intervals, rather than a single number.
+
+{{R3}}**Where the active-inference formulation earns its place.** The conventional route
+estimates a percentile of an *observable* — a time-to-collision, a post-encroachment time, a
+lateral clearance. That inherits a multivariate problem immediately: each scenario has its
+own observables, each needs its own threshold, and combining marginal percentiles under an
+"exceed both" rule silently tightens the criterion (two 80th percentiles under independence
+give a 4% joint exceedance, not 20%). The QUADRARUM document works this through and proposes
+an elliptical joint-percentile boundary, using Mahalanobis distance, as the principled fix.
+
+{{R3}}The active-inference route proposes something different: estimate a per-driver
+**scalar** level *c* on the preference field, which has already absorbed speed, gap, closing
+rate, lateral position and the assumed worst case into one number. The population
+distribution of *c* is then one-dimensional by construction, and a percentile of it is well
+defined without an ellipse. The multivariate problem does not get solved so much as
+dissolved — *if* the field is the right scalar.
+
+{{R3}}**This is a falsifiable claim, and the transfer test is what falsifies it.** Fit *c* on
+one scenario and predict the others with *c* unchanged. If one level per driver transfers
+across a cut-in, an intersection turn and two lateral overtakes, the multivariate problem was
+an artifact of choosing per-scenario observables. **If transfer fails, the field is not the
+right scalar, and the fallback is the elliptical joint-percentile formulation** — which would
+itself be a useful result rather than a dead end, since it would localize the failure to
+specific preference terms.
+
+{{R3}}**A conceptual convergence worth recording.** The QUADRARUM document defines the CZB as
+the point at which "the satisficing condition is violated ... and behavioral regulation
+becomes necessary". That is very close to what the preference function *is*: a specification
+of acceptable outcomes rather than an optimum to be maximized. A driver who is inside the
+comfort zone has no reason to act, not because nothing better is available, but because the
+current state is good enough. The boundary being a level set of a satisficing specification
+is the same idea expressed in two vocabularies, and it is the reason the preference function
+— rather than the closed-loop controller — is the part of the model this chapter depends on.
+
+{{R3}}**Comfort or dread: which boundary the data actually identifies.** The clip-based study
+asks what braking the situation is expected to require: nothing, gentle, or hard. Reading
+these as one ordered response gives two nested levels rather than one, and they are not
+equally trustworthy. A "hard braking expected" answer is difficult to give for any reason
+other than genuine perceived urgency, so it identifies the **dread-zone boundary** cleanly.
+A "gentle braking" answer is compatible with a wide range of internal states and is open to
+satisficing, so the comfort-zone level it implies is weakly identified. Our position, agreed
+with Jonas: fit both as an ordered model so the gentle responses still contribute
+information, but expect the dread level to be well determined and treat the comfort level as
+a latent quantity carrying a wider posterior. Reporting the comfort boundary as a point
+estimate would overstate what the data supports.
+
+## What the fitted boundary level absorbs, and how to take it apart
+
+{{R3}}*Added 2026-08-26 at Jonas's request, recording both the reasoning and the decisions the
+analysis design still has to make.*
+
+{{R3}}**The problem.** A boundary level fitted to observed responses is not purely a boundary.
+It also absorbs everything between the boundary being crossed and the response being
+recorded: the participant's motor and decision latency, their individual willingness to
+report at all, whatever the response paradigm adds, and any mismatch between the field we
+compute and the one the participant is actually responding to. For a *percentile* this is
+mostly harmless, because every driver's estimate is displaced in the same direction and the
+population ordering survives. For an *absolute* claim — "the comfort-zone boundary lies at a
+time headway of x" — it is not harmless at all, and the handbook's standing warning about
+never quoting absolute boundary values without stating the assumed worst-case deceleration
+and reaction time applies with equal force here.
+
+{{R3}}**Why this study can do better than absorb it.** Writing the fitted level for driver *i*
+in paradigm *p* as
+
+> c_obs(i, p) = c_true(i) + b(i) + δ(p) + λ + ε
+
+— a true boundary, a per-driver response bias, a paradigm offset, a latency term and noise —
+the question is whether the design contains contrasts that identify each piece separately.
+It largely does, and by accident rather than intent:
+
+| component | what identifies it | how good is the identification |
+|---|---|---|
+| c_true(i) | the criticality × timepoint response surface | good — six truncation points crossed with three criticality levels |
+| b(i), response bias | the **pre-onset (C1) condition**, where nothing has happened and any reported intervention is a false alarm | good per group, weak per driver at four repetitions |
+| δ(p), paradigm offset | the **same participants in both clip and button designs** | good — but confounded with session order, so it is a *combined* order-plus-modality term |
+| framing shift | **supervisory versus manual sessions**, same stimuli, same people | good, and counterbalanced, unlike the paradigm contrast |
+| λ, motor latency | nothing in this design | not identified — must be fixed from literature or absorbed |
+
+{{R3}}**The decisions the design still has to make.** These are open, and we would want them
+settled before fitting rather than after:
+
+1. **Which components to model explicitly and which to absorb.** Every component added costs
+   identification. Our inclination is to model b(i) and δ(p) explicitly, fix λ at a literature
+   value (roughly 0.2–0.3 s for a keypress), and absorb the remainder into ε.
+2. **Whether the response bias is per-driver or per-group.** Four pre-onset repetitions per
+   participant is thin for an individual false-alarm rate. A hierarchical b(i) with strong
+   shrinkage is the compromise; a fixed group-level bias is the safer alternative.
+3. **Whether the paradigm offset acts on the level or on the accumulator.** A satisficing
+   participant might be pressing at a lower boundary (shift in c) or accumulating faster
+   (shift in rate). These make different predictions about the *shape* of the press-time
+   distribution, not just its location, so the button data can in principle distinguish them
+   — this is worth testing rather than assuming.
+4. **Whether framing acts on c or on the preference parameters.** This is the interesting
+   one, and it is a genuine test of the "extra motives as parameter changes" machinery of
+   chapter 09: if supervising an automated system rather than driving shifts a small number
+   of *named* parameters — most plausibly the assumed worst-case deceleration of the other
+   vehicle, or the reaction-time budget — that is a much stronger result than a free shift in
+   c, and it is falsifiable.
+5. **Whether the order confound is separable at all.** It is not, within this dataset:
+   Random always preceded Button. δ(p) will therefore always be a combined
+   modality-plus-practice term, and should be named that way rather than called a modality
+   effect. Only a counterbalanced replication could separate them.
+
+{{R3}}**What this buys.** If the decomposition works, the population distribution used for a
+percentile is a distribution over c_true rather than over c_obs, and the percentile inherits
+a meaning that does not depend on the paradigm that produced it. That matters if the number
+is ever to be compared against a test-track or naturalistic estimate — which, per the
+QUADRARUM document's observation that measured and CZB-based thresholds may differ by only
+about 0.1 s, is exactly the comparison worth being able to make.
+
 ---
 
 ## Notes for the mathematically curious
+
+{{R3}}**Level 1 — the hierarchical boundary model.** Let ε_s(t) be the comfort-zone field
+along stimulus s at time t, computed once per stimulus because the ego does not respond. For
+driver i, a boundary crossing is the first time ε exceeds a level: T_{i,s} = min{t : ε_s(t) >
+c_i}. The clip-based design truncates stimulus s at a known time T_s and asks for a response,
+so it observes the *event* {T_{i,s} ≤ T_s}, which is the response-time CDF evaluated at T_s.
+With an ordered response (nothing / gentle / hard) and two levels c_i^CZB < c_i^DZB, the
+likelihood for one trial is an ordered-categorical model on max_{t ≤ T_s} ε_s(t): the
+category is "nothing" below the comfort level, "gentle" between the two, "hard" above the
+dread level. Drivers enter as random effects, c_i ~ Normal(μ, σ) on a log scale to keep
+levels positive, and the population boundary at percentile q is then the q-th quantile of
+that fitted population distribution — reported with a posterior interval, since μ and σ are
+themselves estimated.
+
+{{R3}}**Level 2 — identification, and what each design contrast buys.** Three things are
+estimated jointly and would trade off if the design did not separate them. The *level* c_i is
+identified by how criticality shifts the response across the 3 × 6 criticality-by-timepoint
+grid. The *response bias* is identified by the pre-onset condition, where nothing has
+happened and any reported intervention is a false alarm; its rate differs by criticality
+level (0.117, 0.071, 0.046 for TTC4/6/8) because longitudinal proximity already differs
+before the manoeuvre, so the baseline is itself informative about sensitivity to proximity
+alone. The *paradigm offset* is identified by the same participants appearing in both the
+clip and button designs, giving δ = c^button − c^clip; our estimate of its sign and size is
+that button responses are systematically earlier, by up to 0.26 in probability at
+intermediate criticality. The *framing effect* is identified by the supervisory-versus-manual
+sessions at constant stimulus, and the interesting hypothesis there is that it appears as a
+shift in a small number of preference parameters — most plausibly the assumed worst-case
+deceleration of the other vehicle, or the reaction-time budget — rather than as a free change
+in c, which would be a genuinely falsifiable prediction of the "extra motives as parameter
+changes" machinery of chapter 09. A complete specification, with priors and the sampler
+configuration, belongs in its own appendix once the model has actually been fitted; writing
+it before then would be documenting a plan rather than a method.
 
 **Level 1 — definitions.** Field: ε(x) = max_o log p(o) − log p(o(x)) ≥ 0, the residual
 information of the pragmatic value at state x. Comfort zone {x : ε(x) ≤ c}; boundary the

@@ -24,8 +24,8 @@ paper's parametric posterior draws.
 from .binned import (quantile_bin_edges, bin_proportions, theta_Theta, n_bins_rule,
                      uniform_weights)
 from .test import EquivalenceResult, equivalence_test, MetricSpec, run_metric_suite
-from .report import results_table
+from .report import results_table, aggregate_table
 
 __all__ = ["quantile_bin_edges", "bin_proportions", "theta_Theta", "n_bins_rule",
            "uniform_weights", "EquivalenceResult", "equivalence_test", "MetricSpec",
-           "run_metric_suite", "results_table"]
+           "run_metric_suite", "results_table", "aggregate_table"]

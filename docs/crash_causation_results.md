@@ -144,19 +144,178 @@ Headline θ (Eq. 10 weights, 95% bootstrap HDIs), all 5 000 seeds; full tables i
 | B: active inference | 0.31 [0.26, 0.35] | 0.38 [0.33, 0.45] | 1.00 |
 | C: CBM control | 0.39 [0.35, 0.42] | 0.43 [0.38, 0.51] | 1.65 |
 | D: glances only | 0.44 [0.39, 0.47] | 0.38 [0.33, 0.45] | 1.13 |
-| **B + abnormal acceleration** | **0.148 [0.116, 0.190]** | 0.42 [0.36, 0.50] | 1.06 |
-| C + abnormal acceleration | 0.209 [0.172, 0.267] | 0.46 [0.41, 0.54] | 1.38 |
+| **B + abnormal acceleration** | **0.148 [0.110, 0.204]** | 0.42 [0.37, 0.47] | 1.06 |
+| C + abnormal acceleration | 0.209 [0.176, 0.244] | 0.46 [0.42, 0.50] | 1.38 |
+
+*The intervals for the two abnormal-component rows were regenerated 2026-08-26 under the
+conventions settled in section 4.3b; point estimates are unchanged throughout. The first
+three rows still carry pre-correction intervals and are marked as such below.*
 
 Three things changed against the 100-seed sample. First, everything tightened and most
 things improved — the sample's widest HDIs were sampling noise. Second, **the ordering
 reversed: the active-inference conditions are now closer to the reference than the CBM
 control on severity** (B 0.31 versus C 0.39; with the abnormal component 0.148 versus
-0.209) — the control's advantage in the sample did not survive the population. Third,
-the best configuration — active inference with all five components — reaches
-**P_inj θ = 0.148 against a ROPE of 0.10**, still not practically equivalent but by a
-factor of 1.5 rather than the factor of 14 the study started from; its HDI's lower edge
-(0.116) sits just outside the ROPE. The braking distribution (a_f,min) remains the
-structural failure for every configuration, for the reasons of section 4.2.
+0.209) — the control's advantage in the sample did not survive the population, and the
+ordering is confirmed as a paired difference in section 4.3b-ii. Third, the best
+configuration — active inference with all five components — reaches **P_inj θ = 0.148**,
+down from the factor of 14 the study started from. Whether that constitutes practical
+equivalence depends on a threshold this document no longer inherits: against the project's
+adopted θthd = 0.188 the point estimate passes but the interval's upper end does not
+(section 4.3b). The braking distribution (a_f,min) remains the largest departure for every
+configuration, though section 4.3c shows that its θ overstates the case badly.
+
+### 4.3b How the intervals above were produced, and a correction (2026-08-26)
+
+The bootstrap used to produce the credible intervals in section 4.3 drew reference *values*
+with probability proportional to their weight and then treated the resample as unweighted.
+That gives the precision of 5 000 independent draws. The QUADRIS reference is weighted
+strongly enough that its effective sample size is **950, not 5 000** — the top 10% of
+scenarios carry 54% of the weight — so the correct nonparametric bootstrap resamples the
+scenarios uniformly and carries their weights.
+
+**Consequence: every HDI produced before that date is too narrow, by roughly a factor of
+two.** On the severity metric the 95% upper bound for a model that is exactly right moves
+from 0.075 to 0.177 at N = 5. Point estimates of θ and Θ are unaffected, so **the comparison
+this study rests on — condition B closer to the reference than condition C — is unchanged**,
+as are all the per-bin diagnostics.
+
+**What has and has not been regenerated.** The two abnormal-component rows of section 4.3,
+the section 4.4 bin sweep and the summary files in `replication/causation/out/` have been
+regenerated under the conventions below. The first three rows of section 4.3 (conditions B,
+C and D without the abnormal component) and the 100-seed sensitivity ladder still carry
+pre-correction intervals; their point estimates stand, their intervals should be read as
+roughly half as wide as they should be, and they are retained because nothing in the
+argument depends on them.
+
+**Resolution (2026-08-26).** The defect prompted a decision that had been left implicit:
+whether the 5 000 QUADRIS scenarios are the *target population* or a *sample* from the
+generator. The project's convention is now the former, on the grounds that this study
+compares response processes on a fixed, shared ensemble
+(`docs/equivalence_rope_note.md` §2.5). `equivalence_test` therefore defaults to
+`resample="population"`, which fixes the bin edges and reference proportions and resamples
+only the synthetic side; `resample="cases"` implements the sample reading for any claim that
+generalizes beyond the ensemble, and `resample="values"` is retained solely to reproduce
+pre-correction numbers. **The tables in section 4.3 have been regenerated under the
+population convention** and now read:
+
+| condition | severity θ | 95% HDI | severity Θ | 95% HDI |
+|---|---|---|---|---|
+| B: active inference | 0.148 | [0.110, 0.204] | 0.091 | [0.068, 0.117] |
+| C: CBM control | 0.209 | [0.176, 0.244] | 0.150 | [0.132, 0.166] |
+
+The noise floor under this convention is about 0.021, so these intervals describe the model
+rather than the instrument. Against the project's adopted thresholds (θthd = 0.188,
+Θthd = 0.089, from a 10% tolerance on the injury-weighted mean) condition B misses practical
+equivalence on the upper end of its interval, and condition C misses on every reading.
+
+### 4.3b-ii The B-versus-C ordering, tested as a paired difference
+
+With the corrected (wider) intervals, the marginal HDIs of the two conditions overlap
+substantially at every bin count — at N = 5, B is 0.148 [0.085, 0.273] and C is 0.209
+[0.148, 0.343]. Read naively that would suggest the conditions are not separated, and it
+would understate the evidence badly.
+
+Overlapping marginal intervals do not imply an undetermined difference when the two
+estimates share a source of uncertainty, and here they share almost all of it: both
+conditions are scored against the *same* reference, through the *same* quantile bins, with
+the *same* weights. Resampling the reference moves θ_B and θ_C together. The quantity the
+study's claim actually concerns is their difference, so that is what should carry an
+interval. Recomputing with one shared reference resample per bootstrap draw:
+
+| | value |
+|---|---|
+| θ_C − θ_B, point estimate | **0.061** |
+| 95% HDI of the difference (paired, 500 draws) | **[0.037, 0.107]** |
+| P(θ_C > θ_B) | **1.000** |
+
+The interval excludes zero comfortably and the sign is unanimous across every resample.
+**The ordering — the active-inference condition closer to the reference than the CBM control
+on severity — is statistically robust**, and is more strongly supported than the marginal
+intervals suggest. This is the claim the study rests on, and the bootstrap correction of
+section 4.3b does not disturb it.
+
+The same reasoning applies to any future comparison between conditions here, and the paired
+form should be preferred over comparing marginal intervals.
+
+### 4.3c Weighted aggregates, reported directly (added 2026-08-26)
+
+Because θ and Θ constrain only the allocation of mass *between* bins, the readout now also
+reports the weighted aggregate of each metric. The "binned" column is the bin-constant
+approximation, which is the only quantity Θ bounds; where it diverges from the actual
+column, the difference is within-bin and invisible to both statistics.
+
+| metric | reference | B | B rel. err. | C | C rel. err. |
+|---|---|---|---|---|---|
+| P_inj | 0.00615 | 0.00693 | +12.6% | 0.00679 | +10.4% |
+| relative speed at impact [m/s] | 4.788 | 4.862 | **+1.6%** | 4.775 | **−0.3%** |
+| t_nr [s] | −0.1877 | −0.1986 | +5.8% | −0.2094 | +11.6% |
+| a_l,min [m/s²] | −1.981 | −2.195 | +10.8% | −2.104 | +6.2% |
+| a_f,min [m/s²] | −2.379 | −2.371 | **−0.3%** | −3.214 | **+35.1%** |
+
+Three readings, two of them new.
+
+1. **The braking metric separates the two response models far more sharply than θ does.**
+   θ was 1.058 for B and 1.380 for C, both looking catastrophic and neither interpretable
+   (section 4.3b and `docs/severity_vs_timing.md` explain why: a 48% atom at zero collapses
+   two of the five quantile edges). The weighted mean says something clean instead:
+   **condition B reproduces the reference's mean follower braking to within 0.3%, while the
+   CBM control over-brakes by 35%.** This is the strongest single statement of the finding
+   that only the active-inference conditions reproduce the reference's dominant non-braking
+   crash character, and it was invisible in the θ column.
+2. **Severity is reproduced far better than the injury-risk figure suggests, and the two
+   disagree about which condition is closer.** Mean relative speed at impact is within 1.6%
+   (B) and 0.3% (C) of the reference, while mean injury risk is 10–13% high for both.
+   P_inj is a logistic transform of the same variable, so the discrepancy is entirely the
+   convexity: injury risk is a *tail* statistic and relative speed a *location* statistic.
+   Condition C is the clearest case — its mean relative speed is 0.3% *below* the reference
+   while its mean injury risk is 10.4% *above*, which is only possible through a heavier
+   tail. This is a concrete argument for operationalizing severity on relative speed at
+   impact, the assumption-free primitive, rather than on a derived injury model.
+3. **θ and the aggregate answer different questions and need not agree.** On severity θ
+   ranks B closer (0.148 versus 0.209) while the mean ranks C marginally closer (+1.6%
+   versus −0.3%). There is no contradiction: θ measures distributional shape at its worst
+   bin, the mean measures location. Both should be reported.
+
+### 4.4 Bin-count sensitivity (added 2026-08-26)
+
+The tables above use N = 5 quantile bins. That is what [W26] Eq. 4 gives for a 100–200
+scenario reference — the size this study had when the assessment code was written, and the
+size of the paper's own demonstration — but at the full population the same rule gives
+N = min(⌊5000/40⌋, 20) = **20**. Since θ is a worst-bin statistic it tightens with finer
+bins, so the headline numbers sit on the lenient side of the paper's prescription. Re-running
+the readout from the stored condition outputs (`replication/causation/bin_sensitivity.py`,
+no re-simulation):
+
+| metric | B, N=5 | B, N=10 | B, N=20 | C, N=5 | C, N=10 | C, N=20 |
+|---|---|---|---|---|---|---|
+| severity (P_inj = v_rel) θ | **0.148** | 0.241 | 0.275 | **0.209** | 0.255 | 0.352 |
+| severity Θ | 0.091 | 0.091 | 0.165 | 0.150 | 0.150 | 0.168 |
+| t_nr θ | 0.419 | 0.636 | 0.636 | 0.460 | 0.623 | 0.699 |
+| a_l,min θ | 0.314 | 0.314 | 0.786 | 0.254 | 0.254 | 0.591 |
+| a_f,min θ | 1.058 | 3.983 | 3.983 | 1.380 | 2.165 | 4.456 |
+
+Three readings:
+
+1. **The study's headline survives the bin count.** The active-inference condition is closer
+   to the reference than the CBM control on severity at every N (0.148 vs 0.209, 0.241 vs
+   0.255, 0.275 vs 0.352), and on the braking distribution at every N. The ordering is what
+   this study rests on, and it is not an artifact of the coarse binning. The caveat is that
+   at N = 10 and N = 20 the HDIs of the two conditions overlap substantially, so the
+   ordering is consistent in point estimates without being statistically separated there.
+2. **Absolute distances grow with N**, roughly doubling for severity between N = 5 and
+   N = 20. Any absolute claim must state its bin count.
+3. **N = 20 is prescribed but unusable at this reference size.** A model that is exactly
+   right has median θ = 0.129 with a 95% HDI upper bound of 0.266 at N = 20
+   (`docs/equivalence_rope_note.md` §2.1), so nothing can pass a ROPE of 0.10 there. The
+   bin rule and the ROPE threshold are jointly infeasible at n_ref = 5 000 under the
+   decision rule used here. Section 5 of that note proposes what to change.
+
+Two incidental corrections to assumptions made when this readout was built. Θ is **not**
+bin-count invariant — it is a lower bound on twice the total-variation distance that becomes
+exact only as the partition refines, so it grows with N. Further, θ is a maximum over bins
+and is therefore **biased upward under resampling**; at N = 20 condition B's bootstrap HDI
+[0.275, 0.552] does not contain its own point estimate. Both make the "HDI upper bound
+inside the ROPE" rule more conservative at fine bin counts than it looks.
 
 ### The sensitivity ladder (100-seed sample, kept as method history)
 
@@ -323,11 +482,19 @@ are an intermediate exposure extension available now.
    reference than the CBM control** on severity (θ 0.31 versus 0.39; with the abnormal
    component 0.148 versus 0.209), despite generating 4.7 times its crash probability
    (0.280 versus 0.059) — slower responses produce more crashes, but the *right* crash
-   population. The best configuration misses practical equivalence on severity by a
-   factor of 1.5 (θ = 0.148 against a ROPE of 0.10), down from the factor of 14 the
-   study started at. Only the active-inference conditions reproduce the reference's
-   dominant non-braking crash character; the braking distribution (a_f,min) remains the
-   structural failure for every configuration.
+   population. The ordering is **statistically solid rather than a point-estimate
+   impression**: as a paired difference with a shared reference draw, θ_C − θ_B = 0.061
+   with a 95% HDI of [0.037, 0.107] and the same sign on every resample (section 4.3b-ii).
+   The best configuration still misses practical equivalence on severity — θ = 0.148
+   [0.110, 0.204] against the project's adopted θthd = 0.188, failing on the interval's
+   upper end — but it misses by a margin the reference can resolve, and down from the
+   factor of 14 the study started at. Only the active-inference conditions reproduce the
+   reference's dominant non-braking crash character.
+2b. **The braking metric was misreported, in both directions.** Its θ of 1.06 (B) and 1.38
+   (C) is largely an artifact of quantile bins collapsing onto a 48% atom at zero
+   (`docs/severity_vs_timing.md`). Measured on the weighted mean instead, condition B
+   reproduces the reference's follower braking to within **0.3%** while the CBM control
+   over-brakes by **35%** — a far sharper separation than θ ever showed (section 4.3c).
 3. The active-inference response-timing claim is **settled by the tier-2 arbiter**: the
    closed loop matches the zero-start surrogate (median difference +0.42 s, 20/24 seeds
    closer) and rejects the stationary start, so the active-inference response is slower
@@ -339,6 +506,17 @@ are an intermediate exposure extension available now.
 5. Equivalence in the strict ROPE sense is not reached by any configuration — as it was
    not by the SCM in [W26] — and section 7's numbers show that exposure-level claims
    are outside what crash-conditioned seeds can support at any n.
+6. **The equivalence criteria themselves needed work before that verdict meant anything**
+   (section 4.3b, `docs/equivalence_rope_note.md`). Our original configuration could not be
+   passed by a model that is exactly right, for three compounding reasons: uniform bin
+   weights applied a tolerance calibrated for a far more severe crash population, our
+   weighted bootstrap understated the spread by about a factor of two, and the reference
+   was treated as a sample rather than as the target set. With those settled — the QUADRIS
+   5 000 taken as the target population, thresholds derived from a stated 10% tolerance on
+   the injury-weighted mean rather than inherited — the noise floor falls to about 0.021
+   and the verdicts describe the model. A standing caution follows: θ and Θ constrain only
+   how mass is allocated *between* bins, so the weighted aggregate must be reported
+   alongside them, as section 4.3c now does.
 
 ## 9 Limitations and next steps
 

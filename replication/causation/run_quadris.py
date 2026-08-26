@@ -31,7 +31,7 @@ sys.path.insert(0, str(REPO / "src"))
 from quadris import load_synthetic, sample_seeds, p_inj_mais2, no_return_time, min_accel   # noqa: E402
 from causation import CausationConfig, run_condition                                      # noqa: E402
 from causation.runner import aggregate                                                    # noqa: E402
-from equivalence import MetricSpec, run_metric_suite, results_table                       # noqa: E402
+from equivalence import MetricSpec, run_metric_suite, results_table, aggregate_table                       # noqa: E402
 from equivalence.report import per_bin_table                                              # noqa: E402
 
 OUT = REPO / "replication" / "causation" / "out"
@@ -59,6 +59,9 @@ def assess(ref: pd.DataFrame, gen: pd.DataFrame, label: str, n_bins: int = 5) ->
              MetricSpec("a_f,min [m/s^2]", ref.a_f_min.to_numpy(), g.a_f_min.to_numpy(), ref.omega.to_numpy(), g.w_crash.to_numpy())]
     res = run_metric_suite(specs, n_bins=n_bins, n_boot=1000)
     txt = results_table(res, label)
+    # theta and Theta bound only the between-bin allocation, so report the weighted
+    # aggregate directly alongside them (docs/equivalence_rope_note.md section 3)
+    txt += "\n\n" + aggregate_table(res, label)
     txt += "\n\nPer-bin diagnostics, P_inj:\n\n" + per_bin_table(res["P_inj"])
     return txt
 
