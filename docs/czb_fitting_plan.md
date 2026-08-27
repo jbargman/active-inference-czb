@@ -89,7 +89,16 @@ the tracked fallback. The transfer scenarios need their own field construction f
 
 - **Estimation: MAP plus Laplace, in torch.** Write the joint log posterior as a torch
   scalar (the covariates are 18 numbers; the random effects are two vectors), optimize
-  with L-BFGS, and take the Laplace covariance at the mode for intervals. CPU-torch on
+  with L-BFGS, and take the Laplace covariance at the mode for intervals.
+  *[Corrected 2026-08-27 by card A.1. Taken literally — maximizing the joint posterior
+  over hyperparameters **and** driver effects together — this recovers the population
+  median and the lapse but inflates the between-driver sd by a factor of about 2.6, with
+  coverage 0/20: the joint mode of a hierarchical posterior is not its marginal mode.
+  Since the deliverable is a population percentile, and a percentile is made of the
+  spread, this would have been a material error. The estimator to use is
+  `replication/czb/fit_recovery.py::fit_marginal`, which integrates the driver effects
+  out by Gauss-Hermite quadrature — one dimension per driver — and applies Laplace only
+  to the four hyperparameters. Evidence in `replication/czb/out/recovery_summary.md`.]* CPU-torch on
   this machine handles this size trivially. No PyMC or Stan is installed, and nothing
   here needs them; if full posteriors are ever wanted, a hand-rolled NUTS is not worth
   it — the honest upgrade is installing numpyro, and the model is small enough that

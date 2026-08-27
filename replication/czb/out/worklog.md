@@ -94,3 +94,47 @@ deliberately not laid out as `.claude/skills/` (a second active copy would compe
 the live one). He will say when he edits the live copy. No tags outstanding from this
 revision; the skill is 318 lines, still within the card's limit. No repository code
 touched.
+
+## 2026-08-27 — Card A.1: synthetic-recovery harness
+
+Built `replication/czb/fit_recovery.py`; results in `out/recovery_summary.md`, run log in
+`out/log_recovery.txt`. Criteria 2 (shrinkage beats unshrunk per-driver MLEs on RMSE, on
+both axes) and 3 (runtime, 6.1 min against a 10-minute limit) **pass**. Criterion 1
+**fails as recorded**, and was not loosened: over 20 simulated datasets the population
+median and between-driver sd are recovered within 2 Laplace SEs on 18/20 and 18/20 for
+`deficit_max`, the primary axis, and on only 8/20 and 4/20 for `a_req_max`.
+
+Two findings, both load-carrying. **First, the estimation method in the plan is wrong as
+written.** "MAP plus Laplace" implemented literally — maximizing the joint posterior over
+hyperparameters and driver effects together — recovers the median and the lapse but
+inflates the between-driver sd by a factor of about 2.6 (1.289 against a truth of 0.500)
+with coverage 0/20, because the joint mode of a hierarchical posterior is not its
+marginal mode; sigma_pop and the driver effects trade along a funnel. Integrating the
+driver effects out by Gauss-Hermite quadrature, one dimension per driver, and applying
+Laplace only to the four hyperparameters gives bias −0.021 and coverage 18/20. Since the
+deliverable is a population percentile and a percentile is made of the spread, the
+literal reading would have produced a materially wrong headline. Both estimators are kept
+in the script and both are reported, because the size of the bias is the result.
+`docs/czb_fitting_plan.md` §3 now carries a dated correction pointing at the evidence.
+@REVIEW(judgment): changing the estimator prescribed by a planning document is a
+methodological decision, not an implementation detail, and should be confirmed.
+
+**Second, `a_req_max` cannot support a threshold fit as currently constructed**, and the
+reason is the covariate rather than the estimator: two pre-onset cells sit at exactly 0
+while the other sixteen bunch into 8.48–11.65, so 73% of the covariate's range is an
+empty gap in which driver thresholds are mutually indistinguishable (the deficit axis's
+largest gap is 30%). The C1 anchor is separately compromised there — TTC8's pre-onset
+cell reads 8.48, close to the most critical cells rather than to zero, which is the
+lane-gate leak already recorded in `docs/czb_fitting_plan.md` §4.
+@REVIEW(blocker): this does not block card A.2, which proceeds on the primary deficit
+axis, but it does block the truck check in fitting-plan §4 — the check whose entire
+purpose is to let the allowed-deceleration axis rescue the framing where the dread field
+is silent. The fix is upstream, in the field construction, not in the fitting code.
+
+Two smaller notes. The Gauss-Hermite node count was set by measurement, not convention:
+`--check-quadrature` shows estimates still moving at 30 and 60 nodes and settling near
+150, where 150 and 250 agree to 0.003 in the median and 0.0007 in the sd; the default is
+150. And the between-driver sd used as the simulation truth (0.50) was calibrated so the
+simulated spread of per-driver intervention rates matches the observed 0.235 — the sweep
+is printed by `--calibrate` and quoted in the summary, so the choice is checkable.
+Full suite (123 tests) green before and after.
