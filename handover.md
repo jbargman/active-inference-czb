@@ -1,5 +1,38 @@
 # handover.md — restart a session here
 
+> ## Next session: a review gate, for the stronger model
+>
+> *Added 2026-08-27, after a batch run of cards A.1–A.4 on the executing model.*
+>
+> The fitting spine is built and has produced its first real numbers, but it stopped at
+> two decisions it was right not to make alone. **The next session is card R.1 in
+> `docs/czb_work_orders.md`** — a review, not new execution, and it should run on the
+> most capable model available.
+>
+> Start with `replication/czb/out/query_register.md`: nine open queries, three of them
+> blockers, generated from the work log by `replication/czb/collect_queries.py`. The two
+> that block downstream work:
+>
+> - **A.2.Q2** — group-level versus hierarchical lapse changes the between-driver spread
+>   by 39% (0.341 → 0.209), which is the quantity every percentile is made of, while the
+>   held-out likelihood separates the two by 0.6 units. The headline number depends on it.
+> - **A.3.Q1** — the accumulator failed its pre-registered test, but fits *worse in
+>   sample* than the simpler model it extends, so the failure is misspecification rather
+>   than refutation. The cause is identified (Wiener noise accumulating through 15.1 s of
+>   empty pre-onset clip); the remedy is a model-design decision. Neither A.3's nor A.4's
+>   FAIL should be quoted as evidence about the framework until this is settled.
+>
+> What is *not* in doubt and needs no review: the population median boundary level, 5 043
+> to 5 352 depending on the variant, against the stage-0 pilot's independent 5 200; and
+> the comfort/dread separation from the ordered braking-expectation model (3 703 and
+> 6 397 deficit units, THW 0.50 s and 0.27 s at 20 m/s).
+>
+> Working conventions for every session are now the `performing-research` skill
+> (`~/.claude/skills/performing-research/SKILL.md`, mirrored at
+> `docs/skills/performing-research.SKILL.md`): batch mode, the query convention, APA
+> citations, parameter motivations, and the model-tier rules that say a top-tier session
+> has nobody to defer to and must therefore resolve and self-review rather than flag.
+
 > **Later arcs exist.** `handover_2026-08-26.md` covers the 2026-08-25 → 08-26 work (the
 > equivalence/ROPE revision, the severity-versus-timing diagnosis, the new human dataset
 > in `external/01_studies/`, the start of the cut-in scenario); `handover_2026-08-27.md`

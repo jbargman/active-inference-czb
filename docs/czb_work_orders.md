@@ -85,6 +85,39 @@ carries the judgment. The split I would use:
 - **Stop if**: unsure whether some practice is project law or one session's habit —
   list the uncertain items in the draft for Jonas to rule on rather than guessing.
 
+### Card R.1 — review gate after A.2/A.3/A.4 (for the stronger model)
+
+- **Goal**: close the queries the executing session raised, in severity order, and
+  decide the two things it deliberately did not decide.
+- **Read first**: `replication/czb/out/query_register.md` (generated — the work log is
+  the source of truth), then `stage1_summary.md`, `stage2_summary.md`,
+  `button_validation_summary.md`, then the three worklog entries dated 2026-08-27.
+- **The two decisions that block downstream work:**
+  1. **A.2.Q2 — the bias variant.** Group-level versus hierarchical lapse moves the
+     between-driver spread 0.341 → 0.209, a 39% change in the quantity a percentile is
+     made of, while held-out likelihood separates them by 0.6 units over 3 096 trials.
+     The fitted per-driver lapse spread is large (sd 2.76, logit scale), so the
+     hierarchical lapse absorbs variation the group model gave to the threshold — the
+     opposite direction to the leakage argument in `docs/czb_validation_roadmap.md`
+     §5.1, which should be revisited or corrected in the light of it. Deciding this
+     fixes the headline percentile.
+  2. **A.3.Q1 — the accumulator's specification.** The pre-registered verdict is FAIL,
+     but the in-sample fit is worse than the simpler model it extends, and the cause is
+     identified: noise accumulating through 15.1 s of empty pre-onset clip. Choose the
+     remedy (leaky accumulator; accumulation starting where evidence exists; or
+     something else), then A.3 and A.4 are re-run and their verdicts mean something.
+     Until then neither FAIL should be quoted as evidence about the framework.
+- **Also verify, not just accept**: that the numbers quoted in the three summaries come
+  from the committed scripts (the failure mode with precedent here is a number that
+  exists only in a transcript); and that A.2's percentile table is read with its two
+  minor caveats attached (A.2.Q4, A.2.Q5).
+- **Owed work the executing session named**: A.2.Q3 asks for the pre-onset predictive
+  under *both* bias variants; only the better-fitting one was checked.
+- **Accept**: every open query either resolved with a `RESOLVED <card>.Q<n>: ...` line
+  appended to the work log, or explicitly carried forward with a reason; the register
+  regenerated; and if a decision changes a documented plan, that document corrected in
+  place with a dated note.
+
 ### Card A.1 — synthetic-recovery harness
 
 - **Goal**: prove the stage-1 estimator recovers known parameters before touching
