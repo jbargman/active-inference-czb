@@ -51,7 +51,7 @@ def main() -> None:
     ap.add_argument("--tag", default="_fullp_abn")
     ap.add_argument("--conditions", nargs="*", default=["B", "C"])
     ap.add_argument("--bins", nargs="*", type=int, default=[5, 10, 20])
-    ap.add_argument("--abnormal", action="store_true", default=True)
+    ap.add_argument("--abnormal", action=argparse.BooleanOptionalAction, default=True)
     ap.add_argument("--n-boot", type=int, default=1000)
     args = ap.parse_args()
 
@@ -60,6 +60,10 @@ def main() -> None:
         len(ref), n_bins_rule(len(ref))), flush=True)
 
     lines = ["# Bin-count sensitivity of the equivalence readout\n",
+             "Uncertainty convention: `equivalence_test` defaults (resample=\"population\" "
+             "since 2026-08-26 -- reference fixed, synthetic side bootstrapped). Runs of "
+             "this script before 2026-08-27 predate that default and carried \"cases\" "
+             "intervals without saying so.\n",
              "Reference n = {}. Wu et al. (2026) Eq. 4 gives N = {} at this size; the".format(
                  len(ref), n_bins_rule(len(ref))),
              "full-population tables were produced with N = 5. Both statistics tighten with",

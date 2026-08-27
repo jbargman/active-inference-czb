@@ -25,7 +25,7 @@ response of the crash-causation model (CBM) of [B24]?
   (acceleration clamped at ≥ 0). This keeps the accelerating creeping/queue seeds intact
   while excluding the generator-follower's own evasive action, which the plain "original"
   profile embeds in 14 of 100 seeds. Clamping from t = 0 instead changes headline results
-  by only a few percent (section 4.4), so the rule choice is not consequential.
+  by only a few percent (section 4.5), so the rule choice is not consequential.
 - **Causation components**, each switchable: off-road glances, too-close following
   (inherent in the seed), a maximum-deceleration cap, a no-response mixture (10% of
   crashes [B24]), and — added at the study's request — the **abnormal-acceleration
@@ -41,7 +41,7 @@ response of the crash-causation model (CBM) of [B24]?
   the whole scenario, off-road durations from the digitized distribution, on-road dwells
   exponential with the mean set by the 80% on-road share, 50 Monte Carlo draws per seed
   (flagged for a later increase). The [B24] anchored-overshot construction is kept as the
-  CBM-native comparison case; section 4.5 quantifies what the process placement buys.
+  CBM-native comparison case; section 4.6 quantifies what the process placement buys.
 - **Two response processes** behind one interface: the CBM's (respond 0.5 s after eyes
   return; ramp to the drawn deceleration) and the tier-1 active-inference surrogate (the
   model's preference function on the seed kinematics, fed through its evidence
@@ -208,34 +208,41 @@ rather than the instrument. Against the project's adopted thresholds (θthd = 0.
 Θthd = 0.089, from a 10% tolerance on the injury-weighted mean) condition B misses practical
 equivalence on the upper end of its interval, and condition C misses on every reading.
 
-### 4.3b-ii The B-versus-C ordering, tested as a paired difference
+### 4.3b-ii The B-versus-C ordering, tested as a difference *(revised 2026-08-27)*
 
-With the corrected (wider) intervals, the marginal HDIs of the two conditions overlap
-substantially at every bin count — at N = 5, B is 0.148 [0.085, 0.273] and C is 0.209
-[0.148, 0.343]. Read naively that would suggest the conditions are not separated, and it
-would understate the evidence badly.
+The quantity the study's claim concerns is the difference θ_C − θ_B, so that is what
+should carry an interval — comparing overlapping marginal HDIs would understate the
+evidence where the two estimates share uncertainty (under the sample reading they share
+the reference draw), and can mislead in either direction.
 
-Overlapping marginal intervals do not imply an undetermined difference when the two
-estimates share a source of uncertainty, and here they share almost all of it: both
-conditions are scored against the *same* reference, through the *same* quantile bins, with
-the *same* weights. Resampling the reference moves θ_B and θ_C together. The quantity the
-study's claim actually concerns is their difference, so that is what should carry an
-interval. Recomputing with one shared reference resample per bootstrap draw:
+*Correction.* The first version of this section (2026-08-26) reported the difference as
+0.061 with a 95% HDI of [0.037, 0.107] and a unanimous sign, from an analysis that
+resampled the reference while holding **both synthetic sides fixed**. That omits the
+synthetic-side sampling variance, which is independent between the conditions and does not
+cancel in the difference; the certainty was overstated by exactly the kind of incomplete
+uncertainty accounting section 4.3b corrects. The analysis is now committed
+(`replication/causation/paired_difference.py`, 1 000 draws) and runs all three schemes:
 
-| | value |
-|---|---|
-| θ_C − θ_B, point estimate | **0.061** |
-| 95% HDI of the difference (paired, 500 draws) | **[0.037, 0.107]** |
-| P(θ_C > θ_B) | **1.000** |
+| scheme | mean θ_C − θ_B | 95% HDI | P(θ_C > θ_B) |
+|---|---|---|---|
+| reference-only (the 2026-08-26 analysis; incomplete) | 0.071 | [0.039, 0.110] | 0.998 |
+| **population convention** (reference fixed, synthetic sides resampled) | **0.055** | **[−0.006, 0.110]** | **0.970** |
+| cases (shared reference draw + synthetic resamples) | 0.068 | [0.001, 0.147] | 0.972 |
 
-The interval excludes zero comfortably and the sign is unanimous across every resample.
-**The ordering — the active-inference condition closer to the reference than the CBM control
-on severity — is statistically robust**, and is more strongly supported than the marginal
-intervals suggest. This is the claim the study rests on, and the bootstrap correction of
-section 4.3b does not disturb it.
+Point estimate: 0.061. Under the project's own population convention the ordering has a
+posterior probability of about **0.97**, with an HDI that grazes zero. That is strong
+support, not proof: the correct statement is that **the ordering is consistent in point
+estimates at every bin count (section 4.4) and holds with ~0.97 probability under the
+settled uncertainty convention** — no longer "the same sign on every resample". Two
+mitigating observations: θ is a bootstrap-biased maximum statistic and the bias is larger
+for B's smaller crash-record count, which pushes the resampled difference *down* relative
+to the point estimate; and the ordering is corroborated independently of θ by the
+braking aggregate (section 4.3c: B within 0.3% of the reference where C over-brakes by
+35%), which does not involve binning at all.
 
-The same reasoning applies to any future comparison between conditions here, and the paired
-form should be preferred over comparing marginal intervals.
+The paired/difference form remains the right one for any future comparison between
+conditions; the lesson added by the correction is that the synthetic sides must be
+resampled too.
 
 ### 4.3c Weighted aggregates, reported directly (added 2026-08-26)
 
@@ -313,9 +320,15 @@ Three readings:
 Two incidental corrections to assumptions made when this readout was built. Θ is **not**
 bin-count invariant — it is a lower bound on twice the total-variation distance that becomes
 exact only as the partition refines, so it grows with N. Further, θ is a maximum over bins
-and is therefore **biased upward under resampling**; at N = 20 condition B's bootstrap HDI
-[0.275, 0.552] does not contain its own point estimate. Both make the "HDI upper bound
-inside the ROPE" rule more conservative at fine bin counts than it looks.
+and is therefore **biased upward under resampling**; under the cases resampling at N = 20,
+condition B's bootstrap HDI [0.347, 0.773] does not contain its own point estimate of
+0.275. *(Corrected 2026-08-27: the first version quoted [0.275, 0.552] from an
+intermediate run. Under the settled population convention the regenerated N = 20 HDI is
+[0.263, 0.389], which does contain the point estimate — the bias is driven by reference
+resampling and is mild when only the synthetic side is resampled. The stored sweep,
+`summary_bin_sensitivity_fullp_abn.md`, is now generated under the population convention.)*
+Both effects make the "HDI upper bound inside the ROPE" rule more conservative at fine bin
+counts than it looks.
 
 ### The sensitivity ladder (100-seed sample, kept as method history)
 
@@ -351,13 +364,13 @@ Readings:
   mean injury risk exactly for B (0.0063 vs 0.0062) by adding the harder, non-braking
   crashes the four [B24] mechanisms cannot produce. Its cost is a slight overshoot for C.
 
-### 4.4 The counterfactual rule barely matters
+### 4.5 The counterfactual rule barely matters
 
 Clamping the follower's braking from t = 0 instead of from the lead's onset changes B's
 P_inj θ from 0.87 to 0.82 and C's from 0.400 to 0.396 (anchored glances) — the choice of
 clamp rule is not a consequential degree of freedom.
 
-### 4.5 What the process placement buys, against its cost
+### 4.6 What the process placement buys, against its cost
 
 For the **active-inference** response, process glances improve severity equivalence
 substantially (P_inj θ 0.87 → 0.61) besides being theoretically required (the anchored
@@ -482,9 +495,11 @@ are an intermediate exposure extension available now.
    reference than the CBM control** on severity (θ 0.31 versus 0.39; with the abnormal
    component 0.148 versus 0.209), despite generating 4.7 times its crash probability
    (0.280 versus 0.059) — slower responses produce more crashes, but the *right* crash
-   population. The ordering is **statistically solid rather than a point-estimate
-   impression**: as a paired difference with a shared reference draw, θ_C − θ_B = 0.061
-   with a 95% HDI of [0.037, 0.107] and the same sign on every resample (section 4.3b-ii).
+   population. The ordering is **strongly supported rather than a point-estimate
+   impression, though not beyond doubt**: tested as a difference, θ_C − θ_B = 0.061 with
+   P(θ_C > θ_B) ≈ 0.97 under the settled uncertainty convention, an HDI that grazes zero
+   (section 4.3b-ii, corrected 2026-08-27), consistency in point estimates at every bin
+   count, and independent corroboration from the braking aggregate (section 4.3c).
    The best configuration still misses practical equivalence on severity — θ = 0.148
    [0.110, 0.204] against the project's adopted θthd = 0.188, failing on the interval's
    upper end — but it misses by a margin the reference can resolve, and down from the

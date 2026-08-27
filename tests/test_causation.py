@@ -146,6 +146,16 @@ def test_equivalence():
     check("a one-sigma shift fails the ROPE", not diff.equivalent)
     check("P_inj is monotone in delta-v and zero for no crash",
           p_inj_mais2(0) == 0 and p_inj_mais2(5) < p_inj_mais2(10))
+    # regression (2026-08-27): weights must be filtered by the same finite mask as the
+    # values -- a NaN mid-array used to shift every later weight onto the wrong value
+    x2 = x.copy(); x2[7] = np.nan
+    w2 = np.ones_like(x); w2[-1] = 50.0     # heavy weight at the tail, where misalignment showed
+    a = equivalence_test(x2, x, metric="nan", w_ref=w2, n_bins=5, n_boot=10, rng=4)
+    b = equivalence_test(np.delete(x2, 7), x, metric="nan", w_ref=np.delete(w2, 7),
+                         n_bins=5, n_boot=10, rng=4)
+    check("a mid-array NaN in ref does not misalign the weights",
+          abs(a.theta_point - b.theta_point) < 1e-12,
+          f"{a.theta_point:.6f} vs {b.theta_point:.6f}")
 
 
 # ------------------------------------------------- no-brake counterfactual + component 5

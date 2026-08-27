@@ -127,9 +127,13 @@ def equivalence_test(ref: np.ndarray, syn: np.ndarray, *, metric: str = "",
     with a shared reference draw, not by overlapping marginal intervals.
     """
     ref = np.asarray(ref, float); syn = np.asarray(syn, float)
-    ref = ref[np.isfinite(ref)]; syn = syn[np.isfinite(syn)]
-    w_ref = np.ones_like(ref) if w_ref is None else np.asarray(w_ref, float)[: len(ref)]
-    w_syn = np.ones_like(syn) if w_syn is None else np.asarray(w_syn, float)[: len(syn)]
+    # Weights are filtered by the SAME finite mask as the values. (Until 2026-08-27 the
+    # weights were merely truncated to the filtered length, which silently misaligns every
+    # weight-value pair after a non-finite entry anywhere but the tail.)
+    mr, ms = np.isfinite(ref), np.isfinite(syn)
+    w_ref = np.ones(int(mr.sum())) if w_ref is None else np.asarray(w_ref, float)[mr]
+    w_syn = np.ones(int(ms.sum())) if w_syn is None else np.asarray(w_syn, float)[ms]
+    ref, syn = ref[mr], syn[ms]
     rng = np.random.default_rng(rng)
     N = n_bins or n_bins_rule(len(ref))
 
@@ -194,7 +198,7 @@ def equivalence_test(ref: np.ndarray, syn: np.ndarray, *, metric: str = "",
             ths.append(th); Ths.append(Th)
         unc = "weighted-value bootstrap, understates spread (n={})".format(n_boot)
     else:
-        raise ValueError("resample must be 'cases' or 'values', got {!r}".format(resample))
+        raise ValueError("resample must be 'population', 'cases' or 'values', got {!r}".format(resample))
 
     return EquivalenceResult(
         metric=metric, n_bins=N, edges=edges0, omega=om0, theta_point=th0, Theta_point=Th0,

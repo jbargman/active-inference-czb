@@ -216,14 +216,18 @@ price is a restriction on what may be claimed: results are statements about *thi
 never about crash severity in traffic at large. Given the exposure problem described later in
 this chapter, that restriction was already binding for other reasons.
 
-{{R3}}**Where that leaves our result.** The distance is now measured against a criterion the
+{{R4}}**Where that leaves our result.** The distance is now measured against a criterion the
 reference can actually resolve. Condition B's severity θ is 0.148 with a 95% interval of
 [0.110, 0.204], the CBM control's is 0.209 [0.176, 0.244], and neither reaches practical
-equivalence at a defensible tolerance. What *is* solid is the comparison: tested as a paired
-difference, with both conditions scored against the same resampled reference, the
-active-inference condition is closer on every single resample. The lesson we would carry
-forward is that overlapping intervals do not settle a comparison when the two estimates share
-their uncertainty — the difference is what needs the interval.
+equivalence at a defensible tolerance. What holds up is the comparison: tested as a
+difference, the active-inference condition is closer with a posterior probability of about
+0.97 under the project's uncertainty convention, the ordering is consistent at every bin
+count, and the braking aggregate corroborates it without any binning at all. (An earlier
+version of this paragraph said "closer on every single resample"; that came from an
+analysis that held the synthetic sides fixed and overstated the certainty — corrected
+2026-08-27, results doc section 4.3b-ii.) The lesson we would carry forward is that the
+difference is what needs the interval, and that *all* of its variance sources need
+resampling — leaving one side fixed quietly converts strong evidence into false certainty.
 
 {{R3}}**The other lesson is that the same statistic does not mean the same thing on every
 metric.** θ is built on bands of equal reference weight, which assumes the reference can be

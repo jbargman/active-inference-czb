@@ -1,0 +1,9 @@
+condition B: n_syn = 103857
+condition C: n_syn = 701777
+point estimates: theta_B = 0.148, theta_C = 0.209, difference = 0.061
+
+| ref-only | 0.071 | [0.039, 0.110] | 0.998 |
+| population | 0.055 | [-0.006, 0.110] | 0.970 |
+| cases | 0.068 | [0.001, 0.147] | 0.972 |
+
+written to C:\Users\bargman\OneDrive - Chalmers\1_Work\1_Code\WaymoActiveInference\replication\causation\out\summary_paired_difference_fullp_abn.md

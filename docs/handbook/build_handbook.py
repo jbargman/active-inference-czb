@@ -42,7 +42,8 @@ def versioned(path: Path) -> Path:
 
 REVISION_MARKS = {"{{R1}}": (0xB0, 0x00, 0x20),   # revision round -> RGB (round 1: 2026-08-23)
                   "{{R2}}": (0x10, 0x30, 0x8A),   # round 2: 2026-08-25, crash-causation study
-                  "{{R3}}": (0x1B, 0x5E, 0x20)}   # round 3: 2026-08-26, equivalence/ROPE
+                  "{{R3}}": (0x1B, 0x5E, 0x20),   # round 3: 2026-08-26, equivalence/ROPE
+                  "{{R4}}": (0x6A, 0x1B, 0x9A)}   # round 4: 2026-08-27, lane entry + corrections
                                                   #   calibration and the scenario-code deep dive
 
 
