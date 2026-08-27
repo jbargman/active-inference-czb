@@ -138,3 +138,95 @@ Two smaller notes. The Gauss-Hermite node count was set by measurement, not conv
 simulated spread of per-driver intervention rates matches the observed 0.235 — the sweep
 is printed by `--calibrate` and quoted in the summary, so the choice is checkable.
 Full suite (123 tests) green before and after.
+
+## 2026-08-27 — Card A.2: stage-1 hierarchical fit
+
+`replication/czb/fit_stage1.py`, summary in `out/stage1_summary.md`. All three acceptance
+criteria pass: four fits converged with usable standard errors, the summary renders, and
+LOPO separates the bias variants while being reported as weak rather than decisive.
+Runtime 4.4 h, almost all of it the two-dimensional quadrature in the hierarchical-lapse
+folds.
+
+The headline: on the primary deficit axis the population median boundary level is 5 043
+(group lapse) or 5 352 (hierarchical lapse), against the stage-0 pilot's 5 200 — the
+hierarchical fit is the better of the two held out, by +0.6 log-likelihood units. The
+80th-percentile level is 6 379 [6 128, 6 630], equivalent to a required deceleration of
+about 11.0 m/s² and a steady-following time headway at 20 m/s of 0.27 s. The ordered
+braking-expectation model puts the comfort level at 3 703 (a_req 8.81, THW 0.50 s) and
+the dread level at 6 397 (a_req 11.02, THW 0.27 s), separated by 2 694 deficit units
+(SE 70).
+
+@A.2.Q1(judgment): the card specified 43 leave-one-participant-out folds; 15 evenly
+spaced folds were used instead, identical across all four variants so the comparison
+stays like-for-like. 43 folds was budgeted before the cost of the two-dimensional
+quadrature was known — the full design would have run about twelve hours. This costs
+precision in the held-out difference, not validity.
+@A.2.Q2(blocker): the bias-variant choice is not cosmetic. Moving from a group-level to a
+hierarchical lapse shrinks the between-driver spread from 0.341 to 0.209 — a 39%
+reduction in exactly the quantity a percentile is made of — while the held-out likelihood
+separates the two variants by only +0.6 units over 3 096 trials. The deliverable
+therefore depends materially on a choice the data barely constrains. This is the A.2
+review gate and it should not be settled by the executing session. The direction also
+contradicts the leakage argument in `docs/czb_validation_roadmap.md` §5.1, which
+anticipated a *wider* spread under shrinkage; the fitted per-driver lapse spread is large
+(sd 2.76 on the logit scale), so the hierarchical lapse is absorbing variation the group
+model attributed to the threshold.
+@A.2.Q3(judgment): the pre-onset predictive under-shoots systematically and in a graded
+way — observed 0.122/0.070/0.052 against predicted 0.017/0.024/0.041 for TTC4/6/8, so the
+sign pattern runs opposite to criticality. Real pre-onset responses rise with the
+criticality of a clip that has not yet begun to develop, which a lapse floor cannot
+express and which points at anticipation from the repeated stimulus set. The card's stop
+condition asks whether this holds under *both* bias variants; only the better-fitting
+variant was checked, so that comparison is still owed.
+@A.2.Q4(minor): the two-dimensional quadrature is stable to about 5% in the
+between-driver spread across 32/48/72 nodes per dimension (0.199/0.209/0.198), not to the
+third decimal the one-dimensional case reaches. Adequate for a model comparison, not for
+a quoted spread.
+@A.2.Q5(minor): the translation from deficit units to required deceleration interpolates
+each clip's own mapping and takes the median across the three stimuli; it is an
+approximation, and it returns nothing at the 95th percentile because that level exceeds
+the range any Random stimulus reaches. The THW column inherits both caveats.
+
+## 2026-08-27 — Card A.3: the accumulator layer
+
+`replication/czb/fit_stage2.py`, summary in `out/stage2_summary.md`. Against the rule
+fixed before fitting (held-out RMSE at most 0.11 closes the gap, above 0.13 is failure),
+the accumulator reaches **0.236** leave-one-criticality-out — worse than the static
+stage-1 threshold's 0.161 on identical folds. Recorded as **FAIL**, not loosened.
+
+@A.3.Q1(blocker): the verdict should not be read as evidence against the framework,
+because the accumulator is misspecified in a way I can name. Its *in-sample* RMSE, 0.182,
+is worse than the stage-0 static two-parameter probit's 0.125 on the same cells — a model
+that fits worse in sample than the simpler model it extends is broken, not refuted. The
+cause: the clips begin 15.1 s before the lane change, and Wiener noise accumulates
+through that empty window, whose running maximum alone has a standard deviation near 3.9,
+comparable to the entire post-onset drift. The per-cell table shows the consequence
+directly — the model predicts 0.19 at C1 for *all three* criticality levels, where the
+observed rates are 0.12/0.07/0.05 — and the fitted lapse collapses toward zero to
+compensate. The length of that pre-onset window is a property of stimulus presentation,
+not of drivers. The remedies (a leaky accumulator, or beginning accumulation where there
+is evidence) are model-design decisions, so they are referred rather than made.
+@A.3.Q2(judgment): the card's own stop condition — a gain so large that the accumulator
+degenerates to a deterministic threshold — did not fire: the drift-to-noise ratio is 8.7,
+so noise still does real work. Latency sensitivity is mild and monotone (in-sample RMSE
+0.172/0.182/0.191 at lambda = 0.15/0.25/0.35 s), with the threshold location absorbing
+the shift as expected.
+
+## 2026-08-27 — Card A.4: Button press times from the Random fit
+
+`replication/czb/validate_button.py`, summary in `out/button_validation_summary.md`,
+figure `figures/button_validation.png`. Every accumulator parameter carried over from the
+Random design unchanged; the only free quantity is one paradigm shift, fitted twice.
+Acceptance criterion **FAIL**: the worst checkpoint discrepancy is 0.297 against a
+tolerance of 0.05.
+
+@A.4.Q1(blocker): this card is contingent on A.3 and cannot be read on its own — it
+inherits the misspecified accumulator, so the magnitude of the miss carries no
+information about the paradigm.
+@A.4.Q2(judgment): what does survive, because it does not depend on the flawed
+magnitudes, is the *form* and *direction* of the paradigm effect. A shift acting on the
+threshold fits better than one acting on the gain (RMSE 0.148 against 0.169), and its
+sign is negative (−0.250) — a lower boundary in the button paradigm, meaning earlier
+pressing. That is what the documented cross-paradigm excess says, and decision 3 of the
+handbook chapter 11 list asked exactly this question. The magnitude should be refitted
+once the accumulator is repaired.

@@ -302,10 +302,11 @@ def fit_marginal(x: np.ndarray, y: np.ndarray, pid: np.ndarray, pr: Priors,
     H = torch.autograd.functional.hessian(
         lambda t: _neg_log_post_marginal(t, xt, yt, pidt, n_drivers, pr, zt, lwt), phi)
     try:
-        se = torch.sqrt(torch.diagonal(torch.linalg.inv(H)).clamp_min(0.0)).numpy()
+        cov = torch.linalg.inv(H).numpy()
+        se = np.sqrt(np.clip(np.diag(cov), 0.0, None))
         ok = bool(np.all(np.isfinite(se)))
     except Exception:
-        se, ok = np.full(4, np.nan), False
+        cov, se, ok = np.full((4, 4), np.nan), np.full(4, np.nan), False
 
     # Posterior mean of each driver's threshold, from the same quadrature.
     with torch.no_grad():
@@ -326,7 +327,8 @@ def fit_marginal(x: np.ndarray, y: np.ndarray, pid: np.ndarray, pr: Priors,
         "sigma_pop": sigma_pop, "se_sigma_pop": sigma_pop * se[1],
         "sigma_resp": sigma_resp, "se_sigma_resp": sigma_resp * se[2],
         "b": b, "se_b": b * (1 - b) * se[3],
-        "c_i": c_i, "neg_log_post": val, "se_ok": ok,
+        "c_i": c_i, "neg_log_post": val, "se_ok": ok, "cov": cov,
+        "phi": t,
     }
 
 
