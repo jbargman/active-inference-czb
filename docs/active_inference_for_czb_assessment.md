@@ -110,6 +110,20 @@ Three readings, in decreasing comfort:
    accumulator closes most of this gap; if it does not, that is evidence against the
    framework worth taking seriously.
 
+   *[Decided 2026-08-27 at review gate R.1: the expectation was wrong — the verdict is
+   FAIL, and it is quotable. Three structurally-argued accumulator variants (noise from
+   clip start; noise gated at onset; gated with a free trial-level threshold spread)
+   all fit worse in sample than the stage-0 static probit (best 0.178 vs 0.125), and
+   the final variant's held-out RMSE 0.267 fails the pre-registered ≤ 0.11 rule
+   (`replication/czb/out/stage2_summary.md`; v1/v2 records in `out/log_stage2*.txt`).
+   The named structural reason: criticality-graded responding already at C1–C2, where
+   at most 0.05–0.15 s of post-onset evidence exists under any plausible motor latency
+   — anticipation from repeated stimulus exposure, inexpressible by any evidence-gated
+   integrator — plus a late-cell criticality gradient shallower than integrated
+   evidence implies. Time-integration of the deficit does not close the within-scenario
+   gap on this stimulus set; the framework's remaining case is portability (the stage-B
+   transfer gate) and threshold interpretability, exactly as §3.2 anticipated.]*
+
 ## 4 What the route genuinely buys, if the transfer test passes
 
 - **A one-dimensional population.** The percentile question ("trigger where 80% of

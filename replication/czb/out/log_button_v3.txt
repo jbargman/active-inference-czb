@@ -1,4 +1,9 @@
-# Card A.4 (v3) â€” Button press times predicted from the Random fit
+recovering the Random-fitted parameters (v3: hier sigma_pop, onset-gated noise, free sigma_trial) ...
+  gain 0.000488, mu_a 0.495, lapse 0.130, sigma_pop 0.209, sigma_trial 1.006
+  best level shift -0.175 -> RMSE 0.163
+  best gain shift +0.167 -> RMSE 0.163
+
+# Card A.4 (v3) — Button press times predicted from the Random fit
 
 *v3, 2026-08-27: accumulator noise gated at manoeuvre onset, sigma_pop from the hierarchical-lapse stage-1 fit, and the trial-level threshold spread sigma_trial carried over from the v3 Random fit, per the R.1 decisions on queries A.3.Q1 and A.2.Q2.*
 
@@ -25,7 +30,7 @@ Largest absolute discrepancy at any checkpoint: **0.310**.
 
 ## Acceptance criterion
 
-The documented cross-paradigm excess is reproduced within 0.05 at the fixed-clip checkpoints â€” **FAIL** (worst 0.310).
+The documented cross-paradigm excess is reproduced within 0.05 at the fixed-clip checkpoints — **FAIL** (worst 0.310).
 
 ![Predicted and observed press-time distributions](../../figures/button_validation.png)
 

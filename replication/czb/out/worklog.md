@@ -230,3 +230,125 @@ sign is negative (−0.250) — a lower boundary in the button paradigm, meaning
 pressing. That is what the documented cross-paradigm excess says, and decision 3 of the
 handbook chapter 11 list asked exactly this question. The magnitude should be refitted
 once the accumulator is repaired.
+
+## 2026-08-27 — Card R.1: the review gate, run at tier 1
+
+Executed on the strongest available model per the card; there is nobody to defer to, so
+every referred decision was decided here, with committed evidence. Full suite (123
+tests) green before and after. Verification pass first: every headline number in the
+three stage summaries traces to its committed script's tracked log (`log_stage1.txt`,
+`log_stage2.txt`, `log_button.txt`); the percentile table was independently reproduced
+by a second script (below) to the last digit. One cosmetic finding the executing
+session did not report: the logged stage-1 run crashed at its final console print
+(cp1252 versus "≥") *after* writing the summary — numbers unaffected; the print is now
+encoding-safe.
+
+**The A.2.Q2 decision: hierarchical lapse is the primary variant** (population median
+5 352, between-driver σ 0.209; the group variant is kept as the upper sensitivity
+bracket). Evidence in `bias_variant_diagnostics.md` (script
+`bias_variant_diagnostics.py`, log `log_bias_variant.txt`), three questions with
+readings stated before the numbers: (1) per-driver pre-onset heterogeneity is real —
+sd of per-driver C1 rates 0.204 against a shared-rate binomial's 0.078, Monte Carlo
+p < 0.0001 — so a single group-level lapse is misspecified as data description;
+(2) the leakage signature is present — under the group variant fitted thresholds track
+pre-onset behavior at Spearman −0.622, and dropping the C1 cells moves the group σ
+0.341 → 0.281; (3) the no-C1 hierarchical refit (σ 0.104) is an identifiability
+artifact, not an estimate — without pre-onset cells the per-driver lapse is unanchored.
+The executing session's claim that the observed direction *contradicts* roadmap §5.1
+was a misreading — §5.1 predicted the group model shows the wider σ under leakage,
+which is exactly what happened; corrected in the work orders and resolved below.
+Two caveats attached to the deliverable: fitted b_i and c_i correlate at −0.700 while
+the model assumes independence (the trait-correlation conjecture of §5.1), so card
+A.2.v2 fits a correlated-effects variant under a pre-stated escalation rule; and the
+percentile is specification-sensitive (80th: 6 379 hier vs 6 717 group; 95th: 7 543 vs
+8 832), so any quoted percentile names its variant.
+
+**Two defects found in `fit_stage1.py`'s validation code** (the fits are unaffected):
+the hierarchical LOPO integrated both random effects on the same quadrature nodes —
+the diagonal of the 2D integral, asserting perfect rank correlation — so the stored
++0.6 (deficit) and +14.3 (a_req) separations are approximations; and the C1 predictive
+used the hier variant's *median* lapse (0.017) where the population mean (0.107) is
+required, which manufactured most of the reported pre-onset undershoot. Both fixed in
+place; card A.2.v2 regenerates the stored summary. The proper C1 check under both
+variants (the owed A.2.Q3 work) shows the population-level undershoot largely
+disappears under the hierarchical variant, while the *gradient* misfit is real and
+model-independent: observed C1 rates fall with TTC (0.122/0.070/0.052) where every
+covariate-driven prediction rises — anticipation from the repeated stimulus set,
+inexpressible by any lapse floor.
+
+**The A.3.Q1 decision and the verdict: FAIL, final and quotable.** The chosen remedy
+was accumulation gated at manoeuvre onset (observable — the stimulus's first lateral
+motion; the pre-onset window is a presentation property), with the leaky accumulator
+held in reserve as it would alter the very time-integration claim under test. The v2
+re-run then failed differently: its ML solution abandoned the evidence (gain 1.2e-4,
+drift-to-noise 0.73, criticality-flat surface), and a committed grid scan
+(`fit_stage2.py --scan`) verified this was the global optimum, not an optimizer
+failure. Diagnosis: the carded model pinned the between-driver spread but carried no
+counterpart to stage 1's within-driver response variability (σ_resp ≈ 970 ≈ 0.18 of
+the median), leaving Wiener noise as the only flattening degree of freedom. v3 added
+that missing variability (σ_trial, fitted ≈ 1.0) and was pre-committed as the final
+iteration: in-sample 0.178 against the static probit's 0.125, held-out 0.267 against
+the pre-registered ≤ 0.11 / > 0.13 rule — **FAIL**, now structural rather than
+artifactual: criticality-graded responding at C1–C2 where at most 0.05–0.15 s of
+post-onset evidence exists under any plausible motor latency, plus a late-cell
+criticality gradient shallower than integrated evidence implies. Records: v1 in
+`log_stage2.txt` (summary superseded in place), v2 in `log_stage2_v2.txt`, v3 in
+`log_stage2_v3.txt` and `stage2_summary.md`. Consequence folded into the plan: B.4
+transfers the static stage-1 model; the accumulator is out.
+
+**A.4 re-run under v3** (`log_button_v3.txt`, `button_validation_summary.md`): FAIL
+(worst checkpoint discrepancy 0.310), inheriting the accumulator. What survives of
+A.4.Q2 shrinks: the *direction* of the paradigm effect is confirmed (level shift
+−0.175, gain shift +0.167 — both mean earlier pressing in the Button paradigm, as the
+documented cross-paradigm excess says), but the *form* is no longer distinguished —
+under the properly specified model the two shifts fit identically (RMSE 0.163 both).
+Handbook ch. 11's decision 3 (level versus rate) is therefore still open, and closed
+only by a better response model, not by this data plus this accumulator.
+
+**Housekeeping**: `collect_queries.py` now parses the skill-v4 `(severity, audience)`
+form and stops query text at RESOLVED lines; `fit_stage1.py`'s console output is
+encoding-safe. The A.1 entry's two pre-convention review tags are hereby numbered so
+the register can carry them: A.1.Q1 is the estimator change (joint MAP → marginal
+quadrature), A.1.Q2 is the a_req-axis identification failure.
+
+@A.1.Q1(judgment, review): retroactive numbering of the A.1 entry's estimator-change
+tag — changing the plan's prescribed estimator was a methodological decision needing
+confirmation.
+
+@A.1.Q2(blocker, review): retroactive numbering of the A.1 entry's covariate tag — the
+`a_req_max` axis cannot support a threshold fit as constructed (73% of its range is an
+empty gap; the C1 anchor leaks at TTC8). Does not block the deficit-axis work; blocks
+the truck check of fitting-plan §4, whose purpose is to let the allowed-deceleration
+axis rescue the framing where the dread field is silent. The fix is upstream, in the
+field construction.
+
+RESOLVED A.1.Q1: the estimator change is confirmed at the gate — the joint mode of a hierarchical posterior is not its marginal mode (funnel geometry), the 2.6-fold spread inflation with zero coverage is decisive, and marginal Gauss-Hermite quadrature with Laplace on the hyperparameters is the standard treatment. The plan carries the dated correction.
+RESOLVED A.2.Q1: 15 evenly spaced LOPO folds accepted — identical folds across variants keep the comparison like-for-like, and the R.1 decision does not rest on the LOPO number (which was additionally defective for the hier variants; card A.2.v2 regenerates it).
+RESOLVED A.2.Q2: hierarchical lapse is the primary variant; group-level kept as the upper sensitivity bracket. Per-driver lapse heterogeneity is decisively real (p < 0.0001) and the group variant leaks pre-onset propensity into the thresholds (ρ = −0.622; σ 0.341 → 0.281 when C1 is dropped). The claimed contradiction with roadmap §5.1 was a misreading — the observed ordering is the one §5.1 predicted under leakage. Evidence: `bias_variant_diagnostics.md`.
+RESOLVED A.2.Q3: the owed both-variant check was run with the lapse distribution integrated properly. The population-level undershoot was mostly an artifact of the median-lapse defect; the criticality-graded pre-onset pattern is real under both variants, is anticipation from the repeated stimulus set, and stays a recorded limitation (query R.1.Q3).
+RESOLVED A.2.Q4: accepted as a standing caveat — the 2D quadrature is stable to ~5% in σ; any quoted spread carries that resolution. Node counts unchanged.
+RESOLVED A.2.Q5: accepted as a standing caveat — the deficit-to-deceleration translation is an approximation and honestly returns NaN above the stimulus range; the THW column inherits both caveats.
+RESOLVED A.3.Q1: remedy decided (accumulation gated at manoeuvre onset; leaky accumulator held in reserve, argued in `fit_stage2.py` and the fitting plan §2), a second misspecification found and repaired (missing trial-level threshold variability, v3), and the verdict recorded: FAIL, final and quotable — see the R.1 entry above and `stage2_summary.md`.
+RESOLVED A.3.Q2: noted, with one correction — the v1 degeneracy check computed the noise sd from time-since-onset (≈1.1) while its own noise had accumulated since clip start (≈4.0), so the quoted drift-to-noise 8.7 was overstated (true v1 ratio ≈2.4). The v2/v3 code computes it from accumulated noise time; no conclusion changed (the stop condition had not fired under either reading).
+RESOLVED A.4.Q1: confirmed and acted on — A.4 was re-run under the final v3 accumulator; the verdict remains FAIL (worst 0.310) and is attributable to the accumulator, whose within-scenario inadequacy is now the recorded A.3 finding rather than an open contingency.
+RESOLVED A.4.Q2: partially sustained — the paradigm effect's direction (earlier pressing in Button) is confirmed under v3, but the form claim is withdrawn: level and gain shifts fit identically (RMSE 0.163 both) under the repaired model, so handbook ch. 11 decision 3 stays open pending a better response model.
+
+@R.1.Q1(judgment, jonas): the headline percentile is specification-sensitive and every
+quoted percentile must name its variant — 80th percentile 6 379 [6 128, 6 630] under
+the decided hierarchical-lapse variant against 6 717 [6 201, 7 234] under the group
+variant; at the 95th the gap is 7 543 versus 8 832. The gate decided hierarchical
+(evidence above); this query exists so the sensitivity is seen, not to reopen the
+decision.
+
+@R.1.Q2(judgment, review): the fitted per-driver lapse and threshold correlate at
+ρ = −0.700 while the model assumes independence. Card A.2.v2 fits the
+correlated-effects variant with a pre-stated rule: if it moves the 80th percentile by
+more than the current CI half-width (~250 deficit units), escalate before any
+percentile is quoted downstream.
+
+@R.1.Q3(minor, jonas): the anticipation phenomenon — criticality-graded responding
+before and just after onset, visible at C1–C2 under every model — is a property of the
+repeated-exposure fixed-clip paradigm and contaminates any mechanistic response model
+fitted to this surface. Worth carrying into the design of the coming dataset
+(naive-exposure or catch-trial structure would separate anticipation from boundary
+crossing).

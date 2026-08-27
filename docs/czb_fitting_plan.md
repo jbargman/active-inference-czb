@@ -62,7 +62,12 @@ signature, visible before fitting one.
 - per-driver bias b_i as a lapse/guess floor: P = b_i + (1 − b_i) Φ((x − c_i)/σ),
   identified by the C1 cells (4 trials per participant per criticality level, so 12
   pre-onset-equivalent trials per driver; thin, so b_i gets strong shrinkage or one
-  group level — decision 2 of the handbook ch. 11 list);
+  group level — decision 2 of the handbook ch. 11 list); *[decided 2026-08-27 at
+  review gate R.1: hierarchical b_i with shrinkage is the primary variant — per-driver
+  pre-onset heterogeneity is decisively overdispersed and the group variant leaks
+  pre-onset propensity into the thresholds (ρ = −0.622); group-level is kept as the
+  upper sensitivity bracket; evidence in
+  `replication/czb/out/bias_variant_diagnostics.md`]*;
 - the ordered braking-expectation response (nothing / gentle / hard: 1 180 / 1 287 /
   629 trials) as two nested thresholds c_i and c_i + Δ on the same field — the dread
   level well identified, the comfort level latent with a wider posterior, per the
@@ -71,7 +76,18 @@ signature, visible before fitting one.
 **Stage 2 — the accumulator, and the Button data as held-out validation.** Replace the
 static threshold with the existing preference-relative accumulator (`src/surprise/`):
 evidence = the deficit series, crossing = response, giving P(crossed by T) for the
-fixed-clip cells and a full press-time density for Button. Fit gain and noise on the
+fixed-clip cells and a full press-time density for Button. *[Amended 2026-08-27 at
+review gate R.1: accumulation — drift and noise both — is gated at manoeuvre onset.
+The first A.3 run integrated Wiener noise from clip start, through a 15.1 s pre-onset
+window that is a property of stimulus presentation, not of drivers; the noise-alone
+running maximum (sd ≈ 3.9) rivalled the entire post-onset drift, forcing the threshold
+up and flattening the predicted surface (worklog query A.3.Q1). The gate is observable
+— onset is the stimulus's first lateral motion, the pipeline's own 0.03 m detection
+threshold — so this is evidence-gated accumulation, not oracle knowledge; pre-onset
+responses are carried by the lapse floor exactly as in stage 1. The leaky accumulator
+was considered and held in reserve: it bounds pre-onset noise equally but also
+discounts early post-onset evidence, changing the time-integration claim under test,
+and adds a parameter.]* Fit gain and noise on the
 Random surface only; predict the Button press-time distributions (2 396 trials, only
 0.5% censored — participants essentially always press eventually, so the density is
 well populated) allowing the single paradigm shift δ, which per the cross-paradigm
@@ -106,6 +122,16 @@ the tracked fallback. The transfer scenarios need their own field construction f
 - **Validate the machinery on synthetic data first**: simulate responses from known
   c_i, b_i, σ, refit, and confirm recovery — the property-test discipline applied to
   the fitting code. This also calibrates how much the C1 cells actually constrain b.
+  *[Note added 2026-08-27, review gate R.1: two defects were found in `fit_stage1.py`'s
+  validation code — not in the fits. Its held-out likelihood integrated the
+  hierarchical variant's two random effects on the same quadrature nodes (the diagonal
+  of the 2D integral, asserting perfect rank correlation), so the stored LOPO values
+  for the hier variants (deficit +0.6, a_req +14.3) are approximations pending card
+  A.2.v2's regeneration; and its C1 predictive plugged in the hierarchical variant's
+  median lapse (0.017) where the population mean over the lapse distribution is
+  required, understating the pre-onset predictive — corrected numbers in
+  `replication/czb/out/bias_variant_diagnostics.md`. Both functions are fixed in
+  place.]*
 - **Uncertainty conventions carry over** from the equivalence work: report intervals,
   compare conditions as differences with all variance sources resampled, and state
   what is fixed.

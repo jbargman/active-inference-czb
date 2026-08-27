@@ -80,7 +80,15 @@ correctly.
    in advance: the accumulator variant should recover most of the gap to the design
    regressions' cross-validated RMSE (~0.10) without any per-scenario parameter. If
    it does not, that is recorded as evidence against the framework, per the
-   assessment.
+   assessment. *[Verdict recorded 2026-08-27 at review gate R.1: **FAIL**, and the
+   failure is now interpretable — three structurally-argued variants (v1 noise from
+   clip start, v2 onset-gated, v3 with a free trial-level threshold spread) all fit
+   worse in sample than the stage-0 static probit, and v3's held-out RMSE 0.267 fails
+   the pre-registered rule. Cause named in `out/stage2_summary.md`: anticipatory
+   criticality-graded responding at C1–C2 where integrated evidence cannot yet exist,
+   plus a late-cell criticality gradient shallower than integrated evidence implies.
+   The within-scenario claim (a) is settled negative; the framework's case now rests
+   on stage B.]*
 4. **Button-side validation**: predict the press-time densities (2 396 trials) with
    one paradigm shift δ, fitted both as a level shift and as a rate shift; the shape
    decides. Motor latency fixed per section 5.3.
@@ -229,6 +237,27 @@ exactly the distortion that matters. The empirical implications to check when bo
 run: the group model should show systematic C1 misfit for the extreme participants,
 and, if the leakage is real, a wider fitted σ_c than the shrinkage model. If neither
 appears, group-level wins on parsimony and we say so.
+
+*[Resolved 2026-08-27 at review gate R.1; evidence in
+`replication/czb/out/bias_variant_diagnostics.md`. Both empirical implications
+appeared, confirming this section's prediction — the executing session's query A.2.Q2
+had read the direction backwards. (1) Per-driver lapse heterogeneity is real beyond
+argument: the sd of per-driver pre-onset rates is 0.204 against a shared-rate
+binomial's 0.078 (Monte Carlo p < 0.0001), so a group-level lapse is misspecified as a
+matter of data. (2) The leakage signature is present: under the group variant the
+fitted thresholds track pre-onset behavior at Spearman ρ = −0.622, and excluding the
+C1 cells drops the group σ from 0.341 to 0.281 — pre-onset pressing was indeed being
+written into the thresholds. **Decision: the hierarchical lapse is the primary
+variant** (population σ = 0.209; median 5 352); the group variant is reported as an
+upper sensitivity bracket. Two caveats now attached to the deliverable: the fitted
+b_i and c_i correlate at ρ = −0.700 while the model assumes independence — a
+trigger-happy driver genuinely does sit lower on the boundary, exactly this section's
+trait-correlation conjecture — so a correlated-effects variant is specified in card
+A.2.v2 with the rule that if it moves the 80th percentile beyond the current CI
+width, it must be settled before any deployment claim; and the pre-onset anticipation
+gradient (observed C1 rates fall with TTC where the covariate-driven prediction
+rises) holds under both variants, is inexpressible by any lapse floor, and stays a
+recorded limitation.]*
 
 **5.2 The braking-expectation question.** Per Jonas: treat `CZB_2` as the human
 decision (own braking) for now; a new dataset framed that way is coming and will

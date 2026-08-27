@@ -3,9 +3,11 @@
 Executing sessions raise numbered queries in the work log rather than stopping to ask
 (`~/.claude/skills/performing-research/SKILL.md` sections 1-3). Each is written inline as
 
-    @<card>.Q<n>(<severity>): <text>
+    @<card>.Q<n>(<severity>[, <audience>]): <text>
 
-with severity one of blocker, judgment, minor. This script scans the work log and emits
+with severity one of blocker, judgment, minor, and the optional audience one of review
+(a more capable model can settle it) or jonas (only he can) -- the skill's v4 pairing.
+Queries written before v4 carry no audience and still parse. This script scans the work log and emits
 `out/query_register.md`, ordered by severity so that blockers are read first -- with nine
 open queries the severity mattered more than the numbering, which is why the register is
 generated rather than read off the log in card order.
@@ -20,30 +22,36 @@ moves the query into the closed section here.
 from __future__ import annotations
 
 import re
+import sys
 from pathlib import Path
+
+# Query text carries Greek letters and dashes; degrade the console echo rather than
+# crash on a cp1252 console (the register file itself is always written UTF-8).
+sys.stdout.reconfigure(errors="replace")
 
 HERE = Path(__file__).resolve().parent
 LOG = HERE / "out" / "worklog.md"
 DEST = HERE / "out" / "query_register.md"
 
 SEVERITY_ORDER = {"blocker": 0, "judgment": 1, "minor": 2}
-QUERY = re.compile(r"@([A-Z][\w.]*?)\.Q(\d+)\((blocker|judgment|minor)\)\s*:\s*(.*)",
-                   re.DOTALL)
+QUERY = re.compile(r"@([A-Z][\w.]*?)\.Q(\d+)\((blocker|judgment|minor)"
+                   r"(?:,\s*(review|jonas))?\)\s*:\s*(.*)", re.DOTALL)
 RESOLVED = re.compile(r"^RESOLVED\s+([A-Z][\w.]*?)\.Q(\d+)\s*:\s*(.*)$", re.MULTILINE)
 
 
 def parse(text: str):
     """Every query in the log, with its text running to the next query or heading."""
     out = []
-    for m in re.finditer(r"@[A-Z][\w.]*?\.Q\d+\((?:blocker|judgment|minor)\)", text):
+    for m in re.finditer(r"@[A-Z][\w.]*?\.Q\d+\((?:blocker|judgment|minor)"
+                         r"(?:,\s*(?:review|jonas))?\)", text):
         start = m.start()
-        nxt = re.search(r"\n@[A-Z][\w.]*?\.Q\d+\(|\n## ", text[m.end():])
+        nxt = re.search(r"\n@[A-Z][\w.]*?\.Q\d+\(|\n## |\nRESOLVED ", text[m.end():])
         body = text[start:m.end() + (nxt.start() if nxt else len(text) - m.end())]
         q = QUERY.match(body)
         if q:
-            card, num, sev, msg = q.groups()
+            card, num, sev, aud, msg = q.groups()
             out.append({"card": card, "n": int(num), "severity": sev,
-                        "text": " ".join(msg.split())})
+                        "audience": aud, "text": " ".join(msg.split())})
     return out
 
 
@@ -70,7 +78,8 @@ def main() -> None:
         if q["severity"] != current:
             current = q["severity"]
             L.append(f"\n## {current.capitalize()}\n")
-        L.append(f"**{q['card']}.Q{q['n']}** — {q['text']}\n")
+        aud = f" *(-> {q['audience']})*" if q.get("audience") else ""
+        L.append(f"**{q['card']}.Q{q['n']}**{aud} — {q['text']}\n")
 
     if closed:
         L.append("\n## Resolved\n")

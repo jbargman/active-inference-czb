@@ -1,0 +1,9 @@
+C1 per-driver rate sd 0.204 vs binomial 0.078 (95th pct 0.095), p = 0.0000
+fitting group variant (full data) ...
+  sigma_pop = 0.341
+fitting hierarchical variant (full data) ...
+  sigma_pop = 0.209
+refitting both variants without the C1 cells ...
+  group   sigma_pop = 0.281
+  hier    sigma_pop = 0.104
+written to C:\Users\bargman\OneDrive - Chalmers\1_Work\1_Code\WaymoActiveInference\replication\czb\out\bias_variant_diagnostics.md (8.6 min)

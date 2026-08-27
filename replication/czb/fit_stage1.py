@@ -64,6 +64,11 @@ from fit_recovery import NORMAL, Priors, fit_marginal, priors_for, _gh_nodes   #
 OUT = HERE / "out"
 torch.set_default_dtype(torch.float64)
 
+# The summary contains non-ASCII (≥, —); on a cp1252 console the final print of the
+# 2026-08-27 run crashed AFTER writing the summary file. Numbers were unaffected;
+# degrade the console echo instead of crashing.
+sys.stdout.reconfigure(errors="replace")
+
 N_GH_2D = 48            # per dimension; checked against 72 by --check-quadrature
 NODE_CHUNK = 576        # nodes evaluated at once, to bound peak memory
 PERCENTILES = list(range(50, 100, 5))
@@ -201,8 +206,17 @@ def fit_ordered(x, y_ord, pid, pr, n_gh=150, seed=0) -> dict:
 # held-out likelihood, percentiles, predictive checks
 # ----------------------------------------------------------------------------------
 def lopo_loglik(x, y, pid, pr, variant: str, folds: list[int]) -> float:
-    """Summed held-out log-likelihood over leave-one-participant-out folds."""
+    """Summed held-out log-likelihood over leave-one-participant-out folds.
+
+    [Corrected 2026-08-27, card R.1. The hierarchical branch integrated the held-out
+    driver's threshold and lapse effects on the SAME quadrature nodes -- evaluating the
+    two-dimensional integral only on its diagonal, which asserts the two effects are
+    perfectly rank-correlated rather than independent. The stored stage-1 LOPO values
+    for the hier variants (deficit +0.6, a_req +14.3) were computed under that
+    approximation; card A.2.v2 regenerates them on the product grid below.]
+    """
     zz, ww = _gh_nodes(150)
+    zz2, ww2 = _gh_nodes(N_GH_2D)
     tot = 0.0
     for held in folds:
         tr = pid != held
@@ -211,15 +225,24 @@ def lopo_loglik(x, y, pid, pr, variant: str, folds: list[int]) -> float:
              else fit_hier_lapse(x[tr], y[tr], pid_tr, pr))
         # held-out driver is new: integrate their effect(s) over the fitted population
         xh, yh = x[~tr], y[~tr]
-        c = np.exp(f["mu"] + f["sigma_pop"] * zz)
         if variant == "group":
+            c = np.exp(f["mu"] + f["sigma_pop"] * zz)
             bb = np.full_like(c, f["b"])
+            p = bb[None, :] + (1 - bb[None, :]) * _ncdf((xh[:, None] - c[None, :]) / f["sigma_resp"])
+            p = np.clip(p, 1e-12, 1 - 1e-12)
+            ll = (yh[:, None] * np.log(p) + (1 - yh[:, None]) * np.log1p(-p)).sum(axis=0)
+            tot += float(_logsumexp(ll + np.log(ww)))
         else:
-            bb = 1 / (1 + np.exp(-(f["phi"][3] + f["sigma_b"] * zz)))
-        p = bb[None, :] + (1 - bb[None, :]) * _ncdf((xh[:, None] - c[None, :]) / f["sigma_resp"])
-        p = np.clip(p, 1e-12, 1 - 1e-12)
-        ll = (yh[:, None] * np.log(p) + (1 - yh[:, None]) * np.log1p(-p)).sum(axis=0)
-        tot += float(_logsumexp(ll + np.log(ww)))
+            # independent effects: product Gauss-Hermite grid, same node count as the fit
+            c = np.exp(f["mu"] + f["sigma_pop"] * zz2)
+            bb = 1 / (1 + np.exp(-(f["phi"][3] + f["sigma_b"] * zz2)))
+            p = bb[None, None, :] + (1 - bb[None, None, :]) * _ncdf(
+                (xh[:, None, None] - c[None, :, None]) / f["sigma_resp"])
+            p = np.clip(p, 1e-12, 1 - 1e-12)
+            ll = (yh[:, None, None] * np.log(p)
+                  + (1 - yh[:, None, None]) * np.log1p(-p)).sum(axis=0)
+            lw = np.log(ww2)[:, None] + np.log(ww2)[None, :]
+            tot += float(_logsumexp((ll + lw).ravel()))
     return tot
 
 
@@ -249,17 +272,32 @@ def percentiles_with_ci(f: dict) -> list[tuple[int, float, float, float]]:
 
 
 def c1_predictive(x, y, pid, r, f: dict) -> list[tuple[str, float, float]]:
-    """Posterior predictive P(intervene) at the pre-onset cells, against observed."""
+    """Posterior predictive P(intervene) at the pre-onset cells, against observed.
+
+    [Corrected 2026-08-27, card R.1. For the hierarchical variant this plugged in
+    `f["b"]`, the sigmoid of the lapse LOCATION -- the population median lapse (0.017)
+    -- where the population-averaged predictive requires integrating the lapse
+    distribution, whose mean with sigma_b = 2.76 is several times larger. The stored
+    stage-1 C1 table therefore understated the hier variant's pre-onset predictive;
+    `out/bias_variant_diagnostics.md` carries the corrected numbers.]
+    """
     zz, ww = _gh_nodes(150)
     c = np.exp(f["mu"] + f["sigma_pop"] * zz)
+    hier = "sigma_b" in f
     rows = []
     for crit in ("TTC4", "TTC6", "TTC8"):
         m = (r.timepoint == "C1").to_numpy() & (r.criticality == crit).to_numpy()
         if not m.any():
             continue
         xv = float(x[m][0])
-        p = f["b"] + (1 - f["b"]) * _ncdf((xv - c) / f["sigma_resp"])
-        rows.append((crit, float(y[m].mean()), float((p * ww).sum())))
+        if hier:
+            bb = 1 / (1 + np.exp(-(f["phi"][3] + f["sigma_b"] * zz)))
+            p = bb[None, :] + (1 - bb[None, :]) * _ncdf((xv - c[:, None]) / f["sigma_resp"])
+            pred = float((ww[:, None] * ww[None, :] * p).sum())
+        else:
+            p = f["b"] + (1 - f["b"]) * _ncdf((xv - c) / f["sigma_resp"])
+            pred = float((p * ww).sum())
+        rows.append((crit, float(y[m].mean()), pred))
     return rows
 
 

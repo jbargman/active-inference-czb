@@ -46,7 +46,8 @@ sys.path.insert(0, str(HERE))
 from comfortzone.czb_data import (BUTTON_CUTIN_TRACES, TIMEPOINT_OFFSET_S,   # noqa: E402
                                   button_cutin_trials, random_cutin_trials,
                                   stimulus_field)
-from fit_recovery import _gh_nodes, fit_marginal, priors_for                 # noqa: E402
+from fit_recovery import _gh_nodes, priors_for                               # noqa: E402
+from fit_stage1 import fit_hier_lapse                                        # noqa: E402
 from fit_stage2 import (LAMBDA_S, N_GH, N_PATHS, SMOOTH, build_cells,        # noqa: E402
                         evidence_paths, fit)
 
@@ -57,8 +58,12 @@ MUTED, BLUE, ORANGE = "#52514e", "#2a78d6", "#eb6834"
 CRIT_COLORS = {"TTC4": "#b00020", "TTC6": "#eda100", "TTC8": "#2a78d6"}
 
 
-def button_paths(seed: int = 0) -> dict:
-    """Cumulative evidence and shared noise paths on the Button stimuli."""
+def button_paths(seed: int = 0, ungated: bool = False) -> dict:
+    """Cumulative evidence and shared noise paths on the Button stimuli.
+
+    Noise gated at manoeuvre onset, matching `fit_stage2.evidence_paths` (v2, review
+    gate R.1); `ungated` reproduces the v1 model.
+    """
     rng = np.random.default_rng(seed)
     grids = {}
     for crit, path in BUTTON_CUTIN_TRACES.items():
@@ -71,9 +76,10 @@ def button_paths(seed: int = 0) -> dict:
     out = {}
     for crit, (t, E) in grids.items():
         dt = np.diff(t, prepend=t[0])
+        gate = np.ones_like(t, dtype=bool) if ungated else (t > 0.0)
+        dtau = np.maximum(dt, 0.0) * gate
         out[crit] = {"t": t, "E": E,
-                     "W": np.cumsum(steps[:, :len(t)] * np.sqrt(np.maximum(dt, 0))[None, :],
-                                    axis=1)}
+                     "W": np.cumsum(steps[:, :len(t)] * np.sqrt(dtau)[None, :], axis=1)}
     return out
 
 
@@ -100,6 +106,8 @@ def predicted_press_cdf(paths, crit, times, log_k, mu_a, sigma_pop, b, lam,
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--ungated-noise", action="store_true",
+                    help="reproduce the v1 model: noise accumulates from clip start")
     args = ap.parse_args()
     t0 = time.time()
 
@@ -108,18 +116,23 @@ def main() -> None:
     x = r.deficit_max.to_numpy(float)
     y = r.intervene.to_numpy(float)
 
-    print("recovering the Random-fitted parameters ...", flush=True)
-    s1 = fit_marginal(x, y, pid, priors_for(x))
+    print("recovering the Random-fitted parameters (v3: hier sigma_pop, onset-gated "
+          "noise, free sigma_trial) ...", flush=True)
+    s1 = fit_hier_lapse(x, y, pid, priors_for(x))
     sigma_pop = float(s1["sigma_pop"])
-    rnd_paths = evidence_paths(args.seed)
+    rnd_paths = evidence_paths(args.seed, ungated=args.ungated_noise)
     phi = fit(rnd_paths, build_cells(r), sigma_pop, LAMBDA_S)
     log_k, mu_a, b = float(phi[0]), float(phi[1]), float(torch.sigmoid(phi[2]))
+    sigma_trial = float(np.exp(float(phi[3])))
+    # At cell/press level the pinned between-driver and free trial-level spreads act
+    # through one effective log-threshold sd, exactly as in fit_stage2.surface.
+    s_eff = float(np.sqrt(sigma_pop ** 2 + sigma_trial ** 2))
     print(f"  gain {np.exp(log_k):.3g}, mu_a {mu_a:.3f}, lapse {b:.3f}, "
-          f"sigma_pop {sigma_pop:.3f}", flush=True)
+          f"sigma_pop {sigma_pop:.3f}, sigma_trial {sigma_trial:.3f}", flush=True)
 
     btn = button_cutin_trials()
     shared = [c for c in ("TTC4", "TTC6", "TTC8") if c in set(btn.criticality)]
-    bp = button_paths(args.seed)
+    bp = button_paths(args.seed, ungated=args.ungated_noise)
 
     # ---- fit the single paradigm shift, two ways ----
     checkpoints = sorted(TIMEPOINT_OFFSET_S.values())[1:]      # C2..C6, as in the plan
@@ -130,7 +143,7 @@ def main() -> None:
     def loss_for(kind, val):
         err = []
         for c in shared:
-            pred = predicted_press_cdf(bp, c, checkpoints, log_k, mu_a, sigma_pop, b,
+            pred = predicted_press_cdf(bp, c, checkpoints, log_k, mu_a, s_eff, b,
                                        LAMBDA_S,
                                        gain_shift=val if kind == "gain" else 0.0,
                                        level_shift=val if kind == "level" else 0.0)
@@ -155,11 +168,11 @@ def main() -> None:
         d = btn[(btn.criticality == c) & (btn.censored == 0)].press_since_onset.dropna()
         ax.step(np.sort(d), np.arange(1, len(d) + 1) / len(d), color=MUTED, lw=1.6,
                 where="post", label="observed")
-        ax.plot(tgrid, predicted_press_cdf(bp, c, tgrid, log_k, mu_a, sigma_pop, b,
+        ax.plot(tgrid, predicted_press_cdf(bp, c, tgrid, log_k, mu_a, s_eff, b,
                                            LAMBDA_S), color=BLUE, lw=1.5, ls="--",
                 label="Random fit, no shift")
         kind, val = winner, fits[winner][0]
-        ax.plot(tgrid, predicted_press_cdf(bp, c, tgrid, log_k, mu_a, sigma_pop, b,
+        ax.plot(tgrid, predicted_press_cdf(bp, c, tgrid, log_k, mu_a, s_eff, b,
                                            LAMBDA_S,
                                            gain_shift=val if kind == "gain" else 0.0,
                                            level_shift=val if kind == "level" else 0.0),
@@ -175,10 +188,17 @@ def main() -> None:
     fig.savefig(FIGS / "button_validation.png", dpi=150)
 
     # ---- report ----
-    L = ["# Card A.4 — Button press times predicted from the Random fit\n",
+    L = [f"# Card A.4{'' if args.ungated_noise else ' (v3)'} — Button press times "
+         "predicted from the Random fit\n",
+         "" if args.ungated_noise else
+         "*v3, 2026-08-27: accumulator noise gated at manoeuvre onset, sigma_pop from "
+         "the hierarchical-lapse stage-1 fit, and the trial-level threshold spread "
+         "sigma_trial carried over from the v3 Random fit, per the R.1 decisions on "
+         "queries A.3.Q1 and A.2.Q2.*\n",
          "Every accumulator parameter is carried over from the Random design unchanged "
          f"(gain {np.exp(log_k):.3g}, threshold location {mu_a:.3f}, between-driver "
-         f"spread {sigma_pop:.3f}, lapse {b:.3f}). The only free quantity is a single "
+         f"spread {sigma_pop:.3f}, trial spread {sigma_trial:.3f}, lapse {b:.3f}). The "
+         "only free quantity is a single "
          "paradigm shift, fitted twice: acting on the threshold, and acting on the "
          "gain.\n",
          "## Which shift fits\n",
@@ -198,7 +218,7 @@ def main() -> None:
     kind, val = winner, fits[winner][0]
     worst = 0.0
     for c in shared:
-        pred = predicted_press_cdf(bp, c, checkpoints, log_k, mu_a, sigma_pop, b,
+        pred = predicted_press_cdf(bp, c, checkpoints, log_k, mu_a, s_eff, b,
                                    LAMBDA_S,
                                    gain_shift=val if kind == "gain" else 0.0,
                                    level_shift=val if kind == "level" else 0.0)

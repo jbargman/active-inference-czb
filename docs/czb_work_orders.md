@@ -87,6 +87,12 @@ carries the judgment. The split I would use:
 
 ### Card R.1 — review gate after A.2/A.3/A.4 (for the stronger model)
 
+*[Executed 2026-08-27 by a tier-1 review session. Decisions: hierarchical lapse is the
+primary A.2 variant (evidence: `replication/czb/out/bias_variant_diagnostics.md`);
+the A.3 accumulator is repaired by gating accumulation at manoeuvre onset, and A.3/A.4
+were re-run at the gate as v2. All nine queries resolved or carried in the work log;
+register regenerated. Follow-up work is card A.2.v2 below.]*
+
 - **Goal**: close the queries the executing session raised, in severity order, and
   decide the two things it deliberately did not decide.
 - **Read first**: `replication/czb/out/query_register.md` (generated — the work log is
@@ -100,7 +106,11 @@ carries the judgment. The split I would use:
      hierarchical lapse absorbs variation the group model gave to the threshold — the
      opposite direction to the leakage argument in `docs/czb_validation_roadmap.md`
      §5.1, which should be revisited or corrected in the light of it. Deciding this
-     fixes the headline percentile.
+     fixes the headline percentile. *[Corrected at the gate, 2026-08-27: the claimed
+     contradiction was a misreading. Roadmap §5.1 predicted that under real leakage the
+     GROUP model shows the wider σ_c — which is exactly the observed ordering
+     (0.341 > 0.209), so the observation confirms §5.1 rather than contradicting it.
+     Decision and evidence: `replication/czb/out/bias_variant_diagnostics.md`.]*
   2. **A.3.Q1 — the accumulator's specification.** The pre-registered verdict is FAIL,
      but the in-sample fit is worse than the simpler model it extends, and the cause is
      identified: noise accumulating through 15.1 s of empty pre-onset clip. Choose the
@@ -117,6 +127,39 @@ carries the judgment. The split I would use:
   appended to the work log, or explicitly carried forward with a reason; the register
   regenerated; and if a decision changes a documented plan, that document corrected in
   place with a dated note.
+
+### Card A.2.v2 — regenerate stage 1 under the corrected validation code, and test the correlated-effects variant
+
+*(Added at review gate R.1, 2026-08-27. Cheap-model card; long-running, overnight is
+fine.)*
+
+- **Why**: R.1 found and fixed two defects in `fit_stage1.py`'s validation code (not in
+  the fits): the hierarchical LOPO integrated the two random effects on the same
+  quadrature nodes (the diagonal of the 2D integral, asserting perfect rank
+  correlation), and the C1 predictive plugged in the hier variant's *median* lapse
+  where the population mean is required. The stored `out/stage1_summary.md` therefore
+  carries a LOPO comparison and a C1 table computed under those defects. R.1 also
+  found the fitted b_i and c_i correlate at Spearman −0.700 while the model assumes
+  independence, and specified a correlated-effects check.
+- **Build**: (a) re-run `python replication/czb/fit_stage1.py` as committed (the fixes
+  are in place; 15 LOPO folds as before). (b) Add `fit_hier_corr` to
+  `fit_stage1.py`: the hierarchical-lapse model with correlated effects — driver
+  threshold uses z1, driver lapse uses ρ·z1 + √(1−ρ²)·z2 on the same product
+  Gauss-Hermite grid, one extra hyperparameter ρ fitted as atanh(ρ) with prior
+  Normal(0, 0.75) on the atanh scale (weakly informative: 95% prior mass within
+  |ρ| < 0.9; motivation: the posterior-mean correlation −0.700 must be reachable
+  without being presumed). Report its σ_pop, ρ, and the 50/80/95th percentiles
+  alongside the two existing variants.
+- **Accept**: summary regenerated; the LOPO comparison quoted under product-grid
+  integration; the correlated fit either converges with usable SEs or is reported as
+  not identified (also an acceptable outcome — 43 drivers is thin for a correlation).
+- **Decision rule (pre-stated at R.1)**: if the correlated variant moves the 80th
+  percentile by more than the hierarchical variant's current CI half-width (~250
+  deficit units), escalate to review before any percentile is quoted downstream;
+  otherwise the hierarchical variant stands as primary with the correlated fit
+  reported as a robustness line.
+- **Stop if**: the correlated variant's optimizer or Hessian fails after two honest
+  attempts — report, keep the hierarchical variant primary, carry the query.
 
 ### Card A.1 — synthetic-recovery harness
 
@@ -159,6 +202,14 @@ carries the judgment. The split I would use:
 
 ### Card A.3 — the accumulator layer (review gate on its verdict)
 
+*[Verdict recorded 2026-08-27 at review gate R.1: **FAIL**, final and quotable. The
+gate repaired two diagnosed misspecifications (v2: noise gated at manoeuvre onset;
+v3: a free trial-level threshold spread, the analogue of stage 1's σ_resp), verified
+v2's degenerate optimum was global (`fit_stage2.py --scan`), and pre-committed to v3
+as the last iteration. v3: in-sample 0.178 vs the static probit's 0.125; held-out
+0.267 against the ≤ 0.11 / > 0.13 rule. Structural cause in `out/stage2_summary.md`.
+Do not re-run this card; the accumulator question is closed for this stimulus set.]*
+
 - **Goal**: the pre-registered test: does time-integration close the within-scenario
   gap?
 - **Build**: `replication/czb/fit_stage2.py`. Evidence = the per-frame deficit series
@@ -175,6 +226,13 @@ carries the judgment. The split I would use:
   the static threshold — report, since that itself answers the question.
 
 ### Card A.4 — button-side validation
+
+*[Re-run 2026-08-27 at review gate R.1 under the final (v3) accumulator: still FAIL
+(worst checkpoint discrepancy 0.310), attributable to the accumulator's recorded A.3
+inadequacy. What survives: the paradigm effect's direction (earlier pressing in
+Button) is confirmed; the level-versus-rate form is NOT distinguished (both shifts
+reach RMSE 0.163), so handbook ch. 11 decision 3 stays open. Do not re-run without a
+new response model.]*
 
 - **Goal**: predict the press-time densities from the Random-fitted model with one
   paradigm shift.
@@ -211,6 +269,12 @@ per-criticality deficit figure, property tests, and the PS-versus-field correlat
   (e.g. missing vehicle, broken dimensions beyond the documented truck case).
 
 ### Card B.4 — the transfer test (review gate; do not run before A.3 and B.1–B.3)
+
+*[Adjusted 2026-08-27 at review gate R.1: A.3's FAIL removes the accumulator from
+this card. The transferred model is the stage-1 static threshold, hierarchical-lapse
+variant (population median 5 352, σ 0.209), everything frozen. The three-way
+comparison (one-scalar field vs per-scenario 2D rules vs elliptical joint) is
+unchanged.]*
 
 - Fit on cut-in only (A.2/A.3 configuration frozen); predict each transfer scenario's
   response surface with no refit. Primary: no per-scenario shift. Secondary: one
@@ -250,3 +314,21 @@ execute card X and nothing else"; end each with the card's report, a commit whos
 message names the card, and one paragraph appended to the running log in
 `replication/czb/out/worklog.md`. Review sessions (stronger model) after A.2, A.3,
 and B.4 at minimum.
+
+*[Card order after gate R.1, 2026-08-27. Stage A is closed (A.1–A.4 done; the A.3/A.4
+FAILs are recorded verdicts, not open work). The remaining cards, in the order a
+cheap-model session should take them:*
+
+1. *B.1 — cyclist-overtake field construction (small, next).*
+2. *C — percentile sensitivity (small, cheap; uses A.2's decided hierarchical
+   variant: median 5 352, σ 0.209).*
+3. *A.2.v2 — regenerate stage 1 under the corrected validation code + the
+   correlated-effects check (long-running; a good overnight companion to B.1 or C).*
+4. *B.2 — truck field construction; B.3 — LTAP (write its construction note first and
+   have it reviewed before coding, per the card).*
+5. *B.4 — the transfer test (review gate; static stage-1 model per the R.1
+   adjustment).*
+
+*Queries in `replication/czb/out/query_register.md`: A.1.Q2 (a_req axis) stays a
+blocker for the truck check only; R.1.Q1–Q3 are for Jonas/review and block nothing
+above.]*

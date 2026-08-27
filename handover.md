@@ -1,37 +1,43 @@
 # handover.md — restart a session here
 
-> ## Next session: a review gate, for the stronger model
+> ## Next session: card B.1, back on the executing model
 >
-> *Added 2026-08-27, after a batch run of cards A.1–A.4 on the executing model.*
+> *Rewritten 2026-08-27 after review gate R.1 ran at tier 1 (its record:
+> `handover_2026-08-27.md` §12, the work log's R.1 entry, and the dated notes it left
+> in the roadmap, the work orders, the fitting plan and the assessment).*
 >
-> The fitting spine is built and has produced its first real numbers, but it stopped at
-> two decisions it was right not to make alone. **The next session is card R.1 in
-> `docs/czb_work_orders.md`** — a review, not new execution, and it should run on the
-> most capable model available.
+> R.1 closed all nine open queries and settled the two referred decisions:
 >
-> Start with `replication/czb/out/query_register.md`: nine open queries, three of them
-> blockers, generated from the work log by `replication/czb/collect_queries.py`. The two
-> that block downstream work:
+> - **The A.2 bias variant is decided: hierarchical lapse is primary** — population
+>   median 5 352, between-driver σ 0.209; the group variant stays as the upper
+>   sensitivity bracket, and any quoted percentile names its variant (80th: 6 379 hier
+>   vs 6 717 group). Per-driver pre-onset heterogeneity is decisively real
+>   (p < 0.0001), and the group variant leaks pre-onset propensity into the thresholds
+>   — the direction roadmap §5.1 predicted (the batch's "contradiction" was a
+>   misreading). Evidence: `replication/czb/out/bias_variant_diagnostics.md`.
+> - **The A.3 accumulator verdict is final: FAIL, and quotable.** The gate repaired
+>   two diagnosed misspecifications (noise gated at manoeuvre onset; a free
+>   trial-level threshold spread) and pre-committed the third run as last: in-sample
+>   0.178 vs the static probit's 0.125, held-out 0.267 vs the pre-registered ≤ 0.11.
+>   Time-integration of the deficit does not close the within-scenario gap on this
+>   stimulus set; the named cause is anticipatory criticality-graded responding at
+>   C1–C2 plus a shallow late-cell criticality gradient. A.4 re-run under the final
+>   model: still FAIL; the paradigm effect's *direction* (earlier Button pressing) is
+>   confirmed, its level-versus-rate *form* is no longer distinguished. **B.4
+>   transfers the static stage-1 model; the accumulator is out.**
 >
-> - **A.2.Q2** — group-level versus hierarchical lapse changes the between-driver spread
->   by 39% (0.341 → 0.209), which is the quantity every percentile is made of, while the
->   held-out likelihood separates the two by 0.6 units. The headline number depends on it.
-> - **A.3.Q1** — the accumulator failed its pre-registered test, but fits *worse in
->   sample* than the simpler model it extends, so the failure is misspecification rather
->   than refutation. The cause is identified (Wiener noise accumulating through 15.1 s of
->   empty pre-onset clip); the remedy is a model-design decision. Neither A.3's nor A.4's
->   FAIL should be quoted as evidence about the framework until this is settled.
+> **The next card is B.1** (cyclist-overtake field), then C (percentile sensitivity),
+> with A.2.v2 (regeneration under corrected validation code + the correlated-effects
+> check) as the overnight companion — order and details in `docs/czb_work_orders.md`
+> §4's dated note. Open queries: 4 (`replication/czb/out/query_register.md`) — one
+> carried blocker (A.1.Q2, a_req axis; blocks only the truck check) and R.1's three,
+> which block nothing.
 >
-> What is *not* in doubt and needs no review: the population median boundary level, 5 043
-> to 5 352 depending on the variant, against the stage-0 pilot's independent 5 200; and
-> the comfort/dread separation from the ordered braking-expectation model (3 703 and
-> 6 397 deficit units, THW 0.50 s and 0.27 s at 20 m/s).
->
-> Working conventions for every session are now the `performing-research` skill
+> Working conventions for every session are the `performing-research` skill
 > (`~/.claude/skills/performing-research/SKILL.md`, mirrored at
-> `docs/skills/performing-research.SKILL.md`): batch mode, the query convention, APA
-> citations, parameter motivations, and the model-tier rules that say a top-tier session
-> has nobody to defer to and must therefore resolve and self-review rather than flag.
+> `docs/skills/performing-research.SKILL.md`): batch mode, the query convention (now
+> `@<card>.Q<n>(severity, audience)` — the collector parses both forms), APA
+> citations, parameter motivations, and the model-tier rules.
 
 > **Later arcs exist.** `handover_2026-08-26.md` covers the 2026-08-25 → 08-26 work (the
 > equivalence/ROPE revision, the severity-versus-timing diagnosis, the new human dataset
