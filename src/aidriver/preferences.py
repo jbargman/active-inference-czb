@@ -118,6 +118,20 @@ class PreferenceParams:
     a_other_min: float = -6.0       # a_OV,min -- calibrated per scenario (see module notes)
     a_max: float = 8.0              # |a_max| the ego can achieve
     response_time: float = 1.0      # t_react [s]
+    # --- continuous lane entry (2026-08-27; NOT in the released code) ----------------
+    # The released p_safe and the tau^-1 preference gate on binary lane tests, which is
+    # exact for the three released scenarios (their targets are always fully in lane or
+    # fully out of it) but makes the field a step function through a cut-in, where the
+    # target spends ~2.5 s partially in lane. With `lane_entry_continuous` the binary
+    # gates are replaced by a lane-entry weight P_lane in [0, 1] (see `lane_entry_weight`)
+    # which reduces EXACTLY to the released gates in every geometry the released scenarios
+    # sustain. With `counterfactual_residual_severity` the p_safe magnitude grades with
+    # the relative speed remaining at impact under maximal braking, instead of stepping to
+    # a constant; the term then ramps from zero precisely at the model's own boundary
+    # a_req = -a_max. Both default False = released behavior; the cut-in work switches
+    # them on. Derivation and argument: docs/lane_entry_note.md.
+    lane_entry_continuous: bool = False
+    counterfactual_residual_severity: bool = False
     # --- vehicle -------------------------------------------------------------------
     vehicle: BicycleParams = field(default_factory=BicycleParams)
 
@@ -228,6 +242,56 @@ def _severity(v_ego, v_other, theta_ego, theta_other, p: PreferenceParams):
     return p.severity_floor + (1.0 - p.severity_floor) * dv / p.collision_ref_speed
 
 
+def lane_entry_weight(obs: dict, p: PreferenceParams):
+    """
+    P_lane in [0, 1]: how much the car-following conflict geometry applies (2026-08-27,
+    not in the released code; argument in docs/lane_entry_note.md).
+
+    It is the **lateral overlap fraction predicted at the moment of longitudinal
+    closure**: project the lateral offset forward at the current lateral closing rate over
+    the longitudinal time-to-collision (clamped at perfect centering -- a lane-changing
+    target aims into the lane, not through it), then take the overlap of the two width
+    intervals (inflated by the released code's own 1.15 factor) as a fraction of the
+    narrower width:
+
+        |dy|_pred = max( |dy| - max(closing rate, 0) * tau_lon, 0 )
+        P_lane    = clip( (s - |dy|_pred) / (1.15 * min(w_e, w_o)), 0, 1 ),
+                    s = 1.15 * (w_e + w_o) / 2
+
+    A collision requires lateral overlap by the time the gap closes, so the overlap that
+    matters is the one predicted for that moment; the current overlap is the tau_lon -> 0
+    special case. The function is continuous in every argument (the one exception,
+    tau_lon jumping to infinity as closing stops, multiplies terms that are zero there).
+
+    Limits that recover the released behavior exactly: a target centred in lane gives 1; a
+    target in the adjacent lane with no lateral motion gives 0, however hard the ego
+    closes on it. Everything in between is the entry continuum the released binary gates
+    cannot express and the released scenarios never sustain.
+
+    `obs` may supply `w_other` (target width; defaults to the ego's width, which makes the
+    overlap onset threshold coincide with the released box's 1.15 * width) and `vy_other`
+    (d(dy)/dt, signed; defaults to 0 = no anticipation).
+    """
+    veh = p.vehicle
+    dy = np.asarray(obs["dy"], dtype=float)
+    w_o = np.asarray(obs.get("w_other", veh.width), dtype=float)
+    vy = np.asarray(obs.get("vy_other", 0.0), dtype=float)
+
+    s = 1.15 * 0.5 * (veh.width + w_o)          # |dy| at which lateral overlap begins
+    w_min = 1.15 * np.minimum(veh.width, w_o)
+    ady = np.abs(dy)
+
+    # |dy| shrinks at rate -sign(dy) * vy when that is positive (moving toward our lane)
+    closing_rate = np.maximum(-np.sign(dy) * vy, 0.0)
+    dxg = np.asarray(obs["dx"], dtype=float) - veh.length
+    v_rel = np.asarray(obs["v"], dtype=float) - np.asarray(obs.get("v_other", 0.0), dtype=float)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        tau_lon = np.where(v_rel > 1e-3, np.maximum(dxg, 1e-3) / v_rel, np.inf)
+        proj = np.where(np.isinf(tau_lon), 0.0, closing_rate * tau_lon)
+    ady_pred = np.maximum(ady - proj, 0.0)
+    return np.clip((s - ady_pred) / np.maximum(w_min, 1e-9), 0.0, 1.0)
+
+
 def inverse_tau(dx, v_ego, v_other, p: PreferenceParams):
     """
     Inverse tau, tau^-1 = phi_dot / phi -- for an object at longitudinal gap d closing at
@@ -274,6 +338,13 @@ def log_collision_pref(obs: dict, p: PreferenceParams):
         tau_inv = np.maximum(tau_inv, p.tau_inv_mu)
     log_tau = (_log_gauss(tau_inv, p.tau_inv_mu, p.tau_inv_sd)
                - (-np.log(p.tau_inv_sd) - 0.5 * LOG_2PI))   # max normalised to 0
+    if p.lane_entry_continuous:
+        # The released tau^-1 preference has no lateral gate at all -- any vehicle "ahead"
+        # triggers it, which the released scenarios never expose (their leads are always in
+        # lane) but a cut-in does: it would make merely passing a slower adjacent-lane
+        # vehicle uncomfortable. Weight the excess by how much the conflict geometry
+        # applies; fully in lane this is 1 and the released behavior returns.
+        log_tau = lane_entry_weight(obs, p) * log_tau
     return np.where(collided, log_coll, np.where(ahead, log_tau, 0.0))
 
 
@@ -310,6 +381,34 @@ def required_deceleration(obs: dict, p: PreferenceParams):
     return np.where(denom > 0, a_req, -np.inf)
 
 
+def residual_delta_v(obs: dict, p: PreferenceParams):
+    """
+    Relative speed remaining at impact [m/s] in the p_safe counterfactual, if the ego
+    brakes at its full capability a_max after the reaction time:
+
+        dv_resid = sqrt( max(0, v_react^2 - 2 a_max d_avail) )
+
+    with v_react and d_avail exactly as in `required_deceleration` (SI Eq. 51). Zero
+    precisely when a_req >= -a_max (the crash is avoidable; the boundary a_req = -a_max is
+    the zero crossing), growing continuously as the situation worsens, reaching v_react
+    when the gap has already closed. The counterfactual lead has stopped by construction,
+    so the residual ego speed IS the relative speed at impact.
+    """
+    veh = p.vehicle
+    v = np.asarray(obs["v"], dtype=float)
+    a = np.minimum(np.asarray(obs.get("a", 0.0), dtype=float), 0.0)
+    dx = np.asarray(obs["dx"], dtype=float)
+    v_other = np.asarray(obs.get("v_other", 0.0), dtype=float)
+    a_other = np.minimum(np.asarray(obs.get("a_other", 0.0), dtype=float), 0.0)
+    a_test = np.minimum(a_other, p.a_other_min)
+    t = p.response_time
+
+    v_react = np.maximum(v + a * t, 0.0)
+    d_react = (dx - v_other ** 2 / (2.0 * a_test)) - (v * t + 0.5 * a * t ** 2)
+    d_avail = np.maximum(d_react - 1.15 * veh.length, 0.0)
+    return np.sqrt(np.maximum(v_react ** 2 - 2.0 * p.a_max * d_avail, 0.0))
+
+
 def log_safety_pref(obs: dict, p: PreferenceParams):
     """
     p_safe (SI Eqs. 49/50) -- **the comfort-zone term**.
@@ -333,11 +432,29 @@ def log_safety_pref(obs: dict, p: PreferenceParams):
     th = np.asarray(obs.get("theta", 0.0), dtype=float)
     th_o = np.asarray(obs.get("theta_other", 0.0), dtype=float)
 
-    c_brake = ((np.abs(dy) <= 1.15 * veh.width)
-               & (dx >= veh.length)
-               & (np.sign(v) * np.sign(v_other * np.cos(th_o)) >= 0))
-    unsafe = c_brake & (required_deceleration(obs, p) < -p.a_max)
-    return np.where(unsafe, 0.5 * p.g_collision * _severity(v, v_other, th, th_o, p), 0.0)
+    same_dir = np.sign(v) * np.sign(v_other * np.cos(th_o)) >= 0
+    ahead = dx >= veh.length
+
+    if p.counterfactual_residual_severity:
+        # Continuous magnitude (2026-08-27, not in the released code; argument in
+        # docs/lane_entry_note.md section 4): the penalty grades with the relative speed
+        # that would REMAIN at impact under maximal braking, instead of stepping to a
+        # constant scaled by the current relative speed. No severity floor: dv_resid -> 0
+        # means the counterfactual crash is exactly avoidable and the penalty should
+        # vanish -- the floor guards real contact in p_coll, not counterfactuals. The term
+        # is now a continuous ramp whose zero crossing is the model's own boundary
+        # a_req = -a_max, which is what makes level-set fitting on the field possible.
+        magnitude = 0.5 * p.g_collision * (1.0 - p.severity_floor) \
+            * residual_delta_v(obs, p) / p.collision_ref_speed
+    else:
+        unsafe = required_deceleration(obs, p) < -p.a_max
+        magnitude = np.where(unsafe, 0.5 * p.g_collision * _severity(v, v_other, th, th_o, p), 0.0)
+
+    if p.lane_entry_continuous:
+        gate = lane_entry_weight(obs, p)
+    else:
+        gate = (np.abs(dy) <= 1.15 * veh.width).astype(float)
+    return np.where(ahead & same_dir, gate * magnitude, 0.0)
 
 
 # --------------------------------------------------------------------------------------

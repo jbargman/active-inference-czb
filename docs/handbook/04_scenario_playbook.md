@@ -311,11 +311,22 @@ small gap can share a duration and pose entirely different problems. Formulating
 a comparison of τ_lat with the longitudinal TTC captures that; formulating it in terms of
 duration cannot.
 
-{{R3}}**Status.** Not implemented. `src/comfortzone/cutin.py` computes both ingredients
-(`y_rel`, `dy_rel_dt`, `ttc_s`) so the candidate forms can be compared against the observed
-3 × 6 response surface as soon as the form is agreed. Changing the collision and safety terms
-this way is a modification to the authors' preference function, not a parameter choice, and
-should be argued explicitly in any write-up.
+{{R4}}**Status: settled and implemented 2026-08-27.** The full argument is
+`docs/lane_entry_note.md`; the short version is that the binary gates are replaced by the
+lateral overlap fraction *predicted at the moment of longitudinal closure* (projecting the
+lateral offset forward at its closing rate over the longitudinal TTC, clamped at
+centering), and the saturated safety magnitude by the relative speed that would *remain at
+impact* under maximal braking. Both are parameter-free, both reduce exactly to the released
+forms in every geometry the released scenarios sustain, and both are flag-gated in
+`src/aidriver/preferences.py` (default off, so every published number is untouched). On the
+study's clips the field goes from one indistinguishable step to ramps ordered by
+criticality at every truncation point (`figures/cutin_field_check.png`). The note also
+argues the reading on which this is not a departure from the model at all: the closed loop
+already grades lane entry continuously, through rollouts that sample the other vehicle's
+steering; the continuous forms are that expectation written in closed form for the
+rollout-free field. One consequence worth knowing: the mild truck cut-ins have zero dread
+deficit throughout the response window, so the comfort-dread distinction becomes essential
+to the fitting (see the note's section 5).
 
 {{R3}}**One caution carried over from the data.** In the new dataset the participant's
 instruction differs by scenario — intervene against a cut-in, abort an overtake, yield

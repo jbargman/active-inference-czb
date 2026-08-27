@@ -7,11 +7,16 @@ boundary).
 
 Scope and conventions, all deliberate:
 
-* **Parameters are unchanged from the released scenarios.** Nothing here introduces a new
-  fitted constant. Lane width, vehicle dimensions and every preference weight come from
-  `PreferenceParams`; the one scenario-typed dial, the assumed steering variability of the
-  other vehicle, takes the lateral-scenario value (see `CUTIN_W_SD_MODEL`). The intent is
-  that any later disagreement with data is attributable to structure, not to tuning.
+* **No new fitted constants.** Lane width, vehicle dimensions and every preference weight
+  come from `PreferenceParams`; the one scenario-typed dial, the assumed steering
+  variability of the other vehicle, takes the lateral-scenario value (see
+  `CUTIN_W_SD_MODEL`). Two *structural* changes are made, both flag-gated in
+  `aidriver.preferences` and both parameter-free: the binary lane gates become the
+  continuous lane-entry weight, and the safety magnitude grades with the counterfactual
+  residual impact speed (argument: docs/lane_entry_note.md; staging: `cutin_params`).
+  The desired speed is set from the clip -- staging, exactly as the released scenarios
+  stage `v_ego_des` at the scenario's initial speed, not a fitted value. The intent
+  remains that any later disagreement with data is attributable to structure, not tuning.
 * **The acceleration column of the study traces is not used.** It is unsigned and its
   definition could not be established (`docs/czb_study1_data_plan.md` section 1.2), so
   longitudinal acceleration is obtained by differentiating speed. Predictors are built from
@@ -31,8 +36,10 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from aidriver.preferences import (PreferenceParams, log_preference_terms,
-                                  pragmatic_deficit, required_deceleration)
+from dataclasses import replace
+
+from aidriver.preferences import (PreferenceParams, lane_entry_weight, log_preference_terms,
+                                  pragmatic_deficit, required_deceleration, residual_delta_v)
 
 # The one scenario-typed driver parameter (handbook ch. 04): assumed steering variability
 # of the other vehicle. 0.0045 in rear-end, 0.4575 in both lateral scenarios. A cut-in
@@ -142,8 +149,14 @@ def load_cutin_trace(path: str | Path, is_truck: bool = False) -> CutInTrace:
 
     y_t = tg.Location_Y.to_numpy()
     y0, y1 = y_t[0], y_t[-1]
+    # Onset on an ABSOLUTE displacement threshold, not a fraction of the total span: the
+    # traces are simulator-clean (lateral position exactly constant until the manoeuvre),
+    # and a 2%-of-span threshold detected onset 1-2 frames late, which put genuinely
+    # moving frames on the "pre-onset" side of the C1 anchor (found 2026-08-27 via the
+    # C1 covariate check in comfortzone.czb_data).
+    moved = np.abs(y_t - y0) > 0.03
+    onset = int(np.argmax(moved)) if moved.any() else len(y_t) - 1
     frac = (y_t - y0) / (y1 - y0) if abs(y1 - y0) > 1e-6 else np.zeros_like(y_t)
-    onset = int(np.argmax(frac > 0.02))
     complete = int(np.argmax(frac > 0.98)) if (frac > 0.98).any() else len(frac) - 1
 
     length = float(tg.Length_m.iloc[0])
@@ -182,12 +195,18 @@ def cutin_norm_weight(y_rel: np.ndarray, progress: np.ndarray, lane_width: float
     """
     y_rel = np.asarray(y_rel, float)
     progress = np.asarray(progress, float)
-    in_lane = np.abs(y_rel) < 0.5 * lane_width
-    adjacent = np.abs(np.abs(y_rel) - lane_width) < 0.5 * lane_width
+    # A vehicle body of width w_v straddles a lane boundary when its centre is within
+    # w_v/2 of that boundary. (Until 2026-08-27 the in-lane and adjacent-lane categories
+    # were half-lane-wide bands that tiled the whole corridor, so the straddling category
+    # was empty by construction and the time-dependence could never engage.)
+    w_v = 1.8                                     # nominal body width [m]
+    ay = np.abs(y_rel)
+    in_lane = ay < 0.5 * lane_width - 0.5 * w_v
+    adjacent = np.abs(ay - lane_width) < 0.5 * lane_width - 0.5 * w_v
     w = np.full(y_rel.shape, w_offlane, dtype=float)
     w[adjacent] = 1.0
     w[in_lane] = 1.0
-    straddling = ~(in_lane | adjacent)
+    straddling = (~(in_lane | adjacent)) & (ay < 1.5 * lane_width)
     excess = np.clip(progress - straddle_tolerance, 0.0, 1.0)
     w[straddling] = np.maximum(w_offlane, 1.0 - excess[straddling])
     return w
@@ -197,11 +216,32 @@ def cutin_norm_weight(y_rel: np.ndarray, progress: np.ndarray, lane_width: float
 # 3. The predictor series
 # --------------------------------------------------------------------------------------
 
+def cutin_params(trace: CutInTrace, p: PreferenceParams | None = None) -> PreferenceParams:
+    """The preference parameters for evaluating this clip.
+
+    Two things are set here and both are staging, not fitting:
+
+    * **The desired speed comes from the clip.** The stimulus ego holds a rigorously
+      constant speed, and that speed IS the driver's chosen speed for the purposes of the
+      field -- the participant watches a vehicle travelling as intended. Leaving the
+      default 15 m/s against a 30.5 m/s stimulus put a constant -483 into every frame of
+      every clip (the staging error found 2026-08-26); with the clip's own speed the
+      term is ~0, as it is in the released scenarios' own staging, where `v_ego_des`
+      always equals the scenario's initial speed.
+    * **The continuous lane-entry forms are on** (`lane_entry_continuous`,
+      `counterfactual_residual_severity`): a cut-in lives in the straddling continuum the
+      released binary gates cannot express. Argument: docs/lane_entry_note.md.
+    """
+    p = p or PreferenceParams()
+    return replace(p, v_desired=float(np.median(trace.v_ego)),
+                   lane_entry_continuous=True, counterfactual_residual_severity=True)
+
+
 def cutin_obs(trace: CutInTrace, p: PreferenceParams) -> dict:
     """Observation dict along the clip, in the form `log_preference_terms` expects.
 
     Built from positions, speeds and headings only -- no acceleration column, per the
-    module docstring.
+    module docstring. `vy_other` and `w_other` feed the continuous lane-entry weight.
     """
     return {
         "v": trace.v_ego,
@@ -213,6 +253,8 @@ def cutin_obs(trace: CutInTrace, p: PreferenceParams) -> dict:
         "dy": trace.y_tar,
         "v_other": trace.v_tar,
         "a_other": trace.a_tar,
+        "vy_other": np.gradient(trace.y_tar, trace.t),
+        "w_other": trace.tar_wid,
     }
 
 
@@ -223,9 +265,10 @@ def cutin_deficit(trace: CutInTrace, p: PreferenceParams | None = None,
     This is the scalar the boundary is a level set of: the pragmatic deficit of the
     preference function, optionally scaled by how normal the target's behavior is. A
     boundary crossing is the first time this exceeds a level `c`, and `c` is what gets
-    fitted to the clip-rating and button-press responses.
+    fitted to the clip-rating and button-press responses. Evaluated with the clip's own
+    desired speed and the continuous lane-entry forms (see `cutin_params`).
     """
-    p = p or PreferenceParams()
+    p = cutin_params(trace, p)
     d = pragmatic_deficit(cutin_obs(trace, p), p)
     if apply_norm:
         w = cutin_norm_weight(trace.y_tar, trace.progress, LANE_WIDTH_STUDY)
@@ -239,7 +282,7 @@ def cutin_predictors(trace: CutInTrace, p: PreferenceParams | None = None) -> pd
     Jonas's list: relative distances, speeds and angles plus derivatives, looming, the
     deceleration required to avoid a collision with some margin, and TTC.
     """
-    p = p or PreferenceParams()
+    p = cutin_params(trace, p)
     obs = cutin_obs(trace, p)
     terms = log_preference_terms(obs, p)
     v_rel = trace.v_ego - trace.v_tar
@@ -258,6 +301,8 @@ def cutin_predictors(trace: CutInTrace, p: PreferenceParams | None = None) -> pd
         "y_rel": trace.y_tar,
         "dy_rel_dt": np.gradient(trace.y_tar, trace.t),
         "a_req": required_deceleration(obs, p),
+        "dv_resid": residual_delta_v(obs, p),
+        "p_lane": lane_entry_weight(obs, p),
         "norm_weight": cutin_norm_weight(trace.y_tar, trace.progress, LANE_WIDTH_STUDY),
         "deficit": cutin_deficit(trace, p),
     })
