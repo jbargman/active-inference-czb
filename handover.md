@@ -4,8 +4,11 @@
 > equivalence/ROPE revision, the severity-versus-timing diagnosis, the new human dataset
 > in `external/01_studies/`, the start of the cut-in scenario); `handover_2026-08-27.md`
 > covers the 2026-08-27 arc (a review that corrected the B-versus-C paired-difference
-> claim to P ≈ 0.97, the settled continuous lane-entry form, and the fitting
-> preparation). Read this file first for standing context, then those two in order. Where
+> claim to P ≈ 0.97, the settled continuous lane-entry form, the fitting preparation,
+> the honest assessment of the active-inference route, and — its §8 — the
+> **model-handover protocol**: execution moves to a less expensive model working
+> through `docs/czb_work_orders.md`, with escalation triggers and review gates).
+> Read this file first for standing context, then those two in order. Where
 > the files disagree on the equivalence statistics, the latest one wins. The 08-26 arc is
 > a single commit on `main`, so a net diff will not show the sequence of corrections
 > inside it — its §8 explains which ones to look for.

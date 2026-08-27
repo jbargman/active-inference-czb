@@ -44,6 +44,47 @@ carries the judgment. The split I would use:
 
 ## 3 Task cards
 
+### Card S.1 — draft the `perform-research` skill (first task for the next session)
+
+- **Goal**: a reusable, iteratively updatable skill that captures how research is
+  performed in this collaboration — so the working discipline survives model changes,
+  session changes, and time. Jonas asked for it explicitly, drafting delegated to the
+  next (cheaper) session, with the instruction to also look at what exists elsewhere
+  online and borrow with attribution.
+- **Build**: draft `C:\Users\bargman\.claude\skills\perform-research\SKILL.md` with
+  frontmatter (name, description triggering on research execution, analysis tasks,
+  fitting runs, and model handovers in this project family). Required contents, from
+  this project's accumulated practice:
+  1. **Reproducibility discipline**: every quoted number from a committed script with
+     tracked output; regeneration commands logged; generated artifacts never
+     hand-edited; the 2026-08-27 paired-difference correction as the cautionary tale.
+  2. **Verification discipline**: property tests before and after every task; verify
+     by two independent routes where feasible; results that contradict documented
+     findings get surfaced, never silently reconciled.
+  3. **Documentation discipline**: markdown as source of truth, Word/PDF generated;
+     dated handover files per arc plus a standing `handover.md` entry point; decisions
+     recorded with their reasoning and their location; the `jonas-academic-writing`
+     conventions for anything addressed to Jonas.
+  4. **Between-model handover protocol**: the entry sequence (handover chain →
+     roadmap → work orders), one card per session, the escalation triggers and review
+     gates (copy from `handover_2026-08-27.md` §8 — that list is the current
+     authority), worklog appends, and the rule that a cheaper session executes cards
+     and never improvises around a failed acceptance criterion.
+  5. **Statistical practice**: uncertainty conventions stated and resampled
+     completely (all variance sources); comparisons as differences; held-out
+     validation for any model comparison; pre-stated decision rules for verdict
+     experiments.
+- **Research step**: search online for existing practice worth borrowing — multi-
+  agent / multi-model handoff patterns, LLM-assisted research workflow guides,
+  lab-notebook and reproducibility standards (e.g. from open-science communities),
+  and any published skill/prompt libraries for research execution. Cite what is
+  borrowed; mark unverified claims per house rules.
+- **Accept**: the draft SKILL.md exists, is under ~300 lines, cites its sources, and
+  ends with an explicit "for Jonas's review" note. **Do not treat the skill as active
+  until Jonas approves it**; iterate on his comments in later sessions.
+- **Stop if**: unsure whether some practice is project law or one session's habit —
+  list the uncertain items in the draft for Jonas to rule on rather than guessing.
+
 ### Card A.1 — synthetic-recovery harness
 
 - **Goal**: prove the stage-1 estimator recovers known parameters before touching
