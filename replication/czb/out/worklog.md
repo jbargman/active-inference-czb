@@ -77,3 +77,20 @@ cost stays low. File is 292 lines, within the card's limit; frontmatter validate
 draft and still lives outside version control — its revisions are not tracked the way
 the handbook's rounds are; a canonical copy in a repository is offered in §14. Full
 suite (123 tests) green before and after; no repository code touched.
+
+## 2026-08-27 — Card S.1 (v3): skill approved and made active
+
+Jonas approved the skill and the batch-mode carve-out as written, and added one general
+rule: APA style for all citations and reference lists unless he says otherwise. That is
+now §9 of the skill, and §13 was rewritten as a proper APA reference list with the
+in-text citations converted to author-date form; the verification status of each source
+is kept as a note beneath it, since the provenance rule requires distinguishing what was
+fetched in full from what was read only as a search summary. The DRAFT banner is
+replaced by an active status line. He also asked for the skill to be tracked, so it is
+now mirrored at `docs/skills/performing-research.SKILL.md`, byte-identical and verified
+by `diff`, with `docs/skills/README.md` recording that the live user-level copy stays
+authoritative, that the mirror must be updated in the same commit, and why the mirror is
+deliberately not laid out as `.claude/skills/` (a second active copy would compete with
+the live one). He will say when he edits the live copy. No tags outstanding from this
+revision; the skill is 318 lines, still within the card's limit. No repository code
+touched.
