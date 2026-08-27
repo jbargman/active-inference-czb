@@ -24,7 +24,8 @@ from scipy.stats import norm
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "src"))
 
-from comfortzone.czb_data import random_cutin_trials    # noqa: E402
+from comfortzone.czb_data import (RANDOM_CUTIN_TRACES, random_cutin_trials,
+                                  stimulus_field)       # noqa: E402
 
 
 def fit_probit(x: np.ndarray, k: np.ndarray, n: np.ndarray) -> tuple[float, float]:
@@ -67,6 +68,17 @@ def baselines(cells) -> None:
     cells["t_end"] = [0.3 * (int(tp[1]) - 1) for tp in cells.timepoint]
     cells["ttc_nom"] = cells.criticality.str.replace("TTC", "").astype(float)
     cells["ttc_end"] = cells.ttc_nom - cells.t_end       # the dataset's design relation
+    # Jonas's proposed state-based rule (2026-08-27): lateral offset at clip end, from
+    # the traces -- a running minimum, mirroring the running-max convention
+    fields = {c: stimulus_field(p) for c, p in RANDOM_CUTIN_TRACES.items()}
+    for f in fields.values():
+        f["dy_min"] = np.minimum.accumulate(np.abs(f.y_rel.to_numpy()))
+
+    def at_time(f, t):
+        i = np.searchsorted(f.t_since_onset.to_numpy(), t, side="right") - 1
+        return float(f.dy_min.iloc[int(np.clip(i, 0, len(f) - 1))])
+
+    cells["dy_min"] = [at_time(fields[c], t) for c, t in zip(cells.criticality, cells.t_end)]
     k = (cells.p * cells.n).to_numpy()
     n = cells.n.to_numpy()
     obs = cells.p.to_numpy()
@@ -94,6 +106,8 @@ def baselines(cells) -> None:
         "TTC at clip end (design)": [cells.ttc_end.to_numpy()],
         "1/TTC at clip end": [1 / cells.ttc_end.to_numpy()],
         "gated a_req (running max)": [cells.a_req_max.to_numpy()],
+        "2D state: 1/TTC_end + dy (Jonas)": [1 / cells.ttc_end.to_numpy(),
+                                             cells.dy_min.to_numpy()],
         "TTC_nom + exposure time": [cells.ttc_nom.to_numpy(), cells.t_end.to_numpy()],
         "1/TTC_end + exposure time": [1 / cells.ttc_end.to_numpy(), cells.t_end.to_numpy()],
     }
@@ -110,6 +124,7 @@ def crossval(cells, k, n, obs) -> None:
     within-scenario advantage of the design regressions is NOT an in-sample artifact."""
     designs = {
         "field deficit": lambda c: [c.deficit_max.to_numpy() / 1000],
+        "2D state: 1/TTC_end + dy": lambda c: [1 / c.ttc_end.to_numpy(), c.dy_min.to_numpy()],
         "TTC_nom + exposure time": lambda c: [c.ttc_nom.to_numpy(), c.t_end.to_numpy()],
         "1/TTC_end + exposure time": lambda c: [1 / c.ttc_end.to_numpy(), c.t_end.to_numpy()],
     }

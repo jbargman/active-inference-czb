@@ -30,6 +30,42 @@ to the fitting plan's four questions and what they change. Companion documents:
   (after P(intervene) and the ratings' shape, the button densities will be the
   fourth).
 
+## 0b Amendments from the same evening's discussion
+
+Jonas's follow-up questions changed four things; recorded here so the stages below read
+correctly.
+
+- **The named comparator is now his 2D state rule, not the design regression.** A
+  probit in 1/TTC and lateral offset — both observable state variables — reaches
+  held-out corr 0.921 on the cut-in surface (field 0.864; design regression 0.934,
+  demoted to an upper-bound reference since its covariates are experiment clocks, not
+  state). Two things should be said about the 2D rule: within this stimulus family the
+  lateral-offset trajectory is nearly identical across criticality levels, so it
+  spans almost the same space as the design regression; and its second observable is
+  scenario-specific (lane-crossing distance for cut-in, PET for LTAP, clearance for
+  overtakes), which is exactly the conventional per-scenario route whose cross-scenario
+  version is the elliptical formulation. The transfer test is therefore a three-way
+  comparison: one-scalar field, per-scenario 2D rules, elliptical joint.
+- **The comfort and dread levels are both fitted, not fixed at 4 and 8.** Jonas's
+  correction on the DZB's meaning is adopted: the dread boundary is the deceleration
+  drivers do not voluntarily push beyond, a behavioral limit rather than the physical
+  a_max — so 8 m/s² is an upper anchor, not the answer, and 4 may also be high for
+  comfort. The ordered model fits both levels as free parameters per the hierarchy;
+  the 4/8 pair survives only as the staging default for computing example fields.
+- **A secondary model fits the conventions.** a_OV,min and t_react (the driver's
+  *assumed* worst case and budget — distinct from motor latency) can in principle be
+  identified at population level, because they enter the boundary with different
+  kinematic signatures (t_react scales with v_ego, a_OV,min with the lead's stopping
+  distance, a_allowed with v_react²) and the scenarios span 5.5–30.5 m/s. The primary
+  analysis keeps them fixed for falsifiability; the secondary lets the data place
+  them, and disagreement between the two is itself informative.
+- **Epistemic value gets reconsidered on evidence, not dropped for convenience**
+  (stage E below). The deposit contains the authors' own α = 0 runs: rear-end 28
+  matched configurations, collision difference exactly 0.000; intersection 6 matched,
+  within 0.005; **oncoming 3 matched, collisions 5.7 points lower with the term on**.
+  Inert in the longitudinal scenarios, possibly useful in the lateral one
+  (`replication/czb/epistemic_ablation_check.py`).
+
 ## 1 Stage A — close the within-scenario question (1–2 sessions, all data in hand)
 
 1. **Synthetic-recovery harness** for the stage-1 hierarchical model (fitting plan
@@ -115,6 +151,64 @@ frequency) with the CZB percentiles marked on it. This is the concrete version o
 "trigger set by comfort, audited by crash outcome", and it directly tests the QUADRARUM
 document's ~0.1 s observation on our own ensemble. Effort: moderate — the runner,
 weights and metrics all exist; the new piece is the intervention injection.
+
+## 4b Stage E — planning and epistemic value, reconsidered on evidence
+
+The field method's omission of expected-free-energy planning is not purely
+convenience, and the distinction matters. What the field *does* include is the
+predictive rollout of the **other** vehicle — the lane-entry weight is exactly the
+closed-form expectation of the conflict geometry under the target's continued motion.
+What it omits is rollout of the **ego's own policies**. For the study-1 stimuli that
+omission is arguably correct rather than approximate: the instruction asks when doing
+nothing stops being acceptable, which is the pointwise deficit of the no-action
+trajectory — the thing we compute. Where policy rollout plausibly matters is where
+scenarios differ in escape affordances, which is precisely the transfer set (LTAP:
+yield or proceed; overtake: abort or continue). Three bounded experiments, each with a
+decision rule:
+
+1. **E.1 — closed-form versus sampled expectation** (small): Monte Carlo the released
+   binary gates under the model's own steering noise along the cut-in clips and
+   compare with P_lane. If the closed form tracks the sampled expectation within the
+   data's resolution, the "field = rollout in closed form" reading is validated
+   quantitatively rather than argued.
+2. **E.2 — an uncertainty term where the data can see it** (moderate): the truck and
+   car cut-ins are matched on TTC levels but differ hugely in occlusion and apparent
+   size. If truck responses at matched kinematics are systematically earlier than any
+   kinematic covariate explains, an epistemic/precision term earns a place in the
+   field; the Button truck trials are the test bed. This is also the unexercised gaze
+   half's natural entry point.
+3. **E.3 — a policy-set field for the transfer scenarios** (moderate): for fixed
+   clips, EFE over a small discrete policy set (a few braking levels; the instructed
+   alternatives) is closed-form kinematics, not CEM — cheap. Comfort becomes "the
+   best available policy is still acceptable". Decision rule: if the per-scenario
+   instruction shifts (stage B.4's secondary analysis) shrink materially when the
+   policy set replaces the free shift, planning has earned its way back in; if not,
+   the pointwise field stands.
+
+The ablation result in section 0b sits behind all three: epistemic value is inert in
+the authors' longitudinal runs, hints at usefulness in the lateral one, and our α = 0
+matches an ablation they ran themselves — so nothing above contradicts the validated
+base; it extends it where the evidence points.
+
+## 4c What the NDS access is for
+
+Four distinct uses, in the order I would take them:
+
+1. **Estimating the paradigm offset δ empirically.** Fit c on naturalistic brake
+   onsets in lead-vehicle and cut-in events (the calibration machinery exists and
+   needs only kinematics — `comfortzone.calibrate`), and compare with the study-1
+   estimates. The difference *is* the paradigm-plus-context offset, measured rather
+   than assumed — the single biggest upgrade available for the absolute-trigger
+   question.
+2. **Exposure denominators for stage D.** How often routine driving crosses a
+   candidate trigger level determines the nuisance rate — the deposit ensembles
+   cannot provide this; NDS is the only source that can.
+3. **A percentile consistency check.** The distribution of self-selected margins in
+   routine driving (steady-state THW at speed, accepted lateral clearances) against
+   the fitted comfort-level distribution: drivers should mostly live inside their own
+   comfort zones, and the fraction who do not is a direct calibration check.
+4. **Transfer events in the wild** — naturally occurring cut-ins and LTAP conflicts
+   as a held-out scenario set with no instruction at all.
 
 ## 5 The four questions: answers received 2026-08-27, and what follows
 
