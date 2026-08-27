@@ -80,6 +80,14 @@ matched parameter counts:
 | nominal TTC + exposure time (design variables) | 3 | 0.081 | 0.960 |
 | 1/TTC at end + exposure time | 3 | 0.073 | 0.968 |
 
+*(Addendum, same evening: Jonas asked whether this comparison is in-sample. The table
+above is; the check has now been run held-out, and the conclusion survives. Under
+leave-one-criticality-out cross-validation — fit on two criticality levels, predict the
+third — the field gives out-of-sample corr 0.864 / RMSE 0.147 against the design
+regressions' 0.934–0.949 / 0.097–0.108, and leave-one-timepoint-out gives the same
+picture. The regressions genuinely generalize better within this scenario; overfitting
+is not what made them win. Committed in `replication/czb/pilot_surface_fit.py`.)*
+
 Three readings, in decreasing comfort:
 
 1. **The field beats every single kinematic scalar at equal parameter count.** Plain

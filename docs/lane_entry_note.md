@@ -222,7 +222,68 @@ allowed deceleration as the axis on which the boundary lives. This is taken up i
   flag does rescale deficit magnitudes, so a fitted level c is only comparable between
   runs with the same flags.
 
-## 7 Remaining freedoms, stated so they are not mistaken for settled
+## 7 Parameter reference for the cut-in evaluation
+
+*(Added 2026-08-27 at Jonas's request.)* Every quantity entering the cut-in field, its
+meaning, its value, and where the value comes from. None is fitted; the only fitted
+quantity in the whole pipeline is the later per-driver boundary level c.
+
+![Cut-in geometry and the lane-entry quantities](czb_figures/cutin_parameters.png)
+
+*(Figure by `replication/czb/make_cutin_param_diagram.py`. The lower panel shows the
+division of labor on a real clip: P_lane switches the conflict geometry on — near-zero
+before onset, saturating early in the manoeuvre — while Δv_resid carries the graded
+criticality; the deficit is essentially their product plus the small τ⁻¹ and effort
+terms. Δv_resid is nonzero even before onset because it is computed from the
+longitudinal state alone; it only enters the field multiplied by P_lane.)*
+
+**Geometry and kinematics (from the traces)**
+
+| symbol | meaning | value / source |
+|---|---|---|
+| Δy | lateral offset between vehicle centres | trace (`Location_Y` difference) |
+| v_y | lateral closing rate, d(Δy)/dt | differentiated trace position (never the acceleration column) |
+| gap | bumper-to-bumper longitudinal distance | x_tar − (L_ego + L_tar)/2 |
+| v_ego, v_tar | speeds | trace `Speed_mps` |
+| w_e | ego width | 1.72 m (`BicycleParams`, the model's vehicle) |
+| w_o | target width | trace `Width_m`; trucks 2.55 m from `TRUCK_DIMS` (trace boxes broken) |
+| L_ego | ego length | 4.2 m (l_f + l_r) |
+| onset | first lateral displacement > 0.03 m | absolute threshold (the 2%-of-span rule fired late) |
+
+**The lane-entry weight (this note, section 3)**
+
+| symbol | meaning | value / source |
+|---|---|---|
+| 1.15 | collision-box inflation | released code, inherited unexamined |
+| s | \|Δy\| at which lateral overlap begins | 1.15 (w_e + w_o)/2, ≈ 2.0 m for two cars |
+| τ_lon | longitudinal time-to-collision | gap / (v_ego − v_tar); ∞ when not closing |
+| τ_lat | time until overlap begins | (\|Δy\| − s) / max(v_y toward lane, 0) |
+| \|Δy\|_pred | predicted offset at closure | max(\|Δy\| − v_y τ_lon, 0), clamped at centering |
+| P_lane | applicability of the conflict geometry | clip((s − \|Δy\|_pred)/(1.15 min(w_e, w_o)), 0, 1) |
+
+**The safety counterfactual (SI Eq. 51 conventions; the "stated conventions" of the
+project's standing warning)**
+
+| symbol | meaning | value / source |
+|---|---|---|
+| a_OV,min | assumed worst-case lead deceleration | −6 m/s² (authors' calibration; assumption, not measurement) |
+| t_react | reaction budget in the counterfactual | 1.0 s (authors') |
+| a_max | ego braking capability | 8 m/s² (authors'); the dread axis — a_allowed < a_max gives the comfort family |
+| v_react, d_avail | speed after reacting; distance then available | Eq. 51 as released |
+| Δv_resid | residual impact speed under maximal braking | √max(0, v_react² − 2 a_max d_avail) |
+| g_C | collision cost | −10 000 (authors'); safety magnitude is P_lane · 0.5 g_C · 0.8 Δv_resid/10 |
+
+**The remaining preference terms**
+
+| symbol | meaning | value / source |
+|---|---|---|
+| v_desired | desired speed | the clip's median ego speed (staging, as the released scenarios stage `v_ego_des`) |
+| σ_v | speed-preference width | 0.5 m/s (authors') |
+| τ⁻¹ preference | one-sided Gaussian on inverse tau | μ = 0.2 s⁻¹, σ = 0.125 s⁻¹ (authors'); multiplied by P_lane |
+| lane width | study road geometry | 3.5 m (trace lane centres) |
+| w_sd_model | assumed steering variability of the other vehicle | 0.4575 (lateral scenarios); relevant to closed-loop *prediction* only — the pointwise field does not use it |
+
+## 8 Remaining freedoms, stated so they are not mistaken for settled
 
 1. **The linear projection with clamp-at-centering** is the simplest form consistent
    with "aims into the lane". A saturating lateral-velocity profile would differ in the

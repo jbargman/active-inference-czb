@@ -102,6 +102,50 @@ def baselines(cells) -> None:
         rmse, corr, npar = fit_glm(d)
         print(f"{name:34s} {npar:6d} {rmse:6.3f} {corr:6.3f}")
 
+    crossval(cells, k, n, obs)
+
+
+def crossval(cells, k, n, obs) -> None:
+    """Held-out versions of the comparison (assessment section 3 addendum): the
+    within-scenario advantage of the design regressions is NOT an in-sample artifact."""
+    designs = {
+        "field deficit": lambda c: [c.deficit_max.to_numpy() / 1000],
+        "TTC_nom + exposure time": lambda c: [c.ttc_nom.to_numpy(), c.t_end.to_numpy()],
+        "1/TTC_end + exposure time": lambda c: [1 / c.ttc_end.to_numpy(), c.t_end.to_numpy()],
+    }
+
+    def fit_predict(train, test, make):
+        Xtr = np.column_stack([np.ones(len(train))] + make(train))
+        Xte = np.column_stack([np.ones(len(test))] + make(test))
+        ktr = (train.p * train.n).to_numpy()
+        ntr = train.n.to_numpy()
+
+        def nll(b):
+            p = np.clip(norm.cdf(Xtr @ b), 1e-9, 1 - 1e-9)
+            return -(ktr * np.log(p) + (ntr - ktr) * np.log(1 - p)).sum()
+
+        best = None
+        for seed in range(5):
+            rng = np.random.default_rng(seed)
+            res = minimize(nll, rng.normal(0, 0.5, Xtr.shape[1]), method="Nelder-Mead",
+                           options={"maxiter": 20000, "xatol": 1e-8, "fatol": 1e-8})
+            if best is None or res.fun < best.fun:
+                best = res
+        return norm.cdf(Xte @ best.x)
+
+    for scheme, key in [("leave-one-criticality-out", "criticality"),
+                        ("leave-one-timepoint-out", "timepoint")]:
+        print(f"\n{scheme}:")
+        for name, make in designs.items():
+            preds, obss = [], []
+            for held in cells[key].unique():
+                tr, te = cells[cells[key] != held], cells[cells[key] == held]
+                preds += list(fit_predict(tr, te, make))
+                obss += list(te.p)
+            preds, obss = np.array(preds), np.array(obss)
+            print(f"  {name:28s} RMSE={np.sqrt(np.mean((preds - obss) ** 2)):.3f} "
+                  f"corr={np.corrcoef(preds, obss)[0, 1]:.3f}")
+
 
 if __name__ == "__main__":
     main()

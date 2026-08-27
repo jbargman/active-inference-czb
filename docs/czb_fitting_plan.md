@@ -145,6 +145,12 @@ span, which mis-assigns both (review finding, 2026-08-27).
 
 ## 6 Questions for Jonas before stage 1 runs
 
+*(Answered 2026-08-27 — the answers and their consequences are recorded in
+`docs/czb_validation_roadmap.md` section 5: both bias variants will be fitted and
+compared; `CZB_2` is treated as the human decision pending a new dataset; motor latency
+is fixed at 0.25 s with a 0.15/0.35 s sensitivity bracket; the Sequence design stays
+excluded. The original questions are kept below for the record.)*
+
 1. Bias per driver with shrinkage, or one group-level bias? (We lean hierarchical with
    strong shrinkage; the C1 data is thin either way.)
 2. Is the braking-expectation question (`CZB_2`) confirmed as *expected required
