@@ -1,0 +1,27 @@
+k= +0.0  corr 0.9122  rmse 0.1189  c 5230  s 1753
+k= +1.0  corr 0.9123  rmse 0.1188  c 5230  s 1753
+k= +2.0  corr 0.9126  rmse 0.1185  c 5230  s 1753
+k= +4.0  corr 0.9136  rmse 0.1177  c 5230  s 1753
+k= +6.0  corr 0.9147  rmse 0.1167  c 5230  s 1753
+k= +8.0  corr 0.9186  rmse 0.1156  c 5288  s 1668
+k=+12.0  corr 0.9193  rmse 0.1154  c 5288  s 1582
+k=+16.0  corr 0.9160  rmse 0.1181  c 5345  s 1582
+k=+20.0  corr 0.9077  rmse 0.1230  c 5345  s 1582
+k=+30.0  corr 0.8879  rmse 0.1345  c 5403  s 1668
+k=+50.0  corr 0.8680  rmse 0.1437  c 5403  s 1838
+k=+100.0  corr 0.8642  rmse 0.1457  c 5403  s 1838
+k= -2.0  corr 0.9118  rmse 0.1192  c 5230  s 1753
+k= -4.0  corr 0.9110  rmse 0.1199  c 5230  s 1753
+k= -8.0  corr 0.9086  rmse 0.1211  c 5230  s 1838
+## Where this can and cannot be decided
+
+The sweep is informative only where the overlap fraction spans its range. It does in the cut-in (the target crosses the marking). It does **not** in the cyclist overtake, where P_lane stays within 0.843..1.000 and every k gives the same cell ordering (`out/overtake_field_check.md`). Any conclusion here is therefore a statement about cut-in geometry, not a general one.
+
+## The methodological cost, if k is ever fitted
+
+Fitting k would make it the **first fitted parameter upstream of the boundary**. The stage-0 result derives much of its force from the field having zero fitted constants — a two-parameter probit on a covariate nobody tuned. A fitted k does not destroy that (it is one shape parameter, not a per-scenario coefficient), but it must be reported as a field parameter, and for the transfer test it would have to be frozen at its cut-in value before any transfer scenario is scored. Raised as a query rather than settled.
+
+## What the sweep says about the released binary gate
+
+As k grows the ramp approaches a step at half overlap, which is effectively the released binary lane test. That limit is clearly **worse** than both the optimum and the linear ramp, so the sweep independently corroborates the 2026-08-27 decision to replace the binary gates with a continuous form (`docs/lane_entry_note.md`): the gain there was not an artifact of picking a linear ramp in particular.
+

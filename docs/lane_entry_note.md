@@ -299,3 +299,52 @@ project's standing warning)**
    straddling region was empty by construction — is fixed, but the time-dependence stays
    off until there is a reason to switch it on; it is a separate object from P_lane and
    should not be conflated with it.
+
+## 6 The ramp's shape: linear or S-curve? (added 2026-08-28)
+
+Jonas proposed that the ramp from no overlap to full overlap should be a sigmoid rather
+than the linear form above: a sliver of predicted overlap does not yet feel like a
+rear-end conflict, but once the overlap is established the situation becomes one
+relatively quickly. The argument is behavioral rather than geometric, and it is
+testable, so it was implemented as a nested one-parameter family rather than adopted.
+
+`aidriver.preferences.lane_entry_shape(u, k)` remaps the overlap fraction by a
+normalized logistic with three properties that matter:
+
+* **g(0) = 0 and g(1) = 1 exactly, for every k.** The released-limit identities of
+  section 3 are what make the continuous form a refinement rather than a different
+  model, and a bare logistic — which only approaches its asymptotes — would break both.
+* **g(u; 0) = u.** The published linear ramp is nested at k = 0, so the proposal is a
+  statement about one number, and `lane_entry_shape_k` defaults to 0: every number
+  published before this date is untouched.
+* **Negative k is the functional inverse of positive k**, not a duplicate of it. Worth
+  stating because the obvious construction is even in k and silently makes the two the
+  same curve; the property test checks it.
+
+Swept on the 18-cell Random cut-in surface with the stage-0 probit refitted at each k
+(`replication/czb/lane_entry_shape_check.py`):
+
+| k | 0 (linear) | +6 | +8 | **+12** | +16 | +20 | +100 (≈ step) | −4 | −8 |
+|---|---|---|---|---|---|---|---|---|---|
+| RMSE | 0.1189 | 0.1167 | 0.1156 | **0.1154** | 0.1181 | 0.1230 | 0.1457 | 0.1199 | 0.1211 |
+
+The proposal's **direction is supported**: positive k fits better, the reflected shape
+fits worse, and there is a genuine interior optimum near k ≈ 12 rather than a monotone
+drift to the edge of the grid. The **size of the gain is modest** — 2.9% of the linear
+form's error — so the shape is real but not load-bearing on this design.
+
+Two things follow that are worth more than the 2.9%. First, the k → ∞ limit is a step at
+half overlap, which is effectively the released binary gate, and it is by far the worst
+member of the family (0.1457 against the linear 0.1189); the sweep therefore corroborates
+this note's central decision independently, since the gain from going continuous was not
+an artifact of choosing a linear ramp in particular. Second, the sweep is only
+informative where the overlap fraction spans its range: in the cyclist overtake P_lane
+never leaves 0.843–1.000 and every k gives the same cell ordering
+(`docs/overtake_construction_note.md` §4), so any conclusion here is about cut-in
+geometry and does not generalize by itself.
+
+**Whether k should be fitted is deliberately not settled here.** Doing so would make it
+the first fitted parameter upstream of the boundary, and the stage-0 result draws much of
+its force from the field carrying no fitted constants at all. One shape parameter does
+not destroy that, but it would have to be reported as a field parameter and frozen at its
+cut-in value before any transfer scenario is scored.

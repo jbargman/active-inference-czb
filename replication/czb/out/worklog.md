@@ -352,3 +352,120 @@ repeated-exposure fixed-clip paradigm and contaminates any mechanistic response 
 fitted to this surface. Worth carrying into the design of the coming dataset
 (naive-exposure or catch-trial structure would separate anticipation from boundary
 crossing).
+
+## 2026-08-28 — Card B.1 and the R.1 follow-ups, on the executing model
+
+Batch session; Jonas unavailable, so every judgment call was made and recorded rather
+than deferred. Full suite green before (123) and after (173 — 50 new property tests).
+Six committed scripts, six tracked outputs. The R.1 queries were kept open as instructed
+and are repeated in the summary.
+
+**Card B.1 — the cyclist-overtake field is built, and the card's premise failed.**
+`src/comfortzone/overtake.py` loads the three Random traces and hands them to the cut-in's
+own predictor code, so both scenarios share one field implementation — a transfer test in
+which the scenarios were computed by different code would not test transfer. The loader
+validates against the study's own labels: edge-to-edge clearance at the pass comes out
+0.506 / 1.004 / 1.501 m for the traces labelled 0.5 / 1 / 1.5. Three corrections to the
+card, all documented in `docs/overtake_construction_note.md`: roles must be taken from the
+instructed vehicle because the cut-in's lateral-span rule is not merely uninformative here
+but **inverted** (the ego moves 2.24 m laterally, the cyclist 0.16 — so the cut-in rule
+calls the car the target, which is the mechanism behind review finding 1.5); the lateral
+coordinate is `Location_Y`, since `Offset` reproduces 0.94 / 0.45 / 0.05 m and **inverts
+the criticality ordering**, a trap that would have produced a confident and entirely
+spurious transfer failure; and the cyclist's width is in the trace (0.582 m) rather than
+assumed at 0.6. The card's substantive premise — "the rear-end field applies nearly
+unchanged" — does not hold: over the 15 cells the field orders the human response at
+Spearman +0.402 while the clearance label alone orders it at −0.833. The cause is visible
+rather than inferred: `p_lane` never leaves 0.843–1.000 across the whole response window
+in all three conditions, so the manipulated variable is invisible to the field. What
+varies here is not whether lateral overlap will occur — it will not, in any condition —
+but the size of the lateral **comfort margin** at the pass, and passing a cyclist at 0.5 m
+is uncomfortable precisely while being uncontroversially collision-free.
+
+**The onset anchor was settled from the data, per Jonas's suggestion.** Ck = onset +
+0.3 (k−1) s with onset = the ego's lane-change start (same absolute 0.03 m threshold the
+cut-in loader uses). The alternative anchor, counting back from the pass, is ruled out:
+under the onset anchor the three conditions are physically identical at C1 (clearance
+spread 0.000 m), matching their nearly flat C1 rates (0.221 / 0.203 / 0.169), whereas a
+pass-anchored C1 would differ by 0.55 m and predict a strong ordering the data does not
+show. The residual C1 ordering that does remain is the anticipation signature of R.1.Q3,
+now seen in a second scenario.
+
+**Two candidate repairs to the lateral machinery were built, tested and reported.**
+`lane_entry_bidirectional` (default off) lets the lateral projection run outward as well
+as inward — the released form and the 2026-08-27 continuous form both clamp it to inward
+motion, which is harmless in a cut-in and discards the whole signal in an overtake. It
+over-corrects: linear extrapolation of a still-developing lateral move over a ~2.2 s
+closure says the ego will have cleared in every condition, so `p_lane` collapses to 0 by
+C3 and the cells end up ordered **negatively** (−0.537). Kept as a tested-and-rejected
+variant. The S-ramp changes nothing here, because a shape function on a saturated input
+is a no-op. @B.1.Q3(judgment, review): the indicated fix is a lateral-clearance *comfort*
+term in the preference function, which is a structural change and therefore a review
+decision, not one this card takes.
+
+**Jonas's sigmoid proposal: direction supported, magnitude modest, and it corroborates
+the lane-entry decision.** `lane_entry_shape(u, k)` is a normalized logistic with
+g(0) = 0, g(1) = 1 exactly for every k and g(u; 0) = u, so the published linear ramp is
+nested at k = 0 and the default of 0 leaves every published number untouched. Swept on the
+cut-in surface with the stage-0 probit refitted at each k
+(`out/lane_entry_shape_check.md`): RMSE 0.1189 linear, best **0.1154 at k ≈ +12**, and the
+reflected shape is worse (0.1211 at k = −8). So the proposal's direction is right and
+there is a genuine interior optimum rather than a drift to the grid edge, but the gain is
+2.9% of the linear form's error. The by-product is worth more: the k → ∞ limit is a step
+at half overlap, effectively the released binary gate, and it is the worst member of the
+family by a wide margin (0.1457) — which corroborates the 2026-08-27 decision to make lane
+entry continuous, independently of having picked a linear ramp. One bug found and fixed in
+my own first implementation: the natural normalized-logistic construction is *even* in k,
+so k and −k silently gave the same curve; the negative branch is now the explicit
+functional inverse, and a property test checks it.
+
+**The transfer test Jonas asked for works, and the baseline correction is what makes it
+work.** `transfer_cutin_to_overtake.py`, fitting stage 1 on the cut-in (median 5 352,
+σ 0.209, response sd 970) and scoring the 15 overtake cells: frozen transfer RMSE **0.176**
+against chance 0.158 — worse than chance; freeing **only the lapse** gives **0.129**, past
+chance and within 0.016 of the full-refit ceiling (0.113); the roadmap's secondary uniform
+level shift gives 0.110. The pre-onset rate is 0.081 in the cut-in and 0.198 in the
+overtake, so a no-shift primary is mis-specified at the baseline before the boundary is
+consulted. The lapse is identified by that scenario's C1 cells alone, which end where the
+field is zero by construction and therefore carry no boundary information — unlike a level
+shift, which absorbs the quantity under test. Recommendation folded into roadmap §2 step 4
+and work-order card B.4: free the lapse in the primary, keep the level shift secondary.
+
+**LTAP re-scoped, and a field-independent bound established.** Jonas asked for LTAP to be
+included and for a way to compare it at least partially. Two findings. First, LTAP is the
+*richest* transfer target rather than the hardest: 3 096 trials, 18 well-filled cells
+(9 PET × 2 speeds, 172 trials each), intervention range 0.110–0.907 — wider than the
+cyclist overtake, whose 1.5 m condition is flat across all five timepoints and which
+therefore carries roughly two informative levels. Its two-speed axis is exactly the
+identifying variation roadmap §0b wants for `t_react` and `a_OV,min`; note that
+intervention is *lower* at 70 km/h than at 50 at every PET (PET2: 0.360 vs 0.605), which a
+construction should explain rather than assume. It has no `timepoint`, so it gives a
+criticality × speed surface, not a criticality × time one. Added as card B.3.v2. Second,
+the partial comparison Jonas asked for does not need a field at all: every participant saw
+all four scenarios, so the one-scalar claim's central prediction can be tested directly.
+`cross_scenario_consistency.py` finds per-driver criticality-adjusted propensity
+correlating **+0.50 to +0.74** across the six scenario pairs, which is **0.53–0.78 of the
+split-half reliability ceiling** (per-scenario reliabilities 0.93–0.98), mean **0.69**.
+That is the strongest evidence for the one-scalar framing that does not depend on any
+field construction — and it caps stage B, since about a third of reliable per-driver
+variance is scenario-specific and no one-scalar model can explain it.
+
+@B.1.Q1(judgment, jonas): the Random-design third question (`CZB_2`) for the cyclist
+overtake is recorded as **undocumented, "to be confirmed"**, in the study's own context
+file, and carries 0/1 where the cut-in carries 0/1/2. The ordered comfort/dread model is
+therefore not fitted on this scenario and only the intervention response transfers.
+Jonas's question — "for the cut-in it is a decision, but in one more dimension, much
+should still transfer, right?" — is answered yes: `CZB_1` is identically defined in both
+scenarios and is what carries the boundary; only the dread level is cut-in-specific.
+Confirming the wording with the QUADRARUM group would restore a second level here.
+
+@B.1.Q2(judgment, jonas): should `lane_entry_shape_k` be fitted? Doing so makes it the
+first fitted parameter upstream of the boundary, which weakens the "no fitted constants in
+the field" property the stage-0 result rests on. My recommendation is to leave it at 0 for
+the primary analysis and report k ≈ 12 as a sensitivity, because a 2.9% RMSE gain does not
+buy back the rhetorical cost; if it is ever fitted it must be frozen at its cut-in value
+before any transfer scenario is scored.
+
+@B.1.Q4(minor, review): the cyclist-overtake surface has a narrow dynamic range
+(0.140–0.686) and one flat condition, so RMSE differences of a few hundredths between
+transfer models are not decisive. LTAP is the better-powered venue for B.4's headline.

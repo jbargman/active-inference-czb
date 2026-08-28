@@ -161,6 +161,35 @@ fine.)*
 - **Stop if**: the correlated variant's optimizer or Hessian fails after two honest
   attempts — report, keep the hierarchical variant primary, carry the query.
 
+### Card B.3.v2 — the LTAP field (re-scoped 2026-08-28)
+
+*(Replaces the B.3 sketch below for planning purposes; that card's construction advice
+still stands. Re-scoped because the LTAP data turns out to be the richest transfer
+target, not the hardest-to-justify one.)*
+
+- **Why it moved up**: 3 096 Random trials, the same 43 participants, **18 well-filled
+  cells** (9 PET levels × 2 approach speeds, 172 trials each) and an intervention range
+  of 0.110–0.907 — a wider dynamic range than the cyclist overtake (0.140–0.686) and
+  comparable to the cut-in. The cyclist overtake, by contrast, has one condition
+  (1.5 m) that is flat across all five timepoints, so it carries roughly two
+  informative criticality levels.
+- **What it uniquely offers**: the two-speed axis is the identifying variation the
+  roadmap §0b wants for the *secondary* model — `t_react` scales with v_ego and
+  `a_OV,min` with stopping distance, so 50 vs 70 km/h at matched PET separates them.
+  Note the direction, which is worth understanding before modelling: intervention is
+  **lower** at 70 km/h at every PET level (e.g. PET2: 0.605 at 50, 0.360 at 70).
+- **What it lacks**: no `timepoint` — there is no truncation series, so LTAP yields a
+  criticality × speed surface and not a criticality × time surface. Cross-scenario
+  comparison must therefore be on criticality, or per-driver (see below).
+- **Build**: the construction note first, per the original B.3 card — crossing
+  geometry, arrival-time separation at the conflict zone, co-occupancy gating. The
+  cut-in x/y conventions are meaningless here.
+- **Cheap partial comparison, available now and already run**:
+  `replication/czb/cross_scenario_consistency.py` compares all four scenarios with **no
+  field at all**, using the fact that every participant saw all four. Per-driver
+  criticality-adjusted propensity correlates +0.50 to +0.74 across scenario pairs,
+  which is 0.53–0.78 of the split-half reliability ceiling (mean 0.69).
+
 ### Card A.1 — synthetic-recovery harness
 
 - **Goal**: prove the stage-1 estimator recovers known parameters before touching
@@ -255,6 +284,18 @@ per-criticality deficit figure, property tests, and the PS-versus-field correlat
   nearly unchanged; criticality = lateral clearance 0.5/1/1.5 m, so the lateral term
   matters — use the actual clearance in `dy`, widths from the trace (cyclist ≈ 0.6 m).
   Accept: deficit ordered by clearance at C2–C5; cell-level PS Spearman ρ reported.
+  *[Executed 2026-08-28; full account in `docs/overtake_construction_note.md`. The
+  loader is `src/comfortzone/overtake.py`, validated against the study's own clearance
+  labels (0.506 / 1.004 / 1.501 m against 0.5 / 1 / 1.5). Three corrections to this
+  card: roles must come from the instructed vehicle because the cut-in's lateral-span
+  rule is **inverted** here (the ego moves, not the target); the lateral coordinate is
+  `Location_Y` — `Offset` inverts the criticality ordering; and the cyclist width is in
+  the trace (0.582 m), not assumed. The card's premise did **not** hold: the field
+  orders the 15 cells at Spearman +0.402 against the clearance label's −0.833, because
+  `p_lane` sits at 0.843–1.000 all through the window and cannot see the manipulated
+  variable. The scenario's criticality is a lateral *comfort margin*, not a collision
+  geometry. Adding a lateral-clearance comfort term is a preference-function change and
+  is left as a review decision.]*
 - **B.2 truck overtake / truck lateral**: ego passes a truck with clearance variants;
   the conflict is lateral, so P_lane runs on the *lateral closing* induced by the
   truck's drift (`truck_lateral_movement` traces) and the clearance term carries the
@@ -275,6 +316,20 @@ this card. The transferred model is the stage-1 static threshold, hierarchical-l
 variant (population median 5 352, σ 0.209), everything frozen. The three-way
 comparison (one-scalar field vs per-scenario 2D rules vs elliptical joint) is
 unchanged.]*
+
+*[Adjusted again 2026-08-28, on evidence from the B.1 pilot transfer
+(`docs/overtake_construction_note.md` §6). **The primary analysis should freeze the
+boundary and free each scenario's lapse**, not freeze everything. The pre-onset
+intervention rate is 0.081 in the cut-in against 0.198 in the cyclist overtake, so a
+no-shift primary starts every transfer cell ~0.12 low for reasons unrelated to the
+boundary: frozen transfer scores RMSE 0.176 against chance 0.158, while freeing only
+the lapse gives 0.129 — past chance and within 0.016 of the full-refit ceiling. The
+lapse is identified by that scenario's C1 cells alone, which end where the field is
+zero by construction and therefore carry no boundary information; the roadmap's
+secondary "one uniform level shift per scenario" does absorb the boundary and should
+stay secondary. Also: score against the field-independent ceiling in
+`out/cross_scenario_consistency.md` — only ~69% of the reliable per-driver signal is
+shared between scenarios, so a perfect one-scalar model cannot reach 100%.]*
 
 - Fit on cut-in only (A.2/A.3 configuration frozen); predict each transfer scenario's
   response surface with no refit. Primary: no per-scenario shift. Secondary: one

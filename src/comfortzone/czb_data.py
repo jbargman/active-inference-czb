@@ -32,6 +32,7 @@ import numpy as np
 import pandas as pd
 
 from .cutin import CutInTrace, load_cutin_trace, cutin_predictors
+from .overtake import RANDOM_OVERTAKE_TRACES, load_overtake_trace
 
 REPO = Path(__file__).resolve().parents[2]
 STUDY = REPO / "external/01_studies/01_Studies/01_Sequence_Random_ButtonPress"
@@ -55,14 +56,14 @@ BUTTON_CLIP_START_S = 5.0
 TIMEPOINT_OFFSET_S = {f"C{k}": 0.3 * (k - 1) for k in range(1, 7)}
 
 
-def stimulus_field(path: str | Path, is_truck: bool = False) -> pd.DataFrame:
+def stimulus_field(path: str | Path, is_truck: bool = False, p=None) -> pd.DataFrame:
     """Model covariates along one stimulus clip, with running maxima.
 
     Columns added to `cutin_predictors`: `t_since_onset`, `deficit_max`, `a_req_max`
     (magnitude of required deceleration, clipped to finite by the trace's own support).
     """
     tr = load_cutin_trace(path, is_truck=is_truck)
-    df = cutin_predictors(tr)
+    df = cutin_predictors(tr, p)
     df["t_since_onset"] = df.t - df.t.iloc[tr.onset_idx]
     df["deficit_max"] = np.maximum.accumulate(df.deficit.to_numpy())
     # a_req is computed from the longitudinal state alone, so before lane entry it
@@ -90,7 +91,7 @@ def load_joint() -> pd.DataFrame:
     return df[df.get("timing_flag", pd.Series(index=df.index, dtype=object)) != "overshoot"]
 
 
-def random_cutin_trials() -> pd.DataFrame:
+def random_cutin_trials(params=None) -> pd.DataFrame:
     """One row per Random fixed-clip cut-in trial, with model covariates at clip end.
 
     Columns: participant, criticality, timepoint, t_end (s since onset), intervene,
@@ -98,7 +99,8 @@ def random_cutin_trials() -> pd.DataFrame:
     """
     j = load_joint()
     r = j[(j.design == "Random") & (j.scenario == "cutin_car")].copy()
-    fields = {c: stimulus_field(p) for c, p in RANDOM_CUTIN_TRACES.items()}
+    fields = {c: stimulus_field(path, p=params)
+              for c, path in RANDOM_CUTIN_TRACES.items()}
 
     r["t_end"] = r.timepoint.map(TIMEPOINT_OFFSET_S)
     r["deficit_max"] = [
@@ -118,6 +120,64 @@ def random_cutin_trials() -> pd.DataFrame:
         "a_req_max": r.a_req_max,
     }).reset_index(drop=True)
     return out
+
+
+def overtake_stimulus_field(path, p=None) -> pd.DataFrame:
+    """Model covariates along one cyclist-overtake clip.
+
+    Deliberately the same predictor code as the cut-in (`cutin_predictors`); only the
+    role assignment and the onset definition differ, and both live in
+    `comfortzone.overtake`. A transfer test in which the two scenarios were computed by
+    different field code would not test transfer.
+    """
+    tr = load_overtake_trace(path)
+    df = cutin_predictors(tr, p)
+    df["t_since_onset"] = df.t - df.t.iloc[tr.onset_idx]
+    df["deficit_max"] = np.maximum.accumulate(df.deficit.to_numpy())
+    a_req_mag = np.abs(np.clip(df.a_req.to_numpy(), -50.0, 0.0))
+    a_req_mag = np.where(df.p_lane.to_numpy() >= 0.5, a_req_mag, 0.0)
+    df["a_req_max"] = np.maximum.accumulate(a_req_mag)
+    df.attrs["onset_t"] = float(df.t.iloc[tr.onset_idx])
+    df.attrs["name"] = tr.name
+    return df
+
+
+def random_overtake_trials(params=None) -> pd.DataFrame:
+    """One row per Random fixed-clip cyclist-overtake trial (card B.1, 2026-08-28).
+
+    Same columns as `random_cutin_trials` with two differences that are properties of
+    the study rather than of this code, and are therefore surfaced rather than hidden:
+
+    * `timepoint` runs C1-C5, not C1-C6.
+    * `braking_expectation` is **not** the cut-in's ordered nothing/gentle/hard variable.
+      The study's own context file records the Random-design third question for cyclist
+      overtake as *undocumented and "to be confirmed"*, and the column carries only 0/1
+      here against the cut-in's 0/1/2. It is passed through unrenamed as `followup_raw`
+      so nothing downstream can mistake it for the ordered response, and the ordered
+      comfort/dread model is not fitted on this scenario.
+    """
+    j = load_joint()
+    r = j[(j.design == "Random") & (j.scenario == "cyclist_overtake")].copy()
+    fields = {c: overtake_stimulus_field(path, params)
+              for c, path in RANDOM_OVERTAKE_TRACES.items()}
+
+    r["t_end"] = r.timepoint.map(TIMEPOINT_OFFSET_S)
+    r["deficit_max"] = [
+        _at_time(fields[c], t, "deficit_max") for c, t in zip(r.criticality_label, r.t_end)]
+    r["a_req_max"] = [
+        _at_time(fields[c], t, "a_req_max") for c, t in zip(r.criticality_label, r.t_end)]
+    return pd.DataFrame({
+        "participant": r.Exp_Subject_Id,
+        "criticality": r.criticality_label,
+        "timepoint": r.timepoint,
+        "t_end": r.t_end,
+        "intervene": r.intervene,
+        "followup_raw": r.followup_code,
+        "ps": r.PS,
+        "replay": r.Replay,
+        "deficit_max": r.deficit_max,
+        "a_req_max": r.a_req_max,
+    }).reset_index(drop=True)
 
 
 def button_cutin_trials() -> pd.DataFrame:

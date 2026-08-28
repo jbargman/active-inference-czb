@@ -132,6 +132,30 @@ class PreferenceParams:
     # them on. Derivation and argument: docs/lane_entry_note.md.
     lane_entry_continuous: bool = False
     counterfactual_residual_severity: bool = False
+    # `lane_entry_shape_k` bends the lane-entry weight's ramp into an S-curve
+    # (2026-08-28, Jonas's proposal; NOT in the released code). The overlap fraction
+    # enters as a shape function g(u; k) with g(0) = 0, g(1) = 1 and g(u; 0) = u, so
+    # **k = 0 reproduces the linear ramp exactly** and every published number is
+    # untouched. The motivation is behavioral rather than geometric: a sliver of
+    # predicted overlap does not feel like a rear-end conflict, but once the overlap is
+    # established the situation becomes one quickly -- slow at first, then saturating.
+    # k > 0 steepens the middle and flattens both ends; k < 0 does the reverse. See
+    # `lane_entry_shape` and docs/lane_entry_note.md section 6.
+    lane_entry_shape_k: float = 0.0
+    # `lane_entry_bidirectional` lets the lateral projection run OUTWARD as well as
+    # inward (2026-08-28, card B.1). The released-code logic and the 2026-08-27
+    # continuous form both project only toward the ego's lane: `closing_rate` is clamped
+    # at zero, so an object moving laterally AWAY is treated as if it stayed put. For a
+    # cut-in that is harmless (the target moves in). For an overtake it discards the
+    # entire manipulated signal -- measured on the three Random cyclist traces, P_lane
+    # sits at exactly 1.000 through the whole response window in all three clearance
+    # conditions, so the field cannot see the clearance the scenario varies. The
+    # symmetric form projects |dy| forward at its signed rate and clamps the result to
+    # one lane width (the outward analogue of the existing inward clamp at perfect
+    # centering: a driver pulling out aims for the adjacent lane, not through it).
+    # Default False = released behavior and every published number unchanged.
+    lane_entry_bidirectional: bool = False
+    lane_entry_max_dy_m: float = 3.5     # study lane width; the outward projection clamp
     # --- vehicle -------------------------------------------------------------------
     vehicle: BicycleParams = field(default_factory=BicycleParams)
 
@@ -242,6 +266,52 @@ def _severity(v_ego, v_other, theta_ego, theta_other, p: PreferenceParams):
     return p.severity_floor + (1.0 - p.severity_floor) * dv / p.collision_ref_speed
 
 
+def lane_entry_shape(u, k: float):
+    """S-shaped remap of the lane-entry overlap fraction u in [0, 1] (2026-08-28).
+
+    A normalized logistic, which is the smallest change that does what is wanted while
+    keeping the released limits exact:
+
+        g(u; k) = (sigma(k (u - 1/2)) - sigma(-k/2)) / (sigma(k/2) - sigma(-k/2))
+
+    Properties, each of which the property tests check rather than assume:
+
+    * g(0) = 0 and g(1) = 1 **exactly**, for every k. This matters more than it looks:
+      the released-limit identities (a centred target gives 1, an adjacent-lane target
+      with no lateral motion gives 0) are what make the continuous form a refinement of
+      the released code rather than a different model, and a bare logistic -- which
+      approaches 0 and 1 only asymptotically -- would break both.
+    * g(u; 0) = u, recovering the linear ramp. The linear form is therefore nested at
+      k = 0, so "is the ramp S-shaped?" is a testable question about one parameter and
+      not a change of model.
+    * Monotone increasing in u for every k, so the weight never falls as overlap grows.
+    * g(u; k) + g(1 - u; k) = 1: the curve is symmetric about the midpoint. An
+      asymmetric family (a free midpoint, or a power law) is the natural extension if
+      the data asks for one; it is deliberately not offered yet, because with three
+      criticality levels per scenario a second shape parameter would not be identified.
+    * g(g(u; k); -k) = u: negative k is the *functional inverse* of positive k, so the
+      family covers both the S (slow-then-saturating) and its reflection. This is worth
+      stating because the naive construction does not have it -- the normalization is
+      even in k, so a bare logistic would make k and -k the same curve, silently. The
+      negative branch is therefore built as the explicit inverse.
+
+    `k` is a pure shape parameter with no units. k = 0 linear; k ~ 4 is a gentle S;
+    k ~ 10 is close to a soft step at half overlap. k > 0 is the shape the behavioral
+    argument predicts; k < 0 is retained so that a fit can come back and say so.
+    """
+    u = np.clip(np.asarray(u, dtype=float), 0.0, 1.0)
+    k = float(k)
+    if abs(k) < 1e-9:
+        return u
+    a = abs(k)
+    lo, hi = 1.0 / (1.0 + np.exp(a / 2.0)), 1.0 / (1.0 + np.exp(-a / 2.0))
+    if k > 0.0:
+        return (1.0 / (1.0 + np.exp(-a * (u - 0.5))) - lo) / (hi - lo)
+    # k < 0: the inverse of the k > 0 curve, in closed form
+    z = np.clip(lo + u * (hi - lo), 1e-15, 1.0 - 1e-15)
+    return np.clip(0.5 + np.log(z / (1.0 - z)) / a, 0.0, 1.0)
+
+
 def lane_entry_weight(obs: dict, p: PreferenceParams):
     """
     P_lane in [0, 1]: how much the car-following conflict geometry applies (2026-08-27,
@@ -282,14 +352,22 @@ def lane_entry_weight(obs: dict, p: PreferenceParams):
     ady = np.abs(dy)
 
     # |dy| shrinks at rate -sign(dy) * vy when that is positive (moving toward our lane)
-    closing_rate = np.maximum(-np.sign(dy) * vy, 0.0)
+    closing_rate = -np.sign(dy) * vy
+    if not p.lane_entry_bidirectional:
+        closing_rate = np.maximum(closing_rate, 0.0)
     dxg = np.asarray(obs["dx"], dtype=float) - veh.length
     v_rel = np.asarray(obs["v"], dtype=float) - np.asarray(obs.get("v_other", 0.0), dtype=float)
     with np.errstate(divide="ignore", invalid="ignore"):
         tau_lon = np.where(v_rel > 1e-3, np.maximum(dxg, 1e-3) / v_rel, np.inf)
         proj = np.where(np.isinf(tau_lon), 0.0, closing_rate * tau_lon)
     ady_pred = np.maximum(ady - proj, 0.0)
-    return np.clip((s - ady_pred) / np.maximum(w_min, 1e-9), 0.0, 1.0)
+    if p.lane_entry_bidirectional:
+        # Outward projection is clamped the way the inward one is: a driver pulling out
+        # aims for the adjacent lane, not through it. Without this the linear
+        # extrapolation of a still-accelerating lateral move overshoots by metres.
+        ady_pred = np.minimum(ady_pred, p.lane_entry_max_dy_m)
+    u = np.clip((s - ady_pred) / np.maximum(w_min, 1e-9), 0.0, 1.0)
+    return lane_entry_shape(u, p.lane_entry_shape_k)
 
 
 def inverse_tau(dx, v_ego, v_other, p: PreferenceParams):

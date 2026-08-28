@@ -103,7 +103,15 @@ in-house. What blocks it is field construction, not data:
 1. **Cyclist overtake** (first, easiest): same-lane longitudinal geometry, roles fixed
    by instructed vehicle rather than lateral span (the loader mis-assigns these —
    review finding 1.5). The ego closes on a cyclist; the existing rear-end field
-   applies nearly unchanged.
+   applies nearly unchanged. *[Built 2026-08-28 —
+   `docs/overtake_construction_note.md`. "Nearly unchanged" was wrong: the field orders
+   the 15 cells at Spearman +0.402 against the clearance label's −0.833, because
+   `p_lane` saturates at 0.843–1.000 and never sees the manipulated variable. The
+   scenario's criticality is a lateral **comfort margin** — 0.5 m is uncomfortable while
+   being uncontroversially collision-free — and the preference function's lateral
+   machinery is collision-oriented. A lateral-clearance comfort term is the indicated
+   model extension and is a review decision. Despite that, the pilot transfer works once
+   the paradigm baseline is matched: see the amendment to step 4.]*
 2. **Truck overtake / truck lateral**: the ego passes a stationary or drifting truck
    with lateral clearance as the criticality axis. Needs the lateral-clearance term
    rather than the car-following counterfactual; the preference function's lateral
@@ -120,6 +128,29 @@ in-house. What blocks it is field construction, not data:
    confound control: the per-scenario *instruction* differs (intervene / abort /
    yield), so a uniform shift per scenario is permitted in a secondary analysis and
    the primary analysis allows none — both reported.
+   *[Amended 2026-08-28 on evidence from the cyclist-overtake pilot. **The primary
+   analysis should free each scenario's lapse floor** while keeping the boundary level
+   and spread frozen. The pre-onset intervention rate is 0.081 in the cut-in and 0.198
+   in the overtake, so a no-shift primary is mis-specified at the baseline before the
+   boundary is even consulted: frozen transfer scores RMSE 0.176 against chance 0.158,
+   whereas freeing only the lapse gives 0.129 — past chance and within 0.016 of the
+   full-refit ceiling (0.113). The lapse is identified by that scenario's C1 cells
+   alone, which end where the field is zero by construction, so it cannot absorb
+   boundary information; a uniform *level* shift can and does, and stays secondary.
+   Evidence: `replication/czb/out/transfer_overtake_summary.md`.]*
+4b. **A field-independent bound on the whole stage, added 2026-08-28.** All 43
+   participants saw all four Random scenarios, so the one-scalar claim's core
+   prediction — that a driver carries one level — can be tested with no field at all,
+   by asking whether per-driver position is stable across scenarios. It largely is:
+   criticality-adjusted per-driver propensity correlates +0.50 to +0.74 across the six
+   scenario pairs, which is 0.53–0.78 of the split-half reliability ceiling (mean
+   **0.69**), with per-scenario reliabilities of 0.93–0.98.
+   `replication/czb/cross_scenario_consistency.py`. Two consequences: this is the
+   strongest evidence for the framing that does not depend on any field construction;
+   and it caps step 4 — roughly a third of reliable per-driver variance is
+   scenario-specific, so B.4 should be scored against ~0.69 of the signal rather than
+   against perfection.
+
 5. **A cheap preliminary before any of that**: the PS ratings exist for all four
    scenarios. Once a scenario's field exists, the cell-level rating-versus-field
    correlation (as run tonight for cut-in) is a transfer check that needs no fitting

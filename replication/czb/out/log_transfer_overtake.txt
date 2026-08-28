@@ -1,0 +1,31 @@
+fitting stage 1 on the cut-in (hierarchical lapse, the R.1 decision) ...
+  median 5352, sigma_pop 0.209, sigma_resp 970
+
+# Transfer test: cut-in boundary level -> cyclist overtake
+
+Fitted on the 3 096 Random cut-in trials, scored on the 15 cyclist-overtake cells (2 580 trials, same 43 participants). Cut-in fit: population median **5352**, between-driver sigma **0.209**, response sd 970.
+
+| model | what is free | RMSE | correlation |
+|---|---|---|---|
+| frozen | nothing | 0.176 | +0.733 |
+| free lapse | b_logit -2.77 | 0.129 | +0.733 |
+| free lapse + level shift | level x0.86, b_logit -2.77 | 0.110 | +0.721 |
+| full refit (ceiling) | median 4630, sigma_pop 0.288 | 0.113 | +0.709 |
+| *chance (overtake grand mean)* | - | 0.158 | - |
+
+## Per-cell, under the proposal (free lapse)
+
+| clearance | C1 | C2 | C3 | C4 | C5 |
+|---|---|---|---|---|---|
+| 0.5m obs / pred | 0.22 / 0.20 | 0.22 / 0.20 | 0.40 / 0.21 | 0.58 / 0.28 | 0.69 / 0.40 |
+| 1m obs / pred | 0.20 / 0.20 | 0.18 / 0.20 | 0.24 / 0.20 | 0.35 / 0.24 | 0.37 / 0.34 |
+| 1.5m obs / pred | 0.17 / 0.20 | 0.16 / 0.20 | 0.17 / 0.20 | 0.14 / 0.24 | 0.16 / 0.29 |
+
+## Reading
+
+The pre-onset baseline differs sharply between the scenarios (cut-in C1 pooled 0.081, overtake C1 pooled 0.198), and correcting for it is decisive here. Frozen transfer is **worse than chance** (0.176 against 0.158); freeing the lapse alone brings it to **0.129**, comfortably better than chance and within +0.017 of the full-refit ceiling (0.113). The lapse is identified by the C1 cells alone, which end at manoeuvre onset where the field is zero by construction, so it cannot be absorbing boundary information. On this evidence the boundary level and spread fitted on the cut-in do most of the work in the overtake once the paradigm baseline is matched -- which is the outcome the roadmap's no-shift primary analysis would have hidden.
+
+Two limits on how far to read it. The field still ranks these cells weakly (Spearman +0.402 on the deficit against the clearance label's -0.833, `out/overtake_field_check.md`), so the agreement is being carried by the coarse criticality ordering rather than by a well-shaped covariate; a lateral-comfort term should improve it and is the obvious next model step. And the surface's dynamic range is narrow (0.14 to 0.69 against the cut-in's 0.05 to 0.92), so RMSE differences of a few hundredths are not decisive.
+
+Runtime 53.5 min.
+
