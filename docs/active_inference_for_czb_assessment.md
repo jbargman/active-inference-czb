@@ -102,6 +102,20 @@ Three readings, in decreasing comfort:
    outside its grid, and its coefficients mean nothing — but it disciplines the claim:
    the field cannot be sold on within-scenario fit. Its case is that its *threshold* is
    one portable, interpretable number, where the regression's coefficients are neither.
+
+   *[Sharpened 2026-08-28. This was understated. In the study-1 cut-in design relative
+   speed is constant across all 18 cells, so correlation(gap, TTC) = 1.0000 — the
+   longitudinal dimension has one degree of freedom, and the field's 0.90 is equally
+   consistent with a driver thresholding the gap. The second cut-in study breaks the
+   collinearity over a six-fold range of gap and rules against the field's kinematic
+   core: gap orders the response at ρ −0.887, TTC at −0.807, required deceleration at
+   +0.238 (`replication/czb/out/cutin2_scope.md`). So the field cannot be sold on
+   within-scenario fit for a stronger reason than this paragraph gave — it has not yet
+   been shown to beat the simplest alternative on a design that could tell them apart.
+   That test is task 1 of review gate R.2. What is *not* affected is the portability
+   claim, which has independent support: about 69% of the reliable per-driver signal is
+   shared across all four scenarios, measured without any field
+   (`out/cross_scenario_consistency.md`).]*
 3. **The gap is the accumulator's signature.** Most of the baseline's advantage comes
    from the exposure-time term (TTC alone 0.76 → 0.96 with time added). The static
    threshold cannot express "probability of having responded grows with time at a

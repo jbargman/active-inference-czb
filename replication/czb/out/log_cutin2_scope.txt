@@ -2,6 +2,12 @@
 
 10944 trials, 144 participants; 7488 trials after dropping the CP1 baseline. Perceived safety, an intervention binary, and the same three-level expected-braking question as study 1. Participant-level means are formed first throughout, because the DV and CP subsets are between-subjects.
 
+## 0 Why study 1 could not have answered this, and what that costs
+
+Across all 18 cells of the study-1 Random cut-in design the relative speed is constant at 2.78 m/s, so time-to-collision is gap divided by a constant and **correlation(gap, TTC) = 1.0000**. Time headway and required deceleration are likewise fixed functions of the same one number. The longitudinal dimension of that design has a single degree of freedom.
+
+The consequence is uncomfortable and worth stating plainly. Every longitudinal result obtained on study 1 — the stage-0 correlation of 0.90, the stage-1 boundary level, the population percentile — is equally consistent with a driver who thresholds the preference field and with a driver who thresholds **the gap**. Those fits are not wrong, and the boundary is well estimated on its own scale; but they cannot be used as evidence that the field's kinematic content is the right description, because no contrast in that design distinguishes it from the simplest possible alternative. The second cut-in study breaks the collinearity, which is why it can decide what study 1 cannot.
+
 ## 1 The test only this dataset can run
 
 At matched time-to-collision, the delta-velocity factor moves the longitudinal gap by a factor of six. If the response were a function of time alone, each row below would be flat.

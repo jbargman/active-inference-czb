@@ -702,3 +702,47 @@ critical path for the modelling question.
 DV and CP subsets are split-half, so any use of it must form participant means before
 aggregating. This is already done in `cutin2_scope.py` and is flagged so it is not lost
 when someone fits it properly.
+
+## 2026-08-28 (end of arc) — the collinearity finding, and the documentation round
+
+Closing the arc at Jonas's request: summarize, re-document, update the handover, and say
+what the stronger model should do. One new finding, and it is the one that reframes the
+rest.
+
+**Study 1's cut-in design has one longitudinal degree of freedom.** Relative speed is
+constant at 2.78 m/s across all 18 cells, so time-to-collision is gap divided by a
+constant and **correlation(gap, TTC) = 1.0000**; headway and required deceleration are
+fixed functions of the same number. Every longitudinal result fitted on study 1 — the
+stage-0 correlation of 0.90, the boundary level 5 352, the percentile table — is
+therefore equally consistent with a driver who thresholds the preference field and one
+who thresholds the gap. Nothing computed is wrong and the boundary is well estimated on
+its own scale, but none of it is evidence for the field's kinematic content, because the
+design contains no contrast that separates it from the simplest alternative. Reproduced
+in `cutin2_scope.py` §0. This should have been noticed several sessions ago; the cost is
+that estimator refinement was done on a design that cannot discriminate the estimator's
+model. Folded into the assessment (§3.2), the handover chain, and card R.2 as its new
+first task.
+
+**Documentation round.** New `handover_2026-08-28.md` covering the arc; `handover.md`
+rewritten to point at review gate R.2 with the collinearity finding first;
+`docs/active_inference_for_czb_assessment.md` §3.2 sharpened, since the claim it makes
+about within-scenario fit was understated rather than wrong; card R.2 rewritten around
+five prioritized decisions with the first being "is the preference field the right scalar
+at all"; README updated. Word and PDF rebuilt for every changed document. Suite 177 green.
+
+**What the stronger model is being asked to do**, in priority order, is recorded in card
+R.2: (1) fit the existing field to the second cut-in study against a one-parameter gap
+threshold on identical held-out folds, pre-registered, because that is now the live
+question; (2) diagnose the C1 inversion, which blocks the interpretation of every fit;
+(3) decide the lateral term, with Kolekar et al.'s risk field as the strongest donor;
+(4) rule on whether the project's headline becomes the field-independent transfer trait
+(~69% shared) if (1) goes against the field; (5) decide whether the A.3 wording needs
+narrowing in the light of Bontje et al. The card also carries the warning that the
+unified "one mechanism explains both findings" story was tried and does not survive its
+own sign check.
+
+@B2.Q4(blocker, review): the gap-versus-field comparison on the second cut-in study is
+the single most consequential outstanding analysis in the project, and it is cheap. Until
+it is run, no document should describe the field as validated against human data on the
+longitudinal dimension — the wording throughout has been adjusted to say "well estimated
+on its own scale" instead, but the distinction is easy to lose.

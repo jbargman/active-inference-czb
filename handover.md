@@ -1,43 +1,46 @@
 # handover.md — restart a session here
 
-> ## Next session: card B.1, back on the executing model
+> ## Next session: review gate R.2, for the stronger model
 >
-> *Rewritten 2026-08-27 after review gate R.1 ran at tier 1 (its record:
-> `handover_2026-08-27.md` §12, the work log's R.1 entry, and the dated notes it left
-> in the roadmap, the work orders, the fitting plan and the assessment).*
+> *Rewritten 2026-08-28 after the B.1 arc. Full record: `handover_2026-08-28.md`.*
 >
-> R.1 closed all nine open queries and settled the two referred decisions:
+> **Read this first, because it changes how every existing number should be read.** In
+> the study-1 cut-in design the relative speed is constant at 2.78 m/s across all 18
+> cells, so **correlation(gap, TTC) = 1.0000** — headway and required deceleration are
+> fixed functions of the same one number. Every longitudinal result fitted on study 1
+> (stage-0's 0.90, the boundary level 5 352, the percentile table) is therefore equally
+> consistent with a driver who thresholds the preference field and one who thresholds
+> **the gap**. The fits are not wrong; they simply cannot discriminate the model.
 >
-> - **The A.2 bias variant is decided: hierarchical lapse is primary** — population
->   median 5 352, between-driver σ 0.209; the group variant stays as the upper
->   sensitivity bracket, and any quoted percentile names its variant (80th: 6 379 hier
->   vs 6 717 group). Per-driver pre-onset heterogeneity is decisively real
->   (p < 0.0001), and the group variant leaks pre-onset propensity into the thresholds
->   — the direction roadmap §5.1 predicted (the batch's "contradiction" was a
->   misreading). Evidence: `replication/czb/out/bias_variant_diagnostics.md`.
-> - **The A.3 accumulator verdict is final: FAIL, and quotable.** The gate repaired
->   two diagnosed misspecifications (noise gated at manoeuvre onset; a free
->   trial-level threshold spread) and pre-committed the third run as last: in-sample
->   0.178 vs the static probit's 0.125, held-out 0.267 vs the pre-registered ≤ 0.11.
->   Time-integration of the deficit does not close the within-scenario gap on this
->   stimulus set; the named cause is anticipatory criticality-graded responding at
->   C1–C2 plus a shallow late-cell criticality gradient. A.4 re-run under the final
->   model: still FAIL; the paradigm effect's *direction* (earlier Button pressing) is
->   confirmed, its level-versus-rate *form* is no longer distinguished. **B.4
->   transfers the static stage-1 model; the accumulator is out.**
+> The second cut-in study (`external/01_studies/01_Studies/02_Cut-in`, arrived
+> 2026-08-28) breaks that collinearity — delta velocity crossed with TTC, gaps from
+> 1.6 m to 78 m — and rules against the field's kinematic core: **all 24 matched-TTC rows
+> run negative**, gap orders the cells at ρ −0.887, TTC at −0.807, and required
+> deceleration at only +0.238.
 >
-> **The next card is B.1** (cyclist-overtake field), then C (percentile sensitivity),
-> with A.2.v2 (regeneration under corrected validation code + the correlated-effects
-> check) as the overnight companion — order and details in `docs/czb_work_orders.md`
-> §4's dated note. Open queries: 4 (`replication/czb/out/query_register.md`) — one
-> carried blocker (A.1.Q2, a_req axis; blocks only the truck check) and R.1's three,
-> which block nothing.
+> **The next session is review gate R.2** in `docs/czb_work_orders.md`, which now has
+> that dataset and a literature note (`docs/lateral_and_uncertainty_note.md`) behind it.
+> Before it, or as its first act, take **card B.2.v2's C1 item**: at C1 the cut-in
+> conditions differ two-fold in gap and behaviour is ordered accordingly, but the field
+> ranks them backwards — so the lapse is absorbing real boundary signal, which is a
+> blocker on interpreting every fit so far.
 >
-> Working conventions for every session are the `performing-research` skill
+> What is not in doubt: the boundary distribution is well estimated on its own scale
+> (median 5 352, σ 0.209, hierarchical lapse); the transfer to the cyclist overtake works
+> once the per-scenario lapse is freed (RMSE 0.129 against chance 0.158 and a ceiling of
+> 0.113); and — the strongest result, needing no field at all — **about 69% of the
+> reliable per-driver signal is shared across all four scenarios**, which supports the
+> one-scalar trait claim and simultaneously caps what any transfer test can reach.
+>
+> Settled this arc: the lane-entry ramp is S-shaped with **k = 12**, fixed on the CZB
+> staging path (`comfortzone.cutin.CZB_LANE_ENTRY_SHAPE_K`); released defaults untouched.
+> It changes 3 of 18 cut-in cells, all lapse-identifying, so **card A.2.v2 must run
+> before any percentile is quoted again**.
+>
+> Working conventions are the `performing-research` skill
 > (`~/.claude/skills/performing-research/SKILL.md`, mirrored at
-> `docs/skills/performing-research.SKILL.md`): batch mode, the query convention (now
-> `@<card>.Q<n>(severity, audience)` — the collector parses both forms), APA
-> citations, parameter motivations, and the model-tier rules.
+> `docs/skills/performing-research.SKILL.md`). Open queries: 13
+> (`replication/czb/out/query_register.md`), 2 of them blockers.
 
 > **Later arcs exist.** `handover_2026-08-26.md` covers the 2026-08-25 → 08-26 work (the
 > equivalence/ROPE revision, the severity-versus-timing diagnosis, the new human dataset

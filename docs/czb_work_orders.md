@@ -138,6 +138,60 @@ that bears on them has been read and summarized. Run at tier 1.)*
   papers), then `docs/overtake_construction_note.md` §4 and §6 (where the two findings
   came from), then `replication/czb/out/overtake_field_check.md` and
   `out/transfer_overtake_summary.md`.
+*[Rewritten 2026-08-28 after the B.1 arc and the arrival of `02_Cut-in`. The gate now
+has a decisive dataset and a much sharper question than when it was drafted. **Read
+`handover_2026-08-28.md` §1–2 first.**]*
+
+## What this gate must decide, in priority order
+
+**1. Is the preference field the right scalar at all?** This is now the live question,
+and it was not before. In the study-1 cut-in design relative speed is constant, so
+correlation(gap, TTC) = 1.0000 and every longitudinal fit is equally consistent with a
+gap threshold. The second cut-in study breaks that: over 10 944 trials, gap orders the
+response at ρ −0.887, TTC at −0.807, and required deceleration — the quantity our safety
+terms are built from — at +0.238. **The first task is to fit the existing field to the
+second cut-in study and compare it against a one-parameter gap threshold on identical
+held-out folds.** If the field does not beat a gap threshold there, the honest conclusion
+is that the field's kinematic content is not carrying the explanation, and the project's
+claim has to be restated around what does survive (the transfer trait, §4 below) rather
+than around active inference as a mechanism. Pre-register the comparison before running
+it.
+
+**2. Diagnose the C1 inversion** (blocker B2.Q1). At C1 the cut-in conditions differ
+two-fold in gap and behaviour is ordered accordingly, but the field ranks them backwards
+(deficit 1 / 1509 / 2907 for gaps 10.5 / 16.0 / 21.5 m). The lane gate is the obvious
+suspect. Until this is fixed the fitted lapse is absorbing real boundary signal and
+should not be called a response floor. Cheap, and it gates the interpretation of every
+existing fit.
+
+**3. Decide the lateral term** — the original purpose of this gate. The cyclist overtake
+needs a lateral *comfort* term; `p_lane` saturates at 0.843–1.000 and the symmetric
+projection over-corrects. Kolekar et al.'s Driver's Risk Field is the strongest donor:
+same claim as ours ("keep a scalar below a threshold"), lateral dimension built in,
+validated on overtaking. Decide whether to re-derive the spread from our own predictive
+model or adopt the DRF's form (Gaussian cross-section, parabolic height to a
+speed-scaled look-ahead, width linear in arc length and steering).
+
+**4. Rule on what survives regardless.** The cross-scenario result needs no field:
+~69% of the reliable per-driver signal is shared across all four scenarios. That
+supports the one-scalar *trait* claim independently of whether our particular scalar is
+right, and it caps any transfer test. The gate should say explicitly whether the
+project's headline becomes this, if task 1 goes against the field.
+
+**5. Narrow or confirm the A.3 wording.** Bontje et al. (2026) report that traffic
+accumulators conventionally drive on looming or TTC, not a comfort deficit, and list
+leaky accumulation and collapsing bounds as standard. Our FAIL was pre-registered and
+stands for the accumulator we specified; decide whether the assessment's broader claim
+needs narrowing.
+
+**A caution for whoever runs this.** The sign derivation below was attempted on
+2026-08-28 and produced a problem: the expectation route gives the right direction for
+the lateral term but the *wrong* one for the distance effect (a more distant conflict
+would get a higher expected deficit, i.e. more discomfort at larger gaps, opposite to
+what is observed). So the two findings do not have one fix, and
+`docs/lateral_and_uncertainty_note.md` carries a dated correction saying so. Do not
+re-adopt the unified story without redoing that derivation.
+
 - **The problem, in one line**: the field evaluates the deficit along a single predicted
   trajectory, and therefore cannot express either (a) that a collision-free pass at
   0.5 m is uncomfortable, or (b) that a distant conflict at matched time is judged

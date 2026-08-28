@@ -43,6 +43,7 @@ import pandas as pd
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
+sys.path.insert(0, str(REPO / "src"))
 STUDY2 = (REPO / "external/01_studies/01_Studies/02_Cut-in"
           / "cut-in_study_aggregate_trials_annotated.csv")
 CAMP_DIR = REPO / "external/01_studies/01_Studies/03_CAMP"
@@ -84,12 +85,43 @@ def main() -> None:
     rho_dist, _ = spearman(cell.d_m, cell.p)
     rho_areq, _ = spearman(cell.a_req, cell.p)
 
+    # --- why study 1 could never have answered this ---------------------------------
+    from comfortzone.czb_data import (RANDOM_CUTIN_TRACES, TIMEPOINT_OFFSET_S,
+                                      stimulus_field)
+    g1, t1, vr = [], [], []
+    for c, path in RANDOM_CUTIN_TRACES.items():
+        f = stimulus_field(path)
+        ts = f.t_since_onset.to_numpy()
+        for tp, off in TIMEPOINT_OFFSET_S.items():
+            i = max(int(np.searchsorted(ts, off, side="right")) - 1, 0)
+            g1.append(float(f.gap_m.iloc[i]))
+            t1.append(float(f.ttc_s.iloc[i]))
+            vr.append(float(f.v_rel.iloc[i]))
+    rho_gt = float(np.corrcoef(np.array(g1), np.array(t1))[0, 1])
+    vr = np.array(vr)
+
     L = ["# The second cut-in study: what it adds\n",
          f"{len(d)} trials, {d.Exp_Subject_Id.nunique()} participants; "
          f"{len(post)} trials after dropping the CP1 baseline. Perceived safety, an "
          "intervention binary, and the same three-level expected-braking question as "
          "study 1. Participant-level means are formed first throughout, because the DV "
          "and CP subsets are between-subjects.\n",
+         "## 0 Why study 1 could not have answered this, and what that costs\n",
+         f"Across all 18 cells of the study-1 Random cut-in design the relative speed is "
+         f"constant at {vr.min():.2f} m/s, so time-to-collision is gap divided by a "
+         f"constant and **correlation(gap, TTC) = {rho_gt:.4f}**. Time headway and "
+         "required deceleration are likewise fixed functions of the same one number. The "
+         "longitudinal dimension of that design has a single degree of freedom.\n",
+         "The consequence is uncomfortable and worth stating plainly. Every longitudinal "
+         "result obtained on study 1 — the stage-0 correlation of 0.90, the stage-1 "
+         "boundary level, the population percentile — is equally consistent with a "
+         "driver who thresholds the preference field and with a driver who thresholds "
+         "**the gap**. Those fits are not wrong, and the boundary is well estimated on "
+         "its own scale; but they cannot be used as evidence that the field's kinematic "
+         "content is the right description, because no contrast in that design "
+         "distinguishes it from the simplest possible alternative. The second cut-in "
+         "study breaks the collinearity, which is why it can decide what study 1 cannot."
+         "\n",
          "## 1 The test only this dataset can run\n",
          "At matched time-to-collision, the delta-velocity factor moves the longitudinal "
          "gap by a factor of six. If the response were a function of time alone, each "
