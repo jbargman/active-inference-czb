@@ -3,19 +3,49 @@
 *2026-08-28. Written after two findings that the current field cannot explain — the
 LTAP speed effect at matched PET, and the cyclist overtake's lateral criticality — and
 after reading five papers Jonas pointed toward or that the search turned up. The claim
-of this note is that these are **one problem, not two**, and that the fix is already
-native to active inference. Companion documents: `docs/overtake_construction_note.md`
+of this note is that both follow from one structural property of the field — that it
+evaluates the deficit along a single predicted trajectory — and that the natural repair
+is native to active inference.
+
+*[Corrected 2026-08-28, later the same day, while explaining §5 to Jonas. An earlier
+version of this line claimed the two findings are "one problem, not two" with a single
+fix. Working the sign through, that is too strong. The lateral case is safe: the deficit
+is flat at wide clearance and rises steeply at small clearance, so averaging over a
+spread raises it, and raises it more when the mean clearance is small — the right
+direction. The distance case is **not** safe: if predictive variance grows with distance
+and the deficit is convex, then the more distant conflict gets the higher expected
+deficit, i.e. more discomfort at 70 km/h — the opposite of what we observe. So the
+expectation route earns the lateral term but does not, on its own, explain the LTAP
+effect; that likely needs the bounded-optimal route of Wang et al., where noise changes
+the decision rule rather than only the evaluation. §5's proposal stands for the lateral
+problem and is downgraded to a candidate for the distance problem. This is exactly the
+derivation §6 puts first, and it is why it goes first.]* Companion documents: `docs/overtake_construction_note.md`
 (where both findings came from), `docs/lane_entry_note.md` (the lateral machinery as it
 stands), `docs/active_inference_for_czb_assessment.md` (the framework argument).*
 
 ## 1 The two things the field cannot currently do
 
 **The LTAP speed effect.** In the Random LTAP design, intervention is *lower* at 70 km/h
-than at 50 km/h at every one of the nine PET levels (at PET2: 0.360 against 0.605). PET
-is a pure time measure, so at matched PET the higher speed simply means a larger distance
-gap. Our field is built from time-like quantities — inverse tau, TTC, required
-deceleration — and at matched PET those are close to identical between the two speeds.
-The field therefore predicts almost no speed effect, and a large one is there.
+than at 50 km/h at every one of the nine PET levels (at PET2: 0.360 against 0.605).
+
+The manipulation is worth stating precisely, because it decides what the effect can mean.
+Checked in the traces: the vehicle whose speed changes between the two conditions is the
+**oncoming** one (2.01 m wide, 13.9 m/s in the 50 kph clips and 19.4 m/s in the 70 kph
+clips); the other vehicle holds 13.9 m/s in both. So the ego's own kinematics are
+identical across the manipulation, and PET — the arrival-time separation at the conflict
+zone — is matched by design.
+
+That makes the effect unusually clean. If the time-based conflict measure is matched and
+the ego's own state is unchanged, then essentially the only thing that differs between
+the conditions is **how far away the oncoming vehicle is** at any moment, since a faster
+vehicle covers the same time gap over a longer distance. The whole effect is therefore
+carried by distance, at matched time. Our field is built from time-like quantities —
+inverse tau, TTC, required deceleration — which are by construction close to identical
+here, so it predicts almost no effect, and a large one is present.
+
+This is also exactly the manipulation used in the gap-acceptance literature below, where
+the oncoming vehicle's speed is varied at matched time-to-arrival; our result is a
+replication of a documented phenomenon rather than an anomaly of this dataset.
 
 **The cyclist-overtake lateral effect.** Passing a cyclist at 0.5 m rather than 1.5 m
 roughly quadruples the intervention rate, while in *all* conditions the pass is

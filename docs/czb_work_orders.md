@@ -235,7 +235,7 @@ still stands. Re-scoped because the LTAP data turns out to be the richest transf
 target, not the hardest-to-justify one.)*
 
 - **Why it moved up**: 3 096 Random trials, the same 43 participants, **18 well-filled
-  cells** (9 PET levels × 2 approach speeds, 172 trials each) and an intervention range
+  cells** (9 PET levels × 2 *oncoming-vehicle* speeds, 172 trials each) and an intervention range
   of 0.110–0.907 — a wider dynamic range than the cyclist overtake (0.140–0.686) and
   comparable to the cut-in. The cyclist overtake, by contrast, has one condition
   (1.5 m) that is flat across all five timepoints, so it carries roughly two
@@ -244,7 +244,10 @@ target, not the hardest-to-justify one.)*
   roadmap §0b wants for the *secondary* model — `t_react` scales with v_ego and
   `a_OV,min` with stopping distance, so 50 vs 70 km/h at matched PET separates them.
   Note the direction, which is worth understanding before modelling: intervention is
-  **lower** at 70 km/h at every PET level (e.g. PET2: 0.605 at 50, 0.360 at 70).
+  **lower** at 70 km/h at every PET level (e.g. PET2: 0.605 at 50, 0.360 at 70). The
+  speed manipulated is the **oncoming** vehicle's (checked in the traces); the ego holds
+  13.9 m/s in both, so PET and the ego's own kinematics are matched and the effect is
+  carried entirely by distance at matched time.
 - **What it lacks**: no `timepoint` — there is no truncation series, so LTAP yields a
   criticality × speed surface and not a criticality × time surface. Cross-scenario
   comparison must therefore be on criticality, or per-driver (see below).
