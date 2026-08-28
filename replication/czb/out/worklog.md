@@ -605,3 +605,94 @@ Random-design third question for the cyclist overtake is undocumented in the stu
 materials, and one email to the QUADRARUM group would restore a second fitted level in
 that scenario. It is the cheapest outstanding gain in the transfer programme and it needs
 Jonas, since it is outward-facing.
+
+## 2026-08-28 (later) — the two discriminating tests, and the second cut-in study
+
+Two tasks from Jonas: run the two tests proposed for R.1.Q2, and scope the newly arrived
+`02_Cut-in` and `03_CAMP` datasets. Both done; three findings, one of which changes how an
+existing query should be read. Full suite green (177) before and after; no source changed.
+
+**Test A: the response floor is largely a person trait.** Per-driver pre-onset (C1) rate
+in the cut-in against the cyclist overtake, measured directly with no model in between,
+correlates at Spearman **+0.546** (p = 1.5e-4) against a split-half reliability ceiling of
+0.901 — 61% of the reliable signal is shared. A floor that travels with the person across
+two quite different scenarios is a property of the responder, which supports the
+response-style and anticipation accounts over a scenario-specific lapse.
+
+**Test B: it does not build within a session.** Standardising trial order within
+participant x scenario x session (dictionary gotcha 4), the mean within-participant slope
+of C1 responding is **+0.005 (SE 0.052)** — nothing — and first-third against last-third
+is 0.131 to 0.142. Mean replays correlate with the floor at -0.217 (p = 0.16), i.e. not
+reliably and if anything in the wrong direction. Only 26 of 43 participants yield a usable
+slope, so this is the weaker of the two tests, but as far as it goes it says anticipation
+does not accumulate across a block. Jonas expected anticipation to be the leading
+explanation; on study-1 data alone that expectation is not supported, and test D below is
+where it is vindicated.
+
+**Test C, not planned, and the most consequential thing here: C1 is not a null scene.**
+The project has treated the C1 cells as carrying no boundary information, on the grounds
+that the clip ends at manoeuvre onset. Checked against the traces, that is false. At C1
+the three criticality conditions differ by a factor of two in the car-following state —
+gap 10.5 / 16.0 / 21.5 m, time headway 0.34 / 0.52 / 0.70 s — and they differ in the
+direction that matches behaviour, tightest gap giving the most intervention
+(0.122 / 0.070 / 0.052). That is not anticipation of a manoeuvre; it is an ordinary
+response to an ordinary car-following situation. **And the field orders those cells
+backwards**, assigning deficit 1 / 1509 / 2907 — the lowest deficit to the tightest gap.
+The lane gate is the obvious suspect, since the lead is still fully in the adjacent lane
+at C1, but the mechanism is not diagnosed here. The consequence is concrete and affects
+two open queries: the lapse floor is being fitted to cells that carry real boundary
+signal, using a covariate that ranks them wrongly, so part of the lapse-threshold
+correlation is a **mis-assignment** rather than a trait, an estimator artifact, or the
+paradigm. This is a fifth explanation for R.1.Q2, was on nobody's list, and is the only
+one that is a defect in our own construction. It also weakens R.1.Q3's premise: the graded
+pre-onset responding it attributes to repeated exposure is at least partly a response to a
+genuinely graded pre-onset scene.
+
+**The second cut-in study is the dataset review gate R.2 needs.** 10 944 trials, 168
+participants, same three response variables as study 1 including the ordered
+expected-braking question. Its delta-velocity factor is crossed with time-to-collision and
+the two multiply into distance by construction (`distance = TTC x DV`), so matched-TTC
+cells span gaps from 1.6 m to 78 m — a factor of six, in the scenario whose field we
+already have, against LTAP's factor of 1.4 in a scenario whose field we do not.
+
+**Test D, the distance-versus-time question, answered.** Forming participant means first
+(DV and CP subsets are between-subjects), then over the TTC x DV cells: **all 24 matched-TTC
+rows run negative** — at identical time-to-collision, a larger gap means less intervention,
+by as much as 0.042 against 0.818 at TTC_true = 4.7 s. Across all cells, gap orders the
+response at rho = **-0.887**, time-to-collision at **-0.807**, and required deceleration
+`DV / (2 TTC)` at only **+0.238**. The last is the one to dwell on: its sign is what a
+demand-based model wants, but its magnitude is negligible, so the quantity our safety
+terms are built from barely orders these cells while gap orders them almost perfectly.
+This is direct evidence for the R.2 proposition and it is far stronger than the LTAP
+observation that prompted it. What it cannot do is separate gap from closing speed or from
+headway, which are perfectly confounded at matched TTC by construction — the study's own
+documentation says so.
+
+**Test E: repeated exposure does move responding, which study 1 could not show.** Every
+block-1 clip is shown twice to the same participant. Over 3 456 clip-participant pairs,
+P(intervene) is 0.547 on the first showing and **0.575** on the second, a difference of
+**+0.027 (SE 0.007)**, about four standard errors. So Jonas's anticipation account is
+supported after all — by the dataset with the design to test it, in the direction he
+predicted — even though the within-session order test on study 1 was null. The effect is
+small, and it is a shift in overall responding rather than specifically a pre-onset shift.
+
+`03_CAMP` is described only (19 files) and no use is proposed, per Jonas's steer.
+
+@B2.Q1(blocker, review): the C1 finding above is a defect in the field, not in the data,
+and it invalidates the interpretation of the lapse in every fit run so far. Diagnose why
+the field inverts the pre-onset ordering, then decide whether C1 joins the boundary fit
+with a corrected covariate or is dropped and the lapse identified elsewhere. Until then
+the fitted lapse should not be described as a response floor, and the percentile table
+inherits the uncertainty.
+
+@B2.Q2(judgment, review): the second cut-in study should be promoted from "new data" to
+the primary venue for the R.2 distance-versus-time decision, ahead of building the LTAP
+field. It is the same scenario as our existing construction, the manipulation is six times
+larger, and the ordered braking question is present so the comfort/dread pair transfers.
+The LTAP field remains worth building for the transfer test, but it is no longer on the
+critical path for the modelling question.
+
+@B2.Q3(minor, jonas): the second study's TTC 5/6/7 levels are between-subjects and its
+DV and CP subsets are split-half, so any use of it must form participant means before
+aggregating. This is already done in `cutin2_scope.py` and is flagged so it is not lost
+when someone fits it properly.

@@ -181,6 +181,40 @@ that bears on them has been read and summarized. Run at tier 1.)*
   anticipation bias should be lived with and corrected using NDS data rather than
   designed away; the gate should turn that into a specific estimator).
 
+### Card B.2.v2 — the second cut-in study, and the pre-onset defect it exposed
+
+*(Added 2026-08-28. The first item is a **blocker on the interpretation of every fit run
+so far** and should be taken before A.2.v2; the second promotes a dataset.)*
+
+- **The C1 defect (query B2.Q1).** The project treats the C1 cells as carrying no
+  boundary information. That is false: at C1 the three cut-in conditions differ by a
+  factor of two in car-following state (gap 10.5 / 16.0 / 21.5 m, THW 0.34 / 0.52 /
+  0.70 s) and the behaviour is ordered accordingly (0.122 / 0.070 / 0.052), while the
+  field ranks them **backwards** (deficit 1 / 1509 / 2907). Evidence:
+  `replication/czb/out/response_style_and_anticipation.md` §Test C. Diagnose the
+  inversion — the lane gate is the obvious suspect, since the lead is fully in the
+  adjacent lane at C1 — then decide whether C1 joins the boundary fit with a corrected
+  covariate or is excluded and the lapse identified elsewhere. **Until this is settled
+  the fitted lapse must not be described as a response floor**, because it is absorbing
+  real boundary signal, and that is a fifth explanation for the R.1.Q2 correlation that
+  no earlier analysis considered.
+- **Promote the second cut-in study (query B2.Q2).** `02_Cut-in`: 10 944 trials, 168
+  participants, same three response variables including the ordered braking question.
+  Its delta-velocity factor multiplies with TTC into distance by construction, so
+  matched-TTC cells span 1.6–78 m of gap. Measured in `out/cutin2_scope.md`: all 24
+  matched-TTC rows run negative, gap orders the cells at rho −0.887 against
+  time-to-collision's −0.807, and required deceleration manages only +0.238. This is the
+  R.2 distance-versus-time question answered far more sharply than LTAP can answer it,
+  in the scenario whose field already exists. Use it as R.2's primary venue; keep the
+  LTAP field for the transfer test but off the critical path.
+- **Analysis constraint (query B2.Q3)**: TTC 5/6/7 are between-subjects and the DV and
+  CP subsets are split-half, so participant means must be formed before aggregating.
+- **Exposure effect**: the same study shows P(intervene) rising from 0.547 to 0.575
+  between the first and second showing of an identical clip (3 456 pairs, SE 0.007) —
+  the direct test of R.1.Q3's mechanism that study 1 cannot support, and it comes out in
+  the direction R.1.Q3 predicts.
+- **Not proposed**: `03_CAMP`, per Jonas.
+
 ### Card A.2.v2 — regenerate stage 1 under the corrected validation code, and test the correlated-effects variant
 
 *(Added at review gate R.1, 2026-08-27. Cheap-model card; long-running, overnight is

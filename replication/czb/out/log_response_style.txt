@@ -1,0 +1,55 @@
+# What produces the lapse-threshold correlation? Two discriminating tests
+
+Both tests use the pre-onset (C1) cells directly, with no model in between: C1 ends at manoeuvre onset, where the field is zero by construction, so the observed C1 rate *is* the response floor.
+
+## Test A — is the floor a person trait or a scenario property?
+
+43 participants seen in both scenarios.
+
+| quantity | value |
+|---|---|
+| mean C1 rate, cut-in | 0.081 |
+| mean C1 rate, cyclist overtake | 0.198 |
+| split-half reliability, cut-in | 0.929 |
+| split-half reliability, cyclist overtake | 0.875 |
+| **Spearman rho between scenarios** | **+0.546** (p = 0.00015) |
+| reliability ceiling sqrt(rel_a x rel_b) | 0.901 |
+| share of the reliable signal that is shared | +0.61 |
+
+## Test B — does the floor grow with exposure?
+
+Trial order standardized to [0, 1] within participant x scenario x session, so the slope reads as the change in P(press at C1) from the start of a block to its end.
+
+| quantity | value |
+|---|---|
+| participants with a usable slope | 26 |
+| **mean within-participant slope** | **+0.005** (SE 0.052) |
+| C1 rate, first third of each block | 0.131 |
+| C1 rate, last third of each block | 0.142 |
+| Spearman rho, mean replays vs C1 rate | -0.217 (p = 0.16) |
+
+## Reading
+
+**Test A.** The floor correlates across two quite different scenarios at +0.546, which is 61% of what the measurement's own reliability allows. A floor that travels with the person across a cut-in and a cyclist overtake is a property of the responder, not of the situation.
+
+**Test B.** Within a block the floor moves by +0.005 from start to end (SE 0.052), and the first-third to last-third contrast is 0.131 to 0.142. That is not a reliable rise, so anticipation that *builds within a session* is not supported by this test — which does not rule out anticipation acquired earlier or immediately, only anticipation that accumulates over a block.
+
+**Together.** Test A speaks to whether the floor is a trait; test B speaks to whether that trait is learned during the study. They can disagree, and if they do the honest reading is that the floor is stable but was not acquired within the observation window — in which case the Button/Random ordering (Random always ran first) and prior exposure become the candidates, and only a naive-exposure dataset can separate them.
+
+## Test C — but is C1 a null scene at all?
+
+Both tests above inherit the project's standing assumption that the C1 cells carry no boundary information, because the clip ends at manoeuvre onset and the lane-change has not begun. That assumption is checkable, and it is false.
+
+| criticality | gap [m] | TTC [s] | THW [s] | field deficit | observed P(intervene) |
+|---|---|---|---|---|---|
+| TTC4 | 10.5 | 3.78 | 0.34 | 1 | 0.122 |
+| TTC6 | 16.0 | 5.77 | 0.52 | 1509 | 0.070 |
+| TTC8 | 21.5 | 7.74 | 0.70 | 2907 | 0.052 |
+
+At C1 the three conditions are **not** the same scene. The lane change has not started, but the car-following situation already differs by a factor of two in gap and headway, and it differs in the direction that matches behaviour: the tightest following gives the most intervention. That is not anticipation of a manoeuvre — it is an ordinary, correct response to an ordinary car-following situation.
+
+**And the field orders these cells backwards.** It assigns the *lowest* deficit to the tightest gap. Whatever the mechanism (the lane gate is the obvious suspect, since the lead is still fully in the adjacent lane at C1), the consequence is concrete: the model is being asked to fit a lapse floor to cells that carry real boundary signal, using a covariate that ranks them in the wrong order. Some of the lapse-threshold correlation is therefore neither a trait nor an estimator artifact but a **mis-assignment** — genuine boundary information being absorbed by the nuisance parameter.
+
+This is a fifth candidate explanation for R.1.Q2, it was not on the original list, and it is the only one that is a defect in our own construction rather than a property of drivers or of the paradigm. It also bears directly on R.1.Q3: the graded pre-onset responding that query attributes to repeated exposure is, at least in part, simply a response to a genuinely graded pre-onset scene.
+
+
