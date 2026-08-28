@@ -619,15 +619,21 @@ correlates at Spearman **+0.546** (p = 1.5e-4) against a split-half reliability 
 two quite different scenarios is a property of the responder, which supports the
 response-style and anticipation accounts over a scenario-specific lapse.
 
-**Test B: it does not build within a session.** Standardising trial order within
-participant x scenario x session (dictionary gotcha 4), the mean within-participant slope
-of C1 responding is **+0.005 (SE 0.052)** — nothing — and first-third against last-third
-is 0.131 to 0.142. Mean replays correlate with the floor at -0.217 (p = 0.16), i.e. not
-reliably and if anything in the wrong direction. Only 26 of 43 participants yield a usable
-slope, so this is the weaker of the two tests, but as far as it goes it says anticipation
-does not accumulate across a block. Jonas expected anticipation to be the leading
-explanation; on study-1 data alone that expectation is not supported, and test D below is
-where it is vindicated.
+**Test B: null, but the null is uninformative and that is the finding.** Standardising
+trial order within participant x scenario x session (dictionary gotcha 4), the mean
+within-participant slope of C1 responding is **+0.005 (SE 0.052)**, 95% CI
+[-0.097, +0.108]. Pressed on its power, the test collapses: a participant contributes 24
+pre-onset trials and presses on a median of **one**, 17 of 43 have no variation at all and
+drop out, and those 17 are the low-floor participants (mean C1 rate 0.059 against the
+retained group's 0.192), so the trend is measured only on the higher-floor half of the
+sample. The smallest slope detectable at ~80% power is 0.146, while the exposure effect
+that actually exists — measured in test E below, on a design built for the question — is
+**+0.027**. The test could not have detected an effect five times larger than the real
+one. So the correct conclusion is *study 1 cannot address anticipation*, not *anticipation
+is absent*, and Jonas's expectation is neither supported nor contradicted here. Reported
+this way in `out/response_style_and_anticipation.md`; my first pass through this stated
+the null as if it were evidence of absence, which it is not, and the report was corrected
+before commit.
 
 **Test C, not planned, and the most consequential thing here: C1 is not a null scene.**
 The project has treated the C1 cells as carrying no boundary information, on the grounds

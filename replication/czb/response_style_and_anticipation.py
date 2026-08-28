@@ -128,6 +128,18 @@ def main() -> None:
     early = pre[pre.pos <= 1 / 3].intervene.mean()
     late = pre[pre.pos >= 2 / 3].intervene.mean()
 
+    # Power and selection diagnostics for test B: a null slope is only worth reporting
+    # alongside what the test could have detected, and who it dropped.
+    n_c1 = pre.groupby("Exp_Subject_Id").size()
+    k_c1 = pre.groupby("Exp_Subject_Id").intervene.sum()
+    n_c1_med, k_med = float(n_c1.median()), float(k_c1.median())
+    n_total = int(len(k_c1))
+    keep = k_c1[(k_c1 > 0) & (k_c1 < n_c1)].index
+    drop = k_c1.index.difference(keep)
+    n_excluded = int(len(drop))
+    rate_ret = float(pre[pre.Exp_Subject_Id.isin(keep)].intervene.mean())
+    rate_exc = float(pre[pre.Exp_Subject_Id.isin(drop)].intervene.mean()) if len(drop) else float("nan")
+
     # Replay as a secondary exposure proxy
     rep = r.groupby("Exp_Subject_Id").Replay.mean()
     floor_all = pre.groupby("Exp_Subject_Id").intervene.mean()
@@ -186,16 +198,39 @@ def main() -> None:
          f"{early:.3f} to {late:.3f}. " +
          ("That is a rise, which is what learned anticipation predicts."
           if mean_slope > 2 * se_slope else
-          "That is not a reliable rise, so anticipation that *builds within a session* "
-          "is not supported by this test — which does not rule out anticipation "
-          "acquired earlier or immediately, only anticipation that accumulates over a "
-          "block.") + "\n",
-         "**Together.** Test A speaks to whether the floor is a trait; test B speaks to "
-         "whether that trait is learned during the study. They can disagree, and if they "
-         "do the honest reading is that the floor is stable but was not acquired within "
-         "the observation window — in which case the Button/Random ordering (Random "
-         "always ran first) and prior exposure become the candidates, and only a "
-         "naive-exposure dataset can separate them.\n",
+          "That is not a reliable rise.") + "\n",
+         "**But test B is close to uninformative, and saying so is more useful than the "
+         "null.** Three things limit it, all measured rather than suspected:\n",
+         "| limitation | value |", "|---|---|",
+         f"| C1 trials per participant | {int(n_c1_med)} |",
+         f"| C1 *presses* per participant (median) | {int(k_med)} |",
+         f"| participants with no variation to fit, hence excluded | "
+         f"{n_excluded} of {n_total} |",
+         f"| mean C1 rate, participants retained | {rate_ret:.3f} |",
+         f"| mean C1 rate, participants excluded | {rate_exc:.3f} |",
+         f"| 95% CI on the slope | [{mean_slope - 1.96 * se_slope:+.3f}, "
+         f"{mean_slope + 1.96 * se_slope:+.3f}] |",
+         f"| smallest slope detectable at ~80% power | {2.8 * se_slope:.3f} |",
+         "\nA participant contributes 24 pre-onset trials and presses on a median of "
+         "**one** of them, so a per-participant trend line is being fitted through "
+         "almost no signal. Participants with no variation at all drop out — "
+         f"{n_excluded} of {n_total}, almost all of them because they never pressed at "
+         f"C1 — and they are precisely the low-floor participants: the retained group "
+         f"averages {rate_ret:.3f} against the excluded group's {rate_exc:.3f}, so the "
+         "test is run on the higher-floor half of the sample. Most "
+         "decisively, the interval on the slope spans about ±0.10, while the exposure "
+         "effect measured in the second cut-in study, which has a design built for this "
+         "question, is +0.027. **This test could not have detected an effect five times "
+         "larger than the real one.** It is therefore not evidence that anticipation is "
+         "absent; it is evidence that study 1 cannot address the question, and the "
+         "answer has to come from a dataset with a deliberate exposure manipulation.\n",
+         "**Together.** Test A establishes that the floor is a stable property of the "
+         "person. Test B was meant to say whether that property is learned during the "
+         "study, and cannot: it is underpowered by roughly a factor of five against the "
+         "effect size that actually exists. The standing of the anticipation account "
+         "after these two tests is therefore *untested on study 1*, not *unsupported*. "
+         "The deliberate exposure manipulation in the second cut-in study settles it "
+         "instead (`out/cutin2_scope.md`), and it comes out positive.\n",
          "## Test C — but is C1 a null scene at all?\n",
          "Both tests above inherit the project's standing assumption that the C1 cells "
          "carry no boundary information, because the clip ends at manoeuvre onset and "

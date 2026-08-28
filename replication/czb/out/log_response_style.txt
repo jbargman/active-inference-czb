@@ -32,9 +32,23 @@ Trial order standardized to [0, 1] within participant x scenario x session, so t
 
 **Test A.** The floor correlates across two quite different scenarios at +0.546, which is 61% of what the measurement's own reliability allows. A floor that travels with the person across a cut-in and a cyclist overtake is a property of the responder, not of the situation.
 
-**Test B.** Within a block the floor moves by +0.005 from start to end (SE 0.052), and the first-third to last-third contrast is 0.131 to 0.142. That is not a reliable rise, so anticipation that *builds within a session* is not supported by this test — which does not rule out anticipation acquired earlier or immediately, only anticipation that accumulates over a block.
+**Test B.** Within a block the floor moves by +0.005 from start to end (SE 0.052), and the first-third to last-third contrast is 0.131 to 0.142. That is not a reliable rise.
 
-**Together.** Test A speaks to whether the floor is a trait; test B speaks to whether that trait is learned during the study. They can disagree, and if they do the honest reading is that the floor is stable but was not acquired within the observation window — in which case the Button/Random ordering (Random always ran first) and prior exposure become the candidates, and only a naive-exposure dataset can separate them.
+**But test B is close to uninformative, and saying so is more useful than the null.** Three things limit it, all measured rather than suspected:
+
+| limitation | value |
+|---|---|
+| C1 trials per participant | 24 |
+| C1 *presses* per participant (median) | 1 |
+| participants with no variation to fit, hence excluded | 17 of 43 |
+| mean C1 rate, participants retained | 0.192 |
+| mean C1 rate, participants excluded | 0.059 |
+| 95% CI on the slope | [-0.097, +0.108] |
+| smallest slope detectable at ~80% power | 0.146 |
+
+A participant contributes 24 pre-onset trials and presses on a median of **one** of them, so a per-participant trend line is being fitted through almost no signal. Participants with no variation at all drop out — 17 of 43, almost all of them because they never pressed at C1 — and they are precisely the low-floor participants: the retained group averages 0.192 against the excluded group's 0.059, so the test is run on the higher-floor half of the sample. Most decisively, the interval on the slope spans about ±0.10, while the exposure effect measured in the second cut-in study, which has a design built for this question, is +0.027. **This test could not have detected an effect five times larger than the real one.** It is therefore not evidence that anticipation is absent; it is evidence that study 1 cannot address the question, and the answer has to come from a dataset with a deliberate exposure manipulation.
+
+**Together.** Test A establishes that the floor is a stable property of the person. Test B was meant to say whether that property is learned during the study, and cannot: it is underpowered by roughly a factor of five against the effect size that actually exists. The standing of the anticipation account after these two tests is therefore *untested on study 1*, not *unsupported*. The deliberate exposure manipulation in the second cut-in study settles it instead (`out/cutin2_scope.md`), and it comes out positive.
 
 ## Test C — but is C1 a null scene at all?
 
