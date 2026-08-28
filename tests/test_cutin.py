@@ -229,11 +229,31 @@ def test_overtake_uses_the_cutin_field_code():
           abs(float(f.t_since_onset.to_numpy()[np.argmin(np.abs(f.t_since_onset.to_numpy()))])) < 1e-9)
 
 
+def test_czb_shape_constant_is_staged_not_default():
+    """k = 12 applies on the CZB path only; released behavior keeps k = 0 (2026-08-28)."""
+    from comfortzone.cutin import CZB_LANE_ENTRY_SHAPE_K, cutin_params, load_cutin_trace
+    from comfortzone.czb_data import RANDOM_CUTIN_TRACES
+    check("released default keeps the linear ramp",
+          PreferenceParams().lane_entry_shape_k == 0.0)
+    check("the CZB constant is 12", CZB_LANE_ENTRY_SHAPE_K == 12.0)
+    path = RANDOM_CUTIN_TRACES["TTC4"]
+    if not path.exists():
+        check("cut-in trace present for staging check", False, "missing stimulus file")
+        return
+    tr = load_cutin_trace(path)
+    check("CZB staging applies k = 12 by default",
+          cutin_params(tr).lane_entry_shape_k == CZB_LANE_ENTRY_SHAPE_K)
+    # an explicitly supplied params object must win, or the k sweep is unreproducible
+    check("an explicit k is respected by the staging function",
+          cutin_params(tr, PreferenceParams(lane_entry_shape_k=4.0)).lane_entry_shape_k == 4.0)
+
+
 if __name__ == "__main__":
     for fn in [test_lane_entry_weight, test_residual_severity, test_collision_tau_gating,
                test_norm_weight_categories, test_lane_entry_shape,
                test_lane_entry_shape_defaults_preserve_released_behavior,
-               test_overtake_loader, test_overtake_uses_the_cutin_field_code]:
+               test_overtake_loader, test_overtake_uses_the_cutin_field_code,
+               test_czb_shape_constant_is_staged_not_default]:
         fn()
     print(f"\n{len(PASS)} passed, {len(FAIL)} failed")
     sys.exit(1 if FAIL else 0)

@@ -128,6 +128,59 @@ register regenerated. Follow-up work is card A.2.v2 below.]*
   regenerated; and if a decision changes a documented plan, that document corrected in
   place with a dated note.
 
+### Card R.2 — review gate: the lateral term and the distance–time anomaly (for the stronger model)
+
+*(Added 2026-08-28 at Jonas's request. This is a **design** gate, not execution: two
+findings have outrun what the executing session should decide alone, and the literature
+that bears on them has been read and summarized. Run at tier 1.)*
+
+- **Read first**: `docs/lateral_and_uncertainty_note.md` (the argument and the five
+  papers), then `docs/overtake_construction_note.md` §4 and §6 (where the two findings
+  came from), then `replication/czb/out/overtake_field_check.md` and
+  `out/transfer_overtake_summary.md`.
+- **The problem, in one line**: the field evaluates the deficit along a single predicted
+  trajectory, and therefore cannot express either (a) that a collision-free pass at
+  0.5 m is uncomfortable, or (b) that a distant conflict at matched time is judged
+  differently from a near one.
+- **The proposal to assess**: take the deficit in expectation over a predictive
+  distribution, `E[d(x)]` with `x ~ N(x̂, Σ(t))`, rather than at the point estimate.
+  Argued in the note as native to active inference — expected free energy is already an
+  expectation under a predictive distribution, which the released model collapses to its
+  mean because its scenarios are longitudinal. This is the same move as the lane-entry
+  work, which is the closed form of an expectation the closed loop computes by rollout.
+- **The decisions that need making**, none of which the executing session should take:
+  1. **Is the sign right?** For our preference function's actual cost asymmetry, does
+     E[d] rise or fall as Σ widens? Do this analytically or numerically **before any
+     code**. If the sign is wrong the mechanism is not the explanation, and the
+     honest outcome is a lateral term motivated on its own terms instead.
+  2. **Whose functional form?** Re-derive Σ from our own predictive model, or adopt
+     Kolekar et al.'s DRF shape (Gaussian cross-section, parabolic height to a
+     speed-scaled look-ahead, width linear in arc length and steering angle) with its
+     six constants? The DRF is independently validated on overtaking and car-following
+     and is structurally the same claim as ours — "keep a scalar below a threshold" —
+     so inheriting it is defensible, but it is a different model's parameterization.
+  3. **How much fitting is acceptable?** Σ's scaling adds at least one parameter
+     upstream of the boundary. The project's standing position is that the field
+     carries no constants fitted to the responses; k = 12 (card B.1) already bends
+     that, and this would bend it further. Whatever is decided, it must be calibrated
+     on one scenario and frozen before any transfer scenario is scored.
+  4. **Does the A.3 verdict need revisiting?** Bontje et al. (2026) report that traffic
+     accumulators conventionally drive the drift with looming or TTC, not with a
+     comfort deficit, and list leaky accumulation and collapsing bounds as the standard
+     architectures. Our FAIL was pre-registered and stands as a statement about the
+     accumulator we specified; the gate should decide whether it also licenses the
+     broader claim currently in the assessment, or whether that claim needs narrowing.
+- **Pre-registered tests, in order** (the note's §6): derive the sign; then LTAP, whose
+  two-speed design separates time from distance by construction and where the predicted
+  effect is a speed difference of the observed sign at matched PET; then the cyclist
+  overtake, where the prediction is that cell ordering improves materially on the
+  current Spearman +0.402 without the model being given the clearance.
+- **Also settle**: R.1.Q1 (how percentiles are to be quoted — a convention, see the
+  note in card A.2.v2), R.1.Q2 (on the evidence in
+  `out/lapse_threshold_artifact.md`), and R.1.Q3 (Jonas's position is that the
+  anticipation bias should be lived with and corrected using NDS data rather than
+  designed away; the gate should turn that into a specific estimator).
+
 ### Card A.2.v2 — regenerate stage 1 under the corrected validation code, and test the correlated-effects variant
 
 *(Added at review gate R.1, 2026-08-27. Cheap-model card; long-running, overnight is
@@ -160,6 +213,20 @@ fine.)*
   reported as a robustness line.
 - **Stop if**: the correlated variant's optimizer or Hessian fails after two honest
   attempts — report, keep the hierarchical variant primary, carry the query.
+- **Added 2026-08-28, and this card must now run before any percentile is quoted**:
+  the CZB staging path adopts `lane_entry_shape_k = 12` (`comfortzone.cutin.
+  CZB_LANE_ENTRY_SHAPE_K`, Jonas's decision — argument in
+  `docs/overtake_construction_note.md` §5). That changes the covariate in **3 of the 18
+  cells** — TTC4/C2 by +26%, TTC6/C1 by −27%, TTC8/C1 by +8%; the other fifteen are
+  already at saturated overlap and are bit-identical. The changed cells are the early,
+  partially-overlapping ones, which are exactly the cells that identify the lapse, so
+  the stage-1 fit and the whole percentile table must be regenerated under k = 12 before
+  being quoted. Report the old and new percentile tables side by side, since the
+  difference is the price of the k decision and should be visible.
+- **The percentile-reporting convention (R.1.Q1), to adopt here**: every percentile is
+  quoted as a triple — value, CI, and the specification it came from (bias variant and
+  k). The summary table gets a header line naming both. This is a convention, not an
+  analysis, and it is cheap to adopt now.
 
 ### Card B.3.v2 — the LTAP field (re-scoped 2026-08-28)
 

@@ -249,6 +249,24 @@ Four distinct uses, in the order I would take them:
 4. **Transfer events in the wild** — naturally occurring cut-ins and LTAP conflicts
    as a held-out scenario set with no instruction at all.
 
+5. **Correcting the anticipation bias (Jonas's decision, 2026-08-28; query R.1.Q3).**
+   Participants respond in a criticality-graded way *before* the manoeuvre begins —
+   observed at C1 in the cut-in (0.122 / 0.070 / 0.052 by criticality) and again in the
+   cyclist overtake (0.221 / 0.203 / 0.169), so it is a property of repeatedly showing
+   people the same clip set, not of one scenario. A lapse floor cannot express it,
+   because the floor is by construction flat across criticality. Designing it away would
+   need naive-exposure or catch-trial structure, which is hard and constrains the
+   stimulus design severely. **The adopted position is to live with it and correct for
+   it**: treat it as a measured bias of the fixed-clip paradigm and estimate the
+   correction from NDS data, where drivers are not primed by repeated exposure and no
+   instruction is given. Operationally this is the same estimator as use 1 above — fit
+   the boundary on naturalistic events and compare with the study-1 estimate — but with
+   the *criticality-graded* part of the discrepancy attributed to anticipation rather
+   than folded into the single paradigm offset δ. That means δ becomes a small function
+   of criticality rather than a constant, identified by the difference in slope between
+   the naturalistic and study-1 surfaces. Turning this into a concrete estimator is
+   part of review gate R.2.
+
 ## 5 The four questions: answers received 2026-08-27, and what follows
 
 **5.1 Bias: test both, and why I leaned toward shrinkage.** Agreed — both variants run

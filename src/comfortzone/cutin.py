@@ -216,6 +216,34 @@ def cutin_norm_weight(y_rel: np.ndarray, progress: np.ndarray, lane_width: float
 # 3. The predictor series
 # --------------------------------------------------------------------------------------
 
+# The lane-entry ramp's S-shape for all CZB work (Jonas's decision, 2026-08-28).
+#
+# The ramp from no predicted lateral overlap to full overlap was linear. The behavioral
+# argument for an S is that a sliver of predicted overlap does not yet feel like a
+# rear-end conflict, while an established overlap becomes one quickly. Swept on the
+# 18-cell Random cut-in surface with the stage-0 probit refitted at each k
+# (`replication/czb/lane_entry_shape_check.py`, results in
+# `out/lane_entry_shape_check.md`): RMSE 0.1189 at k = 0, minimum 0.1154 at k = 12, and
+# the reflected shape is worse (0.1211 at k = -8), so the proposal's direction is
+# supported and there is a genuine interior optimum rather than a drift to the grid edge.
+#
+# **Status: a calibrated constant, not a fitted parameter, and not parameter-free
+# either.** The value was chosen once, on the cut-in surface, against the response data;
+# that is the same standing as the released model's own per-scenario a_OV,min. What it
+# must never become is a per-scenario knob: it is frozen here so that every transfer
+# scenario is scored with the cut-in's value, which is the only way the transfer test
+# means anything. Any document quoting a CZB number states that k = 12 was used.
+#
+# The optimum is flat between k = 8 (0.1156) and k = 12 (0.1154), so the choice is not
+# sensitive to the third decimal; 12 is the measured minimum and is taken as-is rather
+# than rounded, to avoid a second undocumented choice.
+#
+# `PreferenceParams.lane_entry_shape_k` still defaults to 0, so the causation work and
+# every released-behavior comparison are untouched; this constant is applied only on the
+# CZB staging path, exactly as `lane_entry_continuous` is.
+CZB_LANE_ENTRY_SHAPE_K = 12.0
+
+
 def cutin_params(trace: CutInTrace, p: PreferenceParams | None = None) -> PreferenceParams:
     """The preference parameters for evaluating this clip.
 
@@ -232,7 +260,12 @@ def cutin_params(trace: CutInTrace, p: PreferenceParams | None = None) -> Prefer
       `counterfactual_residual_severity`): a cut-in lives in the straddling continuum the
       released binary gates cannot express. Argument: docs/lane_entry_note.md.
     """
-    p = p or PreferenceParams()
+    # The CZB shape constant is the default for this path, but an explicitly supplied
+    # `p` is respected -- the k sweep in `lane_entry_shape_check.py` has to be able to
+    # ask for other values, and a staging function that silently overrode its own
+    # argument would make that sweep unreproducible.
+    p = p if p is not None else PreferenceParams(
+        lane_entry_shape_k=CZB_LANE_ENTRY_SHAPE_K)
     return replace(p, v_desired=float(np.median(trace.v_ego)),
                    lane_entry_continuous=True, counterfactual_residual_severity=True)
 

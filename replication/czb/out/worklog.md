@@ -469,3 +469,139 @@ before any transfer scenario is scored.
 @B.1.Q4(minor, review): the cyclist-overtake surface has a narrow dynamic range
 (0.140–0.686) and one flat condition, so RMSE differences of a few hundredths between
 transfer models are not decisive. LTAP is the better-powered venue for B.4's headline.
+
+## 2026-08-28 — Jonas's follow-ups: the k decision, the literature, and the R.2 gate
+
+Interactive session turned batch. Five items from Jonas: lock the sigmoid decision,
+investigate the distance/time literature he half-remembered, find evidence for a lateral
+term (he suggested Kolekar), say what to do about the R.1 judgement queries, and hand a
+new plan to the more capable model. Full suite green before (173) and after (177).
+
+**The lane-entry shape is locked at k = 12, on the CZB staging path only.** Jonas chose
+option 2 of the three offered — adopt the S-shape, choose the value once, freeze it — so
+`comfortzone.cutin.CZB_LANE_ENTRY_SHAPE_K = 12.0` is applied by `cutin_params`, while
+`PreferenceParams.lane_entry_shape_k` still defaults to 0 and the causation work and every
+released-behavior comparison are untouched. The constant is documented as *calibrated, not
+parameter-free*: it was chosen against the cut-in response surface, which gives it the same
+standing as the released model's own per-scenario a_OV,min, and the thing it must never
+become is a per-scenario knob. The optimum is flat between k = 8 (RMSE 0.1156) and k = 12
+(0.1154), so the choice is insensitive; 12 is the measured minimum and is taken unrounded
+to avoid a second undocumented choice. One implementation subtlety worth recording: the
+staging function must respect an explicitly supplied params object, or the k sweep that
+justified the constant becomes unreproducible — `cutin_params` now only supplies the
+default when `p is None`, and a property test pins that. **Consequence that must not be
+lost**: the constant changes the covariate in 3 of the 18 cut-in cells (TTC4/C2 +26%,
+TTC6/C1 −27%, TTC8/C1 +8%; the other fifteen are at saturated overlap and are
+bit-identical), and those three are the early partially-overlapping cells that identify
+the lapse. Every stage-1 number and the whole percentile table must therefore be
+regenerated before being quoted again; card A.2.v2 now says so and asks for the old and
+new tables side by side.
+
+**The distance–time anomaly has a literature and a mechanism, and it is the same problem
+as the lateral gap.** Five papers read (three as full text extracted from PDF, two at
+publisher/abstract level; verification status is recorded per source in the note).
+Zgonnikov, Abbink & Markkula (2024) modelled our exact LTAP scenario and found gap
+acceptance depends on time-to-arrival **and** distance, needing a generalized gap measure.
+Wang, Srinivasan, Jokinen, Oulasvirta & Markkula (2024) supply the mechanism Jonas
+remembered — bounded-optimal decisions under noisy visual perception, where perceptual
+noise makes time-to-arrival estimates more dispersed in some conditions than others and
+the rational response to a noisier estimate is a more conservative one; their model
+reproduces *greater gap acceptance at higher speed for matched time-to-arrival*, which is
+our LTAP finding exactly. Mohammad, Farah & Zgonnikov found a third scenario needs a
+speed-dependent *initial bias*, which is a useful warning that where the term enters
+(drift, bound, or starting point) is not determined by the phenomenon. Bontje et al.
+(2026) confirm that traffic accumulators conventionally drive the drift with looming or
+TTC rather than with a comfort deficit, and list leaky accumulation and collapsing bounds
+as the standard architectures — so our A.3 FAIL was of one specific accumulator using an
+unconventional evidence variable, and the assessment's broader claim may need narrowing.
+Kolekar, de Winter & Abbink (2020) give the lateral machinery: the Driver's Risk Field is a
+2D field whose Gaussian cross-section widens with arc length and steering angle, multiplied
+by a per-object cost and thresholded — "keep a scalar below a threshold" is our claim, with
+the lateral dimension already in it, validated on overtaking and obstacle avoidance.
+
+**The synthesis, written up as `docs/lateral_and_uncertainty_note.md`:** our field
+evaluates the deficit along a *single predicted trajectory*, and both failures follow from
+that one fact. A point estimate cannot express that a collision-free pass at 0.5 m is
+uncomfortable (you need probability mass off the predicted path), and it cannot express
+that a distant conflict is judged differently from a near one at matched time (you need
+the estimate's dispersion to grow with distance). The proposal is to take the deficit in
+expectation over a predictive distribution rather than at its mean — which is not a bolt-on
+but a return to the framework's own form, since expected free energy is already an
+expectation under a predictive distribution that the released model collapses because its
+scenarios are longitudinal. Two honest caveats are recorded in the note: it adds at least
+one parameter upstream of the boundary, and the *sign* of the distance effect under an
+expected-deficit model is a derivation I sketched but did not do. That derivation is the
+first task of the new gate, before any code.
+
+@R.2.Q1(blocker, review): the expected-deficit proposal is the session's main design
+output and is unverified. Derive the sign of the distance effect for our preference
+function's actual cost asymmetry before implementing anything; if E[d] falls rather than
+rises as the predictive variance widens, the mechanism predicts the opposite of the
+observed LTAP effect and the proposal fails as an explanation, in which case a lateral
+comfort term has to be motivated on its own terms.
+
+**R.1.Q2 tested rather than argued: Jonas's artefact instinct is half right, and the half
+that is right matters.** Final numbers, computed under the newly locked k = 12: the
+independent arm recovers rho = **-0.272** (sd 0.143) from data with no correlation at all
+-- 37% of the observed magnitude -- while the arm simulated with a genuine -0.7 recovers
+-0.652. The observed **-0.727** is 2.9 sd below the independent arm's mean and more
+negative than all twelve of its replicates, while sitting 0.9 sd from the correlated
+arm's mean. So a real correlation of roughly the naive size is the best explanation,
+reached through a mixture of a real effect and an artifact worth about -0.27; the
+correlated-effects fit in card A.2.v2 must be judged against that baseline rather than
+against zero, since a fitted -0.3 would be evidence of *no* real correlation.
+
+**A worked example of why the k regeneration warning matters.** This script was first run
+before the k = 12 lock and gave observed -0.700 with an artifact baseline of -0.288;
+re-running it after the lock gave -0.727 and -0.272. Nothing else changed. The shift is
+small but it is not noise -- the run is seeded and otherwise deterministic -- and it
+lands exactly where card A.2.v2 predicts, because the three cells k = 12 alters are the
+early partially-overlapping ones that identify the lapse, and this statistic is about the
+lapse. It is a concrete demonstration that every lapse- and percentile-related number
+computed before 2026-08-28 needs regenerating, not just re-labelling.
+
+Two process notes. The script's auto-generated interpretation originally branched on an
+arbitrary -0.3 threshold and, at -0.288, printed "near zero, the estimator does not
+manufacture this pattern" -- the numbers were right and the prose contradicted them,
+which is precisely what committing generated artifacts is supposed to prevent. The branch
+was replaced with a quantitative comparison and the report regenerated. And the first
+run's numbers reached Jonas in chat before the lock; the committed report is the
+authoritative version.
+
+Method: `lapse_threshold_artifact.py` simulates from the fitted model with
+the two driver effects drawn independently, refits with the same estimator, and measures the
+recovered correlation. The estimator manufactures a substantial negative correlation from
+data that has none — the mechanism being that a driver's excess pressing has to be split
+between the lapse and the threshold, forcing the two errors to opposite signs, the same
+phenomenon as the classic intercept–slope anticorrelation. So the raw −0.727 overstates
+whatever is really there. But it does not explain it away: the observed value is more
+negative than any of the twelve independent replicates and sits inside the arm simulated
+with a genuine −0.7. Reading: some of the correlation is real, the correlated-effects
+variant in card A.2.v2 is still needed, and its result should be interpreted against the
+artefact baseline rather than against zero. Numbers in `out/lapse_threshold_artifact.md`.
+
+**R.1.Q1 answered as a convention, not an analysis.** Every percentile is quoted as a
+triple — value, interval, and the specification that produced it (bias variant and k).
+Folded into card A.2.v2 as a reporting requirement rather than left as an open query.
+
+**R.1.Q3 settled by Jonas and turned into a plan.** His position: designing the
+anticipation bias away is hard and constrains the stimulus design too much, so live with
+it and correct for it once NDS data exists. Recorded as a fifth NDS use in roadmap §4c,
+with the operational consequence spelled out: the paradigm offset δ stops being a constant
+and becomes a small function of criticality, identified by the difference in *slope*
+between the naturalistic and study-1 surfaces rather than in their level. Making that a
+concrete estimator is part of the new gate.
+
+**A new review gate, card R.2**, hands the design decisions to the capable model with the
+reading done and the tests pre-registered: derive the sign first; then test on LTAP, whose
+two-speed design separates time from distance by construction; then on the cyclist
+overtake, where the prediction is that cell ordering improves materially on Spearman +0.402
+without the model being given the clearance; and only then decide whether to adopt the
+DRF's functional form wholesale or re-derive it. The gate also owns the question of whether
+the A.3 verdict's wording needs narrowing in the light of Bontje et al.
+
+@R.2.Q2(judgment, jonas): B.1.Q1 is brought forward to R.2 as instructed — the
+Random-design third question for the cyclist overtake is undocumented in the study's own
+materials, and one email to the QUADRARUM group would restore a second fitted level in
+that scenario. It is the cheapest outstanding gain in the transfer programme and it needs
+Jonas, since it is outward-facing.
