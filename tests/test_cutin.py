@@ -283,13 +283,81 @@ def test_lane_entry_bidirectional():
           0.0 <= float(lane_entry_weight(fleeing, p_on)) <= 1.0)
 
 
+def test_covariate_window():
+    """The shown-clip covariate window (2026-08-29, closing blocker B2.Q1).
+
+    The claims under test, from replication/czb/out/c1_covariate_defect.md: the C1
+    covariate no longer includes the manoeuvre-onset frame (whose lane-entry
+    projection inverted the criticality ordering), the running max no longer
+    accumulates trace-start frames the participant never saw, and everything the
+    participants DID see is untouched -- the C2+ cut-in covariates are bit-identical
+    to the whole-trace convention.
+    """
+    from comfortzone.czb_data import (C1_COV_END_S, RANDOM_CLIP_LEAD_S,
+                                      RANDOM_CUTIN_TRACES, stimulus_field)
+    path = RANDOM_CUTIN_TRACES["TTC8"]
+    if not path.exists():
+        check("cut-in trace present for window check", False, "missing stimulus file")
+        return
+    check("C1 window ends before the central-difference reach of the onset frame",
+          -0.2 < C1_COV_END_S < -0.1, C1_COV_END_S)
+
+    # TTC8 is the sharpest case: onset frame deficit 2907 through p_lane ~ 1.
+    f_old = stimulus_field(path)
+    f_new = stimulus_field(path, accum_lead_s=RANDOM_CLIP_LEAD_S)
+
+    def cov(f, t_end):
+        idx = int(np.searchsorted(f.t_since_onset.to_numpy(), t_end, side="right")) - 1
+        return float(f.deficit_max.iloc[max(idx, 0)])
+
+    old_c1, new_c1 = cov(f_old, 0.0), cov(f_new, C1_COV_END_S)
+    check("the old C1 covariate carried the onset-frame spike", old_c1 > 1000, old_c1)
+    check("the new C1 covariate is at the normal-driving noise level", new_c1 < 10, new_c1)
+    # C2..C6 must be untouched by the window change
+    same = all(np.isclose(cov(f_old, 0.3 * k), cov(f_new, 0.3 * k), rtol=0, atol=1e-9)
+               for k in range(1, 6))
+    check("C2-C6 covariates are bit-identical under the shown-clip window", same)
+    # both window arguments at once is a caller error
+    try:
+        stimulus_field(path, accum_start_s=5.0, accum_lead_s=10.0)
+        check("giving both window arguments raises", False)
+    except ValueError:
+        check("giving both window arguments raises", True)
+
+
+def test_covariate_window_trials():
+    """The trial tables built on the window: the C1 inversion is gone, and the
+    overtake condition that inherited a trace-start artifact floor is freed of it."""
+    from comfortzone.czb_data import random_cutin_trials, random_overtake_trials
+    try:
+        cut = random_cutin_trials()
+    except FileNotFoundError:
+        check("study data present for trial-table check", False, "missing study files")
+        return
+    c1 = (cut[cut.timepoint == "C1"].groupby("criticality", observed=True)
+          .deficit_max.first())
+    check("cut-in C1 covariates are all at noise level", bool((c1 < 10).all()),
+          dict(c1.round(2)))
+    spread = float(c1.max() - c1.min())
+    check("the 1500-unit C1 inversion is gone (spread < 5 units)", spread < 5.0, spread)
+
+    ovt = random_overtake_trials()
+    legacy = random_overtake_trials(legacy_covariates=True)
+    m15 = ovt[(ovt.criticality == "1.5m") & (ovt.timepoint == "C1")].deficit_max.iloc[0]
+    l15 = legacy[(legacy.criticality == "1.5m")
+                 & (legacy.timepoint == "C1")].deficit_max.iloc[0]
+    check("the 1.5m overtake trace-start floor (230.9) is excluded",
+          m15 < 10 < l15, f"legacy {l15:.1f} -> {m15:.2f}")
+
+
 if __name__ == "__main__":
     for fn in [test_lane_entry_weight, test_residual_severity, test_collision_tau_gating,
                test_norm_weight_categories, test_lane_entry_shape,
                test_lane_entry_shape_defaults_preserve_released_behavior,
                test_overtake_loader, test_overtake_uses_the_cutin_field_code,
                test_czb_shape_constant_is_staged_not_default,
-               test_lane_entry_bidirectional]:
+               test_lane_entry_bidirectional,
+               test_covariate_window, test_covariate_window_trials]:
         fn()
     print(f"\n{len(PASS)} passed, {len(FAIL)} failed")
     sys.exit(1 if FAIL else 0)

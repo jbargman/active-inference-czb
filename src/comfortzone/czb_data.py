@@ -55,17 +55,67 @@ BUTTON_CLIP_START_S = 5.0
 
 TIMEPOINT_OFFSET_S = {f"C{k}": 0.3 * (k - 1) for k in range(1, 7)}
 
+# --- The covariate window (2026-08-29, closing blocker B2.Q1; evidence and old-vs-new
+# tables in replication/czb/out/c1_covariate_defect.md) ---------------------------------
+#
+# The trial covariate is a running max of the field over what the participant SAW, and
+# until 2026-08-29 it was accumulated over the whole kinematic trace instead. Two
+# defects followed:
+#
+# 1. **Trace-start artifacts entered every covariate.** The traces begin ~15-17 s
+#    before manoeuvre onset, while the shown clips are ~10 s long ("a T2 clip of ~10 s
+#    shows ~9.7 s of normal driving" -- the study's own context file). Differentiation
+#    blips near the trace start (e.g. a 2 m/s^2 acceleration spike at t = 1.2 s in the
+#    1.5 m overtake trace, 16 s before onset) put a floor of 230.9 deficit units under
+#    every cell of that condition -- frames no participant ever saw.
+# 2. **C1's endpoint included the manoeuvre-onset frame.** C1 ends AT onset, and
+#    `_at_time`'s inclusive lookup took the onset frame itself, where the target has
+#    moved <= 6 cm but the lane-entry projection -- whose lever arm is the longitudinal
+#    TTC -- converts that sliver into near-full predicted overlap at the LARGEST gaps.
+#    The C1 covariate was therefore ordered backwards (1 / 1509 / 2907 for gaps
+#    10.5 / 16.0 / 21.5 m), the inversion of B2.Q1. The study's own semantics say C1
+#    is pre-onset ("nothing has happened yet"), so the C1 covariate must not depend on
+#    manoeuvre frames at all.
+#
+# RANDOM_CLIP_LEAD_S: the covariate accumulation starts this long before onset. 10.0 s
+# per the context file's "~10 s" clip length; deficits during depicted normal driving
+# are ~0, so any lead in [8, 12] gives identical covariates except the tiny (1.3-unit)
+# cut-in TTC4 blip at 10.8 s before onset (sensitivity table in the diagnosis report).
+RANDOM_CLIP_LEAD_S = 10.0
+# C1_COV_END_S: C1's covariate window ends here (time since onset). -0.15 excludes the
+# onset frame AND the frame before it, whose central-difference lateral velocity
+# estimate uses the onset frame (at 10 Hz, -0.15 lands between the -0.2 and -0.1
+# frames, so exact float comparison cannot re-include either). The value is one and a
+# half frames -- a resolution guard, not a behavioral constant.
+C1_COV_END_S = -0.15
 
-def stimulus_field(path: str | Path, is_truck: bool = False, p=None) -> pd.DataFrame:
+
+def stimulus_field(path: str | Path, is_truck: bool = False, p=None,
+                   accum_start_s: float | None = None,
+                   accum_lead_s: float | None = None) -> pd.DataFrame:
     """Model covariates along one stimulus clip, with running maxima.
 
     Columns added to `cutin_predictors`: `t_since_onset`, `deficit_max`, `a_req_max`
     (magnitude of required deceleration, clipped to finite by the trace's own support).
+
+    `accum_start_s`: trace time at which the running maxima start accumulating; frames
+    before it contribute zero. Pass the shown clip's start so the covariate reflects
+    what the participant saw rather than the whole trace (see the window notes above).
+    `accum_lead_s`: the same window start expressed as seconds BEFORE manoeuvre onset
+    (for the Random clips, whose documented length is relative to onset). At most one
+    of the two may be given; both None reproduces the pre-2026-08-29 whole-trace
+    accumulation.
     """
+    if accum_start_s is not None and accum_lead_s is not None:
+        raise ValueError("give accum_start_s or accum_lead_s, not both")
     tr = load_cutin_trace(path, is_truck=is_truck)
     df = cutin_predictors(tr, p)
     df["t_since_onset"] = df.t - df.t.iloc[tr.onset_idx]
-    df["deficit_max"] = np.maximum.accumulate(df.deficit.to_numpy())
+    if accum_lead_s is not None:
+        accum_start_s = float(df.t.iloc[tr.onset_idx]) - accum_lead_s
+    shown = np.ones(len(df), bool) if accum_start_s is None \
+        else (df.t.to_numpy() >= accum_start_s)
+    df["deficit_max"] = np.maximum.accumulate(np.where(shown, df.deficit.to_numpy(), 0.0))
     # a_req is computed from the longitudinal state alone, so before lane entry it
     # describes a counterfactual with an adjacent-lane vehicle; gate it by the lane-entry
     # weight so the running max only counts frames where the conflict geometry
@@ -73,7 +123,7 @@ def stimulus_field(path: str | Path, is_truck: bool = False, p=None) -> pd.DataF
     # allowed decelerations instead -- docs/czb_fitting_plan.md.)
     a_req_mag = np.abs(np.clip(df.a_req.to_numpy(), -50.0, 0.0))
     a_req_mag = np.where(df.p_lane.to_numpy() >= 0.5, a_req_mag, 0.0)
-    df["a_req_max"] = np.maximum.accumulate(a_req_mag)
+    df["a_req_max"] = np.maximum.accumulate(np.where(shown, a_req_mag, 0.0))
     df.attrs["onset_t"] = float(df.t.iloc[tr.onset_idx])
     df.attrs["name"] = tr.name
     return df
@@ -91,22 +141,41 @@ def load_joint() -> pd.DataFrame:
     return df[df.get("timing_flag", pd.Series(index=df.index, dtype=object)) != "overshoot"]
 
 
-def random_cutin_trials(params=None) -> pd.DataFrame:
+def _cov_end(t_end: pd.Series, timepoint: pd.Series, legacy: bool) -> pd.Series:
+    """The time at which a trial's covariate is read.
+
+    Equal to the clip-end time for every timepoint except C1, whose window ends at
+    `C1_COV_END_S` so the pre-onset covariate cannot depend on manoeuvre frames (see
+    the window notes above). `legacy=True` reproduces the pre-2026-08-29 inclusive
+    endpoint everywhere.
+    """
+    if legacy:
+        return t_end
+    return t_end.where(timepoint != "C1", C1_COV_END_S)
+
+
+def random_cutin_trials(params=None, legacy_covariates: bool = False) -> pd.DataFrame:
     """One row per Random fixed-clip cut-in trial, with model covariates at clip end.
 
     Columns: participant, criticality, timepoint, t_end (s since onset), intervene,
     braking_expectation (ordered 0/1/2), ps (0-10), replay, deficit_max, a_req_max.
+
+    `legacy_covariates=True` reproduces the pre-2026-08-29 covariates (whole-trace
+    accumulation, C1 endpoint inclusive) for comparison; the default is the shown-clip
+    window that closed blocker B2.Q1.
     """
     j = load_joint()
     r = j[(j.design == "Random") & (j.scenario == "cutin_car")].copy()
-    fields = {c: stimulus_field(path, p=params)
+    fields = {c: stimulus_field(path, p=params,
+                                accum_lead_s=None if legacy_covariates else RANDOM_CLIP_LEAD_S)
               for c, path in RANDOM_CUTIN_TRACES.items()}
 
     r["t_end"] = r.timepoint.map(TIMEPOINT_OFFSET_S)
+    t_cov = _cov_end(r.t_end, r.timepoint, legacy_covariates)
     r["deficit_max"] = [
-        _at_time(fields[c], t, "deficit_max") for c, t in zip(r.criticality_label, r.t_end)]
+        _at_time(fields[c], t, "deficit_max") for c, t in zip(r.criticality_label, t_cov)]
     r["a_req_max"] = [
-        _at_time(fields[c], t, "a_req_max") for c, t in zip(r.criticality_label, r.t_end)]
+        _at_time(fields[c], t, "a_req_max") for c, t in zip(r.criticality_label, t_cov)]
     out = pd.DataFrame({
         "participant": r.Exp_Subject_Id,
         "criticality": r.criticality_label,
@@ -122,27 +191,31 @@ def random_cutin_trials(params=None) -> pd.DataFrame:
     return out
 
 
-def overtake_stimulus_field(path, p=None) -> pd.DataFrame:
+def overtake_stimulus_field(path, p=None, accum_lead_s: float | None = None) -> pd.DataFrame:
     """Model covariates along one cyclist-overtake clip.
 
     Deliberately the same predictor code as the cut-in (`cutin_predictors`); only the
     role assignment and the onset definition differ, and both live in
     `comfortzone.overtake`. A transfer test in which the two scenarios were computed by
-    different field code would not test transfer.
+    different field code would not test transfer. `accum_lead_s` as in
+    `stimulus_field`: the running maxima start this long before onset (None = whole
+    trace, the pre-2026-08-29 behavior).
     """
     tr = load_overtake_trace(path)
     df = cutin_predictors(tr, p)
     df["t_since_onset"] = df.t - df.t.iloc[tr.onset_idx]
-    df["deficit_max"] = np.maximum.accumulate(df.deficit.to_numpy())
+    shown = np.ones(len(df), bool) if accum_lead_s is None \
+        else (df.t_since_onset.to_numpy() >= -accum_lead_s)
+    df["deficit_max"] = np.maximum.accumulate(np.where(shown, df.deficit.to_numpy(), 0.0))
     a_req_mag = np.abs(np.clip(df.a_req.to_numpy(), -50.0, 0.0))
     a_req_mag = np.where(df.p_lane.to_numpy() >= 0.5, a_req_mag, 0.0)
-    df["a_req_max"] = np.maximum.accumulate(a_req_mag)
+    df["a_req_max"] = np.maximum.accumulate(np.where(shown, a_req_mag, 0.0))
     df.attrs["onset_t"] = float(df.t.iloc[tr.onset_idx])
     df.attrs["name"] = tr.name
     return df
 
 
-def random_overtake_trials(params=None) -> pd.DataFrame:
+def random_overtake_trials(params=None, legacy_covariates: bool = False) -> pd.DataFrame:
     """One row per Random fixed-clip cyclist-overtake trial (card B.1, 2026-08-28).
 
     Same columns as `random_cutin_trials` with two differences that are properties of
@@ -158,14 +231,17 @@ def random_overtake_trials(params=None) -> pd.DataFrame:
     """
     j = load_joint()
     r = j[(j.design == "Random") & (j.scenario == "cyclist_overtake")].copy()
-    fields = {c: overtake_stimulus_field(path, params)
+    fields = {c: overtake_stimulus_field(
+                    path, params,
+                    accum_lead_s=None if legacy_covariates else RANDOM_CLIP_LEAD_S)
               for c, path in RANDOM_OVERTAKE_TRACES.items()}
 
     r["t_end"] = r.timepoint.map(TIMEPOINT_OFFSET_S)
+    t_cov = _cov_end(r.t_end, r.timepoint, legacy_covariates)
     r["deficit_max"] = [
-        _at_time(fields[c], t, "deficit_max") for c, t in zip(r.criticality_label, r.t_end)]
+        _at_time(fields[c], t, "deficit_max") for c, t in zip(r.criticality_label, t_cov)]
     r["a_req_max"] = [
-        _at_time(fields[c], t, "a_req_max") for c, t in zip(r.criticality_label, r.t_end)]
+        _at_time(fields[c], t, "a_req_max") for c, t in zip(r.criticality_label, t_cov)]
     return pd.DataFrame({
         "participant": r.Exp_Subject_Id,
         "criticality": r.criticality_label,
@@ -189,7 +265,11 @@ def button_cutin_trials() -> pd.DataFrame:
     """
     j = load_joint()
     b = j[(j.design == "Button") & (j.scenario == "cutin_car")].copy()
-    fields = {c: stimulus_field(p) for c, p in BUTTON_CUTIN_TRACES.items()
+    # The Button clips' shown window is documented per clip (video_clip_name encodes
+    # e.g. trace seconds 5->18), starting at BUTTON_CLIP_START_S -- the covariate
+    # accumulates from there, not from the trace start (window notes above).
+    fields = {c: stimulus_field(p, accum_start_s=BUTTON_CLIP_START_S)
+              for c, p in BUTTON_CUTIN_TRACES.items()
               if c in set(b.criticality_label)}
 
     onset_video_s = {c: f.attrs["onset_t"] - BUTTON_CLIP_START_S for c, f in fields.items()}

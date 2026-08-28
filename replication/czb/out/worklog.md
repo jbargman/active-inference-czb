@@ -790,3 +790,49 @@ C has never been run and now depends on A.2.v2; no per-criticality deficit figur
 produced for the overtake; and the query identifiers are inconsistently formed (`B2.Qn`
 alongside `B.1.Qn`), which stands as a wart because raised identifiers are never
 rewritten.
+
+## 2026-08-29 — Card B.2.v2 item 1: the C1 covariate defect, diagnosed and fixed (tier 1, batch)
+
+Blocker B2.Q1 is closed, and the inversion turned out to be a covariate-window error,
+not a preference-function or data error. Two distinct defects, both diagnosed
+frame-by-frame in `replication/czb/c1_covariate_defect.py` (report:
+`out/c1_covariate_defect.md`). First, the C1 covariate lookup included the
+manoeuvre-onset frame: at that frame the target has moved at most 6 cm, but the
+lane-entry projection's lever arm is the longitudinal TTC, so the same sliver of
+lateral motion projects to near-full predicted overlap at the LARGEST gap — p_lane
+0.000 / 0.318 / 0.997 for TTC4 / TTC6 / TTC8 — and that backwards-ordered gate
+multiplies a correctly-ordered p_safe magnitude into the observed 1 / 1509 / 2907
+inversion. The frame at -0.1 s is also contaminated, because its central-difference
+lateral-velocity estimate uses the onset frame. Second, the running max accumulated
+from the trace start, ~15-17 s before onset, while the shown clips are ~10 s ("a T2
+clip of ~10 s shows ~9.7 s of normal driving", the study's own context file): a
+2 m/s^2 differentiation blip at trace second 1.2 in the 1.5 m overtake — never shown
+to any participant — put a floor of 230.9 deficit units under every cell of that
+condition. Fix in `comfortzone.czb_data`: running maxima accumulate only over the
+shown window (`RANDOM_CLIP_LEAD_S` = 10 s before onset for Random; the documented
+clip start for Button), and C1's covariate window ends at `C1_COV_END_S` = -0.15 s
+(one and a half frames before onset — a resolution guard excluding the onset frame
+and the frame whose velocity estimate touches it, motivated in the module comment).
+`legacy_covariates=True` reproduces the old numbers. Effects: cut-in C1 covariates
+1.26 / 1509 / 2907 -> 0.98 / 1.57 / 1.35 (noise level, no longer ordered); cut-in
+C2-C6 bit-identical; overtake C1 and the 1m/1.5m C2 cells lose their artifact floors.
+Lead-time sensitivity flat over 8-12 s. Eight property tests added (test_cutin.py,
+79 -> 87 checks, all green). Decision taken at gate level (tier 1): **C1 stays in the
+fit** with the corrected covariate and identifies the lapse, exactly as the model
+assumes; the fitted lapse may again be described as a response floor once A.2.v2
+regenerates under this convention.
+@B2.Q5(judgment, review): the real condition ordering in C1 behaviour (0.122 / 0.070 /
+0.052, tightest gap most intervention) is NOT captured by the corrected field — the
+lane gate zeroes the adjacent-lane longitudinal proximity signal by construction.
+Recorded as a structural limitation feeding R.2's field-versus-gap question, not
+patched; an ungated tau-preference would order these cells correctly (only TTC4's
+TTC 3.78 s is inside the 5 s preferred-TTC bound) but that is a preference-function
+change and belongs to the R.2 lateral/proximity decision.
+@B2.Q6(minor, review): stage 1, the transfer test, and the percentile table were all
+fitted on the pre-fix covariates; every C1-dependent number (lapse, lapse-threshold
+correlation, transfer-with-freed-lapse) carries this regeneration debt in addition to
+the k = 12 debt. A.2.v2 and the B.4 re-run settle both at once.
+RESOLVED B2.Q1: covariate-window error, two mechanisms (onset-frame inclusion
+amplified by the TTC-lever projection; whole-trace accumulation of unseen frames).
+Fixed in czb_data with the shown-clip window; C1 joins the fit with the corrected
+covariate; evidence in out/c1_covariate_defect.md.
