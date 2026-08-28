@@ -159,7 +159,21 @@ Two covariates are carried side by side (`czb_data`):
 
 Our recommendation: fit stage 1 on `deficit_max` as the primary (it is the scalar the
 CZB claim is about), run the truck cells as the internal check, and keep the
-deficit-family-over-allowed-deceleration refinement in reserve. This is a place where
+deficit-family-over-allowed-deceleration refinement in reserve.
+
+*[Sharpened 2026-08-28. Two things now bear on this section that were not known when it
+was written. First, the choice between these two axes could never have been made on
+study 1: its cut-in design holds relative speed constant, so correlation(gap, TTC) =
+1.0000 and every longitudinal covariate — deficit, a_req, TTC, headway — is a fixed
+function of one number. Second, the second cut-in study breaks that collinearity and
+scores the allowed-deceleration reading badly: over its cells, gap orders the response at
+rho −0.887, TTC at −0.807, and required deceleration at only **+0.238**
+(`replication/czb/out/cutin2_scope.md`). That is independent evidence on the same axis as
+blocker A.1.Q2, which found `a_req_max` unable to locate a threshold for geometric
+reasons. The two findings have different causes — one is covariate geometry within study
+1, the other is predictive power on new data — and they point the same way. The axis
+question should be re-decided at review gate R.2 on the second cut-in study, not on
+study 1.]* This is a place where
 the data should be allowed to overrule the framing, and the check is cheap.
 
 ## 5 What is built, and what remains before the fit

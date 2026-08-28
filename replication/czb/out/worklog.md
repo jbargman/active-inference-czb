@@ -746,3 +746,47 @@ the single most consequential outstanding analysis in the project, and it is che
 it is run, no document should describe the field as validated against human data on the
 longitudinal dimension — the wording throughout has been adjusted to say "well estimated
 on its own scale" instead, but the distinction is easy to lose.
+
+## 2026-08-28 (audit) — verifying the arc before handing over
+
+Jonas asked for a pass over the whole session to check that nothing important was left
+unpursued before a clean and a model switch. Five real gaps found, all closed; two
+recorded as known and deliberately not closed.
+
+**Closed.** (1) `stage2_summary.md` cited `out/log_stage2_v2.txt` as evidence that the v2
+optimum was global, and that file contains the v2 *fit* log, not a scan — a provenance
+claim pointing at a file that does not support it. The committed `--scan` was actually run
+(`out/log_stage2_scan.txt`) and the citation corrected; while fixing it the claim itself
+was softened, since a coarse grid shows the optimizer succeeded rather than proving a
+global optimum. (2) `lane_entry_bidirectional` and `lane_entry_max_dy_m` had no property
+tests, against the standing rule that new behaviour gets tests — six checks added,
+including that the flag stays off by default, since the variant is kept only so a rejected
+result stays reproducible and the failure mode is that it silently becomes default.
+(3) `docs/czb_fitting_plan.md` §4 still framed the deficit-versus-a_req axis choice as
+open on study 1, where it is undecidable; it now carries the collinearity note and the
+second study's +0.238 for required deceleration. (4) Two undocumented facts about
+`02_Cut-in` recorded in the work orders: the annotated file has **144** participants, not
+the 168 its context document states, and there is exactly one attention-check trial per
+participant with answers splitting 124/16/4, so ~20 gave a non-modal answer and whoever
+fits it must decide explicitly about exclusion. (5) All eight new scripts verified to
+import cleanly from a bare checkout.
+
+**A consequence caught during the audit, and it matters.** Re-running stage 2 after the
+k = 12 lock re-fits stage 1, and the between-driver spread comes back **0.194 against the
+0.209** fitted under k = 0 — about 7%. Every percentile quoted in the handover chain is
+therefore a pre-k=12 number. They are left as written because they are what the committed
+outputs currently say, but both handovers and card A.2.v2 now flag it and give the
+expected size of the shift, so a regeneration that moves things much further is a signal
+that something else changed.
+
+**Verified not blocked.** The existing cut-in loader reads the second study's traces
+correctly (ego 28.7 m/s, target width 1.88 m, onset detected at frame 51 of 600), so
+review gate R.2's first task — fitting the field against a gap threshold on that data —
+needs no pipeline work first.
+
+**Left open deliberately**, and recorded in `handover_2026-08-28.md` §8b: the handbook
+contains none of this arc and would still tell a reader the accumulator is untested; card
+C has never been run and now depends on A.2.v2; no per-criticality deficit figure was
+produced for the overtake; and the query identifiers are inconsistently formed (`B2.Qn`
+alongside `B.1.Qn`), which stands as a wart because raised identifiers are never
+rewritten.

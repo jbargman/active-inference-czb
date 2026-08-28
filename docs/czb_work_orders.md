@@ -263,6 +263,14 @@ so far** and should be taken before A.2.v2; the second promotes a dataset.)*
   LTAP field for the transfer test but off the critical path.
 - **Analysis constraint (query B2.Q3)**: TTC 5/6/7 are between-subjects and the DV and
   CP subsets are split-half, so participant means must be formed before aggregating.
+- **Two more data-handling facts about `02_Cut-in`, found 2026-08-28 and not in its own
+  documentation**: the annotated trials file carries **144 participants**, not the 168 the
+  context document states, so exclusions appear to have been applied already and the
+  effective n should be taken from the file rather than the prose. And there is exactly
+  **one attention-check trial per participant** (`attention1` nonzero on 144 trials);
+  the answers split 124 / 16 / 4 across three values, so roughly 20 participants gave a
+  non-modal answer. Whoever fits this must decide explicitly whether to exclude them —
+  this session did not, because the correct answer is not documented.
 - **Exposure effect**: the same study shows P(intervene) rising from 0.547 to 0.575
   between the first and second showing of an identical clip (3 456 pairs, SE 0.007) —
   the direct test of R.1.Q3's mechanism that study 1 cannot support, and it comes out in
@@ -310,7 +318,11 @@ fine.)*
   partially-overlapping ones, which are exactly the cells that identify the lapse, so
   the stage-1 fit and the whole percentile table must be regenerated under k = 12 before
   being quoted. Report the old and new percentile tables side by side, since the
-  difference is the price of the k decision and should be visible.
+  difference is the price of the k decision and should be visible. **Expected size,
+  measured in passing on 2026-08-28**: the stage-2 refit under k = 12 returns a
+  between-driver spread of **0.194** against the **0.209** fitted under k = 0, so the
+  percentile table should move by roughly 7%. If it moves by much more than that,
+  something else has changed and the run needs checking before anything is quoted.
 - **The percentile-reporting convention (R.1.Q1), to adopt here**: every percentile is
   quoted as a triple — value, CI, and the specification it came from (bias variant and
   k). The summary table gets a header line naming both. This is a convention, not an

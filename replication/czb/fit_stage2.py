@@ -28,8 +28,9 @@ surface's shallow criticality gradient; the v2 accumulator pinned the between-dr
 spread (rightly) but carried NO counterpart to that within-driver variability, leaving
 Wiener noise as the only flattening degree of freedom -- so its maximum-likelihood
 solution abandoned the evidence (fitted gain 1.2e-4, drift-to-noise 0.73, a
-criticality-flat surface; verified to be the global optimum by a committed grid scan,
-`--scan`). The repair is the accumulator analogue of stage 1's sigma_resp: the
+criticality-flat surface; it beats every point of a committed coarse grid over gain,
+threshold and lapse, so it is the optimizer succeeding rather than failing -- `--scan`,
+log in `out/log_stage2_scan.txt`). The repair is the accumulator analogue of stage 1's sigma_resp: the
 effective log-threshold spread is sqrt(sigma_pop^2 + sigma_trial^2) with sigma_pop
 still pinned at card A.2's between-driver value and sigma_trial free. At cell level,
 driver- and trial-level threshold variability are indistinguishable; the pinned part
@@ -399,7 +400,9 @@ def main() -> None:
     t_pre = float(-paths["TTC6"]["t"][0])
     static_note = (
         f"\n**Specification check**: the in-sample RMSE ({rmse_in:.3f}) against the "
-        "stage-0 static two-parameter probit's 0.125 on the same cells. An accumulator "
+        "stage-0 static two-parameter probit's **0.115** on the same cells under the "
+        "same k = 12 staging (0.125 under the k = 0 linear ramp; both from "
+        "`out/lane_entry_shape_check.md`). An accumulator "
         "that fits worse in sample than the simpler model it extends is misspecified, "
         "not refuted. Two such misspecifications were found and repaired at review "
         "gate R.1, each argued from structure before refitting: v1 integrated noise "
@@ -408,8 +411,9 @@ def main() -> None:
         "v2 gated the noise at onset but carried no counterpart to stage 1's "
         "within-driver response variability, so its maximum-likelihood solution "
         "abandoned the evidence (gain 1.2e-4, drift-to-noise 0.73, a "
-        "criticality-flat surface; shown to be the global optimum by `--scan`, log in "
-        "`out/log_stage2_v2.txt`). v3 adds that missing variability as sigma_trial "
+        "criticality-flat surface; the fitted solution beats every point of a coarse "
+        "grid over gain, threshold and lapse, so it is the optimizer finding a genuine "
+        "optimum rather than failing -- `--scan`, log in `out/log_stage2_scan.txt`). v3 adds that missing variability as sigma_trial "
         "and is the final iteration at this gate: its verdict stands as recorded, "
         "whichever way it falls. The reserve remedy, a leaky accumulator, remains "
         "unexercised: it bounds pre-onset noise the way the onset gate does, but also "

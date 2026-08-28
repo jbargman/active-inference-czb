@@ -1,0 +1,10 @@
+v2 landscape (sigma_trial pinned tiny), nll by (log_k, mu_a, b):
+  log_k  -8.75  mu_a -0.50  b 0.100  -> nll 1765.3
+  log_k  -9.50  mu_a -0.50  b 0.100  -> nll 1767.8
+  log_k -11.00  mu_a -1.25  b 0.100  -> nll 1779.7
+  log_k -10.25  mu_a -1.25  b 0.100  -> nll 1794.2
+  log_k  -8.00  mu_a  0.25  b 0.100  -> nll 1797.6
+  log_k -11.00  mu_a -1.25  b 0.050  -> nll 1798.0
+  log_k  -8.75  mu_a -0.50  b 0.050  -> nll 1800.0
+  log_k -10.25  mu_a -0.50  b 0.100  -> nll 1801.5
+  v2 fitted solution                      -> nll 1750.4

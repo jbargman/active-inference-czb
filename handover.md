@@ -26,7 +26,9 @@
 > blocker on interpreting every fit so far.
 >
 > What is not in doubt: the boundary distribution is well estimated on its own scale
-> (median 5 352, σ 0.209, hierarchical lapse); the transfer to the cyclist overtake works
+> (median 5 352, σ 0.209, hierarchical lapse — **these are pre-k=12 numbers**; the
+> stage-2 refit under k = 12 already shows σ moving to 0.194, so A.2.v2 will shift the
+> whole percentile table by roughly 7%); the transfer to the cyclist overtake works
 > once the per-scenario lapse is freed (RMSE 0.129 against chance 0.158 and a ceiling of
 > 0.113); and — the strongest result, needing no field at all — **about 69% of the
 > reliable per-driver signal is shared across all four scenarios**, which supports the

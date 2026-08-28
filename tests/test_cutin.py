@@ -248,12 +248,48 @@ def test_czb_shape_constant_is_staged_not_default():
           cutin_params(tr, PreferenceParams(lane_entry_shape_k=4.0)).lane_entry_shape_k == 4.0)
 
 
+def test_lane_entry_bidirectional():
+    """Outward lateral projection, added for card B.1 and defaulting OFF (2026-08-28).
+
+    Tested rather than trusted because it is a tested-and-REJECTED variant: it is kept
+    in the codebase so the overtake finding is reproducible, and the thing most likely
+    to go wrong is that it silently becomes the default.
+    """
+    p_off = PreferenceParams(lane_entry_continuous=True)
+    p_on = PreferenceParams(lane_entry_continuous=True, lane_entry_bidirectional=True)
+    check("lane_entry_bidirectional defaults to False", p_off.lane_entry_bidirectional is False)
+    check("outward clamp defaults to one study lane width", p_off.lane_entry_max_dy_m == 3.5)
+
+    # object moving laterally AWAY: the unidirectional form ignores it, the new one does not
+    away = obs_following(dy=0.6, dx=30.0, v=25.0, v_other=15.0, vy=+1.5)
+    w_off = float(lane_entry_weight(away, p_off))
+    w_on = float(lane_entry_weight(away, p_on))
+    check("moving away is invisible to the released form but not to the bidirectional one",
+          w_on < w_off, f"off {w_off:.3f}, on {w_on:.3f}")
+
+    # an object moving TOWARD our lane must behave identically under both
+    toward = obs_following(dy=3.0, dx=30.0, v=25.0, v_other=15.0, vy=-1.0)
+    check("inward motion is unaffected by the flag",
+          np.isclose(float(lane_entry_weight(toward, p_off)),
+                     float(lane_entry_weight(toward, p_on)), atol=1e-12))
+    # and with no lateral motion at all, the two forms must agree exactly
+    still = obs_following(dy=2.0, dx=30.0, v=25.0, v_other=15.0, vy=0.0)
+    check("static geometry is unaffected by the flag",
+          np.isclose(float(lane_entry_weight(still, p_off)),
+                     float(lane_entry_weight(still, p_on)), atol=1e-12))
+    # the outward projection is clamped, so the weight cannot go below zero
+    fleeing = obs_following(dy=0.1, dx=60.0, v=30.0, v_other=15.0, vy=+8.0)
+    check("clamped outward projection keeps the weight in [0, 1]",
+          0.0 <= float(lane_entry_weight(fleeing, p_on)) <= 1.0)
+
+
 if __name__ == "__main__":
     for fn in [test_lane_entry_weight, test_residual_severity, test_collision_tau_gating,
                test_norm_weight_categories, test_lane_entry_shape,
                test_lane_entry_shape_defaults_preserve_released_behavior,
                test_overtake_loader, test_overtake_uses_the_cutin_field_code,
-               test_czb_shape_constant_is_staged_not_default]:
+               test_czb_shape_constant_is_staged_not_default,
+               test_lane_entry_bidirectional]:
         fn()
     print(f"\n{len(PASS)} passed, {len(FAIL)} failed")
     sys.exit(1 if FAIL else 0)
