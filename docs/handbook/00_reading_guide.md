@@ -25,6 +25,20 @@ can be dropped into externally defined scenarios by replaying a recorded lead ve
 against the closed loop across 23 scenarios (chapters 09 and 12); and the practical cost
 figures are revised (chapter 03).
 
+{{R5}}**Status note, round 5 (2026-08-29).** Passages in dark orange are a dated status
+correction, not a full revision round: the CZB work has moved decisively since the
+chapters were written, and a reader of chapters 04 and 11 would otherwise learn claims
+the data have since overturned. In brief: the boundary-level accumulator failed its
+pre-registered test (its FAIL is final for the architecture tested); the study-1 cut-in
+design turned out unable to distinguish the preference field from a plain gap threshold
+(its longitudinal variables are perfectly collinear); and a second, larger cut-in study
+that breaks that collinearity ruled **against** the field in a pre-registered comparison
+— a simple gap threshold describes the human response surface far better. What survives,
+with strong evidence, is the claim one level up: each driver carries a single
+comfort-zone level that is substantially shared across scenarios (~69% of the reliable
+per-driver signal). The full record is `docs/r2_gate_decisions.md`; the chapters carry
+short notes at the affected points. A proper revision round awaits Jonas's review.
+
 ## What this handbook is
 
 This handbook explains the active-inference driver model of Schumann et al. (2026, Nature

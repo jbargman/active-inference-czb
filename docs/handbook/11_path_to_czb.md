@@ -5,6 +5,31 @@ as in chapter 0. This chapter answers the project's third goal: how the model ex
 comfort-zone boundary (CZB) research, and what is needed. Fuller technical detail:
 `notes/04_comfort_zone_method.md`; validation status: `notes/05_validation.md`.*
 
+{{R5}}**Status note (2026-08-29) — read before the rest of this chapter.** The program this
+chapter proposes has since been run against human data, and the outcome changes how its
+argument should be read. Four results, in the order they arrived. (1) The boundary was
+fitted on the study-1 cut-in responses and the population distribution is well estimated
+on its own scale (median 5 400 deficit units, between-driver spread 0.200, stable to
+within 1% across specification changes). (2) The accumulator layer — the "dynamic
+picture" half of this chapter's dual-role argument — **failed its pre-registered test**
+(held-out 0.255 against a rule of ≤ 0.11), a verdict that is final for the architecture
+tested (deficit-driven drift, non-leaky, fixed bound) and does not extend to the standard
+traffic architectures never tested. (3) The study-1 cut-in design cannot distinguish the
+field from a plain gap threshold — its relative speed is constant, so gap and TTC are
+perfectly collinear — and a second cut-in study that breaks the collinearity **ruled
+against the field** in a pre-registered comparison: the field scores worse than chance on
+held-out folds where a three-parameter gap threshold approaches the sampling-noise floor.
+(4) What survives, with strong field-free evidence, is this chapter's claim one level up:
+**each driver carries one comfort-zone level, and about 69% of the reliable per-driver
+signal is shared across all four scenarios**; a boundary fitted on the cut-in predicts
+the cyclist overtake once each scenario's response floor is freed. The project's headline
+is now that trait claim, with the criticality axis an open question on which the gap
+currently leads; the per-scenario-indicator alternative this chapter argues against is
+back as the primary comparator program. Full record and decisions:
+`docs/r2_gate_decisions.md`; the fits and tests: `replication/czb/out/`. The chapter
+below is kept as written — its framing argument is why the test was worth running — but
+its confident present tense about the field should be read as of 2026-08-22.
+
 ## Why this model, for this problem
 
 Comfort-zone boundaries are quantified today per scenario, per indicator: a minimum-TTC

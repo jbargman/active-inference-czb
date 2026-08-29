@@ -1017,3 +1017,23 @@ against a current baseline. One nit: the regenerated report's closing line still
 says "R.1.Q2 stays open [and] the A.2.v2 variant is still needed" — generated
 prose written for the pre-A.2.v2 state of the world; the numbers above it are
 current, and R.1.Q2 is resolved in this log.
+
+## 2026-08-29 (morning) — R2.Q6 executed: the handbook status note (Jonas's ruling)
+
+Jonas ruled "yes, update" on R2.Q6 and postponed the smaller queries; R2.Q4, R2.Q5
+and C.Q2 were explained to him in chat and remain open awaiting his ruling. The
+handbook now carries a round-5 status correction in dark orange ({{R5}}, new color in
+`build_handbook.py`; the handover's "next round would be R3" was stale — rounds R3
+and R4 already exist in the chapters, so this is round 5). Three insertions, all
+marked: a revision-round paragraph in chapter 00 (what moved and where the record
+is); the main status note at the top of chapter 11 (the four results in order —
+boundary well estimated on its own scale; the accumulator's pre-registered FAIL,
+scoped to its architecture; the study-1 collinearity and the second study's
+pre-registered verdict against the field; the surviving trait claim and the
+restated headline); and a short note heading chapter 04's cut-in section (the
+construction it plans was built, fitted, and ruled out; pointer to chapter 11).
+The chapters' original text is kept as written — the notes say how to read it, per
+the correct-in-place convention. Word and PDF rebuilt for all chapters and the
+combined document (no OneDrive locks fired).
+RESOLVED R2.Q6: Jonas ruled to update now rather than wait for his Word review;
+done as above.

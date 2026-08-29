@@ -25,6 +25,20 @@ can be dropped into externally defined scenarios by replaying a recorded lead ve
 against the closed loop across 23 scenarios (chapters 09 and 12); and the practical cost
 figures are revised (chapter 03).
 
+{{R5}}**Status note, round 5 (2026-08-29).** Passages in dark orange are a dated status
+correction, not a full revision round: the CZB work has moved decisively since the
+chapters were written, and a reader of chapters 04 and 11 would otherwise learn claims
+the data have since overturned. In brief: the boundary-level accumulator failed its
+pre-registered test (its FAIL is final for the architecture tested); the study-1 cut-in
+design turned out unable to distinguish the preference field from a plain gap threshold
+(its longitudinal variables are perfectly collinear); and a second, larger cut-in study
+that breaks that collinearity ruled **against** the field in a pre-registered comparison
+— a simple gap threshold describes the human response surface far better. What survives,
+with strong evidence, is the claim one level up: each driver carries a single
+comfort-zone level that is substantially shared across scenarios (~69% of the reliable
+per-driver signal). The full record is `docs/r2_gate_decisions.md`; the chapters carry
+short notes at the affected points. A proper revision round awaits Jonas's review.
+
 ## What this handbook is
 
 This handbook explains the active-inference driver model of Schumann et al. (2026, Nature
@@ -796,6 +810,14 @@ almost entirely shared, with `lane_width` = 3.65 m in rear-end and oncoming agai
 intersection, and the one driver-side change already noted above (`w_sd_model`).
 
 ## What a cut-in scenario would take
+
+{{R5}}*Status note (2026-08-29): this section was written ahead of the construction; the
+construction has since been built, fitted, and tested. The stimulus-side field exists
+(`src/comfortzone/cutin.py`, continuous lane entry, S-shaped ramp with k = 12), the
+boundary was fitted on the study-1 responses, and a second cut-in study then ruled the
+field's kinematic content **out** in a pre-registered comparison against a plain gap
+threshold. The section stands as a record of the construction reasoning; the outcome and
+its consequences are in chapter 11's status note and `docs/r2_gate_decisions.md`.*
 
 {{R3}}*Added 2026-08-26, ahead of implementing it. The cut-in is the next scenario, driven by
 the clip-rating and button-press dataset described in `docs/czb_study1_data_plan.md`
@@ -2132,6 +2154,31 @@ calibration test of the prediction fan on held-out segments.
 as in chapter 0. This chapter answers the project's third goal: how the model expands into
 comfort-zone boundary (CZB) research, and what is needed. Fuller technical detail:
 `notes/04_comfort_zone_method.md`; validation status: `notes/05_validation.md`.*
+
+{{R5}}**Status note (2026-08-29) — read before the rest of this chapter.** The program this
+chapter proposes has since been run against human data, and the outcome changes how its
+argument should be read. Four results, in the order they arrived. (1) The boundary was
+fitted on the study-1 cut-in responses and the population distribution is well estimated
+on its own scale (median 5 400 deficit units, between-driver spread 0.200, stable to
+within 1% across specification changes). (2) The accumulator layer — the "dynamic
+picture" half of this chapter's dual-role argument — **failed its pre-registered test**
+(held-out 0.255 against a rule of ≤ 0.11), a verdict that is final for the architecture
+tested (deficit-driven drift, non-leaky, fixed bound) and does not extend to the standard
+traffic architectures never tested. (3) The study-1 cut-in design cannot distinguish the
+field from a plain gap threshold — its relative speed is constant, so gap and TTC are
+perfectly collinear — and a second cut-in study that breaks the collinearity **ruled
+against the field** in a pre-registered comparison: the field scores worse than chance on
+held-out folds where a three-parameter gap threshold approaches the sampling-noise floor.
+(4) What survives, with strong field-free evidence, is this chapter's claim one level up:
+**each driver carries one comfort-zone level, and about 69% of the reliable per-driver
+signal is shared across all four scenarios**; a boundary fitted on the cut-in predicts
+the cyclist overtake once each scenario's response floor is freed. The project's headline
+is now that trait claim, with the criticality axis an open question on which the gap
+currently leads; the per-scenario-indicator alternative this chapter argues against is
+back as the primary comparator program. Full record and decisions:
+`docs/r2_gate_decisions.md`; the fits and tests: `replication/czb/out/`. The chapter
+below is kept as written — its framing argument is why the test was worth running — but
+its confident present tense about the field should be read as of 2026-08-22.
 
 ## Why this model, for this problem
 

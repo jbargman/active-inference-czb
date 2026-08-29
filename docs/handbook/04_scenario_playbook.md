@@ -215,6 +215,14 @@ intersection, and the one driver-side change already noted above (`w_sd_model`).
 
 ## What a cut-in scenario would take
 
+{{R5}}*Status note (2026-08-29): this section was written ahead of the construction; the
+construction has since been built, fitted, and tested. The stimulus-side field exists
+(`src/comfortzone/cutin.py`, continuous lane entry, S-shaped ramp with k = 12), the
+boundary was fitted on the study-1 responses, and a second cut-in study then ruled the
+field's kinematic content **out** in a pre-registered comparison against a plain gap
+threshold. The section stands as a record of the construction reasoning; the outcome and
+its consequences are in chapter 11's status note and `docs/r2_gate_decisions.md`.*
+
 {{R3}}*Added 2026-08-26, ahead of implementing it. The cut-in is the next scenario, driven by
 the clip-rating and button-press dataset described in `docs/czb_study1_data_plan.md`
 [Repo].*
