@@ -1,3 +1,6 @@
+﻿fitting stage 1 on the cut-in (hierarchical lapse, the R.1 decision) ...
+  median 5400, sigma_pop 0.200, sigma_resp 919
+
 # Transfer test: cut-in boundary level -> cyclist overtake
 
 Fitted on the 3 096 Random cut-in trials, scored on the 15 cyclist-overtake cells (2 580 trials, same 43 participants). Cut-in fit: population median **5400**, between-driver sigma **0.200**, response sd 919.
@@ -25,3 +28,4 @@ The pre-onset baseline differs sharply between the scenarios (cut-in C1 pooled 0
 Two limits on how far to read it. The field still ranks these cells weakly (Spearman +0.402 on the deficit against the clearance label's -0.833, `out/overtake_field_check.md`), so the agreement is being carried by the coarse criticality ordering rather than by a well-shaped covariate; a lateral-comfort term should improve it and is the obvious next model step. And the surface's dynamic range is narrow (0.14 to 0.69 against the cut-in's 0.05 to 0.92), so RMSE differences of a few hundredths are not decisive.
 
 Runtime 2.2 min.
+

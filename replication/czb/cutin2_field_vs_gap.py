@@ -142,9 +142,18 @@ def _f(tok: str) -> float:
     return float(tok.replace("p", "."))
 
 
-def video_covariates() -> pd.DataFrame:
+def video_covariates(smooth_ego_s: float | None = None) -> pd.DataFrame:
     """One row per lane-change video: the field covariate over the shown window,
-    plus trace-derived validation quantities."""
+    plus trace-derived validation quantities.
+
+    `smooth_ego_s`: centred moving-average window applied to the EGO speed before
+    differentiating (post-hoc sensitivity only, section 5 of the report). The study-2
+    traces carry ~0.1 m/s cruise-control dither at 30 Hz, which np.gradient turns
+    into |a| up to 2.3 m/s^2 and the control-effort term (sigma_a = 0.1) into a
+    ~1 000-unit deficit floor under every cell -- simulator jitter no participant
+    could perceive, absent from the 10 Hz study-1 traces. None = raw traces, the
+    pre-registered convention.
+    """
     d = pd.read_csv(TRIALS, low_memory=False)
     vids = sorted(v for v in d.video.unique() if "dummy" not in v)
     fields: dict[str, pd.DataFrame] = {}
@@ -158,6 +167,12 @@ def video_covariates() -> pd.DataFrame:
         key = f"LC_dv{dv}_Tlc{tlc}_TTC{ttc:02d}"
         if key not in fields:
             tr = load_cutin_trace(KIN / f"{key}_vehicle_states.csv")
+            if smooth_ego_s is not None:
+                n = max(int(round(smooth_ego_s / tr.dt)) | 1, 3)   # odd window
+                kern = np.ones(n) / n
+                pad = np.pad(tr.v_ego, n // 2, mode="edge")
+                tr.v_ego = np.convolve(pad, kern, mode="valid")
+                tr.a_ego = np.gradient(tr.v_ego, tr.t)
             fields[key] = cutin_predictors(tr, cutin_params(tr))
         f = fields[key]
         t = f.t.to_numpy()
@@ -178,7 +193,10 @@ def cell_table() -> tuple[pd.DataFrame, pd.DataFrame]:
     """The fitting table: one row per video with data, participant means first.
     Returns (cells, per-participant means) -- the latter for the sensitivity rerun."""
     d = pd.read_csv(TRIALS, low_memory=False)
-    d = d[d.group.notna()].copy()                      # drop fillers
+    # Fillers are identified by name: the data dictionary says the design factors are
+    # NaN on filler rows, but `group` turns out to be populated there, so the robust
+    # filter is the filename.
+    d = d[~d.video.str.contains("dummy")].copy()
     att = d.groupby("Exp_Subject_Id").attention1.max()  # one nonzero row each
     d["att_ok"] = d.Exp_Subject_Id.map(att) == 5
     pm = (d.groupby(["Exp_Subject_Id", "video", "att_ok"])
@@ -371,6 +389,46 @@ def main() -> None:
               f"rho(gap, P) = {rho_gap:+.3f}; rho(field covariate, P) = "
               f"{rho_field:+.3f}; field covariate range "
               f"{cp1.deficit_max.min():.1f}-{cp1.deficit_max.max():.1f}.\n"]
+
+    # --- post-hoc sensitivity: ego-speed jitter (NOT pre-registered) ---------------
+    lines.append("## 5 Post-hoc sensitivity: the ego-speed jitter floor "
+                 "(not pre-registered)\n")
+    lines.append("Found after the pre-registered run: the traces' ~0.1 m/s ego-speed "
+                 "dither puts a ~1 000-unit control-effort deficit floor under every "
+                 "cell (CP1 covariates 992-1134 where the scene deficit is ~0), which "
+                 "handicaps the FIELD covariate only -- the design scalars do not see "
+                 "it. Here the ego speed is smoothed (0.5 s centred moving average) "
+                 "before differentiating and the primary comparison re-run. The "
+                 "pre-registered verdict above stands as registered; this section "
+                 "bounds how much of it is trace noise rather than field content.\n")
+    cov_s = video_covariates(smooth_ego_s=0.5)
+    cs = cells.merge(cov_s[["video", "deficit_max"]].rename(
+        columns={"deficit_max": "deficit_smooth"}), on="video")
+    cs["deficit_max"] = cs["deficit_smooth"]
+    fold_s = cs.ttc_start.to_numpy()
+    ys, ws = cs.p.to_numpy(float), cs.n.to_numpy(float)
+    lines.append("| model | scale | held-out wRMSE | Spearman rho |")
+    lines.append("|---|---|---|---|")
+    best_s = np.inf
+    for log_scale in (False, True):
+        pred, _ = held_out(cs, fold_s, "field", log_scale)
+        rr = wrmse(ys, pred, ws)
+        best_s = min(best_s, rr)
+        lines.append(f"| field (smoothed ego) | {'log' if log_scale else 'raw'} | "
+                     f"{rr:.4f} | {float(spearmanr(pred, ys).statistic):+.3f} |")
+    lines.append("")
+    lines.append(f"Best smoothed-field score {best_s:.4f} against the gap threshold's "
+                 f"{best['gap']:.4f}: dRMSE = {best_s - best['gap']:+.4f}, so the "
+                 f"pre-registered conclusion "
+                 f"{'is CONFOUNDED by trace noise and must be re-examined' if best_s < best['gap'] - 0.01 else 'stands after removing the jitter floor'}.\n")
+    rho_rows_s = []
+    for ttc, g in cs.groupby("ttc_true"):
+        if len(g) >= 6:
+            rho_rows_s.append(float(spearmanr(g.deficit_max, g.p).statistic))
+    lines.append(f"Within-row orderings under the smoothed field: "
+                 f"{sum(1 for r in rho_rows_s if r < 0)} of {len(rho_rows_s)} "
+                 f"matched-TTC rows negative (the data: 24 of 24), mean rho "
+                 f"{np.mean(rho_rows_s):+.2f} against the gap's -0.887.\n")
 
     cells_all.to_csv(OUT / "cutin2_cells.csv", index=False)
     (OUT / "cutin2_field_vs_gap.md").write_text("\n".join(lines), encoding="utf-8")

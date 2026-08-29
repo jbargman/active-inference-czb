@@ -138,6 +138,18 @@ Three readings, in decreasing comfort:
    gap on this stimulus set; the framework's remaining case is portability (the stage-B
    transfer gate) and threshold interpretability, exactly as §3.2 anticipated.]*
 
+   *[Narrowed 2026-08-29 at review gate R.2, on Bontje et al. (2026), a review of 28
+   evidence-accumulation studies in traffic: the drift in that literature is
+   conventionally driven by looming or TTC — not a comfort deficit — and leaky
+   accumulation and collapsing bounds are the standard architectures for exactly the
+   failure modes A.3 hit; none of the three tested variants used either. The FAIL
+   therefore stands as a verdict on the accumulator we specified (deficit-driven
+   drift, non-leaky, fixed bound, on this repeated-exposure stimulus set) and licenses
+   no claim about evidence accumulation as a family. The sentence above ("evidence
+   against the framework worth taking seriously") should be read with that scope; the
+   dual-role argument in §0 loses its within-scenario timing support but is not
+   refuted for architectures never tested.]*
+
 ## 4 What the route genuinely buys, if the transfer test passes
 
 - **A one-dimensional population.** The percentile question ("trigger where 80% of

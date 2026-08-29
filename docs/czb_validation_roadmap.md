@@ -267,6 +267,27 @@ Four distinct uses, in the order I would take them:
    the naturalistic and study-1 surfaces. Turning this into a concrete estimator is
    part of review gate R.2.
 
+   *[Specified 2026-08-29 at review gate R.2. The estimator: a joint fit over the two
+   datasets sharing the boundary population (mu, sigma_pop) and the response spread
+   sigma_resp, with the study-side link carrying the paradigm terms --
+   P_study = b_i + (1 - b_i) Phi((x - c_i - delta(x)) / sigma_resp) with
+   delta(x) = delta_0 + delta_1 (x - x_bar), and the NDS side fitted on response
+   onsets with no lapse and no delta: P_nds = Phi((x - c_i) / sigma_resp). delta_1 is
+   identified by the slope difference between the two response surfaces on the common
+   covariate scale, delta_0 by the level difference; the anticipation account predicts
+   delta_1 < 0 (the study surface is shallower, because anticipatory pressing dilutes
+   the criticality gradient). Identification needs NDS events spanning roughly the
+   study cells' covariate range (deficits ~3 000-7 000 under the current spec) and
+   enough events per driver for partial pooling -- otherwise fit delta at population
+   level only. The assumption to state wherever this is used: c_i is
+   paradigm-invariant, so everything paradigm-specific loads on (b, delta); its check
+   is whether the NDS-fitted sigma_pop reproduces the study-fitted one. One caution
+   from the 2026-08-29 C1 diagnosis (B2.Q5): part of the "anticipation" gradient at C1
+   is an ordinary response to adjacent-lane proximity that the field cannot express,
+   so delta_1 as estimated absorbs BOTH anticipation and any such field
+   misspecification; the NDS comparison cannot separate those two, and the wording of
+   any correction should say "paradigm-plus-field offset", not "anticipation".]*
+
 ## 5 The four questions: answers received 2026-08-27, and what follows
 
 **5.1 Bias: test both, and why I leaned toward shrinkage.** Agreed — both variants run
@@ -307,6 +328,19 @@ width, it must be settled before any deployment claim; and the pre-onset anticip
 gradient (observed C1 rates fall with TTC where the covariate-driven prediction
 rises) holds under both variants, is inexpressible by any lapse floor, and stays a
 recorded limitation.]*
+
+*[Amended 2026-08-29 (blocker B2.Q1 closed; evidence in
+`replication/czb/out/c1_covariate_defect.md`). The parenthetical above — "the
+covariate-driven prediction rises" at C1 — described a covariate defect, not the
+field: the C1 covariate included the manoeuvre-onset frame, where the lane-entry
+projection inverted the criticality ordering (deficit 1 / 1509 / 2907 for gaps
+10.5 / 16.0 / 21.5 m). Under the corrected shown-window covariate all three C1 cells
+sit at noise level (~1 deficit unit) and the C1 prediction is flat, as the lapse
+model assumes. What remains true and recorded as B2.Q5: the OBSERVED C1 gradient
+(0.122 / 0.070 / 0.052) is real, is ordered by the adjacent-lane longitudinal gap,
+and is inexpressible by the lane-gated field — a structural limitation, no longer a
+mis-fitted covariate. Every lapse-related number fitted before 2026-08-29 carries
+this regeneration debt in addition to the k = 12 debt; card A.2.v2 settles both.]*
 
 **5.2 The braking-expectation question.** Per Jonas: treat `CZB_2` as the human
 decision (own braking) for now; a new dataset framed that way is coming and will

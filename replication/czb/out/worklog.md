@@ -836,3 +836,147 @@ RESOLVED B2.Q1: covariate-window error, two mechanisms (onset-frame inclusion
 amplified by the TTC-lever projection; whole-trace accumulation of unseen frames).
 Fixed in czb_data with the shown-clip window; C1 joins the fit with the corrected
 covariate; evidence in out/c1_covariate_defect.md.
+
+## 2026-08-29 — Card A.2.v2: stage 1 regenerated under k = 12 + the covariate fix (tier 1, batch)
+
+Run as committed, with `fit_hier_corr` added per the card. Specification per the
+R.1.Q1 convention: hierarchical lapse, k = 12, shown-window covariates (the B2.Q1
+fix), product-grid LOPO, lapse-integrated C1 predictive. Results
+(`out/stage1_summary.md`, log `out/log_stage1_v2.txt`, 28 min):
+
+**The percentile table survives regeneration essentially unchanged** — 50th
+5352 -> 5400 (+0.9%), 80th 6379 -> 6390 (+0.2%), 95th 7543 -> 7503 (-0.5%); the
+k = 12 shift (which alone moved sigma_pop 0.209 -> 0.194) and the C1-covariate fix
+(which removes the inverted 1509/2907 C1 covariates) largely offset, landing at
+sigma_pop 0.200, median 5400. Within the card's expected-magnitude band, so no
+anomaly flag. **The LOPO comparison, regenerated on the product grid, now separates
+the bias variants decisively**: hierarchical beats group by +52.7 held-out
+log-likelihood units (was +0.6 under the defective diagonal integration) — the R.1
+decision is confirmed with real evidence rather than a coin-flip margin.
+**The correlated-effects variant converged with usable SEs**: rho = -0.717
+(SE 0.128), moving the 80th percentile by 17 deficit units against the pre-stated
+escalation threshold of ~254 (the CI half-width) — **the hierarchical variant stands
+as primary**, correlated reported as robustness. Against the artifact baseline of
+-0.27, the fitted -0.717 confirms R.1.Q2's reading: a real trait correlation of
+roughly the naive size, not an estimator artifact. The C1 predictive is now flat
+(0.100 for all three conditions) against the observed 0.122 / 0.070 / 0.052 — the
+expected signature of B2.Q5 (real proximity gradient the lane-gated field cannot
+express), no longer contaminated by the covariate inversion.
+RESOLVED R.1.Q2: the correlated-effects variant was fit; rho = -0.717 (SE 0.128)
+against the -0.27 artifact baseline — part of the correlation is a real trait, and
+it does not move the deliverable (80th percentile shifts 17 units, rule says stand).
+@A2v2.Q1(minor, review): the k = 12 sweep re-run under the corrected covariates
+(out/lane_entry_shape_check.md regenerated) keeps its optimum at k = 12 (RMSE
+0.1162, k = 8 at 0.1166, flat optimum as before) — Jonas's constant survives the
+covariate fix; recorded so the decision's evidence base is current.
+@A2v2.Q2(minor, review): the -0.27 artifact baseline was computed under the pre-fix
+covariates; with C1 covariates now ~0 the lapse/threshold trade-off structure
+changed, so `lapse_threshold_artifact.py` should be regenerated before the -0.717 is
+quoted in a manuscript. The conclusion is robust at this distance (0.45 gap) but the
+baseline number itself is stale. Deferred tonight for CPU (two long jobs were queued).
+@A2v2.Q3(minor, jonas): the run also re-fitted the ordered braking-expectation model
+under the new covariates — comfort 3703 -> 3418, dread 6397 -> 6572, separation delta
+2694 -> 3154 (+17%). These moved more than the intervention percentiles because the
+ordered model's lapse is group-level (per its 5-parameter spec) and the C1 fix
+changes what the lapse absorbs. Nothing downstream quotes the old values except the
+handover chain, which will be regenerated; flagged because the comfort level moved
+-8% and anything Jonas remembers from 08-27 about "comfort ~3700" is now ~3400.
+
+## 2026-08-29 — Review gate R.2, run at tier 1: the field ruled against, and the restatement
+
+The gate's record is `docs/r2_gate_decisions.md` (with Word/PDF); this entry carries
+the queries. The five card questions were answered in order. (1) **The field versus a
+gap threshold on the second cut-in study, pre-registered** (models, folds, decision
+rule committed before the run, commit e9203c6): the pre-registered rule fired at
+dRMSE = +0.195 — the field scores 0.347 held-out wRMSE, worse than chance 0.320,
+while the log-gap threshold scores 0.152 against a sampling-noise floor of 0.118;
+TTC 0.168; required deceleration 0.289. Robust to the attention-check exclusion
+(+0.202) and to a post-hoc trace-noise repair (the 30 Hz ego-speed dither puts a
+~1000-unit accel-term floor under every field covariate; smoothed, the field scores
+0.356 — verdict unchanged, and its within-row orderings stay sign-inconsistent, 14
+of 24 rows negative against the data's 24 of 24). **The field is ruled against on
+its own scenario.** (2) The C1 defect was closed earlier tonight (B2.Q1 entry
+above). (3) The lateral term is NOT built: the R.2.Q1 sign derivation
+(`out/expected_deficit_sign.md`) shows the expected-deficit mechanism is a
+second-order, sign-unstable modulation where the data show a first-order monotone
+gap effect, and grafting a lateral term onto a rejected longitudinal core would
+build on sand; the DRF is re-positioned from donor to comparator. The note's
+pre-registered LTAP/overtake tests of the proposal are cancelled, with the dated
+note in `docs/lateral_and_uncertainty_note.md` §6. (4) **The headline becomes the
+trait claim** — one scalar per driver, ~69% of reliable signal shared across
+scenarios, boundary percentiles stable across specification changes (A.2.v2: 50th
++0.9%), transfer working with a freed lapse — with the criticality axis an open
+question on which gap (log) currently leads. The elliptical/2D comparator program
+moves from fallback to primary for the axis question, which is the fallback the
+project recorded in advance. (5) The A.3 wording is narrowed in the assessment per
+Bontje et al. (dated note). The transfer test was re-run under the new
+specification: freed-lapse RMSE 0.136 (chance 0.158, ceiling 0.120) — the story
+survives regeneration.
+RESOLVED B2.Q4: the comparison was run, pre-registered; the field lost decisively;
+the wording rule ("well estimated on its own scale", never "validated") is now
+backed by the analysis and extended: the field's kinematic content is ruled out as
+fitted on the longitudinal dimension.
+RESOLVED B2.Q2: the second study was promoted and used as the primary venue; LTAP
+stays off the critical path for the modelling question.
+RESOLVED B2.Q5: amended before resolution — the second study's 90 CP1 cells are
+FLAT (rates 0.000-0.115, rho(gap) = -0.04, gaps 3.9-82 m), so drivers do not
+respond to adjacent-lane proximity pre-encroachment, and study 1's C1 gradient is
+better read as exposure-driven anticipation (supported by the 0.547 -> 0.575
+second-showing effect); the lane-gated flat floor is supported at pre-encroachment.
+The structural point (the field cannot express such a response) stands but is moot
+under the section-1 verdict.
+RESOLVED R.2.Q1: the sign derivation was done before any implementation, on the
+actual preference function over the study's own range; the mechanism fails for the
+distance effect (direction inconsistent across rows, magnitude second-order) and
+survives only for the lateral direction, which is not being built (gate §3).
+RESOLVED R.1.Q1: adopted as the reporting convention in A.2.v2 (value, CI, and
+specification on every quoted percentile; spec header on the summary).
+RESOLVED R.1.Q3: Jonas's live-with-and-correct position is turned into the
+concrete estimator recorded in `docs/czb_validation_roadmap.md` §4c item 5, with
+the B2.Q5-derived caution that delta_1 absorbs paradigm and field misspecification
+jointly.
+@R2.Q4(judgment, jonas): with the field ruled against, should cards B.2 (truck) and
+B.3 (LTAP) remain FIELD constructions, or become constructions of the comparator
+class (per-scenario 2D state rules + the elliptical joint percentile) that the
+restated program needs? My recommendation: the latter; the LTAP construction note
+(B.3.v2) should be written for arrival-time separation + oncoming distance as
+observables, not for the preference field. Nothing is built until you rule.
+@R2.Q5(judgment, jonas): how the assessment document and any manuscript position
+the active-inference contribution after this gate. My recommendation: the honest
+paper is stronger, not weaker — a validated-model-derived field, a pre-registered
+falsification of its kinematic content against human data, and a surviving
+cross-scenario trait claim; but that is a positioning call only you can make.
+@R2.Q6(judgment, jonas): the handbook still describes the field, the accumulator
+and the CZB path as of 2026-08-27 and now also predates this gate. Options: a
+one-page dated correcting note inserted now ({{R3}} not yet started), or waiting
+for your Word review. Recommendation: the note, since a reader today would learn a
+claim the data have since overturned.
+@R2.Q7(minor, review): two study-2 data-quality facts for whoever touches those
+traces: the ego speed carries ~0.1 m/s dither at 30 Hz (smoothing sensitivity is
+report §5), and `load_cutin_trace`'s 0.03 m onset threshold misdetects onset on
+these traces (fires at t = 1.7 on slow drift against a true onset near 15.1) — the
+2026-08-28 audit's "onset detected at frame 51" was wrong as a validation claim,
+though nothing used it; the field-vs-gap runner takes its windows from the video
+filename stamps instead.
+@R2.Q8(minor, review): `out/transfer_overtake_summary.md` (generated) still says a
+lateral-comfort term "is the obvious next model step" — written before this gate;
+superseded by gate §3. Left as-is because generated outputs are never hand-edited;
+the script's reading text should be updated if that summary is ever regenerated
+for another purpose.
+
+RESOLVED B.1.Q2: settled by Jonas on 2026-08-28 — k is a calibrated constant fixed at
+12 on the CZB staging path, never fitted and never per-scenario (argument in
+docs/overtake_construction_note.md §5); the 2026-08-29 re-sweep under the corrected
+covariates keeps the optimum at k = 12, so the decision's evidence base is current.
+RESOLVED B.1.Q3: answered at gate R.2 (2026-08-29, docs/r2_gate_decisions.md §3) — no
+lateral-clearance comfort term is added to the preference function: the expected-
+deficit mechanism fails the sign derivation on the distance axis, and the field's
+longitudinal core was ruled against by the pre-registered comparison, so a lateral
+graft would refine a rejected core. The DRF is a comparator for the restated
+program, not a donor.
+
+RESOLVED B2.Q6: the regeneration debt was paid the same night it was raised — card
+A.2.v2 regenerated stage 1 and the percentile table under the corrected covariates
+(shifts under 1%), and the cut-in -> overtake transfer was re-run (freed-lapse 0.136
+against chance 0.158, ceiling 0.120). The only stale lapse-related number left is
+the artifact baseline, tracked separately as A2v2.Q2.

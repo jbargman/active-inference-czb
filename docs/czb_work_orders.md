@@ -130,6 +130,21 @@ register regenerated. Follow-up work is card A.2.v2 below.]*
 
 ### Card R.2 — review gate: the lateral term and the distance–time anomaly (for the stronger model)
 
+*[Executed 2026-08-29 at tier 1; the record is `docs/r2_gate_decisions.md` and the
+worklog entry of that date. Outcomes, against the numbered tasks below: (1) the
+pre-registered field-versus-gap comparison on the second cut-in study ruled **against
+the field** (held-out wRMSE 0.347 versus the log-gap threshold's 0.152, chance
+0.320; robust to the attention exclusion and to a trace-noise repair) — the
+project's claim is restated around the trait (task 4); (2) the C1 inversion was a
+covariate-window defect, fixed (B2.Q1 closed; C1 stays in the fit); (3) the lateral
+term is NOT built — the R.2.Q1 sign derivation kills the expected-deficit distance
+mechanism and the section-1 verdict removes the ground for a lateral graft; the
+DRF becomes a comparator, not a donor; (4) the headline becomes the one-scalar
+TRAIT claim (69% shared signal, stable percentiles, freed-lapse transfer), with
+the criticality axis open and gap currently leading; (5) the A.3 wording is
+narrowed per Bontje et al. in the assessment. R.1.Q1/Q2/Q3 settled (see register).
+Program consequences are queries R2.Q4-Q6 for Jonas.]*
+
 *(Added 2026-08-28 at Jonas's request. This is a **design** gate, not execution: two
 findings have outrun what the executing session should decide alone, and the literature
 that bears on them has been read and summarized. Run at tier 1.)*
@@ -237,6 +252,17 @@ re-adopt the unified story without redoing that derivation.
 
 ### Card B.2.v2 — the second cut-in study, and the pre-onset defect it exposed
 
+*[Executed 2026-08-29. Item 1: the C1 inversion was a covariate-window error — the
+lookup included the manoeuvre-onset frame (whose lane-entry projection inverts the
+ordering through its TTC lever arm) and the running max accumulated trace-start
+frames never shown to participants. Fixed in `comfortzone.czb_data` (shown-window
+accumulation, C1 endpoint −0.15 s); diagnosis in `out/c1_covariate_defect.md`;
+decision: C1 joins the fit with the corrected covariate. Item 2: the study was
+promoted and used as R.2's primary venue — the field-versus-gap comparison ran on
+it (`out/cutin2_field_vs_gap.md`), attention-check handling as specified below
+(kept in the primary, excluded in a sensitivity, verdict unchanged). B2.Q1/Q2/Q4/Q5
+resolved; see the register.]*
+
 *(Added 2026-08-28. The first item is a **blocker on the interpretation of every fit run
 so far** and should be taken before A.2.v2; the second promotes a dataset.)*
 
@@ -278,6 +304,18 @@ so far** and should be taken before A.2.v2; the second promotes a dataset.)*
 - **Not proposed**: `03_CAMP`, per Jonas.
 
 ### Card A.2.v2 — regenerate stage 1 under the corrected validation code, and test the correlated-effects variant
+
+*[Executed 2026-08-29 (28 min; `out/stage1_summary.md`, log `out/log_stage1_v2.txt`).
+Percentiles essentially unchanged (50th 5352 → 5400, +0.9%; 80th +0.2%; 95th −0.5%;
+sigma_pop 0.200) — the k = 12 and C1-covariate-fix effects largely offset, inside
+the card's expected band. The product-grid LOPO now separates the bias variants
+decisively (hier +52.7 units, was +0.6 under the diagonal defect). The correlated
+variant converged: rho = −0.717 (SE 0.128) against the −0.27 artifact baseline —
+partly real — and moves the 80th percentile 17 units against the pre-stated ~254
+threshold, so **the hierarchical variant stands as primary**, correlated reported
+as robustness. The ordered comfort/dread levels moved more (3703 → 3418 /
+6397 → 6572; query A2v2.Q3). The artifact baseline itself is stale under the new
+covariates (query A2v2.Q2).]*
 
 *(Added at review gate R.1, 2026-08-27. Cheap-model card; long-running, overnight is
 fine.)*

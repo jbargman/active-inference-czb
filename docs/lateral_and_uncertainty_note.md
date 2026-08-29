@@ -181,6 +181,24 @@ derivation is the first task in §6, and it should be done before any code is wr
 1. **Derive the sign.** For our preference function's actual cost asymmetry, does
    E[d(x)] under a wider Σ rise or fall? Analytic where possible, numeric otherwise. If
    the sign is wrong, stop; the mechanism is not the explanation.
+
+   *[Done 2026-08-29 at review gate R.2, numerically on the actual preference function
+   (`replication/czb/expected_deficit_sign.py` →
+   `replication/czb/out/expected_deficit_sign.md`), over the second cut-in study's own
+   delta-velocity range. The outcome is worse for the proposal than the correction
+   above feared, and different in character: the point field's within-row direction at
+   matched TTC is **inconsistent** — rho(gap, d) = +1.00 at TTC 2–3 s and −1.00 at
+   TTC 5–7 s, through the counterfactual-residual term — where the data are uniformly
+   negative (24 of 24 rows); and the distance-scaled noise moves E[d] by at most ~10%
+   of the mean deficit with inconsistent sign across rows. So the expected-deficit
+   mechanism is a second-order, sign-unstable modulation where the data show a
+   first-order monotone effect: it **fails as the explanation of the distance–time
+   anomaly**, per this step's own stop rule. The lateral direction remains right, but
+   see the gate record (`docs/r2_gate_decisions.md`) for why the lateral extension is
+   not being built either: the field's longitudinal core was ruled against on the
+   second cut-in study by the pre-registered field-versus-gap comparison, and steps 2
+   and 3 below are therefore not run — testing refinements of a core the data have
+   rejected would be building on sand.]*
 2. **Test on LTAP, which is built for it.** The two-speed design separates time from
    distance by construction. Predicted: at matched PET, the expected-deficit field shows
    a speed effect of the observed sign and roughly the observed size, while the

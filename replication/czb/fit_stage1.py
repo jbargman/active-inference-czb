@@ -1,7 +1,14 @@
-"""Card A.2: stage-1 hierarchical fit of the boundary level on the human responses.
+"""Card A.2 / A.2.v2: stage-1 hierarchical fit of the boundary level on the human responses.
 
 The first real numbers: the population distribution of the comfort-zone boundary level,
 from which a percentile -- the operational deliverable -- is read.
+
+[A.2.v2, 2026-08-29: re-run under k = 12 and the shown-window covariates (B2.Q1 fix),
+with the R.1-fixed validation code, plus the correlated-effects variant
+`fit_hier_corr` (rho between the driver threshold and lapse effects, atanh-scale prior
+Normal(0, 0.75)) and the pre-stated decision rule on the 80th percentile. The report
+carries the old-versus-new percentile table so the price of the regeneration is
+visible.]
 
 Model, and what card A.1 settled about estimating it
 ----------------------------------------------------
@@ -143,6 +150,96 @@ def fit_hier_lapse(x, y, pid, pr, n_gh=N_GH_2D, seed=0) -> dict:
             "se_sigma_pop": np.exp(t[1]) * se[1], "sigma_resp": np.exp(t[2]),
             "b": float(torch.sigmoid(phi[3]).detach()), "sigma_b": np.exp(t[4]),
             "neg_log_post": val, "se_ok": ok, "cov": cov, "phi": t}
+
+
+# ----------------------------------------------------------------------------------
+# correlated-effects variant (card A.2.v2, specified at review gate R.1)
+# ----------------------------------------------------------------------------------
+def _nlp_2d_corr(phi, xt, yt, pidt, n_drivers, pr, z1, z2, lw):
+    """As `_nlp_2d`, with the two driver effects CORRELATED: the threshold uses z1 and
+    the lapse uses rho * z1 + sqrt(1 - rho^2) * z2 on the same product Gauss-Hermite
+    grid. One extra hyperparameter, fitted as atanh(rho) with prior Normal(0, 0.75) on
+    the atanh scale -- weakly informative (95% prior mass within |rho| < 0.9), chosen
+    at R.1 so the observed raw correlation of -0.7 is reachable without being presumed.
+    """
+    mu, sigma_pop = phi[0], torch.exp(phi[1])
+    sigma_resp, b_loc, sigma_b = torch.exp(phi[2]), phi[3], torch.exp(phi[4])
+    rho = torch.tanh(phi[5])
+    zb = rho * z1 + torch.sqrt(1.0 - rho ** 2) * z2
+    acc = torch.full((n_drivers, len(z1)), -np.inf)
+    for s in range(0, len(z1), NODE_CHUNK):
+        e = min(s + NODE_CHUNK, len(z1))
+        c = torch.exp(mu + sigma_pop * z1[s:e])
+        b = torch.sigmoid(b_loc + sigma_b * zb[s:e])
+        p = b + (1.0 - b) * NORMAL.cdf((xt[:, None] - c[None, :]) / sigma_resp)
+        p = p.clamp(1e-12, 1.0 - 1e-12)
+        ll = yt[:, None] * torch.log(p) + (1.0 - yt[:, None]) * torch.log1p(-p)
+        acc[:, s:e] = torch.zeros(n_drivers, e - s).index_add(0, pidt, ll)
+    ll_tot = torch.logsumexp(acc + lw[None, :], dim=1).sum()
+    lp = -0.5 * ((phi[0] - pr.mu_loc) / pr.mu_scale) ** 2
+    lp = lp - 0.5 * (sigma_pop / pr.sigma_pop_scale) ** 2 + phi[1]
+    lp = lp - 0.5 * ((phi[2] - pr.sigma_resp_loc) / pr.sigma_resp_scale) ** 2
+    lp = lp - 0.5 * (torch.sigmoid(phi[3]) / 0.3) ** 2
+    lp = lp - 0.5 * (sigma_b / 1.0) ** 2 + phi[4]
+    lp = lp - 0.5 * (phi[5] / 0.75) ** 2                      # atanh(rho) ~ N(0, 0.75)
+    return -(ll_tot + lp)
+
+
+def fit_hier_corr(x, y, pid, pr, n_gh=N_GH_2D, seed=0) -> dict:
+    """The hierarchical-lapse fit with correlated driver effects. Two starts (rho = 0
+    and rho = -0.5, per the card's two-honest-attempts stop rule); the better posterior
+    wins and both endpoints are reported."""
+    xt, yt = torch.as_tensor(x.copy()), torch.as_tensor(y.copy())
+    pidt = torch.as_tensor(pid, dtype=torch.long)
+    n_drivers = int(pid.max() + 1)
+    zz, ww = _gh_nodes(n_gh)
+    z1 = torch.as_tensor(np.repeat(zz, n_gh))
+    z2 = torch.as_tensor(np.tile(zz, n_gh))
+    lw = torch.as_tensor(np.log(np.outer(ww, ww).ravel()))
+
+    best = None
+    for rho0 in (0.0, -0.5):
+        init = np.array([pr.mu_loc, np.log(0.4), pr.sigma_resp_loc,
+                         np.log(0.09 / 0.91), np.log(0.5), np.arctanh(rho0)])
+        phi = torch.tensor(init, requires_grad=True)
+        opt = torch.optim.LBFGS([phi], max_iter=250, tolerance_grad=1e-9,
+                                tolerance_change=1e-13, history_size=40,
+                                line_search_fn="strong_wolfe")
+
+        def closure():
+            opt.zero_grad()
+            loss = _nlp_2d_corr(phi, xt, yt, pidt, n_drivers, pr, z1, z2, lw)
+            loss.backward()
+            return loss
+
+        try:
+            opt.step(closure)
+            with torch.no_grad():
+                val = float(_nlp_2d_corr(phi, xt, yt, pidt, n_drivers, pr, z1, z2, lw))
+        except Exception:
+            continue
+        if np.isfinite(val) and (best is None or val < best[0]):
+            best = (val, phi)
+    if best is None:
+        return {"converged": False}
+    val, phi = best
+    H = torch.autograd.functional.hessian(
+        lambda t: _nlp_2d_corr(t, xt, yt, pidt, n_drivers, pr, z1, z2, lw), phi)
+    try:
+        cov = torch.linalg.inv(H).numpy()
+        se = np.sqrt(np.clip(np.diag(cov), 0.0, None))
+        ok = bool(np.all(np.isfinite(se)))
+    except Exception:
+        cov, se, ok = np.full((6, 6), np.nan), np.full(6, np.nan), False
+    t = phi.detach().numpy()
+    rho = float(np.tanh(t[5]))
+    # delta-method SE for rho from the atanh-scale SE
+    se_rho = float((1.0 - rho ** 2) * se[5]) if ok else float("nan")
+    return {"mu": t[0], "se_mu": se[0], "sigma_pop": np.exp(t[1]),
+            "se_sigma_pop": np.exp(t[1]) * se[1], "sigma_resp": np.exp(t[2]),
+            "b": float(torch.sigmoid(phi[3]).detach()), "sigma_b": np.exp(t[4]),
+            "rho": rho, "se_rho": se_rho, "neg_log_post": val,
+            "se_ok": ok, "cov": cov, "phi": t, "converged": True}
 
 
 # ----------------------------------------------------------------------------------
@@ -364,11 +461,20 @@ def main() -> None:
 
     x_def = r.deficit_max.to_numpy(float)
     pr_def = priors_for(x_def)
+    print("fitting the correlated-effects variant (card A.2.v2) ...", flush=True)
+    corr = fit_hier_corr(x_def, y, pid, pr_def)
     print("fitting the ordered braking-expectation model ...", flush=True)
     ordered = fit_ordered(x_def, y_ord, pid, pr_def)
 
     # ---------------- report ----------------
-    L = ["# Card A.2 — stage-1 hierarchical fit of the boundary level\n",
+    L = ["# Card A.2.v2 — stage-1 fit regenerated (k = 12, shown-window covariates, "
+         "corrected validation code)\n",
+         "**Specification (the R.1.Q1 convention: every quoted number names its spec):** "
+         "hierarchical-lapse primary; lane-entry shape k = 12 (CZB staging); covariate "
+         "window matched to the shown clip with the C1 endpoint at -0.15 s "
+         "(2026-08-29 fix, `out/c1_covariate_defect.md`); LOPO on the product "
+         "Gauss-Hermite grid (R.1 fix); C1 predictive integrates the lapse "
+         "distribution (R.1 fix).\n",
          f"{len(r)} Random cut-in trials, {n_drivers} drivers, 18 cells. Driver effects "
          "integrated out by quadrature and Laplace applied to the hyperparameters only, "
          "per card A.1. Priors unchanged from A.1 so its recovery evidence carries "
@@ -385,11 +491,16 @@ def main() -> None:
 
     best = {axis: max(("group", "hier"), key=lambda v: lopo[(axis, v)]) for axis in AXES}
     d_def = lopo[("deficit_max", "hier")] - lopo[("deficit_max", "group")]
+    # the strength statement is computed, not hard-coded: a fixed phrase here once
+    # contradicted the number next to it (2026-08-29, when the R.1 LOPO fix moved the
+    # separation from +0.6 to +52.7)
+    sep = ("a decisive separation" if abs(d_def) > 10 else
+           "not a decisive separation, and is reported as such")
     L += [f"\nOn the primary axis the hierarchical lapse is favoured by "
           f"{d_def:+.1f} log-likelihood units held out "
           f"({'hierarchical' if d_def > 0 else 'group-level'} wins); on `a_req_max` the "
-          f"winner is {best['a_req_max']}. A difference of a few units over 3 096 trials "
-          f"is not a decisive separation, and is reported as such.\n",
+          f"winner is {best['a_req_max']}. A difference of {abs(d_def):.1f} units over "
+          f"3 096 trials is {sep}.\n",
           "## Population percentiles of the boundary level (primary axis, "
           f"{best['deficit_max']} lapse)\n",
           "The deliverable. Deficit units, with delta-method 95% intervals, and the "
@@ -398,12 +509,69 @@ def main() -> None:
           "| percentile | level (deficit) | 95% CI | equivalent a_req [m/s²] | "
           "THW* at 20 m/s [s] |", "|---|---|---|---|---|"]
     fbest = fits[("deficit_max", best["deficit_max"])]
-    for q, val, lo, hi in percentiles_with_ci(fbest):
+    new_pcts = {q: (val, lo, hi) for q, val, lo, hi in percentiles_with_ci(fbest)}
+    for q, (val, lo, hi) in new_pcts.items():
         a_req = deficit_to_a_req(val)
         thw = float(critical_thw(20.0, 20.0, a_required=max(a_req, 0.1))) \
             if np.isfinite(a_req) else float("nan")
         L.append("| {}th | {:.0f} | [{:.0f}, {:.0f}] | {:.2f} | {:.2f} |".format(
             q, val, lo, hi, a_req, thw))
+
+    # ---- the old-versus-new comparison card A.2.v2 requires ----------------------
+    # The old percentiles are the committed 2026-08-27 output (out/stage1_summary.md
+    # at commit ee00668): k = 0, whole-trace covariates, diagonal-LOPO era. Embedded
+    # as constants so the side-by-side survives this file overwriting that output.
+    OLD_PCTS = {50: (5352, 5143, 5560), 55: (5494, 5291, 5696), 60: (5642, 5442, 5842),
+                65: (5800, 5598, 6001), 70: (5970, 5761, 6180), 75: (6160, 5935, 6385),
+                80: (6379, 6128, 6630), 85: (6644, 6352, 6935), 90: (6992, 6636, 7348),
+                95: (7543, 7066, 8020)}
+    L += ["\n## Old versus new percentiles (the price of k = 12 + the covariate fix)\n",
+          "Old: hierarchical lapse, k = 0, whole-trace covariates (commit ee00668). "
+          "New: this run's specification (header above). The expected shift from k = 12 "
+          "alone was ~7% (sigma_pop 0.209 -> 0.194 seen in the stage-2 refit); the "
+          "covariate-window fix moves the C1 cells as well, so a somewhat larger move "
+          "is not by itself an anomaly, but a percentile moving by much more than ~10% "
+          "needs checking before quoting.\n",
+          "| percentile | old (k=0) | new | shift |", "|---|---|---|---|"]
+    for q in (50, 80, 95):
+        ov, nv = OLD_PCTS[q][0], new_pcts[q][0]
+        L.append(f"| {q}th | {ov} [{OLD_PCTS[q][1]}, {OLD_PCTS[q][2]}] | "
+                 f"{nv:.0f} [{new_pcts[q][1]:.0f}, {new_pcts[q][2]:.0f}] | "
+                 f"{(nv - ov) / ov:+.1%} |")
+
+    # ---- correlated-effects variant and the pre-stated decision rule --------------
+    L.append("\n## The correlated-effects variant (R.1.Q2)\n")
+    if corr.get("converged") and corr.get("se_ok"):
+        cp = {q: v for q, v, _, _ in percentiles_with_ci(corr)}
+        L += ["| quantity | hierarchical (independent) | correlated |", "|---|---|---|",
+              f"| median exp(mu) | {np.exp(fbest['mu']):.0f} | {np.exp(corr['mu']):.0f} |",
+              f"| sigma_pop | {fbest['sigma_pop']:.3f} | {corr['sigma_pop']:.3f} "
+              f"(SE {corr['se_sigma_pop']:.3f}) |",
+              f"| lapse b (location) | {fbest['b']:.3f} (sd {fbest['sigma_b']:.2f}) | "
+              f"{corr['b']:.3f} (sd {corr['sigma_b']:.2f}) |",
+              f"| rho(threshold, lapse) | 0 (assumed) | {corr['rho']:+.3f} "
+              f"(SE {corr['se_rho']:.3f}) |",
+              f"| 50th / 80th / 95th percentile | {new_pcts[50][0]:.0f} / "
+              f"{new_pcts[80][0]:.0f} / {new_pcts[95][0]:.0f} | "
+              f"{cp[50]:.0f} / {cp[80]:.0f} / {cp[95]:.0f} |"]
+        move80 = abs(cp[80] - new_pcts[80][0])
+        ci_half = (new_pcts[80][2] - new_pcts[80][1]) / 2.0
+        L.append(f"\n**Pre-stated decision rule (R.1):** the correlated variant moves "
+                 f"the 80th percentile by {move80:.0f} deficit units against the "
+                 f"hierarchical variant's CI half-width of {ci_half:.0f}. "
+                 + ("**Escalate to review before quoting percentiles downstream** -- "
+                    "the move exceeds the half-width." if move80 > ci_half else
+                    "**The hierarchical variant stands as primary**; the correlated "
+                    "fit is a robustness line.")
+                 + " The estimator-artifact baseline for the fitted rho is -0.27 "
+                 "(out/lapse_threshold_artifact.md): a fitted rho near -0.3 is "
+                 "evidence of NO real correlation beyond the artifact; substantially "
+                 "more negative means part is real.")
+    else:
+        L.append("The correlated variant did **not** converge with usable standard "
+                 "errors after two starts (rho0 = 0 and -0.5). Per the card, this is "
+                 "an acceptable outcome (43 drivers is thin for a correlation); the "
+                 "hierarchical variant stands as primary and the query is carried.")
 
     L += ["\n## Comfort and dread levels, from the ordered braking expectation\n",
           "| quantity | value | in a_req units | THW* at 20 m/s |", "|---|---|---|---|"]
@@ -430,8 +598,8 @@ def main() -> None:
           f"**{'PASS' if conv else 'FAIL'}**.",
           "2. The summary renders — **PASS** (this file).",
           f"3. LOPO distinguishes the bias variants, or states that it cannot — "
-          f"**PASS**: it separates them by {d_def:+.1f} units on the primary axis, "
-          f"which is reported as weak rather than decisive.\n",
+          f"**PASS**: it separates them by {d_def:+.1f} units on the primary axis "
+          f"({sep.split(',')[0]}).\n",
           f"Runtime {elapsed / 60:.1f} min.",
           "\n**Carried forward**: the `a_req_max` rows are reported for completeness but "
           "should not be interpreted — card A.1 showed that axis cannot locate a "

@@ -1,50 +1,52 @@
 # handover.md — restart a session here
 
-> ## Next session: review gate R.2, for the stronger model
+> ## Next session: Jonas rules on the restatement (queries R2.Q4–Q6)
 >
-> *Rewritten 2026-08-28 after the B.1 arc. Full record: `handover_2026-08-28.md`.*
+> *Rewritten 2026-08-29 after gate R.2 ran. Full record: `handover_2026-08-29.md`;
+> the gate's decisions: `docs/r2_gate_decisions.md`.*
 >
-> **Read this first, because it changes how every existing number should be read.** In
-> the study-1 cut-in design the relative speed is constant at 2.78 m/s across all 18
-> cells, so **correlation(gap, TTC) = 1.0000** — headway and required deceleration are
-> fixed functions of the same one number. Every longitudinal result fitted on study 1
-> (stage-0's 0.90, the boundary level 5 352, the percentile table) is therefore equally
-> consistent with a driver who thresholds the preference field and one who thresholds
-> **the gap**. The fits are not wrong; they simply cannot discriminate the model.
+> **The field's kinematic content is ruled out on its own scenario, by a
+> pre-registered test.** On the second cut-in study, with matched three-parameter
+> threshold models on identical grouped folds (models, folds and decision rule
+> committed before the run), the field scores held-out wRMSE 0.347 — worse than
+> chance 0.320 — against a log-gap threshold's 0.152 (noise floor 0.118); robust to
+> attention-check exclusion and to removing a trace-noise handicap
+> (`replication/czb/out/cutin2_field_vs_gap.md`). Per the gate card's own
+> pre-commitment, **the project's headline is now the trait claim**: a driver
+> carries one comfort-zone scalar that is substantially shared across scenarios
+> (~69% of reliable per-driver signal, field-free), with the criticality axis an
+> open question on which gap currently leads. The elliptical/2D comparator program
+> is promoted from fallback to primary for the axis question.
 >
-> The second cut-in study (`external/01_studies/01_Studies/02_Cut-in`, arrived
-> 2026-08-28) breaks that collinearity — delta velocity crossed with TTC, gaps from
-> 1.6 m to 78 m — and rules against the field's kinematic core: **all 24 matched-TTC rows
-> run negative**, gap orders the cells at ρ −0.887, TTC at −0.807, and required
-> deceleration at only +0.238.
+> Also settled this arc: the C1 inversion (blocker B2.Q1) was a covariate-window
+> defect — fixed in `comfortzone.czb_data`, C1 stays in the fit, and study 2's flat
+> CP1 cells re-read study 1's C1 gradient as exposure anticipation, not proximity
+> response. **Card A.2.v2 ran**: under the full new specification the percentile
+> table is essentially unchanged (median 5 400, σ 0.200, shifts under 1%), the
+> hierarchical lapse now wins the LOPO comparison decisively (+52.7), and the
+> lapse–threshold correlation is partly real (ρ −0.717 against a −0.27 artifact
+> baseline) without moving the deliverable. The freed-lapse transfer survives
+> regeneration (0.136 against chance 0.158, ceiling 0.120). The expected-deficit
+> proposal failed its sign derivation on the distance axis, so **no lateral term
+> was built** and the note's follow-on tests were cancelled.
 >
-> **The next session is review gate R.2** in `docs/czb_work_orders.md`, which now has
-> that dataset and a literature note (`docs/lateral_and_uncertainty_note.md`) behind it.
-> Before it, or as its first act, take **card B.2.v2's C1 item**: at C1 the cut-in
-> conditions differ two-fold in gap and behaviour is ordered accordingly, but the field
-> ranks them backwards — so the lapse is absorbing real boundary signal, which is a
-> blocker on interpreting every fit so far.
->
-> What is not in doubt: the boundary distribution is well estimated on its own scale
-> (median 5 352, σ 0.209, hierarchical lapse — **these are pre-k=12 numbers**; the
-> stage-2 refit under k = 12 already shows σ moving to 0.194, so A.2.v2 will shift the
-> whole percentile table by roughly 7%); the transfer to the cyclist overtake works
-> once the per-scenario lapse is freed (RMSE 0.129 against chance 0.158 and a ceiling of
-> 0.113); and — the strongest result, needing no field at all — **about 69% of the
-> reliable per-driver signal is shared across all four scenarios**, which supports the
-> one-scalar trait claim and simultaneously caps what any transfer test can reach.
->
-> Settled this arc: the lane-entry ramp is S-shaped with **k = 12**, fixed on the CZB
-> staging path (`comfortzone.cutin.CZB_LANE_ENTRY_SHAPE_K`); released defaults untouched.
-> It changes 3 of 18 cut-in cells, all lapse-identifying, so **card A.2.v2 must run
-> before any percentile is quoted again**.
+> **What waits on Jonas**: R2.Q4 — do B.2/B.3 become comparator-class constructions
+> (recommended) or stay field constructions; R2.Q5 — how the assessment and any
+> manuscript position the active-inference contribution; R2.Q6 — whether the
+> handbook gets a dated correcting note now (recommended) or waits for his Word
+> review. Nothing model-building should start before R2.Q4 is answered. Cheap and
+> unblocked regardless: card C (percentile sensitivity) and the A2v2.Q2 artifact-
+> baseline regeneration.
 >
 > Working conventions are the `performing-research` skill
 > (`~/.claude/skills/performing-research/SKILL.md`, mirrored at
 > `docs/skills/performing-research.SKILL.md`). Open queries: 13
-> (`replication/czb/out/query_register.md`), 2 of them blockers.
+> (`replication/czb/out/query_register.md`), 1 blocker (A.1.Q2, truck check only).
 
-> **Later arcs exist.** `handover_2026-08-26.md` covers the 2026-08-25 → 08-26 work (the
+> **Later arcs exist.** `handover_2026-08-29.md` covers the 2026-08-29 overnight batch
+> (gate R.2, the field-versus-gap verdict, the C1 fix, A.2.v2, the transfer re-run);
+> `handover_2026-08-28.md` covers the B.1 arc, the collinearity finding and the k = 12
+> decision. Before those: `handover_2026-08-26.md` covers the 2026-08-25 → 08-26 work (the
 > equivalence/ROPE revision, the severity-versus-timing diagnosis, the new human dataset
 > in `external/01_studies/`, the start of the cut-in scenario); `handover_2026-08-27.md`
 > covers the 2026-08-27 arc (a review that corrected the B-versus-C paired-difference
@@ -52,8 +54,8 @@
 > the honest assessment of the active-inference route, and — its §8 — the
 > **model-handover protocol**: execution moves to a less expensive model working
 > through `docs/czb_work_orders.md`, with escalation triggers and review gates).
-> Read this file first for standing context, then those two in order. Where
-> the files disagree on the equivalence statistics, the latest one wins. The 08-26 arc is
+> Read this file first for standing context, then the dated files in order. Where
+> the files disagree, the latest one wins. The 08-26 arc is
 > a single commit on `main`, so a net diff will not show the sequence of corrections
 > inside it — its §8 explains which ones to look for.
 
