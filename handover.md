@@ -37,12 +37,30 @@
 > *whether* milder stimuli trigger, not only when. The lapse-threshold artifact
 > baseline was regenerated under the new covariates (−0.280; conclusions unchanged).
 >
-> **What waits on Jonas**: R2.Q4 — do B.2/B.3 become comparator-class constructions
-> (recommended) or stay field constructions; R2.Q5 — how the assessment and any
-> manuscript position the active-inference contribution; R2.Q6 — whether the
-> handbook gets a dated correcting note now (recommended) or waits for his Word
-> review; C.Q2 — whether the percentile deliverable stays on the deficit axis.
-> Nothing model-building should start before R2.Q4 is answered.
+> **Jonas ruled on the morning of 2026-08-29** (worklog entry of that morning; his
+> machine was about to reboot, so the rulings are terse and binding): **R2.Q4
+> resolved** — B.2 (truck) and B.3 (LTAP) are built as **comparator-class
+> constructions** (per-scenario 2D state rules + the CZB ellipse), with the field
+> alternative kept documented and each construction note carrying the pros and
+> cons of both routes. **R2.Q6 resolved** — the handbook status note is in (round
+> 5, dark orange). **R2.Q5 narrowed, open** — before settling how to position the
+> active-inference contribution, explore whether the SURPRISE elements survive on
+> their own as a scenario-agnostic metric even with the preference field dropped;
+> the comparator program proceeds meanwhile. **C.Q2 stays open**, and he
+> explicitly wants the **CZB ellipse** explored — it is promoted from comparator
+> to deliverable candidate.
+>
+> **The next session's queue, in order**: (1) the B.3.v2 LTAP construction note,
+> written for the comparator class (arrival-time separation + oncoming distance),
+> with the required both-routes pros/cons section, reviewed before coding;
+> (2) a design note for the CZB ellipse (which observables per scenario, the
+> Mahalanobis joint percentile, how the per-driver trait maps onto it);
+> (3) the R2.Q5 exploration — one crux to start from: every surprise measure
+> needs a reference distribution to be surprised relative to, and in this
+> project the preference field WAS that reference, so "surprise without the
+> field" must say what replaces it (candidates: learned predictive models of
+> normal driving per the src/surprise library's other interfaces; the library
+> itself is validated and scenario-independent by construction).
 >
 > Working conventions are the `performing-research` skill
 > (`~/.claude/skills/performing-research/SKILL.md`, mirrored at
