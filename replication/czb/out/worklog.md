@@ -1037,3 +1037,25 @@ the correct-in-place convention. Word and PDF rebuilt for all chapters and the
 combined document (no OneDrive locks fired).
 RESOLVED R2.Q6: Jonas ruled to update now rather than wait for his Word review;
 done as above.
+
+## 2026-08-29 (morning, before reboot) — Jonas rules on R2.Q4/Q5 and C.Q2
+
+Recorded verbatim-in-substance from chat, minutes before his machine rebooted.
+RESOLVED R2.Q4: B.2 (truck) and B.3 (LTAP) are built as COMPARATOR-class
+constructions (per-scenario 2D state rules + the CZB ellipse), per the
+recommendation — but the field alternative must stay documented, with the pros
+and cons of each route written down (his condition). The construction notes for
+B.2/B.3 must therefore carry a short both-routes section, not silently drop the
+field.
+R2.Q5 partially ruled, stays open in narrowed form: Jonas is not ready to settle
+the positioning. His counter-question: have we really explored active inference
+at its fullest — in particular, can the SURPRISE elements be kept on their own,
+with surprise defined as a scenario-AGNOSTIC metric, even if the full preference
+field is dropped? Direction: go with the comparator program for now, but explore
+the scenario-agnosticism options of the surprise family further (the
+src/surprise library is validated and scenario-independent by construction; what
+was ruled out is the preference-field deficit as the criticality axis, not
+surprise as a family). Positioning of any paper waits on that exploration.
+C.Q2 stays OPEN by his ruling, and he explicitly wants the CZB ellipse explored
+— the elliptical joint-percentile construction moves from "comparator we score
+against" to "deliverable candidate to develop".
