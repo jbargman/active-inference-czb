@@ -30,17 +30,23 @@
 > proposal failed its sign derivation on the distance axis, so **no lateral term
 > was built** and the note's follow-on tests were cancelled.
 >
+> Late in the same session, **card C also ran** (`out/percentile_sensitivity.md`):
+> the percentile choice and its estimation error are comparable in onset terms
+> (~0.27 s per 5 points against ~0.53 s per CI), and at the population median only
+> TTC4 of the three stimuli ever crosses the boundary — the percentile decides
+> *whether* milder stimuli trigger, not only when. The lapse-threshold artifact
+> baseline was regenerated under the new covariates (−0.280; conclusions unchanged).
+>
 > **What waits on Jonas**: R2.Q4 — do B.2/B.3 become comparator-class constructions
 > (recommended) or stay field constructions; R2.Q5 — how the assessment and any
 > manuscript position the active-inference contribution; R2.Q6 — whether the
 > handbook gets a dated correcting note now (recommended) or waits for his Word
-> review. Nothing model-building should start before R2.Q4 is answered. Cheap and
-> unblocked regardless: card C (percentile sensitivity) and the A2v2.Q2 artifact-
-> baseline regeneration.
+> review; C.Q2 — whether the percentile deliverable stays on the deficit axis.
+> Nothing model-building should start before R2.Q4 is answered.
 >
 > Working conventions are the `performing-research` skill
 > (`~/.claude/skills/performing-research/SKILL.md`, mirrored at
-> `docs/skills/performing-research.SKILL.md`). Open queries: 13
+> `docs/skills/performing-research.SKILL.md`). Open queries: 14
 > (`replication/czb/out/query_register.md`), 1 blocker (A.1.Q2, truck check only).
 
 > **Later arcs exist.** `handover_2026-08-29.md` covers the 2026-08-29 overnight batch

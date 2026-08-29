@@ -1007,3 +1007,13 @@ recorded so nobody later reads sub-comfort onsets off this table without checkin
 deficit axis at all, or migrate to whatever axis the comparator program settles on?
 The sensitivity machinery here transfers to any monotone axis unchanged; nothing
 in this card locks the axis in.
+
+RESOLVED A2v2.Q2: `lapse_threshold_artifact.py` was regenerated under the new
+covariates the same night (26 min; log `out/log_lapse_artifact_v2.txt`). The
+artifact baseline moves -0.272 -> -0.280, the observed raw correlation -0.727 ->
+-0.720, and the correlated arm recovers -0.636 — every conclusion unchanged, and
+A.2.v2's fitted rho = -0.717 now sits 1.0 sd inside the genuinely-correlated arm
+against a current baseline. One nit: the regenerated report's closing line still
+says "R.1.Q2 stays open [and] the A.2.v2 variant is still needed" — generated
+prose written for the pre-A.2.v2 state of the world; the numbers above it are
+current, and R.1.Q2 is resolved in this log.
