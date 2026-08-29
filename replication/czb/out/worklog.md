@@ -980,3 +980,30 @@ A.2.v2 regenerated stage 1 and the percentile table under the corrected covariat
 (shifts under 1%), and the cut-in -> overtake transfer was re-run (freed-lapse 0.136
 against chance 0.158, ceiling 0.120). The only stale lapse-related number left is
 the artifact baseline, tracked separately as A2v2.Q2.
+
+## 2026-08-29 (later) — Card C: percentile sensitivity, first run (tier 1, batch)
+
+`replication/czb/percentile_sensitivity.py` -> `out/percentile_sensitivity.md` +
+`figures/percentile_sensitivity.png`. Specification: the A.2.v2 configuration,
+refitted live (hier lapse, k = 12, shown-window covariates); onset = first crossing
+of the running-max deficit by the percentile level, per Random stimulus. Findings:
+**(1) the percentile choice and the estimation uncertainty are of comparable size**
+— one 5-point step moves the trigger onset by ~0.27 s on average (max 1.03 s near
+the tail on TTC4) against ~0.53 s of onset shift across a level's own 95% CI — so
+neither dominates, which answers the standing concern (the docs/czb note that "the
+percentile choice may matter more than estimating a true CZB") with "they are
+comparable on this stimulus set, both around a third of a second per step".
+**(2) The reachability finding matters more**: TTC8 never reaches even the 50th
+percentile level (clip max 4 315 against median 5 400) and TTC6 tops out near the
+75th, so at population-median strictness two of the three stimuli would never
+trigger at all — percentile choice is not only WHEN but WHETHER. Comfort (3 418)
+is reached by all three stimuli; dread (6 572) only by TTC4.
+@C.Q1(minor, review): onset times for levels below ~2 900 on TTC8 (and ~1 500 on
+TTC6) would be distorted by the manoeuvre-onset projection spike that the covariate
+series still carries at t = 0 (the B2.Q1 fix corrected the TRIAL windows, not the
+series); all levels used here sit above it, so no reported number is affected —
+recorded so nobody later reads sub-comfort onsets off this table without checking.
+@C.Q2(judgment, jonas): given R.2, should the percentile deliverable stay on the
+deficit axis at all, or migrate to whatever axis the comparator program settles on?
+The sensitivity machinery here transfers to any monotone axis unchanged; nothing
+in this card locks the axis in.
