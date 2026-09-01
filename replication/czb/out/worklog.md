@@ -1079,3 +1079,39 @@ where the tracked output `out/stage2_summary.md` (v3, final at R.1) gives 0.169 
 quote a pre-v3 iteration. The scope map uses the output's numbers and flags the
 disagreement in place; the assessment document should be corrected in place with a dated
 note rather than rewritten. The FAIL verdict is unaffected.
+
+## 2026-09-01 — the 15-20 minute project-group deck
+
+Not a card: Jonas asked (going to bed; batch mode) for a shorter presentation for the
+project group (cognitive science, driver modeling, vehicle safety engineering), 15-20
+minutes, covering (a) the idea of active inference and surprise, (b) the CZB versions
+tested, (c) where we ended up and why, (d) what to do now — with a short objectives
+slide and a short what-worked/what-did-not summary slide. Built as
+`presentation/talk/build_short_talk.py` → `ai_czb_short_talk.pptx`: 13 slides, notes
+budget 19.8 min, two CUTTABLE slides (animation, R.1) bringing it to ~16.5. Content is
+condensed from the 60-minute deck (`build_talk.py`, built earlier the same day by
+another session); every quoted number traces to the same tracked outputs
+(`out/cutin2_field_vs_gap.md`, `out/cross_scenario_consistency.md`,
+`out/stage1_summary.md`, `out/stage2_summary.md`, `docs/r2_gate_decisions.md`). All 13
+slides rendered to PNG and inspected; one panel-overflow and one figure/kicker count
+mismatch fixed. Full property-test suite green before and after (31+33+40+87 = 191; no
+source files touched). The earlier session had left `presentation/talk/` untracked
+with no worklog entry; this session committed those files alongside (the short deck
+imports its helpers and reuses its figures), with `presentation/talk/*.pptx` added to
+.gitignore to match the existing deck convention.
+@TALK.Q1(minor, jonas): both decks attribute the talk to Jonas alone; co-authors and
+the QUADRARUM/QUADRIS collaborators are not named. The 60-minute deck's README already
+flags this; it matters more for the short deck, since the project group audience
+likely includes those collaborators.
+@TALK.Q2(judgment, jonas): the 60-minute deck file `ai_czb_talk.pptx` has an mtime
+(08:35) later than its build script (07:47), so it may carry a hand save. Its script
+had a figure/text mismatch ("Six steps" against the seven-row progression figure);
+fixed count-free in `build_talk.py` ("The steps, and where each one landed"), but the
+deck was deliberately NOT rebuilt — per the copy-and-augment rule — so the built
+60-minute deck still shows "Six steps" until Jonas confirms it carries no hand edits
+and rebuilds, or edits the two strings in place.
+@TALK.Q3(minor, jonas): the short deck's closing one-liner ("the axis entered a fair,
+pre-registered competition and lost; what survived is the thing worth building on")
+and the "not a failed project" summary panel are editorial framings consistent with
+the gate record and the scope map, but Jonas may want them plainer; both are single
+strings in `build_short_talk.py`.

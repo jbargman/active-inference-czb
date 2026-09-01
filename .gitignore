@@ -13,6 +13,7 @@ notes/paper_text/
 docs/handbook/word/
 docs/handbook/pdf/
 presentation/*.pptx
+presentation/talk/*.pptx
 presentation/_chalmers-template.pptx
 
 # Python

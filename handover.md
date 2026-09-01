@@ -66,6 +66,12 @@
 > (`~/.claude/skills/performing-research/SKILL.md`, mirrored at
 > `docs/skills/performing-research.SKILL.md`). Open queries: 14
 > (`replication/czb/out/query_register.md`), 1 blocker (A.1.Q2, truck check only).
+>
+> *[2026-09-01: two presentation decks now exist in `presentation/talk/` — the
+> 60-minute full account (`build_talk.py`) and the 15-20 minute project-group
+> version (`build_short_talk.py`), both with speaker notes and time budgets; see
+> that directory's README. Three TALK queries added (register now 16 open); the
+> next-session queue above is unchanged.]*
 
 > **Later arcs exist.** `handover_2026-08-29.md` covers the 2026-08-29 overnight batch
 > (gate R.2, the field-versus-gap verdict, the C1 fix, A.2.v2, the transfer re-run);
