@@ -79,6 +79,8 @@ its provenance:
 | IV Reference | 12 Code map | From concept to file, class, and parameter — with five first exercises |
 | | 13 Glossary | The same idea in three vocabularies, plus common misconceptions |
 | | 14 Appendix: the deep end | The material deliberately kept out of the main text — the free-energy principle proper, variational inference, Markov blankets, the debate literature, the discrete-state formulation — for reference |
+| | 15 Appendix: the datasets | Every source a number in this handbook rests on, with the caveat that binds each |
+| | 16 Appendix: an external required-deceleration model | {{R6}}Early work, external to the project: a colleague's habitual-control comfort-zone model and its fit to the cut-in study, read against our results |
 
 ## Reading paths
 

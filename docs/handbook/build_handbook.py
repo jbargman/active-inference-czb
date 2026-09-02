@@ -44,6 +44,7 @@ REVISION_MARKS = {"{{R1}}": (0xB0, 0x00, 0x20),   # revision round -> RGB (round
                   "{{R2}}": (0x10, 0x30, 0x8A),   # round 2: 2026-08-25, crash-causation study
                   "{{R3}}": (0x1B, 0x5E, 0x20),   # round 3: 2026-08-26, equivalence/ROPE
                   "{{R5}}": (0xB3, 0x5C, 0x00),   # round 5: 2026-08-29, gate R.2 status note
+                  "{{R6}}": (0x00, 0x6B, 0x6B),   # round 6: 2026-09-02, external R_h appendix
                   "{{R4}}": (0x6A, 0x1B, 0x9A)}   # round 4: 2026-08-27, lane entry + corrections
                                                   #   calibration and the scenario-code deep dive
 

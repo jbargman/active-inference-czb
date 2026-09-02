@@ -1282,3 +1282,38 @@ overestimate (participants contribute two trials to block-1 videos), so the hone
 statement is "at the floor". A corrected floor from the per-participant means is a
 five-line change to the registered script's floor formula; not done, since that script is
 pre-registered — it could go in EL.2's report instead.
+
+## 2026-09-02 — handbook appendix 16: the external required-deceleration CZB analysis
+
+Not a card: Jonas asked for an analysis, in this project's terms, of a colleague's CZB work
+(a Summala-like boundary through habitual-control resolvability R_h, cut-in cue a_req =
+dv^2 / 2(gap - g_min - dv tau), with a lateral mixture gate) and of another LLM session's
+implementation and fit of it to the second cut-in study, reached via the shortcut in
+`OthersWork/`; a handbook appendix stating it is early work; and the folder fenced off from
+standing context. Done: `docs/handbook/16_appendix_external_rh_model.md` ({{R6}} round;
+reading-guide rows for 15 and 16 added; R6 color in the build), `OthersWork/` gitignored
+with a comment, a stop condition in `handover.md` §5 and a row in §6, a README row. One
+cross-check computed here: `replication/czb/cutin2_external_cue.py` (pre-stated rule) puts
+the walled a_req cue on the registered R.2 pipeline: log gap 0.1522, EL.1 linear rule
+0.1137, a_req with g_min free 0.1710, with g_min and tau free 0.1951 (walls
+9.0-10.1 m); verdict: linear minus best walled = -0.0573: **the linear rule in log gap and log TTC STANDS as the better cue on this pipeline**. A first run had bounded g_min below the smallest design gap (1.1 m; an
+implementation slip that forbade the external ~11.5 m wall) and scored the cue at 0.2585 /
+0.2534; the bound was corrected to [0, 30 m] and the script re-run with models, folds, fitter
+and rule unchanged (both numbers recorded here, per the docstring). The external results were not
+re-run. The appendix's substantive reading: both pipelines find gap first with a speed
+exponent of about 0.4-0.5 (EL.1's gap/sqrt(dv); their gap/dv^0.42 and free exponent 0.39),
+both reject deceleration-type cues for the same reason the pipeline review found for the
+field's counterfactual, both find a reliable per-driver criterion; their fixed-horizon
+anticipatory gate produces the CP1 floor where our closure-time lane-entry gate cost ~44%
+of the field's loss.
+@EXT.Q1(judgment, jonas): the two lines of work converge on "gap with a speed exponent of
+about 0.4-0.5" by independent routes. Should this be stated jointly with the colleague (a
+short joint note), and which functional form should card EL.2 carry for the cut-in: the
+EL.1 linear rule, the walled a_req (per the cross-check), or both as candidates?
+@EXT.Q2(minor, jonas): the external gate anticipates on a fixed 3 s horizon and gets the
+CP1 floor; ours anticipates to the closure time and suppressed the fast-responding cells.
+A fixed-horizon variant of `lane_entry_weight` is a small change; it is not made because
+nothing in the comparator program depends on the field. Say if you want it as a card.
+@EXT.Q3(minor, jonas): the external analysis chose its fold scheme to match our registered
+one and cites our R.2 output, so the two are not blind on the fold design. The appendix
+says so; confirm that wording is acceptable to the colleague before the appendix circulates.

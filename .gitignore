@@ -16,6 +16,11 @@ presentation/*.pptx
 presentation/talk/*.pptx
 presentation/_chalmers-template.pptx
 
+# A colleague's external CZB analysis (a shortcut to a folder outside this repository;
+# not this project's work, not part of its evidence chain, and not standing context --
+# read docs/handbook/16_appendix_external_rh_model.md instead)
+OthersWork/
+
 # Python
 __pycache__/
 *.pyc

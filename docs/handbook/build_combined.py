@@ -2,7 +2,7 @@
 
     python docs/handbook/build_combined.py
 
-Concatenates chapters 00-14 in order into handbook_combined.md, then builds
+Concatenates chapters 00-16 in order into handbook_combined.md, then builds
 word/handbook_combined.docx (revision marks colored, as in the per-chapter build)
 and pdf/handbook_combined.pdf (revision marks stripped — the PDF pipeline has no
 text coloring). The combined markdown is generated; edit the chapters, not it.

@@ -165,6 +165,13 @@ nothing else remains. Stop whenever:
   scope (the standing scope decision: only the active-inference papers are in scope for
   the literature; the CAMP data are a query, EL.Q3).
 
+**Do not read `OthersWork/` as context.** It is a shortcut to a colleague's external
+comfort-zone analysis (a required-deceleration model fitted to the same cut-in study by
+another LLM session). It is not this project's work and nothing here depends on it. What
+the project takes from it is written down once, in handbook appendix 16
+(`docs/handbook/16_appendix_external_rh_model.md`); read that if a task touches it, and
+open the external folder only when Jonas explicitly asks for work on it.
+
 ## 6 The documents that matter, by purpose
 
 | purpose | file |
@@ -177,6 +184,7 @@ nothing else remains. Stop whenever:
 | the worklog (source of truth for decisions and queries) and the register | `replication/czb/out/worklog.md`, `out/query_register.md` |
 | the two talks and the animation shot list | `presentation/talk/README.md` |
 | how earlier scenarios were built (the pattern to follow) | `docs/lane_entry_note.md`, `docs/overtake_construction_note.md` |
+| the external required-deceleration analysis, read in our terms (early work; the folder itself is not context) | `docs/handbook/16_appendix_external_rh_model.md` |
 | the data and its traps | `docs/czb_study1_data_plan.md`; the study's own `DATA_DICTIONARY.md` under `external/01_studies/` (read its "gotchas" before touching the joint file) |
 | the deep research context, environment and parameter traps (older) | `HANDOFF.md`, then the dated handovers `handover_2026-08-26.md` → `handover_2026-09-02.md` in order |
 
