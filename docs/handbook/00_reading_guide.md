@@ -77,7 +77,7 @@ its provenance:
 | | 10 Calibration and parameter fitting | Where every number came from, how to set new ones, identifiability, and the dos and don'ts |
 | | 11 The path to comfort-zone boundaries | What exists, what has been tested, what human data would add |
 | IV Reference | 12 Code map | From concept to file, class, and parameter — with five first exercises |
-| | 13 Glossary | The same idea in three vocabularies, plus common misconceptions |
+| | 13 Glossary | The same idea in three vocabularies, common misconceptions, and {{R6}}the measurement vocabulary (axis, level, gate, held out, noise floor, percentile, trait) in plain words |
 | | 14 Appendix: the deep end | The material deliberately kept out of the main text — the free-energy principle proper, variational inference, Markov blankets, the debate literature, the discrete-state formulation — for reference |
 | | 15 Appendix: the datasets | Every source a number in this handbook rests on, with the caveat that binds each |
 | | 16 Appendix: an external required-deceleration model | {{R6}}Early work, external to the project: a colleague's habitual-control comfort-zone model and its fit to the cut-in study, read against our results |

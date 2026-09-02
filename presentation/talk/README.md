@@ -13,6 +13,8 @@
 | `build_talk.py` | builds the 60-minute deck from scratch |
 | `ai_czb_status_talk.pptx` | the 10-15 minute "where we are now" deck (2026-09-02): 10 slides, four animated, little text, the talk in the notes (budget 13.0 min) |
 | `build_status_talk.py` | builds the status deck; `make_status_animations.py` builds its three GIFs (the model on one real cut-in; the held-out scoreboard; the 43-driver trait) from tracked data and outputs |
+| `ai_czb_concepts_talk.pptx` | the concepts deck (2026-09-02): one animated slide per term of the measurement vocabulary (axis, level, gate, how we test, the deliverable, the trait), 9 slides, notes budget 12.1 min |
+| `build_concepts_talk.py` | builds the concepts deck; `make_concept_animations.py` builds its five GIFs from tracked outputs (`out/stage1_looming.md`, `out/cutin2_gate.md`, `out/cutin2_cells.csv`, the study-2 traces) |
 | `ai_czb_short_talk.pptx` | the 15-20 minute project-group version: 13 slides (notes budget 19.8 min; two CUTTABLE slides bring it to ~16.5) |
 | `build_short_talk.py` | builds the short deck; imports the layout helpers from `build_talk.py`, so the two decks share one set of conventions |
 | `make_talk_figures.py` | the talk versions of the diagrams and the two live-computed figures |

@@ -1380,3 +1380,21 @@ say if the lane-entry note should get a dated section on it (three sentences).
 ## 2026-09-02 — animation S1 built (the belief cloud)
 
 `presentation/talk/make_belief_animation.py` → `figures/belief_anim.gif` (+ `belief_static.png`), shot S1 of the shot list, run as a background agent; all arrays from the deposit (Exp_7, seed 0). Two findings recorded in the script and the shot list: the deposit's belief columns are the true-state columns shifted by two (b[..., j] = eta[..., j-2]), and the deposited particle weights are uniform (stored after resampling), so marker size cannot carry weight. The believed gap has ~1 mm particle spread (observed, in effect), so the cloud is drawn in believed lead speed × believed lead acceleration: sd(speed) 0.475 → 0.0012 m/s in the one step after the lead brakes, re-plan at 1.4 s, brake at 1.6 s. Referenced from the status deck's slide-2 notes as an alternative; not committed into any deck.
+
+## 2026-09-02 — the concepts deck and the measurement vocabulary
+
+Jonas asked what "the population's median level is 0.032 rad/s" means and what the deficit axis
+is, for slides that explain the concepts (with animations, improving on the status deck), and
+for a vocabulary in the handbook that makes it easy to understand. Done: handbook chapter 13
+gained a section "The measurement vocabulary" (21 terms, each with its meaning first and then
+the number or file it is tied to; the reading guide's row updated; chapter rebuilt);
+`presentation/talk/build_concepts_talk.py` → `ai_czb_concepts_talk.pptx` (9 slides, 12.1 min in
+the notes) with five new animations from `make_concept_animations.py`: the axis (the field's
+deficit against the expansion rate on the TTC 2 s stimuli with 2 s and 4 s lane changes, where
+the lane-entry gate's effect is visible), the level (study 1's gate-open cells, the population
+curve, 43 drivers' thresholds drawn from the fitted population, the 50th/80th percentiles), the
+gate (clearance now and 3 s ahead, w rising 0.07 → 1), how we test (leave-one-starting-TTC-out
+fold by fold, then the noise floor), and the deliverable (percentile → onset with the level's CI,
+from `out/stage1_looming.md` table 5); plus the trait animation. Every number parsed from a
+tracked output. Rendered and inspected; two frame fixes (the axis window cut at the clip end,
+because after ~2 s the TTC 2 s stimuli reach the ego; the held-out final frame keeps the cells).
