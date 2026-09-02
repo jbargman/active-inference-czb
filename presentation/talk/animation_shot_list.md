@@ -28,6 +28,8 @@ reads it is committed next to the GIF.*
 
 ### S1 — the belief cloud catching the lead's braking (subsystem: perception and beliefs)
 
+*[Built 2026-09-02: `make_belief_animation.py` → `figures/belief_anim.gif`. Two deviations forced by the deposit: the x axis is believed lead speed, not believed gap (the gap is effectively observed, particle sd ~1 mm, so it shows no collapse); and the deposited weights are uniform (post-resampling), which the frame states.]*
+
 - **Claim on the slide.** Detection is not the bottleneck: the particle cloud snaps to
   the new reality within one 0.2 s step; the response comes 0.6 s later when the plan,
   not the world, has accumulated evidence of failure.

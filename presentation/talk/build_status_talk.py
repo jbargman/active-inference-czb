@@ -103,6 +103,11 @@ defined event, and one scalar doing two jobs, locating the boundary and timing t
 Both halves were tested against human data with rules fixed in advance, and both failed
 (gates R.1 and R.2, docs/r2_gate_decisions.md). That is the background; the rest of this
 talk is what we have instead, and it is more than we expected.
+
+Alternative for this slide: figures/belief_anim.gif (shot S1) shows the same event with the
+75-particle belief cloud collapsing onto the truth in one step at t = 0.8 s while the
+accumulator keeps filling until 1.4 s -- the sharper version of "surprise, not perception,
+times the response". Swap it in if the audience knows the model.
 """)
 
     # -- 3 the model we have -----------------------------------------------

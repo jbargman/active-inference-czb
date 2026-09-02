@@ -17,6 +17,7 @@
 | `build_short_talk.py` | builds the short deck; imports the layout helpers from `build_talk.py`, so the two decks share one set of conventions |
 | `make_talk_figures.py` | the talk versions of the diagrams and the two live-computed figures |
 | `make_event_animation.py` | the animated demonstration, read from the OSF deposit |
+| `make_belief_animation.py` | shot S1 of the shot list (2026-09-02): the 75-particle belief cloud collapsing on the lead's braking in one 0.2 s step while the accumulator keeps filling for three more; `figures/belief_anim.gif` + `belief_static.png`, all arrays from the deposit (the belief columns are the true-state columns shifted by two; the deposited weights are uniform, post-resampling) |
 | `figures/` | generated; safe to delete and rebuild |
 | `animation_shot_list.md` | the specification for the next seven data-driven animations (S1–S7), each with its claim, tracked source, required content and caveats; build order and conventions at the top |
 
