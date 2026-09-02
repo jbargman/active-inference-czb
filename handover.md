@@ -12,12 +12,13 @@ and you should say so in your reply.*
 1. Read this file in full. Then read `docs/czb_work_orders.md` §2 (the standing rules)
    and the cards it points you to for the task at hand. Do not read the papers or the
    handbook unless the card says to.
-2. Run the test suite exactly like this, and confirm 31, 33, 40 and 96 passed:
+2. Run the test suite exactly like this, and confirm 31, 33, 40, 96 and 62 passed:
    ```bash
    python tests/test_surprise.py
    python tests/test_comfortzone.py
    python tests/test_causation.py
    python tests/test_cutin.py
+   python tests/test_ltap.py
    ```
    (`pytest` reports fewer and is *not* the suite; the files are scripts.)
 3. Run `git status` and `git log --oneline -5`. The tree should be clean. If it is not,
@@ -79,6 +80,14 @@ Card EL.1 (a second axis on the second cut-in study) has run; its verdict is in
 > 0.261 (attribution confirmed) but it stays far behind the gap; the flag
 > `lane_entry_horizon_s` defaults off and nothing depends on it.
 >
+> **Later the same day, on Jonas's rulings:** **G1.Q1** — stage 1 re-fitted on the gated
+> looming rule (`out/stage1_looming.md`): LOPO +14.9 over the deficit axis, C1 predicted to
+> 0.030, so **the gated looming axis is now the stage-1 primary**; median level 0.032 rad/s
+> (1.8°/s), 80th percentile 0.066 rad/s. **B3.Q1** resolved by assumption (decision moment
+> 13.5 s; one number from Jonas overturns it, `T_DECISION_S` in `src/comfortzone/ltap.py`).
+> **B.3.v2** run (`out/ltap_two_axis.md`): distance 0.056, time 0.112, linear rule
+> 0.054, quadratic 0.062, the oncoming's looming rate 0.054; distance minus linear = +0.0018; distance minus quadratic = -0.0067; linear minus quadratic = -0.0085; distance minus looming = +0.0018. **neither 2D model beats distance alone by 0.01: one axis suffices on this data**; -; **looming and distance are indistinguishable (within 0.01)**.
+>
 > **TT.1** (`out/ltapod_testtrack.md`): the first real-driving anchor. Jonas's 2013 LTAP/OD
 > test-track study (`external/02_LTAPOD_DBIN/`, paper filed under `papers/comfort-zone-boundaries/`,
 > summary `notes/06_bargman2015_ltapod_testtrack.md`) fitted with the same threshold model as the
@@ -131,7 +140,7 @@ work; do not start the gated card until the query is answered in the worklog.
 |---|---|---|
 | **Q5.Q1** (judgment) | Is "surprise defines the onset, a population percentile defines the level" the working framing? | card Q5.1 |
 | **EL.Q1** (judgment) | Is the ellipse's percentile over pooled observed states or over drivers' boundary levels? | card EL.2, EL.3 |
-| **B3.Q1** (minor) | Where does the Random-design LTAP clip end (assumed 13.5 s, before turn onset)? | card B.3.v2's covariates |
+| B3.Q1 (resolved by assumption; overturn with one number) | the Random LTAP clip end, taken as 13.5 s | re-run `ltap_two_axis.py` if changed |
 | EL.Q2, EL.Q3 (minor) | the scale convention for EL.2; whether the CAMP rear-end data are in scope | EL.2; the CAMP part of EL.1 |
 | ANIM.Q1 (minor) | build order of the animations; whether a labeled synthetic figure is acceptable | the shot list |
 | REV.Q1–Q3, TALK.Q1–Q3, Q5.Q2–Q3 | wording and attribution questions | nothing; answer when convenient |
@@ -143,7 +152,10 @@ Everything else in the register predates this arc and is listed there with its s
 Each item has a card. Read the card and the note it points to before starting; the
 note is the specification and the card is the pointer.
 
-1. **Card B.3.v2 — the LTAP scenario** (`docs/ltap_construction_note.md` §2 and §5).
+1. ~~**Card B.3.v2 — the LTAP scenario**~~ **Done 2026-09-02** (`out/ltap_two_axis.md`; the
+   loader, tests and comparison exist). What remains of it is only the re-run if B3.Q1's
+   assumption is overturned. (The original item, for the record:)
+   **Card B.3.v2 — the LTAP scenario** (`docs/ltap_construction_note.md` §2 and §5).
    After B3.Q1. Add to its comparison a fourth model, the oncoming vehicle's looming rate
    (width × speed / distance²), so that the cut-in's axis is tested on a crossing geometry;
    the geometry predicts it will NOT be the LTAP cue (the note's §1 residual runs the other

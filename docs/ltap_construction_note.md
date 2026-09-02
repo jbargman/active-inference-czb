@@ -160,6 +160,25 @@ first.
 - **Then EL.2** as specified in the ellipse note, with LTAP as the scenario on which the
   second axis is expected to matter most.
 
+## 5b Result (added 2026-09-02, same day)
+
+*Card B.3.v2 ran (`replication/czb/ltap_two_axis.py` → `out/ltap_two_axis.md`; loader
+`src/comfortzone/ltap.py`, 62 property checks in `tests/test_ltap.py`; query B3.Q1 resolved
+by assumption at a 13.5 s decision moment). Held out over leave-one-PET-level-out folds on
+the 18 cells: distance alone 0.056, arrival-time separation alone 0.112, the linear 2D rule
+0.054 (weight 0.81–0.90 on distance in every fold), the quadratic form 0.063, the oncoming's
+looming rate 0.054; chance 0.288, sampling-noise floor 0.033. The pre-stated rule: neither
+two-axis model beats distance alone by 0.01, so one axis suffices on the left turn, and that
+axis is distance (or the oncoming's looming rate, which at one speed per cell is a monotone
+function of distance and scores the same). Time alone is far worse. Section 1's "speed
+residual" is real but small: the linear rule puts about 12% of its weight on arrival time,
+not enough to earn the second axis by the rule. Section 1's remark that looming would
+predict the wrong sign was wrong and is withdrawn: at matched arrival time the faster
+oncoming vehicle is farther and looms less, which is the observed direction; the test
+settles it. One caveat: the 50-resample cell bootstrap in the report (reduced from the
+pre-stated 200 after 2.7 CPU-hours without completing) is the uncertainty statement, and
+with 18 cells it is coarse.*
+
 ## 6 Where I may be wrong
 
 - The "distance with a speed residual" reading rests on interpolating the 50 km/h

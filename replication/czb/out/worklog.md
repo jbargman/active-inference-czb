@@ -1460,3 +1460,51 @@ dropped and the fit re-run.
 @TT.Q4(minor, jonas): the video's PS column runs 0..10 with higher = LESS safe in the joint file
 (8.2 at PET 0, 3.5 at PET 4); the data dictionary calls it perceived safety. Confirm the
 orientation; T4/T4b assume it.
+
+## 2026-09-02 — G1.Q1 executed (stage 1 on the gated looming rule); B3.Q1 resolved; B.3.v2 run
+
+RESOLVED G1.Q1: Jonas ruled yes. `replication/czb/fit_stage1_looming.py` → `out/stage1_looming.md`
+(pre-registered; run 34.9 min; the first run died with its agent at the usage limit and was
+relaunched unchanged). Study 1's Random cut-in trials (3096 trials, 43 drivers, 18 cells) with
+x = log(theta_dot) at the covariate time (instantaneous, not a running max) and the study-2 gate
+FIXED (m_lat 0.149 m, s_l 0.990 m, t_enc 3 s); level linear on the log scale; the deficit axis
+refitted on the identical code path. w_gate at C1 0.074-0.083, post-onset 0.37-1.00 (study 2:
+0.06-0.07 / 0.55-1.00). LOPO log-likelihood: L-gated -363.0, D-gated -377.9, L-ungated -474.4,
+D-ungated -404.9. C1 predictive mean abs error: L-gated 0.030, D-gated 0.034. Both pre-stated
+conditions met: **the gated looming axis replaces the deficit axis as the stage-1 primary.**
+Level: median 0.0317 rad/s (1.8 deg/s; CI 0.0285-0.0352), 80th 0.0658, 95th 0.132; sigma_pop
+0.868 log units. Card C translation on this axis: one 5-point percentile step moves the implied
+onset 0.244 s against 0.520 s from the level's own CI (ratio 0.5; on the deficit axis card C had
+0.27 vs 0.53) -- estimation uncertainty, not the percentile choice, dominates on this axis; and
+TTC8 never crosses at the median, as before. The gate is worth +111 LOPO units on the looming
+axis. The transfer (B.4) was deliberately not run on this axis (the overtake does not vary
+looming across clearance; EL.2's job). Assumption: the study-1 ego width equals the target's
+(1.882 m, from the TTC4 trace).
+@G1R.Q1(judgment, jonas): the percentile deliverable now lives on the looming axis (a level in
+rad/s, or deg/s). Should `docs/czb_validation_roadmap.md` and the scope map be amended to say so
+(dated notes), and should card C's report be regenerated on the new axis as the primary
+sensitivity statement? Nothing is rewritten yet.
+@G1R.Q2(minor, review): the lapse sd in the L-gated fit is 3.69 on the logit scale with a mean
+lapse of 0.004 -- effectively "no lapse for most drivers, a few lapse-prone ones"; the prior
+(HalfNormal(1.0) on the logit sd) is being pulled by the data. Record only.
+
+RESOLVED B3.Q1 (by assumption, per Jonas's instruction to proceed): the Random-design LTAP
+clip's end time is not recorded anywhere in the study material (the data dictionary says only
+that fixed clips "stopped at a fixed timepoint"); the decision moment is taken as 13.5 s of
+trace time, the Button window's end, 0.40-0.60 s before turn onset. A different end time shifts
+every cell's oncoming distance by the same amount and changes no ordering; `T_DECISION_S` in
+`src/comfortzone/ltap.py` is the one number to change.
+
+B.3.v2 run: `src/comfortzone/ltap.py` (roles by yaw span; the loader reproduces
+`out/ltap_geometry.md` to 1e-14), `tests/test_ltap.py` (62 checks, one bound widened from the
+note's rounded "0.4-0.6 s" to 0.35-0.65 s after the measured lead came out 0.3999-0.601 s),
+`replication/czb/ltap_two_axis.py` → `out/ltap_two_axis.md` (pre-stated; 18 cells,
+leave-one-PET-level-out, the registered fitter): distance 0.0558, arrival-time separation
+0.1121, linear 2D rule 0.0539 (w on -log D 0.81-0.90 across folds), quadratic form 0.0625,
+the oncoming's looming rate 0.0540; chance 0.2882, noise floor 0.0325. distance minus linear = +0.0018; distance minus quadratic = -0.0067; linear minus quadratic = -0.0085; distance minus looming = +0.0018. **neither 2D model beats distance alone by 0.01: one axis suffices on this data**; -; **looming and distance are indistinguishable (within 0.01)**.
+Cell bootstrap: distance minus linear mean +0.0019, 95% -0.0191 to +0.0282 (52% of resamples favour the linear rule); distance minus looming mean +0.0010, 95% -0.0219 to +0.0239 (50% of resamples favour looming). A
+correction to the construction note's section 1 is recorded in the script's docstring: at
+matched arrival time the faster oncoming vehicle is farther and looms LESS, so looming predicts
+the observed direction (the note said the opposite). The agent that started this card was cut
+off at the usage limit after the loader and tests; the comparison script and the fixes are the
+tier-1 session's.
