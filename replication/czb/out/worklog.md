@@ -1398,3 +1398,22 @@ fold by fold, then the noise floor), and the deliverable (percentile → onset w
 from `out/stage1_looming.md` table 5); plus the trait animation. Every number parsed from a
 tracked output. Rendered and inspected; two frame fixes (the axis window cut at the clip end,
 because after ~2 s the TTC 2 s stimuli reach the ego; the held-out final frame keeps the cells).
+
+## 2026-09-02 — the concepts deck revised on Jonas's review
+
+Jonas's review of the first concepts deck: the axis slide looked as if the deficit were the
+better axis (a step reads as decisive), the phrase "gate open" was unclear, the gate slide's
+dashed car jumped, the noise floor needed its own popular-science slide before the held-out
+slide, the held-out slide's dots and right-hand axes were unexplained, the trait should lead
+(after the map) to entice the listener, and the deck should end with the whole model brought
+together and one slide on what is next. All done in `build_concepts_talk.py` (13 slides) and
+`make_concept_animations.py` (seven GIFs): the axis slide now shows the participants'
+intervention rates for the two stimuli next to the two candidates and states the takeaway on
+the picture; "after the lane change has started" replaces "gate open"; the gate's projection
+is an arrow with the 0.3 s backward-difference closing rate; `concept_noise.gif` (16 people at
+a true rate of one half drawn 24 times, then all 288 cells under a perfect model, error 0.118);
+the held-out slide names its dots and axes in plain words; `concept_whole.gif` puts gate w(t),
+axis theta_dot(t) and the fitted population of levels on study 1's TTC4 clip and draws the
+model's share who would intervene against the clip's six observed cells (a fit, not a
+held-out prediction, said so in the notes). The deck was written to `-v2` because the first
+file was open in PowerPoint. Rendered and inspected.
