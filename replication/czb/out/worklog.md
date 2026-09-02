@@ -1317,3 +1317,62 @@ nothing in the comparator program depends on the field. Say if you want it as a 
 @EXT.Q3(minor, jonas): the external analysis chose its fold scheme to match our registered
 one and cites our R.2 output, so the two are not blind on the fold design. The appendix
 says so; confirm that wording is acceptable to the colleague before the appendix circulates.
+
+## 2026-09-02 — three cards in parallel (EL.1b, G.1, F.1) and the status deck
+
+Jonas asked for a 10-15 minute "where we are now" deck (little text, notes carry the talk,
+moving illustrations with captions) and allowed other tasks in parallel. Three cards ran as
+background agents with pre-stated rules, each in its own script; nothing pre-registered was
+modified; suite 31/33/40/96 green (nine property checks added by F.1).
+
+**EL.1b** (`replication/czb/cutin2_looming.py` -> `out/cutin2_looming.md`): the looming
+identity. gap x TTC = W / theta_dot (small angle), so EL.1's equal-weight rule is a threshold
+on the optical expansion rate. Fitted directly with the traces' width (1.882 m, all traces):
+log theta_dot 0.1130 held out (registered folds), EL.1 linear rule 0.1137, gap 0.1522, inverse
+tau 1/TTC 0.1679, optical size theta 0.1521; noise floor 0.1176. Pre-stated rule: within
+0.005 -> the identity holds numerically. Threshold 0.0336 rad/s (1.9 deg/s); theta_dot over
+the cells 0.0036-1.107 rad/s. Note for the literature: on this video paradigm theta_dot beats
+inverse tau, the reverse of Xue et al. (2018) in a simulator.
+
+**G.1** (`replication/czb/cutin2_gate.py` -> `out/cutin2_gate.md`, `out/cutin2_gate_states.csv`):
+a fixed-horizon anticipatory gate in front of the EL.1 rule, P = b + (1-b) w_gate Phi(.),
+w_gate = Phi((m_lat - l0 - ldot t_enc)/s_l), t_enc = 3 s fixed, l0 the edge-to-edge lateral
+clearance at the clip end (validated against the study's lateral_dist: median 0.151 m, max
+0.434 m), ldot its 0.3 s backward difference. Fitted on the 288 post-onset cells only: held
+out 0.1027 (ungated 0.1137); the 90 CP1 cells predicted out of sample at 0.0319 (mean 0.032
+vs observed 0.023; ungated 0.4832). m_lat 0.149 m, s_l 0.990 m (per fold 0.05-0.21 m,
+0.91-1.03 m); w_gate 0.063-0.070 at CP1, 0.55-1.00 post-onset. Pre-stated rule (i) fired:
+the gate is credited, and it improves the open-gate fit rather than costing it. The loader's
+y_tar is already ego-relative (centre-to-centre = |y_tar|), stated in the docstring.
+
+**F.1** (`replication/czb/cutin2_field_horizon_gate.py` -> `out/cutin2_field_horizon_gate.md`;
+flag `lane_entry_horizon_s` in `src/aidriver/preferences.py`, default None = bit-identical,
+frozen-grid test against commit 5062059; `test_lane_entry_horizon`, 9 checks): the field
+with the lane-entry projection at a fixed 3 s horizon instead of the closure time. Held out
+0.2612 (log) from the registered 0.3471 (reproduced with the flag off); improvement +0.086
+> 0.05 -> credited: the closure-time gate was the project's share of the loss, and this is
+the first field variant to beat chance (0.320). Against the gap (0.1522): +0.109 -> the field
+remains ruled against. Within matched-TTC rows the horizon field orders 7 of 24 like the data
+(registered 10 of 24): the gain is on the between-TTC axis, not the within-row axis. CP1
+unchanged (pre-onset lateral velocity ~0, so the horizon adds nothing there).
+
+**The status deck** (`presentation/talk/build_status_talk.py` -> `ai_czb_status_talk.pptx`,
+10 slides, notes budget 13.0 min; `make_status_animations.py` -> `figures/status_model.gif`,
+`status_scoreboard.gif`, `status_trait.gif`, each with captions in the frames, every number
+parsed from tracked outputs; the event animation reused). Rendered and inspected; one bug
+found and fixed on the way: `load_cutin_trace`'s onset detector fires at t ~ 1.7 s on the
+study-2 traces (known; cutin2_field_vs_gap docstring), so the animation takes onset from the
+CP1 clip's end stamp + 0.066 s.
+
+Reading, in one line: the cut-in model is now gate x axis x level, with the axis the looming
+rate and the gate a fixed-horizon clearance projection; both were suggested by the external
+required-deceleration analysis (appendix 16) and both passed pre-stated tests here.
+@G1.Q1(judgment, jonas): with the gate credited, should the stage-1 estimator (hierarchical
+per-driver level) be re-run on the gated looming rule for the cut-in, and the B.4 transfer
+re-scored on it? That would replace the deficit axis in the percentile deliverable (card C's
+sensitivity numbers would move). The notes assume yes but nothing is re-run.
+@G1.Q2(minor, jonas): the gate's fitted softness (s_l ~ 1.0 m) differs from the external fit
+(~0.3 m); the design samples only floor and plateau, so the shape is unidentified either way.
+Record only.
+@F1.Q1(minor, jonas): the horizon flag stays default-off and undocumented outside the card;
+say if the lane-entry note should get a dated section on it (three sentences).

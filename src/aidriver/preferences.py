@@ -156,6 +156,18 @@ class PreferenceParams:
     # Default False = released behavior and every published number unchanged.
     lane_entry_bidirectional: bool = False
     lane_entry_max_dy_m: float = 3.5     # study lane width; the outward projection clamp
+    # `lane_entry_horizon_s` replaces the lane-entry weight's projection time with a
+    # FIXED anticipation horizon (2026-09-02, attribution experiment; NOT in the released
+    # code and NOT a proposed model change). The project's gate projects the lateral
+    # offset to the moment of LONGITUDINAL CLOSURE (tau_lon), which suppresses the deficit
+    # for slow lane changes at short starting TTC -- exactly the cells participants
+    # respond to most (out/cutin2_lane_gate_diagnostic.md attributes ~44% of the R.2 loss
+    # to it). A colleague's external model instead extrapolates the lateral clearance over
+    # a fixed encounter horizon t_enc. Setting this to T uses exactly that: the lateral
+    # offset is projected T seconds ahead at the current lateral rate, and everything else
+    # (the inward/outward clamps, the overlap-to-weight mapping, `lane_entry_shape_k`) is
+    # untouched. None = the existing closure-time projection, bit-identical.
+    lane_entry_horizon_s: float | None = None
     # --- vehicle -------------------------------------------------------------------
     vehicle: BicycleParams = field(default_factory=BicycleParams)
 
@@ -341,6 +353,10 @@ def lane_entry_weight(obs: dict, p: PreferenceParams):
     `obs` may supply `w_other` (target width; defaults to the ego's width, which makes the
     overlap onset threshold coincide with the released box's 1.15 * width) and `vy_other`
     (d(dy)/dt, signed; defaults to 0 = no anticipation).
+
+    2026-09-02, attribution experiment: `p.lane_entry_horizon_s = T` replaces tau_lon by
+    the fixed horizon T (see the flag's comment on `PreferenceParams`). Default None
+    leaves this function exactly as above.
     """
     veh = p.vehicle
     dy = np.asarray(obs["dy"], dtype=float)
@@ -357,9 +373,17 @@ def lane_entry_weight(obs: dict, p: PreferenceParams):
         closing_rate = np.maximum(closing_rate, 0.0)
     dxg = np.asarray(obs["dx"], dtype=float) - veh.length
     v_rel = np.asarray(obs["v"], dtype=float) - np.asarray(obs.get("v_other", 0.0), dtype=float)
-    with np.errstate(divide="ignore", invalid="ignore"):
-        tau_lon = np.where(v_rel > 1e-3, np.maximum(dxg, 1e-3) / v_rel, np.inf)
-        proj = np.where(np.isinf(tau_lon), 0.0, closing_rate * tau_lon)
+    if p.lane_entry_horizon_s is None:
+        with np.errstate(divide="ignore", invalid="ignore"):
+            tau_lon = np.where(v_rel > 1e-3, np.maximum(dxg, 1e-3) / v_rel, np.inf)
+            proj = np.where(np.isinf(tau_lon), 0.0, closing_rate * tau_lon)
+    else:
+        # 2026-09-02, attribution experiment (`lane_entry_horizon_s`): the fixed-horizon
+        # reading of the gate -- extrapolate the lateral offset T seconds ahead at the
+        # current lateral rate, whatever the longitudinal gap is doing. tau_lon does not
+        # enter, so the gate no longer collapses when closure is slow or absent; the
+        # tau_lon == T case reproduces the closure-time projection exactly.
+        proj = closing_rate * float(p.lane_entry_horizon_s)
     ady_pred = np.maximum(ady - proj, 0.0)
     if p.lane_entry_bidirectional:
         # Outward projection is clamped the way the inward one is: a driver pulling out

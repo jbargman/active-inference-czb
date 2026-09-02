@@ -283,6 +283,128 @@ def test_lane_entry_bidirectional():
           0.0 <= float(lane_entry_weight(fleeing, p_on)) <= 1.0)
 
 
+#: Frozen reference values of `lane_entry_weight` on a small grid, computed from the
+#: module as it stood at commit 5062059 -- i.e. BEFORE `lane_entry_horizon_s` existed
+#: (2026-09-02, attribution experiment). The grid is
+#: (|dy|, dx, v_ego = 30, v_other = 25, vy_other), dy x vy x dx as built below, and it
+#: spans the whole ramp (0, interior, 1) at both shape constants in use (k = 0 released
+#: ramp, k = 12 the CZB staging constant). If the flag-off path ever stops being
+#: bit-identical, these numbers are what catches it.
+HORIZON_GRID = [(dy, dx, 30.0, 25.0, vy)
+                for dy in (0.5, 1.5, 2.5, 3.5)
+                for vy in (0.0, -0.25, -0.9)
+                for dx in (12.0, 40.0)]
+HORIZON_GRID_REF = {
+    0.0: [
+        0.7472194135490394, 0.7472194135490394, 0.9443882709807887, 1.0, 1.0, 1.0,
+        0.24165824064711822, 0.24165824064711822, 0.43882709807886755, 1.0,
+        0.9514661274014157, 1.0,
+        0.0, 0.0, 0.0, 0.6410515672396359, 0.44590495449949447, 1.0,
+        0.0, 0.0, 0.0, 0.13549039433771468, 0.0, 1.0,
+    ],
+    12.0: [
+        0.9532853548913333, 0.9532853548913333, 0.9976530396626315, 1.0, 1.0, 1.0,
+        0.040832387409888954, 0.040832387409888954, 0.3234279811371042, 1.0,
+        0.9980447478488733, 1.0,
+        0.0, 0.0, 0.0, 0.8462806913907422, 0.3424038878541466, 1.0,
+        0.0, 0.0, 0.0, 0.01001944294486478, 0.0, 1.0,
+    ],
+}
+
+
+def _obs_grid(g):
+    dy, dx, v, v_other, vy = g
+    return obs_following(dy=dy, dx=dx, v=v, v_other=v_other, vy=vy)
+
+
+def test_lane_entry_horizon():
+    """The fixed-horizon lane-entry gate (2026-09-02, `lane_entry_horizon_s`).
+
+    An ATTRIBUTION EXPERIMENT, not a proposed model change: the project's gate projects
+    the lateral offset to the moment of longitudinal closure, and a colleague's external
+    model instead extrapolates it over a fixed encounter horizon t_enc. The flag makes
+    that substitution and nothing else, so the same two failure modes matter as for
+    `lane_entry_bidirectional`: that it silently becomes the default, and that merely
+    adding it perturbs the registered numbers.
+    """
+    check("lane_entry_horizon_s defaults to None",
+          PreferenceParams().lane_entry_horizon_s is None)
+    check("the CZB staging path does not set a horizon",
+          PreferenceParams(lane_entry_continuous=True,
+                           counterfactual_residual_severity=True,
+                           lane_entry_shape_k=12.0).lane_entry_horizon_s is None)
+
+    # 1. flag off reproduces the pre-change values on the grid, EXACTLY (not allclose)
+    for k, ref in HORIZON_GRID_REF.items():
+        p_off = PreferenceParams(lane_entry_shape_k=k)
+        got = [float(lane_entry_weight(_obs_grid(g), p_off)) for g in HORIZON_GRID]
+        worst = max(abs(a - b) for a, b in zip(got, ref))
+        check(f"flag off is bit-identical to the pre-change weight on the grid (k={k:g})",
+              all(a == b for a, b in zip(got, ref)), f"max |delta| {worst:.3g}")
+
+    # 2. with the flag on, the weight is a monotone non-increasing function of the
+    #    PROJECTED overlap offset |dy|_pred = max(|dy| - max(-sign(dy) vy, 0) T, 0),
+    #    computed here independently of the implementation -- and of nothing else, so
+    #    the same |dy|_pred reached from different gaps and closing speeds must give
+    #    the same weight (tau_lon no longer enters).
+    T = 3.0
+    p_on = PreferenceParams(lane_entry_shape_k=12.0, lane_entry_horizon_s=T)
+    cases = [(dy, dx, v, 25.0, vy)
+             for dy in (0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0)
+             for vy in (0.0, -0.1, -0.3, -0.6, -1.0)
+             for dx in (8.0, 25.0, 90.0)
+             for v in (25.0, 30.0, 40.0)]
+    pred, wts = [], []
+    for dy, dx, v, v_other, vy in cases:
+        pred.append(max(abs(dy) - max(-np.sign(dy) * vy, 0.0) * T, 0.0))
+        wts.append(float(lane_entry_weight(
+            obs_following(dy=dy, dx=dx, v=v, v_other=v_other, vy=vy), p_on)))
+    order = np.argsort(np.asarray(pred), kind="stable")
+    w_sorted = np.asarray(wts)[order]
+    check("flag on: the weight is monotone non-increasing in the projected offset",
+          np.all(np.diff(w_sorted) <= 1e-12), f"{len(cases)} cases")
+    # equivalently, monotone non-DECREASING in the projected overlap fraction
+    ties = {}
+    for pp, ww in zip(np.round(pred, 12), wts):
+        ties.setdefault(pp, set()).add(round(ww, 12))
+    check("flag on: the projected offset alone determines the weight "
+          "(the gap and closing speed drop out)",
+          all(len(v) == 1 for v in ties.values()),
+          f"{sum(1 for v in ties.values() if len(v) > 1)} offsets with disagreement")
+    check("flag on: the weight stays in [0, 1]", min(wts) >= 0.0 and max(wts) <= 1.0)
+
+    # 3. the special case tau_lon == T: the two forms must coincide exactly.
+    #    tau_lon = (dx - L) / (v - v_other), so dx = L + T (v - v_other) with the ego
+    #    closing gives tau_lon = T by construction.
+    veh = PreferenceParams().vehicle
+    v_ego, v_other = 30.0, 25.0
+    dx_eq = veh.length + T * (v_ego - v_other)
+    n_interior = 0
+    for k in (0.0, 12.0):
+        p0 = PreferenceParams(lane_entry_shape_k=k)
+        pT = PreferenceParams(lane_entry_shape_k=k, lane_entry_horizon_s=T)
+        for dy in (0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5):
+            for vy in (0.0, -0.2, -0.5, -1.0):
+                o = obs_following(dy=dy, dx=dx_eq, v=v_ego, v_other=v_other, vy=vy)
+                a, b = float(lane_entry_weight(o, p0)), float(lane_entry_weight(o, pT))
+                if a != b:
+                    check(f"tau_lon == T reproduces the closure-time weight "
+                          f"(k={k:g}, dy={dy}, vy={vy})", False, f"{a!r} != {b!r}")
+                    return
+                if 0.0 < a < 1.0:
+                    n_interior += 1
+    check("tau_lon == T reproduces the closure-time weight exactly on a 56-point grid",
+          True, f"{n_interior} of 56 points on the interior of the ramp")
+
+    # 4. and the case the experiment is FOR: with no longitudinal closure the
+    #    closure-time gate has no anticipation at all, the fixed horizon still does.
+    no_closure = obs_following(dy=2.6, dx=30.0, v=25.0, v_other=25.0, vy=-0.4)
+    w0 = float(lane_entry_weight(no_closure, PreferenceParams(lane_entry_shape_k=12.0)))
+    wT = float(lane_entry_weight(no_closure, p_on))
+    check("flag on: a lateral move with no longitudinal closing still raises the gate",
+          w0 == 0.0 and wT > 0.0, f"closure-time {w0:.3f} -> fixed horizon {wT:.3f}")
+
+
 def test_covariate_window():
     """The shown-clip covariate window (2026-08-29, closing blocker B2.Q1).
 
@@ -356,7 +478,7 @@ if __name__ == "__main__":
                test_lane_entry_shape_defaults_preserve_released_behavior,
                test_overtake_loader, test_overtake_uses_the_cutin_field_code,
                test_czb_shape_constant_is_staged_not_default,
-               test_lane_entry_bidirectional,
+               test_lane_entry_bidirectional, test_lane_entry_horizon,
                test_covariate_window, test_covariate_window_trials]:
         fn()
     print(f"\n{len(PASS)} passed, {len(FAIL)} failed")

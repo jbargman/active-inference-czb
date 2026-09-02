@@ -12,14 +12,14 @@ and you should say so in your reply.*
 1. Read this file in full. Then read `docs/czb_work_orders.md` §2 (the standing rules)
    and the cards it points you to for the task at hand. Do not read the papers or the
    handbook unless the card says to.
-2. Run the test suite exactly like this, and confirm 31, 33, 40 and 87 passed:
+2. Run the test suite exactly like this, and confirm 31, 33, 40 and 96 passed:
    ```bash
    python tests/test_surprise.py
    python tests/test_comfortzone.py
    python tests/test_causation.py
    python tests/test_cutin.py
    ```
-   (`pytest` will report 35 and is *not* the suite; the files are scripts.)
+   (`pytest` reports fewer and is *not* the suite; the files are scripts.)
 3. Run `git status` and `git log --oneline -5`. The tree should be clean. If it is not,
    stop and report what is uncommitted before doing anything.
 4. If Jonas said "load handover.md" and nothing else: reply with a short statement of
@@ -68,6 +68,16 @@ Card EL.1 (a second axis on the second cut-in study) has run; its verdict is in
 > scale; card EL.2 should carry the linear rule as the cut-in's form, and the R.2
 > headline's "gap leads" is now "gap leads among single scalars; a two-scalar linear
 > rule reaches the noise floor" (query EL1.Q1 asks Jonas to confirm that wording).
+>
+> **Three cards run later the same day** (records in the worklog, outputs in
+> `replication/czb/out/`): **EL.1b** — the equal-weight rule IS a threshold on the optical
+> expansion rate (gap × TTC = width / looming rate); fitted directly it scores 0.113, so the
+> cut-in axis is the classic looming variable. **G.1** — a fixed-horizon (3 s) lateral-
+> clearance gate in front of the rule predicts the pre-onset cells out of sample (0.032)
+> and improves the post-onset fit (0.103): the model is now gate × axis × level. **F.1** —
+> the same horizon idea in the field's lane-entry weight lifts the field from 0.347 to
+> 0.261 (attribution confirmed) but it stays far behind the gap; the flag
+> `lane_entry_horizon_s` defaults off and nothing depends on it.
 
 ## 2 The rules that bind every session (short form; the long form is `docs/czb_work_orders.md` §2)
 
@@ -125,7 +135,10 @@ Each item has a card. Read the card and the note it points to before starting; t
 note is the specification and the card is the pointer.
 
 1. **Card B.3.v2 — the LTAP scenario** (`docs/ltap_construction_note.md` §2 and §5).
-   After B3.Q1. Deliverables: `src/comfortzone/ltap.py` (roles by yaw span; turn onset;
+   After B3.Q1. Add to its comparison a fourth model, the oncoming vehicle's looming rate
+   (width × speed / distance²), so that the cut-in's axis is tested on a crossing geometry;
+   the geometry predicts it will NOT be the LTAP cue (the note's §1 residual runs the other
+   way), and that contrast is worth having on the record. Deliverables: `src/comfortzone/ltap.py` (roles by yaw span; turn onset;
    conflict point; the two observables at the decision moment), property tests as
    listed in the note, `replication/czb/ltap_two_axis.py` running the note's
    pre-stated comparison with leave-one-PET-level-out folds, output
@@ -138,7 +151,9 @@ note is the specification and the card is the pointer.
    (`docs/czb_ellipse_design_note.md` §6). After B.3.v2 and EL.Q1/EL.Q2.
 4. **Animations S1 → S7** (`presentation/talk/animation_shot_list.md`). After ANIM.Q1;
    S1 (the belief cloud) can be built first regardless, following
-   `presentation/talk/make_event_animation.py` as the template.
+   `presentation/talk/make_event_animation.py` as the template. Three status animations
+   already exist (`make_status_animations.py`: the model on one cut-in, the scoreboard, the
+   trait) and are the pattern for captions inside the frames.
 5. **Card B.2 — the truck overtake.** No construction note exists yet. Write one first,
    in the pattern of `docs/ltap_construction_note.md` (measure the traces with a
    committed script, state both routes, pre-state the comparison), and stop for review
@@ -179,6 +194,8 @@ open the external folder only when Jonas explicitly asks for work on it.
 | the decisive negative result and its scope | `docs/r2_gate_decisions.md`, `docs/r2_pipeline_review.md`, `replication/czb/out/cutin2_field_vs_gap.md`, `out/cutin2_lane_gate_diagnostic.md` |
 | what survives (the trait, the boundary distribution, the transfer) | `replication/czb/out/cross_scenario_consistency.md`, `out/stage1_summary.md`, `out/transfer_overtake_summary.md`, `out/percentile_sensitivity.md` |
 | what the project uses of active inference, in one place | `docs/active_inference_scope_map.md` |
+| the three cards of 2026-09-02 that shaped the model (looming axis, anticipatory gate, field attribution) | `replication/czb/out/cutin2_looming.md`, `out/cutin2_gate.md`, `out/cutin2_field_horizon_gate.md` |
+| the three decks (60 min, 15-20 min, 10-15 min status) | `presentation/talk/README.md` |
 | the three design notes of 2026-09-02 | `docs/surprise_without_the_field.md`, `docs/czb_ellipse_design_note.md`, `docs/ltap_construction_note.md` |
 | the cards and the standing rules | `docs/czb_work_orders.md` |
 | the worklog (source of truth for decisions and queries) and the register | `replication/czb/out/worklog.md`, `out/query_register.md` |
