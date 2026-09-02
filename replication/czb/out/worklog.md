@@ -1605,6 +1605,57 @@ available; (iii) keep the design span and mark the deliverable as design-relativ
 recommendation is (i) with (iii) reported alongside as a sensitivity. Accept (i), or name
 another.
 
+### Concepts deck v3 — the axis taken apart, and why that quantity
+
+Jonas: "do we have any cognitive or behavioural motivation for the form of the axis? Also, I
+think we need a slide in the concept deck that describes the components of the log thetadot
+you describe above, and maybe a motivation why". Two slides added after the axis slide, built
+to `presentation/talk/ai_czb_concepts_talk-v3.pptx` (15 slides, 10 animated, notes budget
+21.4 min). v2's mtime (2026-09-02 22:09) equals its last GIF build, so it had not been opened
+since it was built and nothing was at risk; it is left in place and superseded, and v3 is a
+new file rather than a rebuild over it (README rule).
+
+New animation `concept_components.gif` (`make_concept_animations.py::make_components_gif`,
+run on the LC_dv21_Tlc2p0_TTC02 study-2 clip, the same clip as the axis slide): the left
+column plots gap, TTC and the expansion rate over the clip; the right column assembles
+log W − log gap − log TTC into the total and puts it on a number line against the fitted
+level, which is parsed from `out/cutin2_looming.md` (c = −3.3946, 0.0336 rad/s) rather than
+hardcoded. The total is drawn as a marker on a number line, not a fourth bar: log theta_dot
+rises toward zero as the situation sharpens, so a bar anchored at zero would SHRINK as
+criticality rose, which read backwards in the first build. A black tick shows the exact
+W*dv/(gap^2 + W^2/4) that EL.1b actually scored, next to the small-angle total the identity
+uses; at these gaps they coincide to within the marker, which is the honest way to show that
+nothing rests on the approximation. `signals()` gained `vrel` and `W` in its returned dict
+(purely additive; the other seven GIFs are unaffected and were left unrebuilt).
+
+The motivation slide carries three columns and one caveat, all from filed material: (i) the
+expansion rate is an optical quantity, available without first estimating distance or speed;
+(ii) the active-inference model's own perception stage already observes the visual angle and
+its rate with a detection threshold (`src/aidriver/bicycle.py::looming_rate`,
+`src/aidriver/agent.py` `use_looming`, `looming_threshold = 0.00215 rad/s`) — its preference
+field lost at gate R.2 but its perceptual front end did not; (iii) a threshold on the
+expansion rate implies gap ∝ sqrt(dv), and the colleague's independent model fitted that
+exponent at 0.39–0.42 against our implied 0.5 (handbook appendix 16.3). The caveat is Xue et
+al. (2018), who found inverse TTC the better brake-onset cue in a simulator where this video
+paradigm reverses the order (0.113 against 0.168).
+
+@DECK.Q1(judgment, jonas): the new motivation slide puts **Xue et al. (2018)** on a slide, but
+that citation reaches us only through the colleague's external note, whose references handbook
+appendix 16.5 explicitly records as unverified ("from memory"). Nothing else on the slide
+depends on it, and it is the one line that would embarrass the deck if the year or the finding
+is wrong. Three options: verify it before the deck is shown (a literature check, cheap); drop
+the sentence and keep the caveat generic ("simulator studies with real self-motion have found
+inverse TTC the better brake-onset cue"); or keep it and mark it on the slide as reported at
+second hand. The notes currently say out loud that we have not verified it. Recommendation:
+the generic wording now, the citation restored once verified.
+
+@DECK.Q2(minor, jonas): the concept slides carry GIFs, and a GIF's first frame is what shows
+in PowerPoint's normal (non-slideshow) view — for this animation that frame is empty axes,
+since the curves draw in. The other nine animated slides behave the same way, so this is the
+deck's existing idiom rather than a regression, but if you read the deck rather than present
+it, every animated slide looks blank. Fixable by drawing the first frame at the clip's start
+state instead of empty. Say the word and it applies to all ten.
+
 @G1R.Q3(judgment, jonas): the narrowed remainder of G1R.Q1, whose generic half the standing
 ruling above settles. What remains is the paperwork — should `docs/czb_validation_roadmap.md` and
 `docs/active_inference_scope_map.md` get dated notes saying that the deliverable is a

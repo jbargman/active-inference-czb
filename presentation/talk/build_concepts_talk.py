@@ -133,6 +133,83 @@ people, not by how decisive a curve looks. A step is not better than a ramp; mat
 data is better.
 """)
 
+    # 4b the axis taken apart (Jonas, 2026-09-03)
+    concept(prs, "1  the axis, taken apart",
+            "The axis is not a new quantity: it is how far away, and how fast it closes",
+            "concept_components.gif",
+            "One study-2 clip (DV 21 km/h, TTC 2 s, 2 s lane change). Left: the two ingredients and what they make. Right: the three log contributions adding up, against the fitted level.",
+            1.7, """
+This is the same axis as the slide before, taken apart. Nobody should have to take "optical
+expansion rate" on faith.
+
+Write the expansion rate the way the geometry gives it: a car of width W, at a gap g, closing
+at dv, grows in the eye at about W times dv over g squared. Now notice that g squared over dv
+is just gap times time-to-collision. So the expansion rate is the width divided by (gap x
+TTC), and taking logs turns the product into a sum: log expansion rate = log W - log gap -
+log TTC.
+
+Three parts, and only two of them move. The width of the car in front is a constant here -
+one value, 1.882 metres, across all ninety traces - so it does no work except to shift where
+the level sits. What is left is exactly two things: how far away the other car is, and how
+fast it is closing on you. Nothing else.
+
+The bar on the right is the punchline. The two logs enter with EQUAL weight, one-for-one. We
+did not impose that. Card EL.1 fitted a free weight on the two logs, and it came back 0.497,
+in every held-out fold between 0.474 and 0.512. The data picked the halfway point, and the
+halfway point is the looming rate.
+
+The black tick under the marker is the exact expansion rate, without the small-angle step
+used to derive the identity. At these distances the two are on top of each other; card EL.1b
+scored the exact one (out/cutin2_looming.md), so nothing here rests on the approximation.
+""")
+
+    # 4c why this quantity
+    s = head(prs, "Why THIS quantity, and not gap, or time to collision",
+             kicker="1  the axis, motivated")
+    cw = 9.9; ytop = BODY_TOP + 0.4
+    for i, (title, lines, col) in enumerate([
+        ("IT IS WHAT THE EYE GETS",
+         ["expansion rate is available directly on the retina: no estimate of distance, and no estimate of speed, has to be made first",
+          "gap and TTC each need a quantity the eye does not measure; their product does not"], BLUE),
+        ("THE MODEL ALREADY ASSUMED IT",
+         ["the active-inference model's own perception stage observes the visual angle and its rate, with a detection threshold (src/aidriver/bicycle.py)",
+          "its preference field lost at gate R.2 — but the quantity it perceives with survived"], PURPLE),
+        ("TWO PIPELINES LANDED ON IT",
+         ["a threshold on expansion rate implies gap grows as the square root of closing speed",
+          "a colleague's independent model, different cue and different fitter, fitted that exponent at 0.39–0.42 against our implied 0.5 (appendix 16)"], DEEPTEAL)]):
+        x = MARGIN + i * (cw + 0.75)
+        panel(s, x, ytop, cw, 9.4, BEIGE); rule(s, x + 0.8, ytop + 0.7, 2.4, col, 4.0)
+        runs = [(title, 17, col, True, 0)] + [("–  " + ln, 12.5, INK, False, 8) for ln in lines]
+        text(s, x + 0.8, ytop + 1.2, cw - 1.6, 7.8, runs, spacing=1.2)
+    text(s, MARGIN, 14.3, BODY_W, 2.6,
+         [("And one honest mark against it: in a driving simulator, Xue et al. (2018) found inverse TTC the better cue for brake onset. "
+           "On this video paradigm the order reverses (0.113 against 0.168). Which of the two is the paradigm and which is the task, only naturalistic onsets will say",
+           13, GREY, False)], align=PP_ALIGN.CENTER)
+    notes(s, 1.6, """
+Jonas asked for the motivation, so here it is in three columns, and one caveat.
+
+First, it is what the eye actually gets. Expansion rate is an optical quantity: it is on the
+retina. Gap is not — you have to infer distance. Closing speed is not either. The striking
+thing is that the two quantities you cannot see combine into one you can.
+
+Second — and this is the part I like — the active-inference model already assumed it. Its
+perception stage does not observe gap and speed; it observes the visual angle and how fast
+that angle is growing, and it has a detection threshold below which closing is simply not
+perceptible. So when the axis comparison picked the expansion rate, it picked the model's own
+observable. The preference field lost at gate R.2; the perceptual front end did not.
+
+Third, two independent analyses landed on the same cue. A threshold on expansion rate implies
+that the accepted gap grows as the square root of closing speed. A colleague, fitting a
+completely different model with a different cue and a different fitter, got a speed exponent
+of 0.39 to 0.42 where ours implies 0.5. Their exponent had no mechanism; ours supplies one.
+
+The caveat at the bottom is real and belongs on the slide. Xue and colleagues, in a simulator
+with real self-motion, found inverse TTC better than expansion rate for brake onset. Our
+frozen-video paradigm reverses that order. I do not know which is the paradigm and which is
+the task, and I would not claim to. That reference comes from a colleague's note and we have
+not verified it ourselves.
+""")
+
     # 5 level
     concept(prs, "2  the level",
             "The LEVEL: where each driver says \"now\", and the population of levels",

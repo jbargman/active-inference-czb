@@ -2,7 +2,9 @@
 
     python presentation/talk/make_concept_animations.py
 
-Seven GIFs, every number from tracked data or a tracked output; captions inside the frames.
+Eight GIFs, every number from tracked data or a tracked output; captions inside the frames.
+Extended 2026-09-03 on Jonas's ask for a slide describing the components of log theta_dot:
+`concept_components.gif` takes the axis apart into log W - log gap - log TTC.
 Revised 2026-09-02 evening after Jonas's review of the first version: the axis slide now
 shows what participants did next to the two candidate axes and states the takeaway; the gate
 projection is drawn as an arrow with a smoothed closing rate instead of a jumping ghost; the
@@ -14,6 +16,9 @@ study-1 clip against what participants did.
                             two study-2 stimuli (DV 21 km/h, starting TTC 2 s, lane change in
                             2 s and in 4 s), with the participants' intervention rates for the
                             same two stimuli (out/cutin2_cells.csv).
+    concept_components.gif  WHAT THE AXIS IS MADE OF: log theta_dot = log W - log gap - log TTC
+                            assembled on one study-2 clip, against the fitted level of
+                            out/cutin2_looming.md (Jonas, 2026-09-03).
     concept_level.gif       LEVEL: study 1's 15 post-onset cells, the population response
                             curve, 43 drivers' thresholds from the fitted population (L-gated fit
                             in out/stage1_looming.md), the histogram, the 50th/80th percentiles.
@@ -62,6 +67,8 @@ KPH = 1000.0 / 3600.0
 STUDY2 = REPO / "external/01_studies/01_Studies/02_Cut-in"
 FPS = 8
 W_CAR = 1.882
+# The combining dot of "theta-dot" does not render in the default font; mathtext does.
+TH = r"$\dot{\theta}$"
 
 
 def caption(fig, text, y=0.04, size=14.5):
@@ -98,7 +105,14 @@ def signals(path, onset_t):
     k = max(int(round(0.3 / dt)), 1)
     ldot = np.concatenate([np.zeros(k), (l0[k:] - l0[:-k]) / (k * dt)])   # backward 0.3 s difference (G.1)
     return dict(t=t, deficit=f.deficit.to_numpy(), thd=thd, l0=l0, gap=gap, y=tr.y_tar, ldot=ldot,
-                onset=onset_t, tr=tr)
+                vrel=vrel, W=W, onset=onset_t, tr=tr)
+
+
+def looming_threshold_rad():
+    """The full-sample fitted threshold on log(theta_dot), from the tracked EL.1b output."""
+    txt = (OUT / "cutin2_looming.md").read_text(encoding="utf-8")
+    c = float(re.search(r"threshold c on log\(theta_dot\) = ([-0-9.]+)", txt).group(1))
+    return c, float(re.search(r"theta_dot at threshold = ([0-9.]+) rad/s", txt).group(1))
 
 
 def gate_params():
@@ -175,6 +189,113 @@ def make_axis_gif():
         return list(lines.values()) + [p2, p4]
 
     return save(fig, fn, n_frames, "concept_axis.gif")
+
+
+# ---------------------------------------------------------------------------------
+# 1b  WHAT THE AXIS IS MADE OF  (Jonas, 2026-09-03: "describe the components of log theta_dot")
+# ---------------------------------------------------------------------------------
+def make_components_gif():
+    """The axis taken apart: log theta_dot = log W - log gap - log TTC, on one real clip.
+
+    The identity is exact for the small-angle expansion rate theta_dot = W*dv/gap^2, since
+    gap*TTC = gap^2/dv = W/theta_dot. The left column plots the two ingredients and the
+    quantity they make; the right column assembles the three log contributions into the
+    total and compares it with the fitted level. The dashed marker on the total bar is the
+    EXACT expansion rate W*dv/(gap^2 + W^2/4) that card EL.1b scored, so the slide shows
+    for itself how little the small-angle step costs at these distances.
+    """
+    S = signals(STUDY2 / "02_Kinematics" / "LC_dv21_Tlc2p0_TTC02_vehicle_states.csv",
+                onset_from_stamps("LC_dv21_Tlc2p0_TTC02"))
+    c_log, c_rad = looming_threshold_rad()
+    W = S["W"]
+    t_rel = S["t"] - S["onset"]
+    t0, t1 = -2.5, 1.3
+    m = (t_rel >= t0) & (t_rel <= t1)
+    tt, gap, vrel = t_rel[m], S["gap"][m], S["vrel"][m]
+    ttc = gap / np.maximum(vrel, 1e-6)
+    thd_small = W * vrel / gap ** 2                       # the small-angle form the identity uses
+    thd_exact = np.radians(S["thd"][m])                   # W*dv/(gap^2 + W^2/4), as scored in EL.1b
+
+    fig = plt.figure(figsize=(12.8, 7.2), dpi=100)
+    gs = fig.add_gridspec(3, 2, width_ratios=[1.15, 1], left=0.085, right=0.975,
+                          top=0.845, bottom=0.20, hspace=0.32, wspace=0.30)
+    fig.suptitle("What the AXIS is made of:   log " + TH + "  =  log W  −  log gap  −  log TTC",
+                 fontsize=15.5, color=INK, y=0.955)
+
+    ax_g = fig.add_subplot(gs[0, 0])
+    ax_t = fig.add_subplot(gs[1, 0], sharex=ax_g)
+    ax_d = fig.add_subplot(gs[2, 0], sharex=ax_g)
+    for ax, lab, col, ymax in ((ax_g, "gap [m]", BLUE, 1.1 * gap.max()),
+                               (ax_t, "TTC [s]", AMBER, 1.1 * ttc.max()),
+                               (ax_d, TH + " [deg/s]", TEAL, 1.15 * np.degrees(thd_exact).max())):
+        ax.set_xlim(t0, t1); ax.set_ylim(0, ymax)
+        ax.axvspan(t0, 0, color="#EEEEEE", zorder=0)
+        ax.set_ylabel(lab, fontsize=11.5, color=col)
+        ax.spines[["top", "right"]].set_visible(False)
+    ax_d.set_xlabel("time from lane-change onset [s]", fontsize=11.5)
+    ax_d.axhline(np.degrees(c_rad), color=PURPLE, lw=1.2, ls=":")
+    ax_d.text(t1 - 0.05, np.degrees(c_rad), "fitted level", ha="right", va="bottom",
+              fontsize=9.5, color=PURPLE)
+    lg, = ax_g.plot([], [], color=BLUE, lw=2.6)
+    lt, = ax_t.plot([], [], color=AMBER, lw=2.6)
+    ld, = ax_d.plot([], [], color=TEAL, lw=2.6)
+
+    ax_b = fig.add_subplot(gs[:, 1])
+    labels = ["log W\n(the car's width)", "− log gap\n(how far away)", "− log TTC\n(how fast it closes)"]
+    cols = [GREY, BLUE, AMBER]
+    ypos = np.array([3.0, 2.0, 1.0])
+    bars = ax_b.barh(ypos, [0, 0, 0], height=0.55, color=cols)
+    ax_b.set_yticks(list(ypos) + [-0.55]); ax_b.set_yticklabels(labels + [TH + "\non its axis"], fontsize=11)
+    ax_b.set_xlim(-6.2, 1.6); ax_b.set_ylim(-1.35, 3.7)
+    ax_b.axvline(0, color=INK, lw=1.0, ymin=0.30)
+    ax_b.axhline(0.30, color=GREY, lw=0.8)
+    # The total is a marker on a number line, not a bar: criticality rises to the RIGHT, so
+    # the marker crosses the level from the left. A bar anchored at zero would shrink instead.
+    ax_b.plot([-6.2, 1.6], [-0.55, -0.55], color=INK, lw=1.4, zorder=1)
+    ax_b.plot([c_log, c_log], [-0.95, -0.15], color=PURPLE, lw=2.0, ls=":", zorder=2)
+    ax_b.text(c_log, -1.06, "the fitted level\n%.4f rad/s" % c_rad, ha="center", va="top",
+              fontsize=9.5, color=PURPLE)
+    tot_mk, = ax_b.plot([], [], "v", color=TEAL, ms=15, zorder=4)
+    exact_mk, = ax_b.plot([], [], "|", color=INK, ms=16, mew=2.0, zorder=5)
+    ax_b.text(-6.1, -0.20, "black tick = exact " + TH + ", no small-angle step (it sits under the marker)",
+              fontsize=8.5, color=GREY, ha="left", va="bottom")
+    ax_b.tick_params(axis="y", length=0)
+    ax_b.set_xlabel("log " + TH + "   [log units, " + TH + " in rad/s]", fontsize=11)
+    ax_b.spines[["top", "right", "left"]].set_visible(False)
+    ax_b.set_title("the three parts, adding up", fontsize=12, color=INK)
+    vals = [ax_b.text(0, y, "", va="center", fontsize=10.5, color=INK) for y in ypos]
+    tot_lab = ax_b.text(0, -0.30, "", va="bottom", ha="center", fontsize=11.5, color=TEAL, fontweight="bold")
+    cap = caption(fig, "")
+
+    grid = np.arange(t0, t1, 0.05)
+    n_frames = len(grid) + 3 * FPS
+
+    def fn(i):
+        k = min(i, len(grid) - 1)
+        upto = tt <= grid[k]
+        lg.set_data(tt[upto], gap[upto]); lt.set_data(tt[upto], ttc[upto])
+        ld.set_data(tt[upto], np.degrees(thd_exact)[upto])
+        j = int(np.argmax(np.cumsum(upto)))                       # last sample shown
+        parts = [np.log(W), -np.log(gap[j]), -np.log(ttc[j])]
+        total = sum(parts)
+        for b, v in zip(bars, parts):
+            b.set_width(v)
+        for txt, y, v in zip(vals, ypos, parts):
+            txt.set_position((v + (0.12 if v >= 0 else -0.12), y))
+            txt.set_ha("left" if v >= 0 else "right")
+            txt.set_text("%+.2f" % v)
+        tot_mk.set_data([total], [-0.55])
+        exact_mk.set_data([np.log(thd_exact[j])], [-0.55])
+        tot_lab.set_position((total, -0.42)); tot_lab.set_text("%+.2f" % total)
+        if grid[k] < 0:
+            cap.set_text("One real clip. The gap shrinks and the time to collision shrinks; add their two logs and you get how fast the car grows in the eye")
+        elif grid[k] < 0.6:
+            cap.set_text("Only two things vary: how far away it is, and how fast it is closing. The width is a constant, so it only shifts where the level sits")
+        else:
+            cap.set_text("The two logs enter with EQUAL weight — which is exactly what the fit chose on its own (w = 0.497). The marker passes the level when a typical driver says \"now\"")
+        return list(bars) + [lg, lt, ld, tot_mk, exact_mk, tot_lab] + vals
+
+    return save(fig, fn, n_frames, "concept_components.gif")
 
 
 # ---------------------------------------------------------------------------------
@@ -512,4 +633,5 @@ def make_whole_gif():
 
 
 if __name__ == "__main__":
-    make_axis_gif(); make_level_gif(); make_gate_gif(); make_noise_gif(); make_heldout_gif(); make_percentile_gif(); make_whole_gif()
+    make_axis_gif(); make_components_gif(); make_level_gif(); make_gate_gif(); make_noise_gif()
+    make_heldout_gif(); make_percentile_gif(); make_whole_gif()
