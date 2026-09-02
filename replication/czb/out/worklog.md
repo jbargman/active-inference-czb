@@ -1527,3 +1527,91 @@ staircase already is the measurement; the hierarchy earns its keep on video. Wri
 `docs/handbook/17_appendix_test_track.md` ({{R6}}; reading guide row; combined handbook
 rebuilt), marked early results, one scenario. Not tested on the track: the axis (one oncoming
 speed) and the gate (fixed decision moment). T3 (dread) stays in the report as run but is parked.
+
+## 2026-09-03 — Jonas's rulings on Q5.Q1, EL.Q1 and EL1.Q1; the axis is scenario-specific and may be multi-dimensional
+
+Jonas, in session: yes to Q5.Q1; percentiles over driver levels for EL.Q1, with "scale
+convention" (EL.Q2) not understood and to be restated; on G1R.Q1 he is "still not sure how
+generic (scenario agnostic) we can be here — so we do need to define the axis for each
+scenario, and it can be multi-dimensional (or?) — why do we not use a multi-dimensional axis
+for cut-in, was it not needed?"; yes to EL1.Q1, "but we should keep our mind open to other
+(especially multi-dimensionality)".
+
+RESOLVED Q5.Q1: Jonas ruled yes. The two-object framing is the working position for any
+manuscript — world surprise defines when the stimulus begins, a population percentile over
+drivers' boundary levels defines the boundary, one operator with two references. It gives up
+"one scalar, two jobs" explicitly. Card Q5.1's pre-stated decision rules stand as written and
+the card is unblocked.
+
+RESOLVED EL.Q1: Jonas ruled **population B** — the percentile is taken over DRIVERS' BOUNDARY
+LEVELS, not over pooled observed states. The ellipse design note's split (A for the shape, B
+for the level) is superseded: B applies throughout. Consequences, both as the query predicted:
+card EL.2 (one level per driver across every scenario's rule) is the deliverable, and card
+EL.3 (the observed-state ellipse) becomes a check on it rather than a product. EL.2 remains
+gated on EL.Q2, restated below.
+
+RESOLVED EL1.Q1: Jonas ruled yes with a standing caveat. The documents and decks adopt the
+two-scalar wording ("gap leads among single scalars; an equally weighted rule in log gap and
+log TTC — which is the looming-rate threshold — reaches the noise floor"), and card EL.2
+carries the EL.1 linear rule as the cut-in's form. The caveat is recorded as a standing rule
+below: no scenario inherits a dimensionality, each one tests for it.
+
+STANDING RULING (from Jonas's G1R.Q1 answer; supersedes any reading of the programme as
+axis-agnostic): the *machinery* is scenario-agnostic — gate, axis, level, percentile over
+driver levels — and the *axis* is scenario-specific and may be multi-dimensional. Every
+scenario runs the EL.1-style second-axis test with its pre-stated 0.01 held-out margin before
+its axis is fixed, and a one-dimensional axis is only ever a finding, never an assumption.
+The record so far, all from tracked outputs: on the cut-in a second axis DID earn its place
+(`out/cutin2_two_axis.md`: log gap alone 0.1522, linear 2D rule in log gap and log TTC 0.1137,
+quadratic form 0.1148, noise floor 0.1176; gap minus linear = +0.0386, well past the margin) —
+the cut-in axis is two-dimensional, and it is *named* one-dimensionally only because the
+fitted weight came out at w = 0.497 across folds (0.474–0.512), at which weight the rule is
+algebraically the looming rate: log θ̇ = log W − log gap − log TTC, so equal weights on the two
+logs ARE log θ̇ up to a constant. `out/cutin2_looming.md` confirms this numerically — the 1D
+looming axis scores 0.1130 against the 2D rule's 0.1137, a difference of −0.0007, with one
+fewer free parameter. On the left turn a second axis did NOT earn its place
+(`out/ltap_two_axis.md`: distance 0.0558, linear 2D 0.0539, quadratic 0.0625; distance minus
+linear = +0.0018, inside the margin), and distance and looming are indistinguishable there
+(+0.0018); the cell bootstrap splits 52% / 50%, so this is unresolved on 18 cells rather than
+settled. The design is the reason: the left turn holds one oncoming speed per cell, so its two
+candidate observables are nearly collinear and the data cannot separate them. Expect the
+scenarios that vary two things independently (the truck overtake, card B.2; the cyclist
+overtake's clearance against speed) to need two dimensions on their own evidence.
+
+RESOLVED EL.Q2: superseded, not answered — Jonas said the original wording ("a convention to
+pin each scenario's Sigma_s scale") did not tell him what was being asked. The question is
+live under its new number EL.Q4, restated in plain terms below; the register would otherwise
+carry two entries for one id, since the collector does not dedupe.
+
+RESOLVED G1R.Q1: half answered, half renumbered. The generic half is settled by the standing
+ruling above (the machinery is scenario-agnostic, the axis is scenario-specific and may be
+multi-dimensional). The remaining half — whether the roadmap and scope map get dated notes and
+whether card C's report is regenerated on the cut-in's looming axis — is live under its new
+number G1R.Q3 below.
+
+@EL.Q4(judgment, jonas): restated from EL.Q2, whose wording proved opaque. Card EL.2 puts
+every scenario's axis into one shared population of driver levels, and the scenarios' axes are
+measured in different units (rad/s on the cut-in, metres on the left turn, metres of lateral
+clearance on the cyclist overtake). Before those can share one population, each scenario's
+axis must be divided by something to make the numbers comparable — that divisor is the "scale
+convention", the Sigma_s of the note. The note proposes normalizing each axis by the span its
+own experiment designed in (the mildest to the harshest cell), and says plainly that this is
+arbitrary: it makes the percentile depend on how wide a range the experimenters happened to
+choose. The alternatives are (i) normalize by the between-driver spread of levels in that
+scenario, which makes a percentile mean "this far out among drivers" in every scenario and is
+the choice most consistent with the population-B ruling just made; (ii) normalize by an
+external naturalistic spread once such data exist, which is the right answer and is not
+available; (iii) keep the design span and mark the deliverable as design-relative. The
+recommendation is (i) with (iii) reported alongside as a sensitivity. Accept (i), or name
+another.
+
+@G1R.Q3(judgment, jonas): the narrowed remainder of G1R.Q1, whose generic half the standing
+ruling above settles. What remains is the paperwork — should `docs/czb_validation_roadmap.md` and
+`docs/active_inference_scope_map.md` get dated notes saying that the deliverable is a
+percentile over driver levels on *each scenario's own axis* (the cut-in's being the gated
+looming rule, a level in rad/s or deg/s), and should card C's sensitivity report be regenerated
+on the cut-in's looming axis as the primary statement? Nothing is rewritten yet. Note that
+G1.Q1's stage-1 run already carries the card C translation on the looming axis
+(`out/stage1_looming.md`: a 5-point percentile step moves the implied onset 0.244 s against
+0.520 s from the level's own CI), so regenerating card C is a presentation decision, not a new
+result.
