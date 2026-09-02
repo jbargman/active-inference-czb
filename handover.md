@@ -94,6 +94,15 @@
 > preference code; it runs after his review. Queue item (3) is therefore done at the
 > design level; items (1) B.3.v2 and (2) the ellipse note remain, and the ellipse note
 > should start from the identity in the R2.Q5 note's §4.]*
+>
+> *[2026-09-02, later still: queue item (2) is also done at the design level —
+> `docs/czb_ellipse_design_note.md` (cards EL.1–EL.3 in the work orders; EL.1 can run
+> now on study 2). Its central point: the study data identify the ellipse's shape and
+> the per-driver ordering, not its scale, which is confounded with the level until a
+> population reference from naturalistic data exists; query EL.Q1 asks which population
+> Jonas's percentile refers to. A shot list for further data-driven animations is in
+> `presentation/talk/animation_shot_list.md` (query ANIM.Q1). Remaining queue: (1) the
+> B.3.v2 LTAP construction note; then, after Jonas's rulings, cards Q5.1 and EL.1.]*
 
 > **Later arcs exist.** `handover_2026-08-29.md` covers the 2026-08-29 overnight batch
 > (gate R.2, the field-versus-gap verdict, the C1 fix, A.2.v2, the transfer re-run);

@@ -581,6 +581,17 @@ new script; the CAMP braking-lead onset check). Decision rules are in the note. 
 no preference code and front-runs neither B.2 nor B.3. Runs after Jonas has reviewed the
 note (query Q5.Q1).
 
+### Cards EL.1–EL.3 — the CZB ellipse (2026-09-02)
+
+Specified in full in `docs/czb_ellipse_design_note.md` §6; read that note first. EL.1
+(now, study 2, no new loaders): does a second axis earn its place against the R.2-winning
+1D log-gap threshold — linear 2D rule and quadratic form on identical registered folds,
+decision rules in the note. EL.2 (after B.2/B.3.v2 loaders): the per-driver level shared
+across the per-scenario forms via the stage-1 estimator, the B.4 transfer as amended,
+with the scale-confound convention stated in the header. EL.3 (naturalistic data): the
+population reference per scenario and the two percentiles side by side. Runs after Jonas
+has ruled on query EL.Q1 (which population the ellipse's percentile refers to).
+
 ## 4 Suggested session pattern
 
 One card per session, in card order within a stage; start each session with "read

@@ -16,6 +16,7 @@
 | `make_talk_figures.py` | the talk versions of the diagrams and the two live-computed figures |
 | `make_event_animation.py` | the animated demonstration, read from the OSF deposit |
 | `figures/` | generated; safe to delete and rebuild |
+| `animation_shot_list.md` | the specification for the next seven data-driven animations (S1–S7), each with its claim, tracked source, required content and caveats; build order and conventions at the top |
 
 Rebuild everything with:
 

@@ -1190,3 +1190,39 @@ note; the card should cite a source or treat the sweep itself as the motivation.
 @Q5.Q3(minor, jonas): queue order — Q5.1 does not depend on B.3.v2 or the ellipse note and
 touches no shared code; it could run first if the surprise question is wanted settled before
 the comparator constructions. The handover queue currently puts B.3.v2 first.
+
+## 2026-09-02 — the CZB ellipse design note, and the animation shot list
+
+Not a card: items (3) and (4) of the plan Jonas accepted this morning. The ellipse note
+(`docs/czb_ellipse_design_note.md`, + Word/PDF) reads Jonas's QUADRARUM definition (joint
+percentile, (x-mu)^T Sigma^-1 (x-mu) = chi2_{2,0.8}) against what the data can identify:
+two populations can be meant (observed states; drivers' boundary levels) and they differ
+by his own THW argument; the response model d_s(x) vs a shared per-driver level c_i has a
+scale confound between Sigma_s and c_i that the designed stimuli cannot break, so the study
+data identify the shape (trade-off; only where a design varies both axes: study 2, LTAP,
+CAMP) and the per-driver ordering (already 0.69 of ceiling, field-free), not the absolute
+joint percentile, which needs a population reference from naturalistic data. Observables
+per scenario tabulated (the B.2/B.3 construction notes own the final choice). The trait
+maps on by substituting d_s for the deficit in the stage-1 estimator; the B.4 transfer runs
+unchanged in form. Identity with residual-information surprise (half the squared
+Mahalanobis distance) links it to the R2.Q5 note. Cards EL.1 (study 2 now), EL.2 (after
+loaders), EL.3 (naturalistic) appended to the work orders. The shot list
+(`presentation/talk/animation_shot_list.md`) specifies seven data-driven animations (belief
+cloud; a button-data crossing; the matched-TTC rows; the lane-gate mechanism; the ellipse
+vs conjunction; surprise onset after Q5.1; the glance gate) with sources and conventions,
+for a cheaper session to build. No analysis run; suite 191 green; no source changes.
+@EL.Q1(judgment, jonas): the QUADRARUM ellipse's "80th percentile across a population of
+drivers ... upper 20% of observations" — is the percentile over pooled OBSERVED STATES
+(population A, what naturalistic data estimate) or over DRIVERS' BOUNDARY LEVELS
+(population B, what stage 1 estimates)? The note assumes A for the shape and B for the
+level; if B was meant throughout, card EL.3 becomes a check rather than the deliverable.
+@EL.Q2(minor, jonas): until a population reference exists, card EL.2 needs a convention to
+pin each scenario's Sigma_s scale; the note proposes design-span normalization and calls it
+arbitrary. Accept, or name a better convention.
+@EL.Q3(minor, jonas): the CAMP crowdsourced replication (rear-end, last-moment HARD braking
+= a dread rather than a comfort boundary; 15 clips, 119 participants) is proposed as the
+third dataset for the ellipse's shape question. Is it in scope for this project, given the
+standing scope decision that only the active-inference papers are in scope for now?
+@ANIM.Q1(minor, jonas): the shot list's build order (S1 belief cloud first, S7 glance gate
+last) and whether a clearly-labeled synthetic illustration (S5, the ellipse-vs-conjunction
+count) is acceptable on a slide, given the "nothing sketched" rule for the others.
