@@ -1389,10 +1389,10 @@ design that cannot support one.
         ("The rule fired at a difference of +0.195.", "  Robust to excluding the "
          "20 non-modal attention-check participants, and to repairing a trace-noise "
          "handicap found after the registered run."),
-        ("Within matched-TTC rows,", "  the field orders 14 of 24 rows in the "
-         "observed direction where the data order 24 of 24 - and a numerical "
-         "derivation on the preference function itself shows that inconsistency is "
-         "structural, not noise."),
+        ("Within matched-TTC rows,", "  the field orders only 10 of 24 rows in the "
+         "observed direction (anti-ordered in 14) where the gap orders 24 of 24 - and "
+         "a numerical derivation on the preference function itself shows that "
+         "inconsistency is structural, not noise."),
     ], colour=DEEPPINK, size=12.5)
     text(s, MARGIN, 13.6, 19.6, 3.6,
          [("The consequence, now in force in every project document:", 15.5, PURPLE, True),

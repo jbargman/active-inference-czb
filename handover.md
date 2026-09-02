@@ -72,6 +72,15 @@
 > version (`build_short_talk.py`), both with speaker notes and time budgets; see
 > that directory's README. Three TALK queries added (register now 16 open); the
 > next-session queue above is unchanged.]*
+>
+> *[2026-09-02: an adversarial review of the R.2 pipeline
+> (`docs/r2_pipeline_review.md`, diagnostic `replication/czb/cutin2_lane_gate_diagnostic.py`)
+> confirms the verdict by an independent fit and decomposes the field's loss: ~44% is
+> the project's lane-entry gate (suppresses the deficit where participants respond
+> most; they are flat across lane-change duration, the gate is not), ~56% the released
+> counterfactual magnitude (orders matched-TTC cells by absolute speed, not gap). One
+> sign slip in the gate record's gloss corrected in place. Queries REV.Q1–Q3. The R2.Q5
+> exploration note starts from the review's section 5 constraints.]*
 
 > **Later arcs exist.** `handover_2026-08-29.md` covers the 2026-08-29 overnight batch
 > (gate R.2, the field-versus-gap verdict, the C1 fix, A.2.v2, the transfer re-run);

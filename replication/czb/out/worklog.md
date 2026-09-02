@@ -1115,3 +1115,48 @@ pre-registered competition and lost; what survived is the thing worth building o
 and the "not a failed project" summary panel are editorial framings consistent with
 the gate record and the scope map, but Jonas may want them plainer; both are single
 strings in `build_short_talk.py`.
+
+## 2026-09-02 — adversarial review of the R.2 decisive pipeline
+
+Not a card: Jonas asked what to do with remaining top-tier budget and accepted the
+proposal (1) the R2.Q5 surprise-without-the-field note, with (2) an adversarial review of
+the decisive field-versus-gap pipeline alongside. (2) was run first, since a defect there
+would change how (1) is framed. Read line by line: `cutin2_field_vs_gap.py`, its report,
+`comfortzone.cutin`, `comfortzone.czb_data`, and the safety/collision/lane-entry terms in
+`aidriver.preferences`. New tracked diagnostic `replication/czb/cutin2_lane_gate_diagnostic.py`
+→ `out/cutin2_lane_gate_diagnostic.md` (log `out/log_lane_gate_diagnostic.txt`); review
+document `docs/r2_pipeline_review.md` (+ Word/PDF); dated note in `docs/r2_gate_decisions.md`
+§1. Findings: the verdict reproduces by an independent grid fit with closed-form lapse
+(field 0.3508 vs registered 0.3471; gap 0.1531 vs 0.1522), cell-bootstrap interval on the
+difference +0.174..+0.222 against the 0.01 margin; model-free Spearman of the field with
+the response +0.14 vs the gap's +0.86, so no fit could rescue it. The loss decomposes:
+forcing the lane-entry gate to 1 recovers 0.087 of the 0.199 deficit (~44%) — the gate
+(a project construction) suppresses the deficit in the 64 slow-lane-change cells at
+starting TTC 2-3 s whose mean response is 0.75, where participants are flat across
+lane-change duration; the remaining ~56% is the released counterfactual magnitude, whose
+local sensitivity to either vehicle's speed is 4-6x its sensitivity to gap, so it orders
+matched-TTC cells by absolute speed where participants order by gap (the study realizes
+DV partly via ego speed: 30.7 vs 36.5 m/s). Verdict unchanged; scope statement sharpened.
+Also found: the gate record's gloss "orders 14 of 24 rows in the observed direction" was a
+sign slip — the registered report counts rows where rho(field, P) is NEGATIVE, i.e. the
+field is anti-ordered in 14 and ordered like the data in 10; corrected in place (dated) in
+the gate record and in `presentation/talk/build_talk.py` slide 36 (deck not rebuilt, per
+TALK.Q2). Minor: the registered L-BFGS-B numbers move by up to 0.005 under row
+permutation (flat objective; irrelevant at the margin); the trace-vs-annotation TTC
+discrepancies sit in the 7 km/h clips (1.9 m/s closing speed) and handicap the design
+scalars, not the field. Suite 191 green; no source files changed.
+@REV.Q1(minor, jonas): should a manuscript attribute the gate's ~44% share to "our
+continuous lane-entry form" or to the published model's lane gate? The released binary
+gate was not run on study 2; by its geometry it should suppress the same cells at least
+as hard, and the check is cheap (one flag in `cutin_params`). Not run without a ruling,
+since it would add a fifth model to a registered comparison.
+@REV.Q2(minor, jonas): the built 60-minute deck's slide 36 still reads "the field orders
+14 of 24 rows in the observed direction"; the correct wording ("only 10 of 24, anti-ordered
+in 14") is in the build script. Rebuild if the deck carries no hand edits (see TALK.Q2), or
+edit the one line in PowerPoint.
+@REV.Q3(judgment, jonas): the review's section 5 reads the two failure mechanisms as
+constraints on any replacement reference for the surprise exploration (engage at
+encroachment onset independent of lateral pace; order matched-TTC cells by gap, not by
+absolute speed), and offers the opinion that a worst-case counterfactual may be the right
+reference for collision avoidance and the wrong one for comfort. The R2.Q5 note is being
+written on that basis; say so if the framing should be different.

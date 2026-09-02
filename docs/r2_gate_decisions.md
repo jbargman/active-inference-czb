@@ -33,14 +33,31 @@ robust to excluding the 20 non-modal attention-check participants (+0.202) and t
 post-hoc repair of a trace-noise handicap discovered after the registered run (the
 30 Hz ego-speed dither puts a ~1 000-unit control-effort floor under every field
 covariate; with the ego speed smoothed the field scores 0.3564 and the verdict is
-unchanged). Within matched-TTC rows the smoothed field orders only 14 of 24 rows in
-the observed direction (mean ρ −0.10) where the data order 24 of 24 (gap ρ −0.887) —
-and the sign derivation below shows that inconsistency is structural, not noise.
+unchanged). Within matched-TTC rows the smoothed field's correlation with the response
+is negative in 14 of 24 rows (mean ρ −0.10) *[corrected 2026-09-02: this sentence
+originally read "orders only 14 of 24 rows in the observed direction"; the observed
+direction for a criticality measure is positive, so the field orders 10 of 24 rows
+like the data and is anti-ordered in 14 — `docs/r2_pipeline_review.md` §4]* where the
+data order 24 of 24 (gap ρ −0.887) — and the sign derivation below shows that
+inconsistency is structural, not noise.
 
 Two consequences, both now in force. No document may describe the field as validated
 against human data on the longitudinal dimension (blocker B2.Q4's wording rule,
 now backed by the analysis it was waiting for). And per the card's own
 pre-commitment, the project's claim is restated around what survives (§4).
+
+*[Added 2026-09-02, after an adversarial review of this pipeline
+(`docs/r2_pipeline_review.md`; diagnostic `replication/czb/cutin2_lane_gate_diagnostic.py`
+→ `out/cutin2_lane_gate_diagnostic.md`). The verdict reproduces by an independent
+fitting route (field 0.3508, gap 0.1531; cell-bootstrap interval on the difference
++0.174 to +0.222). Its loss decomposes into two identifiable mechanisms: about 44% is
+the lane-entry gate — a project construction — which suppresses the deficit in the
+slow-lane-change cells at short TTC, exactly where participants respond most (their
+response is flat across lane-change duration, the gate is not); the remainder is the
+released counterfactual magnitude, which within matched-TTC rows orders cells by the
+vehicles' absolute speeds rather than by gap. Nothing in the verdict changes; its scope
+statement should say that both the project's gate and the published term's
+counterfactual fail, each for a stated reason.]*
 
 ## 2 The C1 inversion: a covariate defect, found, fixed, and reinterpreted
 
