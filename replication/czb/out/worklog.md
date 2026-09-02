@@ -1417,3 +1417,46 @@ axis theta_dot(t) and the fitted population of levels on study 1's TTC4 clip and
 model's share who would intervene against the clip's six observed cells (a fit, not a
 held-out prediction, said so in the notes). The deck was written to `-v2` because the first
 file was open in PowerPoint. Rendered and inspected.
+
+## 2026-09-02 — card TT.1: the 2013 LTAP/OD test-track study against the video LTAP study
+
+Jonas placed the run protocol of Bärgman, Smith & Werneke (2015, TRF 35) in
+`external/02_LTAPOD_DBIN/` with column notes, and the paper in `papers/`; asked for the paper
+to be filed and summarized and for the data to be used to test our models against the video
+experiment. Filed as `papers/comfort-zone-boundaries/2015 - Bargman Smith Werneke - ... (TRF 35).pdf`
+(new section in `papers/README.md`); summary `notes/06_bargman2015_ltapod_testtrack.md`; the
+data documented in `external/README.md`. Analysis `replication/czb/ltapod_testtrack.py`
+(pre-registered; T4b and T5 added after the first run, both descriptive, said so in the
+docstring) → `out/ltapod_testtrack.md`, `out/ltapod_runs.csv`.
+
+Data after the filters (Training ≠ 1; comfort = Broader or Finer; dread = DreadZone; Remove = 1
+excluded in the primary analysis): comfort 218 runs / 26 drivers / 112 Go; dread 165 / 26 / 83;
+SetPET < 0 on 7 comfort and 28 dread runs (3 and 7 Go). Model: the stage-1 hierarchical
+threshold (`fit_stage1_looming.fit_hier_lapse_gated`, gate = 1, level linear on x = −PET),
+identical code on both datasets; track response = 1 − Go; video = intervene at 50 km/h.
+T1: PET_50 track 2.45 s (SE 0.04), video 2.18 s (SE 0.20), video − track −0.27 s (SE 0.20):
+inside the pre-stated 0.5 s → the video paradigm REPRODUCES the test-track comfort boundary.
+Sensitivities: Remove runs included 2.20 s; SetPET ≥ 0 only 2.44 s. T2: sigma_pop 0.89 s (track)
+vs 1.36 s (video); sigma_resp 0.20 vs 0.86 s. T3: the hierarchical fit on the hurried runs
+gives PET_50 0.18 s with lapse 0.28 — not trusted: hurried Go rates are flat (0.4–0.7) across
+SetPET 0.4–2.4 s and drivers accelerated (observed − SetPET +0.31 s median on hurried Go runs,
+−0.52 s in the comfort condition). T5 replicates the paper from the protocol: observed PET at
+the last Go, medians 2.17 s (comfort; paper 2.26) and 1.49 s (dread; paper 1.50), ratio 0.68
+(paper 0.69), every one of 26 drivers shorter when hurried; on SetPET the bracket midpoints are
+2.60 s and 0.80 s. T4: on Go runs the comfort rating is flat against SetPET (+0.06 z/s; video
+−0.40) — selection; T4b with a rating on every run (IfTurnHowComfortable after No-Go): −0.31
+z/s (SE 0.085) against the video's −0.40 (SE 0.036), intervals overlap.
+@TT.Q1(judgment, jonas): the comparison assumes "Go on the track = not intervening on video".
+Confirm the video's LTAP question can be read that way (brake/yield versus turn).
+@TT.Q2(judgment, jonas): for the dread boundary, SetPET is not the stimulus the hurried driver
+faced (they accelerated); the paper's measure is the observed PET at the last Go. Which PET
+should the project's dread boundary live on: SetPET (comparable to the video's design PET) or
+observed PET (what the driver produced)? The comfort boundary barely depends on the choice
+(2.45 vs 2.17); the dread boundary does (0.8 vs 1.5).
+@TT.Q3(minor, jonas): the protocol has 26 participants; the paper reports 22 (two more with
+corrupted PET). Were four excluded for a reason that should apply here (e.g. protocol
+deviations)? The primary analysis keeps all 26; say if the four highest-numbered should be
+dropped and the fit re-run.
+@TT.Q4(minor, jonas): the video's PS column runs 0..10 with higher = LESS safe in the joint file
+(8.2 at PET 0, 3.5 at PET 4); the data dictionary calls it perceived safety. Confirm the
+orientation; T4/T4b assume it.

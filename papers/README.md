@@ -156,6 +156,15 @@ Conflict typology framework; functional scenarios for intersection collisions.
 - ✅ **2023** — Framework for a conflict typology including contributing factors  
   <conflict-typology-and-scenarios/2023 - Framework for a conflict typology including contributing factors.pdf>
 
+## Comfort-zone boundary studies, own group  (`comfort-zone-boundaries/`)
+
+Not Waymo papers: the group's own empirical comfort-zone work, filed here because the project's
+measurement program tests against it. Summaries in `notes/06_bargman2015_ltapod_testtrack.md`.
+
+- ✅ **2015** — Quantifying drivers' comfort-zone and dread-zone boundaries in left turn across path/opposite direction (LTAP/OD) scenarios (Bärgman, Smith, Werneke; TRF 35, 170–184)  
+  <comfort-zone-boundaries/2015 - Bargman Smith Werneke - Quantifying drivers comfort-zone and dread-zone boundaries in LTAP-OD (TRF 35).pdf>  
+  The 2013 Vårgårda test-track study: a balloon car at 50 km/h, SetPET manipulated by a method-of-adjustment staircase, comfortable then hurried; comfort boundary median PET 2.26 s, dread boundary 1.50 s (≈ 0.69 × comfort). Its run protocol is in `external/02_LTAPOD_DBIN/`.
+
 ## Missing (need library / institutional access)
 
 No open-access copy found (Unpaywall + arXiv checked). Taylor & Francis blocks scripted downloads even for OA articles; fetch these via the Chalmers library proxy and drop them into the category folder.

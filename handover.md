@@ -78,6 +78,15 @@ Card EL.1 (a second axis on the second cut-in study) has run; its verdict is in
 > the same horizon idea in the field's lane-entry weight lifts the field from 0.347 to
 > 0.261 (attribution confirmed) but it stays far behind the gap; the flag
 > `lane_entry_horizon_s` defaults off and nothing depends on it.
+>
+> **TT.1** (`out/ltapod_testtrack.md`): the first real-driving anchor. Jonas's 2013 LTAP/OD
+> test-track study (`external/02_LTAPOD_DBIN/`, paper filed under `papers/comfort-zone-boundaries/`,
+> summary `notes/06_bargman2015_ltapod_testtrack.md`) fitted with the same threshold model as the
+> video LTAP at 50 km/h: median comfort boundary 2.45 s on the track, 2.18 s on video (video
+> minus track −0.27 s, SE 0.20): **the video paradigm reproduces the real comfort boundary within
+> the design resolution**; drivers are much sharper in the car (within-driver spread 0.20 s vs
+> 0.86 s). The paper's numbers reproduce from the protocol. The hurried (dread) condition needs
+> the observed PET, not SetPET (queries TT.Q1–Q4).
 
 ## 2 The rules that bind every session (short form; the long form is `docs/czb_work_orders.md` §2)
 
@@ -194,6 +203,7 @@ open the external folder only when Jonas explicitly asks for work on it.
 | the decisive negative result and its scope | `docs/r2_gate_decisions.md`, `docs/r2_pipeline_review.md`, `replication/czb/out/cutin2_field_vs_gap.md`, `out/cutin2_lane_gate_diagnostic.md` |
 | what survives (the trait, the boundary distribution, the transfer) | `replication/czb/out/cross_scenario_consistency.md`, `out/stage1_summary.md`, `out/transfer_overtake_summary.md`, `out/percentile_sensitivity.md` |
 | what the project uses of active inference, in one place | `docs/active_inference_scope_map.md` |
+| the real-driving anchor: the 2013 test-track LTAP/OD study against the video (card TT.1) | `replication/czb/out/ltapod_testtrack.md`, `notes/06_bargman2015_ltapod_testtrack.md`, `external/README.md` |
 | the three cards of 2026-09-02 that shaped the model (looming axis, anticipatory gate, field attribution) | `replication/czb/out/cutin2_looming.md`, `out/cutin2_gate.md`, `out/cutin2_field_horizon_gate.md` |
 | the three decks (60 min, 15-20 min, 10-15 min status) | `presentation/talk/README.md` |
 | the three design notes of 2026-09-02 | `docs/surprise_without_the_field.md`, `docs/czb_ellipse_design_note.md`, `docs/ltap_construction_note.md` |
