@@ -1226,3 +1226,59 @@ standing scope decision that only the active-inference papers are in scope for n
 @ANIM.Q1(minor, jonas): the shot list's build order (S1 belief cloud first, S7 glance gate
 last) and whether a clearly-labeled synthetic illustration (S5, the ellipse-vs-conjunction
 count) is acceptable on a slide, given the "nothing sketched" rule for the others.
+
+## 2026-09-02 — the B.3.v2 LTAP construction note, and the handover for a less capable model
+
+Not a card: Jonas asked for a handover to a cheaper model and for whatever else was useful
+first. Done: the LTAP construction note (`docs/ltap_construction_note.md`, + Word/PDF)
+with its geometry script `replication/czb/ltap_geometry.py` → `out/ltap_geometry.md`
+(+ csv). Findings from the traces: the ego is the TURNING vehicle (roles by yaw span; the
+B.3.v2 card's "ego holds 13.9 m/s" was a mis-assignment, corrected by a dated note in the
+card), its script is identical across all 18 traces (turn onset 13.9-14.1 s, 6.5-6.9 m/s
+at onset, in the oncoming lane ~15.1-15.7 s), the oncoming runs at 13.9 or 19.4 m/s, so
+at matched design PET the time-to-arrival is matched (2.5-6.7 s) and distance differs by
+1.4x. Against the Random responses a time-only prediction errs by -0.203 (RMS 0.214); a
+distance-only reading (interpolating the 50 km/h curve) reaches RMS 0.078 with signed
+error +0.064: distance with a speed residual, i.e. the second axis LTAP is expected to
+need. Comparator-class construction specified (arrival-time separation + oncoming
+distance at the decision moment; leave-one-PET-out folds; the EL.1 rule); the field
+route documented in §3 with pros/cons and not built. Measured PET exceeds design PET by
+0.7-1.2 s under a +-1 m conflict band (definition undocumented; orderings unaffected).
+Handover: `handover_2026-09-02.md` (the dated record) and `handover.md` rewritten as
+the entry point for a less capable model (rules, gating queries, queue, stop conditions).
+@B3.Q1(minor, jonas): the Random-design LTAP clip's end time is not recorded in the joint
+file (video names are Button-only). The note assumes the Button window (0-13.5 s of trace
+time, ending 0.4-0.6 s before turn onset); the B.3.v2 covariates are read at that moment.
+Confirm, or give the Random clip window.
+
+## 2026-09-02 — card EL.1 run: a second axis earns its place on the second cut-in study
+
+Card EL.1 (`replication/czb/cutin2_two_axis.py`, pre-registered in its docstring →
+`out/cutin2_two_axis.md`, log `out/log_cutin2_two_axis.txt`), run on the day it was
+specified: the ellipse note's condition "after EL.Q1" was relaxed for EL.1 only, since its
+within-scenario question does not depend on which population the percentile refers to
+(EL.2 and EL.3 still wait). Same 288 cells, fit, folds and metric as R.2. Held-out wRMSE:
+1D log gap 0.1522 (the registered number reproduced), 1D log TTC 0.1679, linear 2D rule
+0.1137, quadratic form 0.1148, CAMP-style quadratic (1/TTC, ego speed) 0.1822; chance
+0.3202; noise floor 0.1176 (conservative — repeated trials per participant; pipeline review
+§4). Pre-stated rule fired: a second axis EARNS its place (gap minus linear +0.039); linear
+and quadratic within 0.01 (−0.001), parsimony keeps the linear rule. The fitted weight on
+log gap is 0.47–0.51 in all six folds (full sample 0.497): a one-for-one trade-off on the
+log scale, i.e. a threshold on sqrt(gap × TTC), the geometric mean. Within matched-TTC rows
+all three covariates order 24 of 24. Two implementation notes: the registered fitter
+returns None when every start's objective is NaN (cells exactly at the quadratic form's
+corner with sigma → 0), so the script carries `fit_reg`, the same starts and optimizer
+with a finite-objective guard, which reproduces the registered 1D numbers exactly; and
+model (e)'s ego speed was first defined for two DV levels only (my bug; fixed as
+25.0 + DV, the traces' staging) and the script re-run. Dated notes added to the ellipse
+note §6, the gate record §4 item 4, and the handover. Suite 191 green.
+@EL1.Q1(judgment, jonas): the R.2 headline currently says "simple scene scalars, gap
+leading". EL.1 sharpens it: gap leads among single scalars, and an equally weighted
+linear rule in log gap and log TTC reaches the noise floor. Should documents and the
+decks adopt the two-scalar wording, and should EL.2 carry the linear rule (not the
+quadratic form) as the cut-in's form? The notes assume yes to both.
+@EL1.Q2(minor, jonas): 0.1137 is below the stated noise floor 0.1176; the floor is an
+overestimate (participants contribute two trials to block-1 videos), so the honest
+statement is "at the floor". A corrected floor from the per-participant means is a
+five-line change to the registered script's floor formula; not done, since that script is
+pre-registered — it could go in EL.2's report instead.

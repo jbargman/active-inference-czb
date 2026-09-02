@@ -235,6 +235,18 @@ population reference without changing the code.
   level set in the log-gap/log-TTC plane), the within-row orderings, and the noise
   floor. No verdict prose beyond the rule.
 
+*[Run 2026-09-02, the same day, `replication/czb/cutin2_two_axis.py` →
+`out/cutin2_two_axis.md`. The second axis earns its place: linear 2D rule 0.1137, quadratic
+form 0.1148, 1D log gap 0.1522, noise floor 0.1176 (conservative, see the pipeline review
+§4). Linear and quadratic within 0.01, so parsimony keeps the linear rule; its weight on
+log gap is 0.47–0.51 in every fold, a one-for-one trade-off on the log scale, i.e. a
+threshold on the geometric mean of gap and TTC. Section 3's expectation that the cut-in
+would identify a trade-off is met, and more strongly than I expected: the cut-in's form
+for card EL.2 is the linear rule, and the "ellipse" on this scenario is a straight line
+in the log plane. Model (e), the quadratic form on the CAMP-style axes (1/TTC, ego speed), scores
+0.1822 after a re-run (the first run had the ego speed defined for two DV levels
+only, my bug); it is reported for comparison and carries no decision.]*
+
 ### Card EL.2 — the level shared across scenarios, on the ellipse forms
 
 After B.2 and B.3.v2 have their loaders and construction notes. The stage-1 estimator

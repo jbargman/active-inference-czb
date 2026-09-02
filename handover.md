@@ -1,259 +1,192 @@
-# handover.md — restart a session here
+# handover.md — start every session here
 
-> ## Next session: Jonas rules on the restatement (queries R2.Q4–Q6)
->
-> *Rewritten 2026-08-29 after gate R.2 ran. Full record: `handover_2026-08-29.md`;
-> the gate's decisions: `docs/r2_gate_decisions.md`.*
->
-> **The field's kinematic content is ruled out on its own scenario, by a
-> pre-registered test.** On the second cut-in study, with matched three-parameter
-> threshold models on identical grouped folds (models, folds and decision rule
-> committed before the run), the field scores held-out wRMSE 0.347 — worse than
-> chance 0.320 — against a log-gap threshold's 0.152 (noise floor 0.118); robust to
-> attention-check exclusion and to removing a trace-noise handicap
-> (`replication/czb/out/cutin2_field_vs_gap.md`). Per the gate card's own
-> pre-commitment, **the project's headline is now the trait claim**: a driver
-> carries one comfort-zone scalar that is substantially shared across scenarios
-> (~69% of reliable per-driver signal, field-free), with the criticality axis an
-> open question on which gap currently leads. The elliptical/2D comparator program
-> is promoted from fallback to primary for the axis question.
->
-> Also settled this arc: the C1 inversion (blocker B2.Q1) was a covariate-window
-> defect — fixed in `comfortzone.czb_data`, C1 stays in the fit, and study 2's flat
-> CP1 cells re-read study 1's C1 gradient as exposure anticipation, not proximity
-> response. **Card A.2.v2 ran**: under the full new specification the percentile
-> table is essentially unchanged (median 5 400, σ 0.200, shifts under 1%), the
-> hierarchical lapse now wins the LOPO comparison decisively (+52.7), and the
-> lapse–threshold correlation is partly real (ρ −0.717 against a −0.27 artifact
-> baseline) without moving the deliverable. The freed-lapse transfer survives
-> regeneration (0.136 against chance 0.158, ceiling 0.120). The expected-deficit
-> proposal failed its sign derivation on the distance axis, so **no lateral term
-> was built** and the note's follow-on tests were cancelled.
->
-> Late in the same session, **card C also ran** (`out/percentile_sensitivity.md`):
-> the percentile choice and its estimation error are comparable in onset terms
-> (~0.27 s per 5 points against ~0.53 s per CI), and at the population median only
-> TTC4 of the three stimuli ever crosses the boundary — the percentile decides
-> *whether* milder stimuli trigger, not only when. The lapse-threshold artifact
-> baseline was regenerated under the new covariates (−0.280; conclusions unchanged).
->
-> **Jonas ruled on the morning of 2026-08-29** (worklog entry of that morning; his
-> machine was about to reboot, so the rulings are terse and binding): **R2.Q4
-> resolved** — B.2 (truck) and B.3 (LTAP) are built as **comparator-class
-> constructions** (per-scenario 2D state rules + the CZB ellipse), with the field
-> alternative kept documented and each construction note carrying the pros and
-> cons of both routes. **R2.Q6 resolved** — the handbook status note is in (round
-> 5, dark orange). **R2.Q5 narrowed, open** — before settling how to position the
-> active-inference contribution, explore whether the SURPRISE elements survive on
-> their own as a scenario-agnostic metric even with the preference field dropped;
-> the comparator program proceeds meanwhile. **C.Q2 stays open**, and he
-> explicitly wants the **CZB ellipse** explored — it is promoted from comparator
-> to deliverable candidate.
->
-> **The next session's queue, in order**: (1) the B.3.v2 LTAP construction note,
-> written for the comparator class (arrival-time separation + oncoming distance),
-> with the required both-routes pros/cons section, reviewed before coding;
-> (2) a design note for the CZB ellipse (which observables per scenario, the
-> Mahalanobis joint percentile, how the per-driver trait maps onto it);
-> (3) the R2.Q5 exploration — one crux to start from: every surprise measure
-> needs a reference distribution to be surprised relative to, and in this
-> project the preference field WAS that reference, so "surprise without the
-> field" must say what replaces it (candidates: learned predictive models of
-> normal driving per the src/surprise library's other interfaces; the library
-> itself is validated and scenario-independent by construction).
->
-> Working conventions are the `performing-research` skill
-> (`~/.claude/skills/performing-research/SKILL.md`, mirrored at
-> `docs/skills/performing-research.SKILL.md`). Open queries: 14
-> (`replication/czb/out/query_register.md`), 1 blocker (A.1.Q2, truck check only).
->
-> *[2026-09-01: two presentation decks now exist in `presentation/talk/` — the
-> 60-minute full account (`build_talk.py`) and the 15-20 minute project-group
-> version (`build_short_talk.py`), both with speaker notes and time budgets; see
-> that directory's README. Three TALK queries added (register now 16 open); the
-> next-session queue above is unchanged.]*
->
-> *[2026-09-02: an adversarial review of the R.2 pipeline
-> (`docs/r2_pipeline_review.md`, diagnostic `replication/czb/cutin2_lane_gate_diagnostic.py`)
-> confirms the verdict by an independent fit and decomposes the field's loss: ~44% is
-> the project's lane-entry gate (suppresses the deficit where participants respond
-> most; they are flat across lane-change duration, the gate is not), ~56% the released
-> counterfactual magnitude (orders matched-TTC cells by absolute speed, not gap). One
-> sign slip in the gate record's gloss corrected in place. Queries REV.Q1–Q3. The R2.Q5
-> exploration note starts from the review's section 5 constraints.]*
->
-> *[2026-09-02, later: the R2.Q5 design note exists —
-> `docs/surprise_without_the_field.md`. Its position: surprise is an operator on a
-> reference, scenario-agnosticism belongs to the reference, and only two references
-> qualify — a predictive model of other agents (zero by construction on the cyclist
-> overtake, so not the axis, but a pace-independent onset definition) and a population
-> distribution of accepted states (which IS the CZB ellipse: residual information under a
-> Gaussian is half the squared Mahalanobis distance). Working framing proposed for
-> Jonas's ruling (Q5.Q1): surprise defines the onset, a population percentile the level.
-> Card Q5.1 in `docs/czb_work_orders.md` tests the onset half on data in hand with no
-> preference code; it runs after his review. Queue item (3) is therefore done at the
-> design level; items (1) B.3.v2 and (2) the ellipse note remain, and the ellipse note
-> should start from the identity in the R2.Q5 note's §4.]*
->
-> *[2026-09-02, later still: queue item (2) is also done at the design level —
-> `docs/czb_ellipse_design_note.md` (cards EL.1–EL.3 in the work orders; EL.1 can run
-> now on study 2). Its central point: the study data identify the ellipse's shape and
-> the per-driver ordering, not its scale, which is confounded with the level until a
-> population reference from naturalistic data exists; query EL.Q1 asks which population
-> Jonas's percentile refers to. A shot list for further data-driven animations is in
-> `presentation/talk/animation_shot_list.md` (query ANIM.Q1). Remaining queue: (1) the
-> B.3.v2 LTAP construction note; then, after Jonas's rulings, cards Q5.1 and EL.1.]*
+*Rewritten 2026-09-02 for a less capable model, by the tier-1 session that ran the
+2026-09-01 → 09-02 arc (its dated record: `handover_2026-09-02.md`). This file says
+what the project is, what the rules are, what is waiting on Jonas, what to do in what
+order, and when to stop and ask. It does not repeat the science; the documents it
+points to do that. Where this file and the repository disagree, the repository wins,
+and you should say so in your reply.*
 
-> **Later arcs exist.** `handover_2026-08-29.md` covers the 2026-08-29 overnight batch
-> (gate R.2, the field-versus-gap verdict, the C1 fix, A.2.v2, the transfer re-run);
-> `handover_2026-08-28.md` covers the B.1 arc, the collinearity finding and the k = 12
-> decision. Before those: `handover_2026-08-26.md` covers the 2026-08-25 → 08-26 work (the
-> equivalence/ROPE revision, the severity-versus-timing diagnosis, the new human dataset
-> in `external/01_studies/`, the start of the cut-in scenario); `handover_2026-08-27.md`
-> covers the 2026-08-27 arc (a review that corrected the B-versus-C paired-difference
-> claim to P ≈ 0.97, the settled continuous lane-entry form, the fitting preparation,
-> the honest assessment of the active-inference route, and — its §8 — the
-> **model-handover protocol**: execution moves to a less expensive model working
-> through `docs/czb_work_orders.md`, with escalation triggers and review gates).
-> Read this file first for standing context, then the dated files in order. Where
-> the files disagree, the latest one wins. The 08-26 arc is
-> a single commit on `main`, so a net diff will not show the sequence of corrections
-> inside it — its §8 explains which ones to look for.
+## 0 What to do when a session starts
 
-Written 2026-08-25, superseding the 2026-08-23 version. This is the **session entry
-point**; it captures the 2026-08-23 → 2026-08-25 work arc (the method review, the
-crash-causation study through its full-population results, handbook revision round 2).
-The older `HANDOFF.md` remains the deep research context (scope decisions, environment
-constraints, parameter traps) — this file does not repeat it, and where its §6 open-item
-list disagrees with §5 below, this file wins.
+1. Read this file in full. Then read `docs/czb_work_orders.md` §2 (the standing rules)
+   and the cards it points you to for the task at hand. Do not read the papers or the
+   handbook unless the card says to.
+2. Run the test suite exactly like this, and confirm 31, 33, 40 and 87 passed:
+   ```bash
+   python tests/test_surprise.py
+   python tests/test_comfortzone.py
+   python tests/test_causation.py
+   python tests/test_cutin.py
+   ```
+   (`pytest` will report 35 and is *not* the suite; the files are scripts.)
+3. Run `git status` and `git log --oneline -5`. The tree should be clean. If it is not,
+   stop and report what is uncommitted before doing anything.
+4. If Jonas said "load handover.md" and nothing else: reply with a short statement of
+   where things stand (three or four sentences from §1) and the list in §3, then stop
+   and wait. Do not start a card until he names one.
+5. If Jonas named a task: find its card (§4), check its "runs after" condition against
+   §3, and if the condition is met, do the card. If it is not met, say which query
+   blocks it and stop.
 
-## 0 What "load handover.md to prepare for this session" means
+## 1 Where the project stands, in plain terms
 
-When Jonas says that (optionally adding "do not start implementing anything until I say
-so"), do exactly this:
+The project set out to measure drivers' comfort-zone boundaries (CZB) with one scalar
+borrowed from a published active-inference driver model: its preference field. Two
+pre-registered tests on human data both went against that scalar. At review gate R.1
+the field's accumulation over time failed to predict *when* people respond; at gate R.2
+the field lost to a simple gap threshold as the criticality axis, scoring worse than
+chance on the study built to separate them (`docs/r2_gate_decisions.md`). A review of
+that decisive pipeline on 2026-09-02 confirmed the result and explained it: about 44%
+of the loss is a lane-entry gate the project itself added, which suppresses the field
+exactly where participants respond most; the rest is the published model's worst-case
+counterfactual, which ranks situations by speed where people rank them by distance
+(`docs/r2_pipeline_review.md`).
 
-1. Read this file in full.
-2. Read `HANDOFF.md` (especially §2 scope decisions, §3 environment constraints, §4
-   parameter choices and the two traps, §7 resumption pitfalls), then `README.md`.
-3. Do **not** re-read papers or re-derive documented findings — `notes/01–05`,
-   `docs/method_review.md`, `docs/crash_causation_plan.md`,
-   `docs/crash_causation_results.md`, and `docs/handbook/` hold them.
-4. Reply with a short statement of where the project stands and what the plausible next
-   steps are, then **stop and wait**. No implementation, no file changes, no commits,
-   until Jonas says what he wants.
+What survives is the project's headline: **each driver carries one comfort-zone level
+that is largely shared across four scenarios** (about 69% of the reliable per-driver
+signal, measured with no field at all), and **the best criticality axis on the data so
+far is the longitudinal gap**, with TTC close behind. The program now builds the
+*comparator class*: per-scenario two-observable rules and the CZB ellipse (a joint
+percentile over two observables), with the per-driver level shared across scenarios.
+Three design notes from 2026-09-02 say how: `docs/surprise_without_the_field.md` (what
+"surprise" can still mean; a card to test it), `docs/czb_ellipse_design_note.md` (what
+the ellipse is and what the data can identify about it; cards EL.1–EL.3), and
+`docs/ltap_construction_note.md` (the left-turn scenario, which separates time from
+distance by design; card B.3.v2).
 
-House style for anything written for Jonas: the `jonas-academic-writing` skill (US
-English, markdown as source of truth, Word generated for his comments, PDFs from
-markdown, no period at the end of a heading, hedge opinions as opinions).
+Card EL.1 (a second axis on the second cut-in study) has run; its verdict is in
+`replication/czb/out/cutin2_two_axis.md` and the line below.
 
-## 1 Where the project stands in one paragraph
+> **EL.1 verdict (2026-09-02):** a second axis **earns its place** on the second cut-in
+> study. A linear rule in log gap and log TTC scores held-out wRMSE 0.114 against the
+> 1D log gap's 0.152, at the sampling-noise floor (0.118, which is conservative); the
+> quadratic form scores 0.115, so parsimony keeps the linear rule. The fitted weight is
+> 0.47–0.51 on log gap in every fold: the two trade off one-for-one on the log scale,
+> which is a threshold on the geometric mean of gap and TTC. Consequence for the
+> program: the criticality axis on the cut-in is two-dimensional and linear on the log
+> scale; card EL.2 should carry the linear rule as the cut-in's form, and the R.2
+> headline's "gap leads" is now "gap leads among single scalars; a two-scalar linear
+> rule reaches the noise floor" (query EL1.Q1 asks Jonas to confirm that wording).
 
-The project's goal is unchanged: a method for driver **comfort-zone boundaries** using
-active inference; that method is built, property-tested, and validated end to end on the
-authors' OSF output (median onset error 0.0 s), waiting on human data
-(`docs/data_requirements.pdf` is the document to hand to data owners). Since the last
-handover, two large pieces were added. A **method review** of the published model against
-its code and deposit (`docs/method_review.md`, written to be sendable to an author). A
-complete **crash-causation study** (`docs/crash_causation_results.md` is the document of
-record): the Bärgman et al. (2024) mechanisms plus Wu et al.'s abnormal-acceleration mode
-as five switchable components around two response processes (CBM and an active-inference
-tier-1 surrogate), run on all 5 000 QUADRIS seeds with digitized real input
-distributions and compared with the Wu binning/ROPE framework. Headlines: the attentive
-active-inference driver avoids 67% of the crash population; its conditions are *closer*
-to the reference than the CBM control (severity θ 0.148 vs 0.209, ROPE 0.10, from a
-factor-14 miss at the study's start); the tier-2 closed loop validated the timing
-surrogate (median |diff| 0.55 s, zero-start convention arbitrated); and the **glance-gate
-finding** — the model gates evidence, not inference, and brakes mid-glance once a
-conflict is registered, diverging testably from the CBM. The 15-chapter handbook carries
-these lessons as revision round 2 (dark blue) and awaits Jonas's Word review; a one-off
-authors' edition and a combined single-document build exist.
+## 2 The rules that bind every session (short form; the long form is `docs/czb_work_orders.md` §2)
 
-## 2 What exists beyond what HANDOFF.md and the notes describe
+1. **Every number you will quote comes from a committed script with a tracked output.**
+   No numbers from an interactive session. If you computed something to decide, write
+   the script, commit it, quote its output file.
+2. **The suite (§0 step 2) passes before and after every card.** New behavior gets new
+   property tests in the same style (`check(...)` calls that count).
+3. **Never change defaults in `src/aidriver/preferences.py`.** New behavior goes behind a
+   flag that defaults off. Never modify a script whose docstring says "pre-registered"
+   (`replication/czb/cutin2_field_vs_gap.py` above all); write a new script that imports
+   it.
+4. **Documents:** US English; the `.md` is the source of truth; build Word and PDF with
+   `pandoc docs/X.md -o docs/X.docx --from markdown --resource-path docs` and
+   `python docs/build_pdf.py docs/X.md`; no period at the end of a heading; state
+   opinions as opinions ("the way I read it", "it seems"); never invent a reference. If
+   a build fails with `PermissionError`, the file is open in Word: write `X-v2.md`/`-v2.docx`
+   and say so.
+5. **Questions go in the worklog, not in chat, and do not stop the work.** Append an
+   entry to `replication/czb/out/worklog.md` (see the last entries for the form), write
+   each question as `@<CARD>.Q<n>(<severity>, <who>): ...` with severity `blocker`,
+   `judgment` or `minor` and who `jonas` or `review`, then run
+   `python replication/czb/collect_queries.py` to regenerate the register. Continue
+   with everything that does not depend on the answer.
+6. **Commit at the end of each card** with a message that says what changed and why,
+   ending with the `Co-Authored-By` line the recent commits use. Do not push unless
+   Jonas asks (`github-token-handoff` skill if he does).
+7. **Presentations:** never rerun a deck build script onto a file Jonas may have edited
+   by hand (both decks in `presentation/talk/` are at risk; see that README). Render
+   decks through PowerPoint on a *copy* in the scratchpad and never call `$ppt.Quit()`.
+8. **Shell:** long heredocs with mixed quotes fail to parse here. Put edit text in a
+   Python script written with the Write tool and run that; commit with `git commit -F`.
+   Run anything over a minute in the background with its output redirected to a log
+   file in `replication/czb/out/`, and never pipe a background job through `tail`.
 
-| Area | State | Where |
+## 3 What is waiting on Jonas, and what each answer unblocks
+
+The register is `replication/czb/out/query_register.md`. These are the ones that gate
+work; do not start the gated card until the query is answered in the worklog.
+
+| query | question, in one line | unblocks |
 |---|---|---|
-| Crash-causation results | **document of record**, full population, figures, arbiter verdict, exposure quantification | `docs/crash_causation_results.md` (+ Word/PDF); plan and reading notes in `docs/crash_causation_plan.md` (its §11 is superseded history) |
-| Causation code | five components (glances with three placements, decel cap, no-response, abnormal-acceleration), two response models behind one interface, restartable runners; 40 property tests in `tests/test_causation.py` (suite total 123 as of 2026-08-27) | `src/causation/`, `src/quadris/`, `src/equivalence/` (reusable Wu ROPE testing), `replication/causation/` |
-| Digitized input data | SHRP2 glance distribution and max-deceleration histogram from B24's published figures; two-route calibration checks built into the script | `replication/causation/digitize_b24.py` → `replication/causation/data/` |
-| Full-population outputs | summaries/configs/logs tracked; the 60–270 MB `cond_*_fullp*.csv` are **gitignored** — regenerate with the exact commands in `replication/causation/out/log_fullp*.txt` | `replication/causation/out/summary_fullp.md`, `summary_fullp_abn.md` |
-| Tier-2 closed loop | adapter (lead replay, forcible gaze schedule via `I_factor`, checkpointing, seed restart); 44 seed runs incl. the both-stationary batch; arbiter analysis | `replication/causation/tier2_rear_end.py`, `tier2_compare.py`, `tier2/arbiter_comparison.csv` |
-| Handbook | round-2 revisions folded in (marks: {{R1}} dark red, {{R2}} dark blue, colored by `build_handbook.py`); combined single Word/PDF for a colleague via `build_combined.py` | `docs/handbook/`; combined outputs in `word/` and `pdf/` |
-| Authors' edition | one-off 13-chapter de-CZB'd handbook to share with the papers' authors; frozen by design (its README explains) | `docs/handbook_authors/` |
-| Email draft | the pre-filter-set request to Jian Wu, ready for Jonas to edit and send | `docs/email_jian_draft.md` |
-| Method review | review of the published method vs code and deposit; sendable | `docs/method_review.md` (+ Word/PDF); numbers regenerated by `replication/review_osf.py` |
-| **Equivalence/ROPE calibration** (2026-08-26) | the original ROPE sat at the reference's noise floor and could not be passed by a perfect model; the adopted thresholds are derived from a stated 10% tolerance on the injury-weighted mean (θthd 0.188, Θthd 0.089 — Wu's published 0.10/0.05 is close to the 5%-tolerance pair); uniform ω=1 shown to be the *strictest* reading, not the neutral one; written to be sendable to Jian Wu | `docs/equivalence_rope_note.md` (+ Word/PDF); bin sweep by `replication/causation/bin_sensitivity.py` |
-| **Severity-vs-timing dissociation** (2026-08-26) | why severity matches while t_nr and a_f,min do not: response timing changes crash *count*, not *severity*; θ misreads a lattice (t_nr, 25 distinct values) and an atom (a_f,min, 48% at zero) | `docs/severity_vs_timing.md` (+ Word/PDF); figures by `replication/causation/make_dissociation_figure.py`, numbers by `severity_vs_timing.py` |
-| **New human data** (arrived 2026-08-25) | clip-rating + button-press study: 80 participants, 4 scenarios, 67 kinematic traces. The button press is a *timed CZB crossing*, not a proxy, and the ego never responds | `external/01_studies/`; proposal in `docs/czb_study1_data_plan.md` (+ Word/PDF) |
+| **Q5.Q1** (judgment) | Is "surprise defines the onset, a population percentile defines the level" the working framing? | card Q5.1 |
+| **EL.Q1** (judgment) | Is the ellipse's percentile over pooled observed states or over drivers' boundary levels? | card EL.2, EL.3 |
+| **B3.Q1** (minor) | Where does the Random-design LTAP clip end (assumed 13.5 s, before turn onset)? | card B.3.v2's covariates |
+| EL.Q2, EL.Q3 (minor) | the scale convention for EL.2; whether the CAMP rear-end data are in scope | EL.2; the CAMP part of EL.1 |
+| ANIM.Q1 (minor) | build order of the animations; whether a labeled synthetic figure is acceptable | the shot list |
+| REV.Q1–Q3, TALK.Q1–Q3, Q5.Q2–Q3 | wording and attribution questions | nothing; answer when convenient |
 
-## 3 Decisions and conventions from this arc (beyond HANDOFF and the style skill)
+Everything else in the register predates this arc and is listed there with its status.
 
-- **"The handbook" means the internal one** (`docs/handbook/`); the authors' edition is
-  frozen. Revision rounds are color-marked; next round would be {{R3}}.
-- **Pre-response counterfactual**: original follower profile with braking removed from
-  the lead's onset (`pre_response_speed="no_brake"`); clamp-from-start differs by only a
-  few percent.
-- **Glance placement**: renewal process for active-inference conditions (theoretically
-  required for an accumulating response), anchored overshot for the CBM (where it is
-  Markkula's shortcut and performs better).
-- **Accumulator start**: zero, **arbitrated** by the tier-2 closed loop (20/24 seeds;
-  scope: windows opening near the conflict). The stationary variant stays in the outputs
-  as tested-and-rejected. Do **not** fold the +0.42 s surrogate offset into a
-  calibration — the untuned-surrogate argument is in the results doc §5.
-- **Desired speed for external seeds**: the speed the original follower later reached.
-  The both-stationary queue seeds are attentive-unreachable regardless (a finding —
-  results doc §9); they crash only through the abnormal/no-response components.
-- **Severity metric**: relative speed at impact is the assumption-free primitive
-  (deposit delta-v assumed equal masses); report it alongside P_inj.
-- **Never claim exposure-level results from crash-conditioned seeds**: ESS 44.7 of
-  5 000, 295 unreachable — the B-versus-C contrast is robust to the critique, absolute
-  rates are not (results doc §7).
-- Verify by two independent routes; long jobs restartable; generated artifacts never
-  hand-edited; token rules per the `github-token-handoff` skill — all unchanged.
+## 4 The queue, in order, with what "done" means
 
-## 4 Machine and environment notes (2026-08-25)
+Each item has a card. Read the card and the note it points to before starting; the
+note is the specification and the card is the pointer.
 
-- Unchanged from HANDOFF §3 and the old handover: OneDrive locks (write `-vN` names),
-  Python 3.14 with torch-cpu, pandoc, no gh CLI/LaTeX/GPU, PowerPoint COM never
-  `.Quit()`, Git Bash `/tmp` ≠ Windows temp, big files via the Write tool.
-- **Tier-2 cost is wildly variable**: 3 minutes to 4 hours per seed (batch 4), median
-  ~10 minutes uncontended, with no clean predictor. Measure before extrapolating;
-  everything is checkpointed and seed-restartable.
-- Tier-1 full-population runs: minutes to ~1 h per condition; the 1000-draw bootstrap
-  assessment can dominate. Run conditions as parallel background processes.
-- Stopping a background shell pipeline can orphan its Python child briefly (it dies
-  after its next checkpoint write); and never pipe a background runner through `tail` —
-  it buffers everything and blinds progress monitoring.
-- GitHub: files > 100 MB cannot be pushed; the fullp CSVs are gitignored for this
-  reason. Push works via the repo-local credential helper (token rules in the skill).
+1. **Card B.3.v2 — the LTAP scenario** (`docs/ltap_construction_note.md` §2 and §5).
+   After B3.Q1. Deliverables: `src/comfortzone/ltap.py` (roles by yaw span; turn onset;
+   conflict point; the two observables at the decision moment), property tests as
+   listed in the note, `replication/czb/ltap_two_axis.py` running the note's
+   pre-stated comparison with leave-one-PET-level-out folds, output
+   `out/ltap_two_axis.md`. Do not write a field (preference-function) term for LTAP;
+   the note's §3 explains why and it is Jonas's ruling.
+2. **Card Q5.1 — world surprise on the data in hand**
+   (`docs/surprise_without_the_field.md` §6). After Q5.Q1. Uses only `src/surprise/`
+   and the trace loaders; four pre-stated tests; output `out/world_surprise.md`.
+3. **Card EL.2 — the shared level across scenarios on the ellipse forms**
+   (`docs/czb_ellipse_design_note.md` §6). After B.3.v2 and EL.Q1/EL.Q2.
+4. **Animations S1 → S7** (`presentation/talk/animation_shot_list.md`). After ANIM.Q1;
+   S1 (the belief cloud) can be built first regardless, following
+   `presentation/talk/make_event_animation.py` as the template.
+5. **Card B.2 — the truck overtake.** No construction note exists yet. Write one first,
+   in the pattern of `docs/ltap_construction_note.md` (measure the traces with a
+   committed script, state both routes, pre-state the comparison), and stop for review
+   before coding.
 
-## 5 Open items, in the order I would take them
+Not in the queue and not to be started without a new instruction: any handbook
+revision (Jonas reviews it first), any manuscript text, any change to the registered
+R.2 comparison, and card EL.3 (it needs naturalistic data the project does not have).
 
-1. **Jonas reviews the handbook** (Word in `docs/handbook/word/`, rounds R1+R2 colored;
-   the combined document is for his colleague). Then: comments into markdown, {{R3}},
-   rebuild.
-2. **Send the Jian email** (`docs/email_jian_draft.md`) — the pre-filter set is the
-   study's most valuable single ask; the method review and results doc are sendable
-   companions to the respective authors.
-3. **The CZB transfer test on the new data** — data arrived 2026-08-25 in
-   `external/01_studies/`, so this is no longer blocked on acquisition. The proposal, and
-   an argument with Jonas's initial sketch, is `docs/czb_study1_data_plan.md`: build the
-   cut-in *preference function* (cheap) rather than the full closed-loop cut-in scenario
-   (expensive) first, fit the boundary to right-censored button-press times rather than to
-   braking (there is no braking in this data — the press *is* the boundary crossing), then
-   fit on cut-in and predict LTAP/cyclist/truck overtake. Awaiting Jonas's scope decision.
-4. **The a_f,min lever**: every configuration fails the braking-distribution metric — but
-   `docs/severity_vs_timing.md` now shows roughly a third of the reported θ is a
-   quantile-binning artifact at the 48% zero atom, and the real difference is a
-   redistribution *within* braking crashes (too many moderate, too few hard) traceable to
-   the discrete deceleration draw (375 distinct values against the reference's 1 853) plus
-   the shared jerk-ramp execution model. The unpulled lever is still the execution model.
-5. **Unexercised half of the gaze system**: the model *choosing* glances by epistemic
-   pricing (handbook ch08 Proposal 1's second half); the forced-schedule route is done.
-6. Smaller, unchanged from before: OSF oncoming + intersection analyses (the held-out
-   scenario), deck unification and the teaching deck (post handbook review), 13 papers
-   needing the Chalmers proxy, process-draw increase if tighter HDIs are ever needed.
+## 5 When to stop and ask instead of proceeding
 
-## 6 If something here contradicts the repository
+Write the query (§2 rule 5), finish what does not depend on it, and end the turn if
+nothing else remains. Stop whenever:
 
-Trust the repository and the tracked notes over this file, and say so out loud — this
-file was written 2026-08-25 and does not update itself.
+- a step would change a default in `src/aidriver/preferences.py`, a pre-registered
+  script, or a tracked output by hand;
+- a result contradicts a document (a number in a note, the gate record, a handover);
+  report both numbers and which file each came from, and do not "fix" the document;
+- a card's "runs after" query is unanswered;
+- a decision rule written in advance would need reinterpreting to reach a verdict;
+- you would need a parameter value with no motivation you can write down;
+- a deck or document may have been hand-edited by Jonas since it was built;
+- the task is about scope, positioning of a paper, or which scenario counts as in
+  scope (the standing scope decision: only the active-inference papers are in scope for
+  the literature; the CAMP data are a query, EL.Q3).
+
+## 6 The documents that matter, by purpose
+
+| purpose | file |
+|---|---|
+| the decisive negative result and its scope | `docs/r2_gate_decisions.md`, `docs/r2_pipeline_review.md`, `replication/czb/out/cutin2_field_vs_gap.md`, `out/cutin2_lane_gate_diagnostic.md` |
+| what survives (the trait, the boundary distribution, the transfer) | `replication/czb/out/cross_scenario_consistency.md`, `out/stage1_summary.md`, `out/transfer_overtake_summary.md`, `out/percentile_sensitivity.md` |
+| what the project uses of active inference, in one place | `docs/active_inference_scope_map.md` |
+| the three design notes of 2026-09-02 | `docs/surprise_without_the_field.md`, `docs/czb_ellipse_design_note.md`, `docs/ltap_construction_note.md` |
+| the cards and the standing rules | `docs/czb_work_orders.md` |
+| the worklog (source of truth for decisions and queries) and the register | `replication/czb/out/worklog.md`, `out/query_register.md` |
+| the two talks and the animation shot list | `presentation/talk/README.md` |
+| how earlier scenarios were built (the pattern to follow) | `docs/lane_entry_note.md`, `docs/overtake_construction_note.md` |
+| the data and its traps | `docs/czb_study1_data_plan.md`; the study's own `DATA_DICTIONARY.md` under `external/01_studies/` (read its "gotchas" before touching the joint file) |
+| the deep research context, environment and parameter traps (older) | `HANDOFF.md`, then the dated handovers `handover_2026-08-26.md` → `handover_2026-09-02.md` in order |
+
+## 7 Environment notes
+
+Windows 11, Python 3.14 with torch CPU-only, pandoc 3.10 on PATH, no LaTeX, no `gh`,
+no GPU. The repository lives in OneDrive: an open Word or PowerPoint file is locked, so
+write a versioned copy rather than fighting the lock. `external/` is not tracked (the
+OSF deposit, the authors' code and the study data are restored per `external/README.md`).
+The full-population causation CSVs are gitignored and regenerable. The `.pptx` decks are
+gitignored; their build scripts and figures are tracked. Background Python jobs die
+after their next checkpoint if their shell is closed; check for orphans before
+relaunching a long job.

@@ -368,6 +368,17 @@ fine.)*
 
 ### Card B.3.v2 — the LTAP field (re-scoped 2026-08-28)
 
+*[2026-09-02: the construction note this card asks for exists —
+`docs/ltap_construction_note.md` (comparator-class construction per R2.Q4, with the
+field alternative documented in its §3; geometry measured by
+`replication/czb/ltap_geometry.py` → `out/ltap_geometry.md`). Execution follows the
+note's §2 and §5: loader `src/comfortzone/ltap.py` with roles by yaw span, the
+property tests listed there, and `replication/czb/ltap_two_axis.py` with its
+pre-stated rule. Runs after query B3.Q1 (the Random clip's end time). The
+"ego holds 13.9 m/s" statement below is wrong: the ego is the turning vehicle
+(12.7 m/s approaching, 6.5–6.9 m/s at turn onset); 13.9 m/s is the oncoming's
+50 km/h.]*
+
 *(Replaces the B.3 sketch below for planning purposes; that card's construction advice
 still stands. Re-scoped because the LTAP data turns out to be the richest transfer
 target, not the hardest-to-justify one.)*

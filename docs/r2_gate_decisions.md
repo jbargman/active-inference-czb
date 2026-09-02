@@ -133,6 +133,10 @@ is the trait claim, not the field.** What stands, each with its evidence:
 4. **The best within-scenario criticality axis on the decisive dataset is the
    longitudinal gap** (log scale), with TTC close behind and required deceleration
    nowhere — which is a statement about *any* demand-based axis, not only ours.
+   *[Sharpened 2026-09-02 by card EL.1 (`out/cutin2_two_axis.md`): gap leads among
+   single scalars; a linear rule in log gap and log TTC, equally weighted, scores
+   0.114 held out against the gap's 0.152 — at the sampling-noise floor. The cut-in's
+   axis is two-dimensional and linear on the log scale.]*
 
 The restated claim, recommended wording: *each driver carries a scalar comfort-zone
 threshold that is substantially shared across scenarios; the right criticality axis
