@@ -273,6 +273,94 @@ def main() -> None:
           f"(paper: 0.69 from the regression, medians 1.50 / 2.26). Every driver shorter when hurried on the midpoints: "
           f"{int((both.mid_d < both.mid_c).sum())} of {len(both)}.", ""]
 
+    # --- T6: transfer with nothing refitted --------------------------------------------------
+    # (added 2026-09-02 after Jonas asked how the video parameters work on the track; pre-stated
+    # here before running: the population curve of one dataset's fit is scored on the other's
+    # cells against chance and against that dataset's own fit; a transfer within 0.02 wRMSE of
+    # the own fit is "carries over", within 0.05 "carries over with an offset", else "does not".)
+    def pop_curve(f, x):
+        zz, ww = F._gh_nodes(48)
+        z1 = np.repeat(zz, 48); z2 = np.tile(zz, 48); lw = np.outer(ww, ww).ravel()
+        c = f["mu"] + f["sigma_pop"] * z1
+        b = 1.0 / (1.0 + np.exp(-(f["phi"][3] + f["sigma_b"] * z2)))
+        from scipy.stats import norm as _n
+        P = b[None, :] + (1 - b[None, :]) * _n.cdf((x[:, None] - c[None, :]) / f["sigma_resp"])
+        return (P * lw[None, :]).sum(axis=1) / lw.sum()
+
+    def cells_of(pet, resp, weights=None):
+        t = pd.DataFrame({"pet": np.round(pet, 1), "y": resp})
+        g = t.groupby("pet").y.agg(["mean", "count"]).reset_index()
+        return g.pet.to_numpy(float), g["mean"].to_numpy(float), g["count"].to_numpy(float)
+
+    def wr(y, p, w):
+        return float(np.sqrt(np.average((p - y) ** 2, weights=w)))
+
+    track_pet, track_y, track_n = cells_of(s.SetPET.to_numpy(), 1 - s.go.to_numpy())
+    video_pet, video_y, video_n = cells_of(v.pet.to_numpy(), v.intervene.to_numpy())
+    rows = []
+    for name, (pet, yy, nn) in (("track cells", (track_pet, track_y, track_n)), ("video cells", (video_pet, video_y, video_n))):
+        own = ft if name.startswith("track") else fv
+        other = fv if name.startswith("track") else ft
+        chance = wr(yy, np.full_like(yy, np.average(yy, weights=nn)), nn)
+        rows.append((name, chance, wr(yy, pop_curve(own, -pet), nn), wr(yy, pop_curve(other, -pet), nn)))
+    # the sampling-noise floor of each cell set, from the own fit's predicted rate (many track cells
+    # hold one to five runs, where the observed 0/1 mean would give a floor of zero)
+    floors = {}
+    for name, (pet, yy, nn), own in (("track cells", (track_pet, track_y, track_n), ft), ("video cells", (video_pet, video_y, video_n), fv)):
+        ph = np.clip(pop_curve(own, -pet), 1e-6, 1 - 1e-6)
+        floors[name] = float(np.sqrt(np.average(ph * (1 - ph) / nn, weights=nn)))
+    L += ["## T6 Transfer with nothing refitted: one paradigm's fitted population applied to the other", "",
+          "The population curve (driver effects integrated out) of each fit, scored on the other dataset's cell means "
+          "(weighted RMSE, weights = trials per cell) against chance, that dataset's own fit, and the sampling-noise floor of "
+          "its cells (from the own fit's predicted rate; the track's cells hold 1 to 32 runs, so its floor is high).", "",
+          "| scored on | chance | own fit (in sample) | the OTHER paradigm's fit, nothing refitted | noise floor |", "|---|---|---|---|---|"]
+    for name, ch, own_e, oth_e in rows:
+        L.append(f"| {name} | {ch:.3f} | {own_e:.3f} | {oth_e:.3f} | {floors[name]:.3f} |")
+    t_ch, t_own, t_oth = rows[0][1:]
+    vt = "carries over" if t_oth - t_own <= 0.02 else "carries over with an offset" if t_oth - t_own <= 0.05 else "does not carry over"
+    L += ["", f"**Video → track:** the video-fitted population predicts the track's Go/No-Go cells at {t_oth:.3f} against the track's own "
+          f"fit {t_own:.3f} and chance {t_ch:.3f}: **the video model {vt}** (pre-stated margins 0.02 / 0.05). "
+          f"Track → video: {rows[1][3]:.3f} against the video's own {rows[1][2]:.3f} and chance {rows[1][1]:.3f}.", ""]
+
+    # --- T7: the track model's own held-out performance and per-driver reliability ----------
+    # (pre-stated here: LOPO over 13 evenly spaced drivers with fit_stage1_looming.lopo_loglik_gated;
+    # the per-driver posterior-mean level against the model-free bracket midpoint of T5, Pearson r.)
+    x_t = -s.SetPET.to_numpy(float); y_t = (1 - s.go.to_numpy()).astype(float)
+    codes_t, uniq_t = pd.factorize(s.ParticipantNumber.to_numpy())
+    pr_t = F.priors_log_scale(x_t)
+    folds = list(np.linspace(0, codes_t.max(), 13).astype(int))
+    lopo = F.lopo_loglik_gated(x_t, np.ones_like(x_t), y_t, codes_t, pr_t, folds)
+    n_lopo = int(np.isin(codes_t, folds).sum())
+    # chance log-lik on the same held-out trials: the training mean
+    ll_chance = 0.0
+    for fdr in folds:
+        m = codes_t == fdr; pbar = float(np.clip(y_t[~m].mean(), 1e-6, 1 - 1e-6))
+        ll_chance += float((y_t[m] * np.log(pbar) + (1 - y_t[m]) * np.log(1 - pbar)).sum())
+    # per-driver posterior mean level
+    zz, ww = F._gh_nodes(48); z1 = np.repeat(zz, 48); z2 = np.tile(zz, 48); lw = np.log(np.outer(ww, ww).ravel())
+    from scipy.stats import norm as _n
+    c_nodes = ft["mu"] + ft["sigma_pop"] * z1
+    b_nodes = 1.0 / (1.0 + np.exp(-(ft["phi"][3] + ft["sigma_b"] * z2)))
+    lev = {}
+    for k, pid in enumerate(uniq_t):
+        m = codes_t == k
+        P = b_nodes[None, :] + (1 - b_nodes[None, :]) * _n.cdf((x_t[m][:, None] - c_nodes[None, :]) / ft["sigma_resp"])
+        P = np.clip(P, 1e-12, 1 - 1e-12)
+        ll = (y_t[m][:, None] * np.log(P) + (1 - y_t[m][:, None]) * np.log(1 - P)).sum(axis=0) + lw
+        wgt = np.exp(ll - ll.max()); wgt /= wgt.sum()
+        lev[pid] = -float((wgt * c_nodes).sum())        # PET units
+    mids_c = mids["comfort"].set_index("pid")
+    common = [p for p in mids_c.index if p in lev]
+    a = np.array([lev[p] for p in common]); bmid = mids_c.loc[common, "mid"].to_numpy(float); bpet = mids_c.loc[common, "pet_lastgo"].to_numpy(float)
+    r_mid = float(np.corrcoef(a, bmid)[0, 1])
+    ok = np.isfinite(bpet); r_pet = float(np.corrcoef(a[ok], bpet[ok])[0, 1]); n_pet = int(ok.sum())
+    L += ["## T7 The track model on its own terms: held-out drivers and per-driver reliability", "",
+          f"Leave-one-driver-out over {len(folds)} drivers ({n_lopo} held-out runs): log-likelihood {lopo:.1f} against chance "
+          f"{ll_chance:.1f} (the training mean), i.e. {(lopo - ll_chance) / n_lopo:+.3f} per held-out run.", "",
+          f"Per-driver level (posterior mean, PET units) against the model-free bracket midpoint on SetPET (T5): Pearson r = {r_mid:.2f} "
+          f"over {len(common)} drivers; against the observed PET at the last Go (the paper's boundary): r = {r_pet:.2f} over the {n_pet} drivers with a PET. "
+          f"Range of per-driver levels {a.min():.2f} to {a.max():.2f} s (median {np.median(a):.2f}).", ""]
+
     # --- observed PET vs SetPET -------------------------------------------------------------
     go = prim[(prim.go == 1) & prim.PET.notna()]
     L += ["## 3 Observed PET against SetPET on Go runs (how far drivers left the reference trajectory)", "",

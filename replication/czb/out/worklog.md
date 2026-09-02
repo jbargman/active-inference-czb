@@ -1508,3 +1508,22 @@ matched arrival time the faster oncoming vehicle is farther and looms LESS, so l
 the observed direction (the note said the opposite). The agent that started this card was cut
 off at the usage limit after the loader and tests; the comparison script and the fixes are the
 tier-1 session's.
+
+## 2026-09-02 — TT.1 extended (transfer, held-out, reliability) and handbook appendix 17
+
+Jonas: skip the dread boundary for now (the manipulated PET is not what a hurried driver faced);
+where is the test-track analysis, do the video parameters work on the track, how does the model
+perform, are the methods still promising, how large are the differences; write a handbook
+appendix. Added to `ltapod_testtrack.py` (pre-stated in the code before running): T6, transfer
+with nothing refitted — the video-fitted population applied to the track's Go/No-Go cells scores
+wRMSE 0.200 against chance 0.289, the track's own population fit 0.231, and a cell noise floor of
+0.108 (many SetPET levels hold 1-5 runs): CARRIES OVER under the pre-stated 0.02 margin; the
+reverse (track → video) 0.149 against the video's own 0.039 (the track's 0.2 s within-driver
+spread is too sharp for clip judgments). T7, the track model on its own terms: leave-one-driver-
+out over 13 drivers (109 runs) log-likelihood −54.3 vs chance −75.9 (+0.20 per run); the
+estimator's per-driver level correlates r = 1.00 with the staircase's bracket midpoint and
+r = 0.38 with the paper's observed PET at the last Go (22 drivers) — on the track the
+staircase already is the measurement; the hierarchy earns its keep on video. Written up as
+`docs/handbook/17_appendix_test_track.md` ({{R6}}; reading guide row; combined handbook
+rebuilt), marked early results, one scenario. Not tested on the track: the axis (one oncoming
+speed) and the gate (fixed decision moment). T3 (dread) stays in the report as run but is parked.

@@ -80,6 +80,7 @@ its provenance:
 | | 13 Glossary | The same idea in three vocabularies, common misconceptions, and {{R6}}the measurement vocabulary (axis, level, gate, held out, noise floor, percentile, trait) in plain words |
 | | 14 Appendix: the deep end | The material deliberately kept out of the main text — the free-energy principle proper, variational inference, Markov blankets, the debate literature, the discrete-state formulation — for reference |
 | | 15 Appendix: the datasets | Every source a number in this handbook rests on, with the caveat that binds each |
+| | 17 Appendix: the test-track anchor | {{R6}}Early results: the video paradigm against real left turns (the 2013 test-track study), same model, boundary within a quarter of a second, sharpness four times higher in the car |
 | | 16 Appendix: an external required-deceleration model | {{R6}}Early work, external to the project: a colleague's habitual-control comfort-zone model and its fit to the cut-in study, read against our results |
 
 ## Reading paths

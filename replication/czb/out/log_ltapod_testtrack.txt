@@ -109,6 +109,23 @@ Per driver and condition, runs in `RunNumber` order; the last Go and the last No
 
 Dread / comfort on the bracket midpoints (SetPET), 26 drivers with both: median ratio 0.31; on observed PET at the last Go: 0.68 (paper: 0.69 from the regression, medians 1.50 / 2.26). Every driver shorter when hurried on the midpoints: 26 of 26.
 
+## T6 Transfer with nothing refitted: one paradigm's fitted population applied to the other
+
+The population curve (driver effects integrated out) of each fit, scored on the other dataset's cell means (weighted RMSE, weights = trials per cell) against chance, that dataset's own fit, and the sampling-noise floor of its cells (from the own fit's predicted rate; the track's cells hold 1 to 32 runs, so its floor is high).
+
+| scored on | chance | own fit (in sample) | the OTHER paradigm's fit, nothing refitted | noise floor |
+|---|---|---|---|---|
+| track cells | 0.289 | 0.231 | 0.200 | 0.108 |
+| video cells | 0.223 | 0.039 | 0.149 | 0.033 |
+
+**Video ? track:** the video-fitted population predicts the track's Go/No-Go cells at 0.200 against the track's own fit 0.231 and chance 0.289: **the video model carries over** (pre-stated margins 0.02 / 0.05). Track ? video: 0.149 against the video's own 0.039 and chance 0.223.
+
+## T7 The track model on its own terms: held-out drivers and per-driver reliability
+
+Leave-one-driver-out over 13 drivers (109 held-out runs): log-likelihood -54.3 against chance -75.9 (the training mean), i.e. +0.198 per held-out run.
+
+Per-driver level (posterior mean, PET units) against the model-free bracket midpoint on SetPET (T5): Pearson r = 1.00 over 26 drivers; against the observed PET at the last Go (the paper's boundary): r = 0.38 over the 22 drivers with a PET. Range of per-driver levels -0.55 to 4.27 s (median 2.63).
+
 ## 3 Observed PET against SetPET on Go runs (how far drivers left the reference trajectory)
 
 | condition | Go runs with observed PET | median PET ? SetPET [s] | IQR | corr(SetPET, PET) |

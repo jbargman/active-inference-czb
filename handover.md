@@ -95,7 +95,11 @@ Card EL.1 (a second axis on the second cut-in study) has run; its verdict is in
 > minus track −0.27 s, SE 0.20): **the video paradigm reproduces the real comfort boundary within
 > the design resolution**; drivers are much sharper in the car (within-driver spread 0.20 s vs
 > 0.86 s). The paper's numbers reproduce from the protocol. The hurried (dread) condition needs
-> the observed PET, not SetPET (queries TT.Q1–Q4).
+> the observed PET, not SetPET (queries TT.Q1–Q4). Extended the same night: the video-fitted
+> population applied to the track with nothing refitted scores 0.200 against the track's own 0.231
+> (chance {ch}) — carries over; held-out drivers +0.20 log-likelihood per run over chance; the
+> per-driver level equals the staircase's bracket (r = 1.00). Handbook appendix 17 holds the
+> account. The dread boundary is parked by Jonas's decision (2026-09-02).
 
 ## 2 The rules that bind every session (short form; the long form is `docs/czb_work_orders.md` §2)
 
