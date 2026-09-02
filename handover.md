@@ -81,6 +81,19 @@
 > counterfactual magnitude (orders matched-TTC cells by absolute speed, not gap). One
 > sign slip in the gate record's gloss corrected in place. Queries REV.Q1–Q3. The R2.Q5
 > exploration note starts from the review's section 5 constraints.]*
+>
+> *[2026-09-02, later: the R2.Q5 design note exists —
+> `docs/surprise_without_the_field.md`. Its position: surprise is an operator on a
+> reference, scenario-agnosticism belongs to the reference, and only two references
+> qualify — a predictive model of other agents (zero by construction on the cyclist
+> overtake, so not the axis, but a pace-independent onset definition) and a population
+> distribution of accepted states (which IS the CZB ellipse: residual information under a
+> Gaussian is half the squared Mahalanobis distance). Working framing proposed for
+> Jonas's ruling (Q5.Q1): surprise defines the onset, a population percentile the level.
+> Card Q5.1 in `docs/czb_work_orders.md` tests the onset half on data in hand with no
+> preference code; it runs after his review. Queue item (3) is therefore done at the
+> design level; items (1) B.3.v2 and (2) the ellipse note remain, and the ellipse note
+> should start from the identity in the R2.Q5 note's §4.]*
 
 > **Later arcs exist.** `handover_2026-08-29.md` covers the 2026-08-29 overnight batch
 > (gate R.2, the field-versus-gap verdict, the C1 fix, A.2.v2, the transfer re-run);

@@ -1160,3 +1160,33 @@ encroachment onset independent of lateral pace; order matched-TTC cells by gap, 
 absolute speed), and offers the opinion that a worst-case counterfactual may be the right
 reference for collision avoidance and the wrong one for comfort. The R2.Q5 note is being
 written on that basis; say so if the framing should be different.
+
+## 2026-09-02 — the R2.Q5 design note: surprise without the field
+
+Not a card: the first item of the plan Jonas accepted this morning. Written as
+`docs/surprise_without_the_field.md` (+ Word/PDF); no new analysis, every number from a
+tracked output. The argument: the surprise family is an operator on a reference
+distribution, and with a free reference it reproduces any threshold model (residual
+information of exp(-s) is s), so scenario-agnosticism is a property of the reference.
+Two references are scenario-agnostic by construction: (A) a predictive model of what
+other road users do (the Waymo construction; the library's probabilistic/belief-mismatch
+families), and (B) a population distribution of accepted states — under a Gaussian, residual
+information is half the squared Mahalanobis distance, so the CZB ellipse's joint percentile
+IS surprise with a population reference. (A) is zero by construction where the other agent
+behaves normally (the cyclist overtake), so it cannot be the criticality axis alone; it can
+define the stimulus ONSET independent of lateral pace, which is one of the two constraints
+the pipeline review extracted. Proposed working framing: surprise as onset, population
+percentile as level — two references, not one field at two levels. Card Q5.1 (constant-
+velocity Gaussian predictor, four pre-stated tests with decision rules, no preference code)
+appended to `docs/czb_work_orders.md` for the cheaper tier, to run after review.
+@Q5.Q1(judgment, jonas): the two-object framing (world surprise defines when the stimulus
+begins; a population-percentile/ellipse level defines the boundary; one operator, two
+references) is proposed as the working position for any manuscript, pending card Q5.1. It
+gives up "one scalar, two jobs" explicitly. Approve, amend, or reject before Q5.1 runs, since
+the card's decision rules are written to that framing.
+@Q5.Q2(minor, jonas): the predictor's uncertainty-growth sweep (sigma_1 in 0.5-2.0 m/s) is
+motivated by the trajectory-prediction literature from memory and marked unverified in the
+note; the card should cite a source or treat the sweep itself as the motivation.
+@Q5.Q3(minor, jonas): queue order — Q5.1 does not depend on B.3.v2 or the ellipse note and
+touches no shared code; it could run first if the surprise question is wanted settled before
+the comparator constructions. The handover queue currently puts B.3.v2 first.

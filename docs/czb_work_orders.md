@@ -569,6 +569,18 @@ Deliberately not carded for cheap execution: E.2 (uncertainty term) and E.3
 (policy-set field) involve model design, and D (safety audit) touches the causation
 runner's intervention injection. These get cards after their design notes exist.
 
+### Card Q5.1 — world surprise on the data in hand, with no preference function (2026-09-02)
+
+Specified in full in `docs/surprise_without_the_field.md` §6 (the R2.Q5 design note);
+read that note first, the card is not repeated here. In one line: a constant-velocity
+Gaussian predictor of the *other* agent's body-frame position, residual information and
+antithesis via `src/surprise/`, four pre-stated tests (onset independent of lane-change
+duration on study 2; identically zero on the cyclist overtake; surprise-alone and
+surprise × inverse-gap as added covariates under the registered R.2 fit and folds, in a
+new script; the CAMP braking-lead onset check). Decision rules are in the note. Touches
+no preference code and front-runs neither B.2 nor B.3. Runs after Jonas has reviewed the
+note (query Q5.Q1).
+
 ## 4 Suggested session pattern
 
 One card per session, in card order within a stage; start each session with "read
