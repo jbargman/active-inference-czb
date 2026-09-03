@@ -1896,3 +1896,34 @@ bottleneck. That is the honest reading of card C on this axis and it belongs nex
 first mention of a trigger, not only at the end.
 
 19 slides, 12 animated, notes budget 28.8 min. Every slide after 3 shifts by one against v6.
+
+### Concepts deck v8 — the axis slide's trap named, and the gate and noise-floor notes expanded
+
+Jonas: "For slide 3, can you just explain to me what I am seeing. It looks like the top metric
+is much clearer than the bottom one for identifying the 'value' or? What am I missing?" and
+"Add a bit more explanation in slide 11, but only in the notes. I am not sure I understand it."
+
+**Slide identification.** The description does not fit v7's slide 3 (the new four-panel ADAS
+loop, no plot). A top metric against a bottom metric is the AXIS animation — top left the
+field's deficit, bottom left the expansion rate — which is slide 7 in v7. His question is
+exactly the trap that slide is built around, which means the takeaway was not landing: it only
+appears in the animation's last phase, and the on-slide caption merely said "takeaway on the
+picture". The caption now states it outright, and the notes answer the objection directly:
+the top panel does discriminate more, but the two stimuli differ only in lane-change duration
+and participants responded to both at about 0.9, so the field is drawing a sharp distinction
+people did not draw. Across all 288 cells that costs it 0.347 against 0.113, floor 0.118.
+
+**Slide 11 is ambiguous** between v7 (the gate) and v6 numbering (the noise floor), and he has
+both files. Rather than spend a round trip asking, BOTH sets of notes were expanded — the cost
+is a few paragraphs of speaker notes that are read by one person.
+  - GATE: what lateral clearance is, how the 0.3 s rate and the 3 s projection combine, why w
+    is a probability rather than a switch (fitted softness about a metre), why the horizon was
+    fixed in advance rather than tuned, and the reason to believe it — two parameters fitted on
+    post-onset cells only, then predicting the 90 unseen pre-onset cells to 0.032.
+  - NOISE FLOOR: why the number exists at all (0.113 means nothing without a reference), what
+    "at the floor" licenses and does not ("as good as this data can show", not "better than
+    perfect"), when to stop modelling and go to new data, why the floor is the reason
+    everything is scored held out (an in-sample fit can beat the floor by memorising noise),
+    and the caveat that the floor is itself estimated from observed rates.
+
+No new slides and no animation changes; 19 slides, 12 animated, notes budget 29.1 min.

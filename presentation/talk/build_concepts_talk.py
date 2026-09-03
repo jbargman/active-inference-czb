@@ -281,7 +281,7 @@ measure; the rest of the deck is how.
     concept(prs, "1  the axis",
             "The AXIS: which candidate tells two stimuli apart the way participants did?",
             "concept_axis.gif",
-            "Two study-2 stimuli, same speed and starting TTC, lane change in 2 s or 4 s. Left: the two candidate axes. Right: what participants did. Takeaway on the picture.",
+            "Two stimuli, same speed and starting TTC, lane change in 2 s or 4 s. TOP LEFT (the field's deficit) separates them dramatically; BOTTOM LEFT (expansion rate) says they are alike. The separation looks like the better signal — but the right panel shows participants treated them as ALIKE, so the top panel is discriminating something people did not use.",
             2.0, """
 An axis is whatever number we read off the scene at each moment and put the boundary on.
 The picture asks one question: which candidate agrees with people?
@@ -299,6 +299,19 @@ says the two are alike; people agreed. On all 288 cells held out, the expansion 
 The takeaway is on the slide: the axis is an empirical choice, decided by agreement with
 people, not by how decisive a curve looks. A step is not better than a ramp; matching the
 data is better.
+
+If someone says "but the top panel is the clearer signal — it separates the two stimuli and
+the bottom one barely does" — that is the trap this slide is built around, and it is worth
+answering head-on. Yes, the top curve discriminates more. The question is whether it is
+discriminating something real. Here it is not: the two stimuli differ only in how long the
+lane change takes, and participants responded to them almost identically, at about 0.9 in
+both. So the field is drawing a sharp distinction that people did not draw. On this data that
+is not sensitivity, it is a false alarm — and across all 288 cells it costs the field dearly:
+0.347 against 0.113 for the expansion rate, with a noise floor of 0.118.
+
+The general form of the point: an axis is not better for being more decisive. It is better for
+agreeing with what people did. A flat, boring curve that tracks the data beats a dramatic one
+that does not.
 """)
 
     # 4b the axis taken apart (Jonas, 2026-09-03)
@@ -403,17 +416,40 @@ from preference, median 5 400 units; it lost to this one by 14.9 log-likelihood 
             "The GATE: does this vehicle count yet?",
             "concept_gate.gif",
             "Same stimulus. The arrow shows where the car will be in 3 s at its current sideways speed. w rises from 0.07 to 1 as that projection reaches into my lane.",
-            1.5, """
-Before the lane change starts, the car is in its own lane and drivers do not respond,
-whatever the gap. The gate is the model's way of saying "not yet": from the car's clearance
-now and how fast that clearance is shrinking (measured over the last 0.3 s), project 3 s
-ahead; w is the probability that the projection comes within a minimum clearance. Two
-parameters, fitted on post-onset cells only; the gate then predicted the 90 pre-onset cells
-out of sample to 0.032 (card G.1, out/cutin2_gate.md), and improved the post-onset fit too.
-The idea came from Sarang's independently developed analysis (handbook appendix 16).
+            1.8, """
+Start with the problem the gate solves. Before the lane change begins, the other car is
+sitting in its own lane. It may be very close and closing fast — the expansion rate can
+already be high — and drivers still do nothing, because it is not coming at them. If the
+model had only the axis, it would predict a flood of interventions that never happened. The
+gate is what stops that.
 
-The gate is where scenario knowledge enters. On a left turn it is "will the oncoming car
-reach the crossing before I clear it". The axis and the level are what we claim carry over.
+What the gate actually computes, step by step. Take the LATERAL clearance: the sideways gap
+between the two vehicles' edges, right now. Measure how fast that clearance is shrinking, over
+the last 0.3 seconds. Now project it forward 3 seconds at that rate: where would the sideways
+gap be if this continued? If the projection stays comfortably out in the other lane, the
+situation does not count yet. If the projection reaches into my lane, it does.
+
+Two things people ask at this point, so I will pre-empt them.
+
+Why is w a probability rather than a yes/no? Because the projection is uncertain, and drivers
+are not unanimous. We fit a softness — a clearance below which the answer is clearly yes, and
+a scale over which it goes from no to yes. The fitted softness is about a metre, so the gate
+is genuinely gradual and not a switch. w is the weight the axis gets multiplied by, and it
+runs from about 0.07 before onset to 1 once the car is committed to the manoeuvre.
+
+Why 3 seconds and not some other horizon? It was fixed in advance, not tuned; the idea came
+from Sarang's independently developed analysis, which used the same fixed horizon.
+
+The reason to believe it. The two parameters were fitted using ONLY cells from after the lane
+change had started. The gate then had to predict the 90 cells from BEFORE onset, which it had
+never seen — and it got them to 0.032, close to the noise floor. That is the test that
+matters, because the gate's whole job is to be near zero in exactly those pre-onset cells.
+It also improved the fit on the post-onset cells it was fitted on.
+
+Finally, why the gate matters for the programme. The gate is where scenario knowledge lives:
+on a left turn it becomes "will the oncoming car reach the crossing before I clear it", which
+is a completely different geometry. The axis and the level are what we claim carry across
+scenarios; the gate is what we expect to rewrite each time.
 """)
 
     # 7 noise floor
@@ -434,6 +470,10 @@ weighted by how many people saw each one.
 
 That second number is the whole point of this slide.
 
+The question this slide answers is: how good is good enough? When I say a rule scores 0.113
+held out, is that close to perfect or miles off? Without a reference point the number means
+nothing, and the noise floor is that reference point.
+
 Popular-science version: flip 16 fair coins. You expect 8 heads; you rarely get exactly 8.
 Ask 16 people whose true chance of saying "yes" is one half, and the same thing happens: the
 observed share scatters around 0.5 with a spread of about 0.12. Each of our cells is 12 to 24
@@ -445,6 +485,27 @@ the 288 cells and you get 0.118. That is the noise floor: the error the best pos
 would show. A model at the floor cannot be improved on this data, and two models both at the
 floor cannot be told apart. It is computed from the observed cell means and counts, so it is
 measured, not assumed.
+
+Three consequences, and they govern how every other number in this deck should be read.
+
+First, it sets the scale. The looming rule scores 0.113 and the floor is 0.118. That is not
+"slightly better than perfect" — it is at the floor, and a little under it by luck, which is
+what a model at the floor does about half the time. The right statement is "this rule is as
+good as this data can show", not "this rule is better than perfect".
+
+Second, it tells you when to stop. The gap threshold scores 0.152 against a floor of 0.118, so
+there is real room above it and the comparison against looming is meaningful. Once two
+candidates are both at 0.118, more modelling on this dataset cannot separate them, and the
+answer has to come from new data — a different design, or naturalistic driving.
+
+Third, it is why the deck keeps saying "held out". The floor is the error of a model that
+already knows the truth. A model fitted on these same cells can score BELOW the floor by
+memorising the noise, which looks like success and is not. Scoring on cells the model never
+saw is what makes the comparison against the floor honest.
+
+One caveat I would state if asked: the floor is itself an estimate, computed from the observed
+rates rather than the unknown true ones, so it carries its own uncertainty. It is a
+well-placed reference line, not a precise constant.
 """)
 
     # 8 how we test
