@@ -2001,3 +2001,85 @@ scrolling it ever matters more than playing it, the options are: a static PNG of
 placed beside the video on the slide; a duplicate hidden slide carrying the final frame; or
 designing each animation so frame 0 already shows the scene at rest rather than empty axes (most
 work, best result). Recording the trade-off so no later session silently reverses it.
+
+## 2026-09-03 (evening, capable session) — the authors' edition reviewed against the released code and the post-08-24 findings
+
+Jonas: "go through the author's handbook and verify that all is now correct, and update
+anything that we may have learned from working with the model — but we should not go into the
+CZB perspective." Started from `docs/authors_handbook_review_brief.md`, then read the whole of
+`docs/handbook_authors/aif_driver_model_handbook.md` and checked its code claims against
+`external/aica/` line by line where a number or a mechanism was stated. Suite before and after:
+31, 33, 40, 96, 62. No source files changed.
+
+**Errors found in the first edition, all against the released code, all corrected in place with
+a dated note.**
+- *Planner elite set and iterations* (chapter 03, both the component paragraph and Level 2).
+  The edition said "refine the best tenth, repeat ~10 rounds". `mpc_discrete.py:47-48`
+  transforms the nominal `top_percent` = 0.1 to 0.1^(log 0.5 / log 0.1) = 0.5 and takes
+  max(min(50, N/2), ceil(0.5 N)) plans, so 50 of 100 are elite; `iters` = 10 is doubled to 20
+  around every `generate_optimal_plan` call (lines 374/379 and 425/431), so a full re-plan is 20
+  rounds and the one-step patch (`produce_reference_plan`, H = 1) is 10. The SI's 20 and the
+  paper's 10 are both right for different calls (method_review §5 item 8 already had this; the
+  edition had not carried it). The internal chapter 03 had the same error; {{R7}} note added.
+- *Collision severity factor* (chapter 07 Level 2). The edition wrote max(Δv/10, 0.2);
+  `reward.py:299` is 0.2 + 0.8·Δv/10 on the absolute longitudinal speed difference at first
+  contact, uncapped (1.8 at 20 m/s). Internal chapter 07 had the same; {{R7}} note added.
+- *Safety-margin term's form* was not stated: it is an indicator, 0.5 × g_C × severity floor
+  = −1000 per step when a_req < −a_max (8) or the gap closes within t_react, else 0
+  (`reward.py:353-357`), and both it and the τ⁻¹ term are multiplied by
+  `test_looming_viability(perc=False)` (1.15 widths; `reward.py:239,276,307`). Now stated.
+- *Looming threshold*: the fixed 0.00215 is correct, but `decoder.py:170-184` carries a
+  distance-dependent threshold (0.00377 at 20 m → 0.00215 at 40 m, asymptote 0.001) that
+  `encoder.py:89` computes and line ~100 then overrides with the fixed config value. Dead code;
+  noted in Level 2 so the authors know the reading is deliberate.
+- *"tens of seconds per timestep"* softened to the measured range (internal chapter 03 {{R2}}).
+
+**Additions from what was learned since 2026-08-24, none of it CZB-framed.** A new tag [Study]
+for the project's own analyses (defined in the preamble, and in the edition's README). Chapter 04:
+the line-by-line "three files" section from the internal chapter 04 {{R3}} round (no repo paths,
+no figure), and a checklist note that the released lateral gates are binary (3 widths perception,
+1.15 widths preference) so a partly-in-lane target is all-or-nothing. Chapter 03: the looming
+rate as the best single scalar on the second cut-in study (`out/cutin2_looming.md`: 0.113 vs
+gap 0.152, size 0.152, 1/TTC 0.168, a_req 0.289, floor 0.118; EL.1 weight 0.497), with the Xue
+et al. (2018) caveat. Chapter 05: pre-conflict drift matters little near the conflict
+(`docs/crash_causation_results.md` §5: median 0.30 s, half-start over-corrects by ~1 s).
+Chapters 06 and 08: beliefs coast through a forced occlusion; the gaze gate blocks observation,
+not inference (the CBM comparison left out, per the README's inventory-only rule). Chapter 07:
+the safety term's indicator saturation on a cut-in (internal ch. 04: −2112 at both 10 m and
+21 m at 30 m/s) and the counterfactual magnitude's absolute-speed ordering
+(`docs/r2_pipeline_review.md` §3.2: ~0.33 (m/s)/m of gap vs 1.5–2.0 per m/s of speed), scoped
+exactly as §3.3 scopes it, with the ~44% gate share attributed to OUR gate and the gate-free
+0.26 quoted (`out/cutin2_lane_gate_diagnostic.md`). Chapter 10: the λ·g_C one-degree-of-freedom
+note (method_review §6.1). Appendix 16's external numbers were NOT taken into the edition.
+
+**DECK.Q1 verified, not ruled on.** Xue, Q., Markkula, G., Yan, X. & Merat, N. (2018), Using
+perceptual cues for brake response to a lead vehicle: comparing threshold and accumulator models
+of visual looming, *Accid. Anal. Prev.* 118, 114–124. It is reference 10 of the Nature
+Communications paper's own list (`notes/paper_text/2026 - ...txt` line 2172), and its abstract
+(PubMed 29929099; White Rose eprint 131962) states: "For all versions of the mechanistic models,
+models using τ⁻¹ as the measure of looming fitted better than those using θ̇", accumulator models
+fitted the RT distribution better than pure thresholds, and brake lights improved the fit. The
+deck's caveat and appendix 16.3's sentence are therefore accurate as written.
+
+RESOLVED DECK.Q1: the citation is verified against the paper's abstract (details above); the
+motivation slide's wording stands, and the citation may now be treated as verified wherever it
+appears (deck notes, appendix 16.3, the authors' edition chapter 03). Resolved by verification,
+not by a ruling; Jonas may still prefer generic wording.
+
+@AH.Q1(judgment, jonas): the two [Study] paragraphs (chapter 03, the looming-rate result;
+chapter 07, the safety term against the raters) put unpublished human-data results in front of
+the authors, stated as properties of the model rather than as CZB work. Confirm that these two
+should go out with the edition, or cut them and keep only the code corrections and the
+released-model findings (three files, coasting beliefs, drift, λ·g_C).
+
+@AH.Q2(minor, review): `src/aidriver/preferences.py::log_collision_pref` docstring (near line
+440) says "The released tau^-1 preference has no lateral gate at all -- any vehicle 'ahead'
+triggers it". `reward.py:239` computes `looming_viable = test_looming_viability(o, perc=False)`
+(1.15 widths) and line 276 multiplies the τ⁻¹ log-preference by it, so the released term IS
+laterally gated. Nothing numerical depends on the docstring; not edited under rule 3. Check
+and correct the docstring, and check whether `lane_entry_continuous`'s weighting of the τ⁻¹
+term was motivated by that reading.
+
+@AH.Q3(minor, jonas): the edition's README used to say "one-off, will not track". It now says
+"revised only when a review of the published model warrants it". Confirm, or restore the
+one-off rule and keep this revision as the last.

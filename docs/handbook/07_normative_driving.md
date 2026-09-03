@@ -143,10 +143,14 @@ documentation error), lane-structured per scenario (SI Eq. 52). Inverse-tau: Gau
 1/τ with mean 0.2 s⁻¹, sd 0.125 s⁻¹, evaluated on max(1/τ, 0.2) so that it is one-sided
 [Code: `reward.py:272`; SI Eq. 48 writes it symmetric]. Our mirror (`src/aidriver/
 preferences.py`) follows the code for all of these and keeps the SI forms behind flags.
-Collision: cost −10000 scaled by severity = max(Δv/10 m/s, 0.2) — the floor is SI
-Eq. 48, not a fudge. Safety margin (SI Eqs. 49–51): required deceleration under the
-counterfactual (lead brakes at min(observed, assumed worst); own response after
-t_react = 1 s), compared against the achievable 8 m/s²; the closed-form boundary this
+Collision: cost −10000 times the severity factor 0.2 + 0.8·Δv/(10 m/s), Δv the absolute
+longitudinal speed difference at first contact, uncapped — the 0.2 floor is SI Eq. 48,
+not a fudge {{R7}}(corrected 2026-09-03: the first version wrote max(Δv/10, 0.2), which is
+not the released form; `reward.py:299`). Safety margin (SI Eqs. 49–51): required
+deceleration under the counterfactual (lead brakes at min(observed, assumed worst); own
+response after t_react = 1 s), compared against the achievable 8 m/s², charged as an
+indicator of 0.5 × g_C × 0.2 = −1000 per step when violated and gated by the 1.15-width
+lateral box (`reward.py:276,307,353`); the closed-form boundary this
 yields is `src/comfortzone/field.py::critical_gap` and chapter 11. Norm weights: Part
 B's geometries with factors 0.001 and 0.001 × 0.01 (`weigh_particles`,
 `full_violation_factor`); oncoming's speed compliance 1 − 2.25 (v/v₀ − 1)², clipped

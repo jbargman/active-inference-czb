@@ -8,12 +8,15 @@ what is waiting on Jonas, what to do in what order, and when to stop and ask. It
 the science; the documents it points to do that. Where this file and the repository disagree, the
 repository wins, and you should say so in your reply.*
 
-> **Handed to a capable session, 2026-09-03 evening:** the review of the **authors' edition of
-> the handbook** (`docs/handbook_authors/`) against what has been learned about the *published*
-> model since 2026-08-24. Jonas asked for it explicitly and it is deliberately NOT in the queue
-> below. The starting brief, with the one verified finding, the strongest positive finding, one
-> thing that must not be misattributed, and what was never checked, is
-> **`docs/authors_handbook_review_brief.md`**. Do not redo that scan from scratch; start there.
+> **Done by a capable session, 2026-09-03 (later the same evening):** the review of the
+> **authors' edition of the handbook** (`docs/handbook_authors/`) against the released code and
+> what has been learned about the *published* model since 2026-08-24. The edition is revised in
+> place with dated notes and rebuilt; the worklog entry of that date lists every change, and the
+> internal chapters 03 and 07 carry the same two code corrections as {{R7}} notes. Waiting on
+> Jonas: **AH.Q1** (keep the two [Study] paragraphs in the shared edition?), **AH.Q3** (the
+> edition's README no longer says "one-off"); for review: **AH.Q2** (a docstring in
+> `preferences.py` misstates the released τ⁻¹ term's lateral gate). **DECK.Q1 is resolved by
+> verification** (Xue et al. 2018 says what the deck says). Do not redo the review.
 
 ## 0 What to do when a session starts
 
@@ -184,7 +187,7 @@ adopt the two-scalar wording, with the standing genericity ruling in §1 as the 
 |---|---|---|
 | **EL.Q4** (judgment) | The old EL.Q2 restated after Jonas said it was opaque: each scenario's axis is in different units (rad/s, s, m), so what does EL.2 divide by to share one population? Recommendation on file — normalise by each scenario's between-driver spread, with the design-span version reported as a sensitivity | **card EL.2**, the largest blocked item |
 | **G1R.Q3** (judgment) | The paperwork half of the old G1R.Q1 (its generic half is settled by the §1 ruling): dated notes in the roadmap and scope map saying the deliverable is a percentile over driver levels on *each scenario's own axis*; regenerate card C's report on the looming axis? | the document sweep in §4 item 6 |
-| **DECK.Q1** (judgment) | The Xue et al. (2018) citation on the deck's motivation slide reaches us only through Sarang's note, whose references appendix 16.5 records as unverified. Verify, or use generic wording? | showing the concepts deck outward; also the authors'-handbook review |
+| DECK.Q1 (**resolved 2026-09-03 by verification**) | The Xue et al. (2018) citation is real (*Accid. Anal. Prev.* 118, 114–124; reference 10 of the Nature Communications paper) and its abstract says τ⁻¹ fitted better than θ̇ for both threshold and accumulator models. The deck's wording stands | nothing; the deck may be shown as worded |
 | **DECK.Q4** (judgment) | The deck's title slide names the model "a gated threshold model of the comfort-zone boundary", filling Jonas's placeholder. Accept or rename | one string in `build_concepts_talk.py` |
 | C.Q2 (judgment) | Should the percentile deliverable stay on the deficit axis? **Stale** — G1.Q1 already moved it to looming. Flagged to Jonas as closable; he has not ruled | nothing |
 | ANIM.Q1 (minor) | Build order for animations S2–S7; a labeled synthetic figure acceptable? | §4 item 4 |
@@ -264,7 +267,7 @@ SetPET is the stimulus (appendix 17 and TT.Q2 say why).
 | the external analysis, read in our terms | handbook `docs/handbook/16_appendix_external_rh_model.md` |
 | the decisive negative result and its scope | `docs/r2_gate_decisions.md`, `docs/r2_pipeline_review.md`, `replication/czb/out/cutin2_field_vs_gap.md` |
 | what survives (the trait, the boundary distribution) | `replication/czb/out/cross_scenario_consistency.md` (model-free), **`out/driver_levels.md` + `.csv` (card TR.1: the same question of the fitted levels)**, `out/stage1_summary.md` (the old deficit axis, superseded), `out/percentile_sensitivity.md` |
-| **the authors' edition of the handbook, and its review** | `docs/handbook_authors/` (one-off, 2026-08-24, does not track the internal handbook — see its README), `docs/method_review.md` (2026-08-23), and **`docs/authors_handbook_review_brief.md`** — the starting brief for the revision review Jonas handed to a capable session |
+| **the authors' edition of the handbook, and its review** | `docs/handbook_authors/` (2026-08-24, **revised 2026-09-03**; does not track the internal handbook — see its README), `docs/method_review.md` (2026-08-23), `docs/authors_handbook_review_brief.md` (the starting brief), and the worklog entry of 2026-09-03 (evening, capable session) listing every revision |
 | **how the decks and their animations are built** | `presentation/talk/README.md`, and **`docs/skill_additions_video.md`** — the video pipeline and its traps, written to be folded into the `chalmers-slide-generation-jonas` skill |
 | the design notes | `docs/surprise_without_the_field.md`, `docs/czb_ellipse_design_note.md`, `docs/ltap_construction_note.md`, `docs/lane_entry_note.md`, `docs/overtake_construction_note.md` |
 | the cards and the standing rules | `docs/czb_work_orders.md` |

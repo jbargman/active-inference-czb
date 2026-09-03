@@ -70,6 +70,11 @@ sometimes returns a merely decent plan, which is a modeling commitment about hum
 bug [Paper].
 *Input:* belief cloud, preferences. *Output:* the (kept or replaced) plan; its first step
 goes to the vehicle. [Code: `mpc_discrete.py`]
+{{R7}}*Corrected 2026-09-03 against `mpc_discrete.py` during the authors'-edition review: the
+elite set is the better half, not the best tenth (the constructor transforms the nominal
+`top_percent` = 0.1 to 0.1^(log 0.5/log 0.1) = 0.5, so 50 of 100 plans), a full re-plan runs
+20 iterations (`iters` doubled around `generate_optimal_plan`), and the one-step patch runs
+10 iterations over the newly exposed final step only.*
 
 {{R1}}**7. The surprise account (evidence accumulation).** The response-timing mechanism, and the
 piece this project reuses for comfort zones. Each step it receives the gap between what the
@@ -134,8 +139,11 @@ sequences — sample, score by expected free energy, keep the elite fraction, re
 sampling distribution, iterate. Acting: execute the first control of the incumbent plan.
 
 **Level 2 — sizes and references.** Δt = 0.2 s; horizon H = 30 (6 s); particles N = 75;
-CEM: 100 candidate plans, elite fraction 0.1, ~10 iterations; looming threshold
-0.00215 s⁻¹; evidence accumulation E(t) = E(t−1) + λ·ε(t), re-plan at E ≥ 1 (Paper
+CEM: 100 candidate plans, elite set 50 (nominal fraction 0.1, transformed to 0.5 in the
+constructor), 10 iterations for the patch and 20 for a full re-plan {{R7}}(corrected
+2026-09-03; the first version said elite fraction 0.1, ~10 iterations); looming threshold
+0.00215 s⁻¹, fixed (the decoder's distance-dependent threshold, 0.00377 at 20 m to 0.00215
+at 40 m, is computed by the encoder and then overridden by the fixed value); evidence accumulation E(t) = E(t−1) + λ·ε(t), re-plan at E ≥ 1 (Paper
 Eq. 13). Observation model and looming transform: SI §2.2; belief update §2.3; preference
 terms §2.4 Eqs. 44–52; planner §2.5 [SI]. Parameter values as shipped: the OSF deposit's
 `Setups_*.xlsx` (65 columns per run) [OSF]. Our independent NumPy re-implementation of

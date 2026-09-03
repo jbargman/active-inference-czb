@@ -8,6 +8,17 @@ enough to build on it. It is shared with the authors of that work in the spirit 
 companion text: what a careful outside reader reconstructed, stated plainly enough to be
 checked. Any errors of reading are ours, and corrections are very welcome.*
 
+*Revised 3 September 2026. The first edition was prepared on 24 August 2026. Since then we
+have read the released code more closely, run the model outside its published scenarios,
+and compared parts of it against human response data for our own purposes, and several
+passages have been corrected or extended as a result. Every revision is dated in place.
+The largest are: the planner's elite set and iteration counts (chapter 03); the collision
+severity factor and the indicator form of the safety-margin term (chapter 07); a
+line-by-line account of what differs between the three released scenarios (chapter 04);
+what the belief machinery does when the observation channel is closed (chapters 06 and
+08); and two findings from human data about the model's perceptual and preference stages
+(chapters 03 and 07), carried under a new tag, [Study].*
+
 ## What this handbook is
 
 This handbook explains the active-inference driver model of Schumann, Engström, Johnson,
@@ -18,7 +29,7 @@ change. It is written for a mixed audience of traffic-safety analysts and human-
 researchers. The main text of every chapter avoids mathematics; each chapter ends with
 layered notes for readers who want the equations.
 
-The handbook is grounded in four kinds of sources, and every substantive claim is tagged
+The handbook is grounded in five kinds of sources, and every substantive claim is tagged
 with its provenance:
 
 - **[Paper]** — the published article
@@ -30,6 +41,10 @@ with its provenance:
   handbook show real numbers rather than sketches
 - **[Opinion]** — our own readings and judgments, marked so they cannot be mistaken for
   the authors' claims
+- **[Study]** — our own analyses since the first edition: human intervention judgments on
+  video clips of a highway cut-in (2026, unpublished), and the released model run on
+  scenarios outside the published three. Stated so they can be checked; not the authors'
+  claims, and not yet peer reviewed
 
 ## The chapters
 
@@ -458,14 +473,19 @@ enough". Six independent terms, each with interpretable knobs (chapter 07).
 `reward.py` per scenario; SI §2.4]
 
 **6. The planner (bounded, not optimal).** Holds one current plan — a 6-second control
-sequence. Ordinarily the plan is only *patched*: shifted one step and locally re-optimized
-cheaply. A full re-plan — propose ~100 candidate plans, score them all against the
-preferred future across the belief cloud, refine the best tenth, repeat ~10 rounds — runs
-only when the surprise account demands it. The budget is deliberately capped: the planner
-sometimes returns a merely decent plan, which is a modeling commitment about humans, not a
-bug [Paper].
+sequence. Ordinarily the plan is only *patched*: shifted one step, and only the newly
+exposed final step is re-optimized (ten rounds of one-step proposals). A full re-plan —
+propose 100 candidate plans, score them all against the preferred future across the
+belief cloud, refit the proposal distribution on the better half, repeat twenty rounds,
+keep the single best plan of the last round — runs only when the surprise account demands
+it. The budget is deliberately capped: the planner sometimes returns a merely decent plan,
+which is a modeling commitment about humans, not a bug [Paper].
 *Input:* belief cloud, preferences. *Output:* the (kept or replaced) plan; its first step
 goes to the vehicle. [Code: `mpc_discrete.py`]
+*Revised 2026-09-03: the first edition said "the best tenth" and "~10 rounds". The
+released planner transforms its nominal elite fraction of 0.1 into 0.5 before using it, so
+50 of 100 plans are elite, and it doubles its 10 iterations to 20 around every full
+re-plan; the Level 2 note gives the lines.*
 
 **7. The surprise account (evidence accumulation).** The response-timing mechanism. Each
 step it receives the gap between what the current plan is now expected to deliver and the
@@ -490,6 +510,34 @@ against each other without an arbitration rule. In the published collision-avoid
 the pragmatic part dominates [Paper]; the epistemic part is the natural hook for glance
 behavior and uncertainty-driven slowing (chapter 08).
 
+## The looming channel, tested against human judgments
+
+*Added 2026-09-03.* For our own purposes we asked which single scene quantity best
+predicts when people say they would intervene in a highway cut-in, shown as video clips
+frozen at successive moments (378 clips, 288 of them after the cut-in has begun, 10–26
+raters per clip; one three-parameter probit threshold per candidate, scored out of sample
+by holding out each starting time-to-collision level in turn). The candidates were the
+gap, time to collision (equivalently inverse tau), the target's optical size, the required
+deceleration, and the optical expansion rate θ̇ that the model's own perception stage
+computes. The expansion rate won outright: held-out weighted RMSE 0.113, against 0.152
+for the gap, 0.152 for optical size, 0.168 for inverse tau and 0.289 for required
+deceleration, with the sampling-noise floor of the data at 0.118. A two-dimensional rule
+fitted freely in log gap and log time-to-collision put a weight of 0.497 on the gap
+(0.474–0.512 across folds), which is the small-angle identity θ̇ ≈ W·Δv/gap² rather than
+an approximation of it [Study].
+
+We report this because it was not the question we set out to answer, and because it cuts
+the other way from what chapter 07 reports about the preference terms: the model's
+*perceptual* front end, chosen by the authors on visual-control grounds, is the quantity
+that human intervention judgments track best on this paradigm. One caveat belongs beside
+it. Xue, Markkula, Yan and Merat (2018, *Accident Analysis and Prevention* 118, 114–124)
+compared the same two looming cues on brake onsets in a driving simulator and found
+inverse tau the better cue for both threshold and accumulator models, with accumulator
+models fitting the response-time distributions better than pure thresholds. Whether the
+reversal is the paradigm (frozen video without self-motion against a simulator), the task
+(a judged intervention point against an executed brake onset) or the scenario (a cut-in
+against a braking lead) is open; naturalistic onsets would settle it [Opinion].
+
 ## What is deliberately human about it
 
 | Design choice | The human claim behind it |
@@ -509,7 +557,10 @@ behavior and uncertainty-driven slowing (chapter 08).
 - The other vehicle is **not intelligent**: it follows a script and never reacts to our
   driver (chapter 06). There is no negotiation or interaction in the published model.
 - It is **not fast**: the code is written for GPU; on a CPU, one simulated timestep of a
-  batched run costs on the order of tens of seconds.
+  batched run has cost us anywhere from under a second to tens of seconds, and the
+  variation between runs is wide with no clean predictor (a 45-step scenario with four
+  parallel repeats has taken between minutes and hours on the same machine). Plan batches
+  to be restartable, and measure before extrapolating [Study].
 
 ---
 
@@ -520,13 +571,22 @@ by the likelihood of the new observation under each particle, then normalized; p
 are refreshed by resampling when weights degenerate. Prediction: particles are pushed
 through the bicycle dynamics with control noise on the other agent, reweighted by
 norm-compliance (chapter 06, Level 2). Planning: cross-entropy method over control
-sequences — sample, score by expected free energy, keep the elite fraction, refit the
-sampling distribution, iterate. Acting: execute the first control of the incumbent plan.
+sequences — sample, score by expected free energy, keep the elite half, refit the
+sampling distribution, iterate, and return the best plan of the final round. Acting:
+execute the first control of the incumbent plan.
 
 **Level 2 — sizes and references.** Δt = 0.2 s; horizon H = 30 (6 s); particles N = 75;
-CEM: 100 candidate plans, elite fraction 0.1, ~10 iterations; looming threshold
-0.00215 s⁻¹; evidence accumulation E(t) = E(t−1) + λ·ε(t), re-plan at E ≥ 1 (Paper
-Eq. 13). Observation model and looming transform: SI §2.2; belief update §2.3; preference
+CEM: 100 candidate plans; elite set 50 — the planner's constructor raises the nominal
+`top_percent` = 0.1 to 0.1^(log 0.5 / log 0.1) = 0.5 and takes
+max(min(50, N/2), ⌈0.5·N⌉) plans, so half of them at N = 100; iterations 10 for the
+one-step patch and 20 for a full re-plan (`iters` is doubled around each
+`generate_optimal_plan` call, so the SI's 20 and the paper's 10 are both right, for
+different calls) [Code: `mpc_discrete.py`; revised 2026-09-03]; looming threshold
+0.00215 s⁻¹, a fixed value — the decoder also carries an unused distance-dependent
+threshold, interpolating 0.00377 s⁻¹ at 20 m to 0.00215 s⁻¹ at 40 m headway, which the
+belief update computes and then overrides with the fixed one [Code: `decoder.py`,
+`transform_to_looming`; `encoder.py`]; evidence accumulation E(t) = E(t−1) + λ·ε(t),
+re-plan at E ≥ 1 (Paper Eq. 13). Observation model and looming transform: SI §2.2; belief update §2.3; preference
 terms §2.4 Eqs. 44–52; planner §2.5 [SI]. Parameter values as shipped: the OSF deposit's
 `Setups_*.xlsx` (65 columns per run) [OSF].
 
@@ -610,6 +670,83 @@ for the longer-gap rear-end conditions the assumed worst case saturates at −8 
 [Code: `Analysis_following.xlsx`, `find_parameters`]. Chapter 10 returns to this as a
 general lesson about calibration coverage.
 
+## The three files, line by line
+
+*Added 2026-09-03, from a line-level diff of `src/rear_end_test/`, `src/oncoming/` and
+`src/intersection/` [Code]. The five groups above say what changes; this section says
+exactly where, because a new scenario will be written by editing these three files and it
+matters which lines are the scenario and which are the driver.*
+
+**A naming trap first.** The intersection scenario's files are called *side* at top level
+(`simulation_side.py` sets `name = 'intersection'`, and `Analysis_side.py` analyzes it)
+but *intersection* inside `src/`. Searching for one name finds half the code.
+
+**`decoder_true.py` is identical in all three.** The three versions differ by exactly
+three lines, all of them docstring, where the rear-end version documents two extra state
+variables (`t_brake_tar`, `j_brake_tar`) belonging to its target's brake script. How the
+world becomes observations — the looming transform, the noise model, the gaze gate — is
+scenario-independent in the released code. The only thing that makes it
+scenario-dependent is the vehicle dimensions it is constructed with, since the looming
+angle depends on the target's width.
+
+**`dynamics_true.py` is where nearly all the code volume is, and none of the driver.** The
+three versions are 162, 354 and 665 lines (rear-end, intersection, oncoming), and the
+spread is entirely the other vehicle's script:
+
+| scenario | what `forward_state_tar` does | supporting machinery |
+|---|---|---|
+| rear-end | counts down to `t_brake_tar`, then ramps deceleration at `j_brake_tar` | none; a few lines of arithmetic |
+| intersection | steers the target through the turn geometry | `tar_loss`, `get_tar_steering_rate`, `load_steering_rate`: solves for the steering rate that tracks the intended path |
+| oncoming | drives the target along a synthesized incursion trajectory | `propagate_forward`, `cost_function`, `ctrl_gradient_descent`, `optimize_control_part`: a gradient-descent optimal-control solve |
+
+The trap in this file is the word "cost". `src/oncoming/dynamics_true.py` contains a
+`cost_function`, and it has nothing to do with the driver's preferences: it is the
+scenario author's own objective, penalizing deviation of the target's lateral position
+from a reference path plus a terminal mismatch, minimized by gradient descent to
+manufacture a smooth incursion that reaches the scripted depth at the scripted moment.
+Reading it as part of the driver model would be a serious misunderstanding; it is stage
+machinery, not psychology.
+
+**`reward.py` is the only file where the scenario changes the driver**, and the three
+versions differ in exactly three places:
+
+1. *The lane-geometry mapping, in `compute_features`.* A handful of lines that turn a raw
+   lateral coordinate into "how far am I from where I should be". Rear-end and
+   intersection share one version, which treats the ego as being on a two-lane road with
+   a viable lane to the left and snaps near-zero offsets to exactly zero. Oncoming needs a
+   different one because the lane to the left is the *oncoming* lane rather than a free
+   overtaking lane, so it distinguishes `in_other_lane` from `left_lane` and maps them
+   separately. This is checklist item 4, and it is roughly six lines.
+2. *A lane-change bookkeeping block that exists only in rear-end.* About twenty lines that
+   track how long the ego has been between lanes, add a heavy penalty for an *aborted*
+   lane change (returning to the lane it started in after more than 1.5 timesteps of
+   straddling) and a growing penalty for dwelling between lanes beyond nine timesteps.
+   Oncoming and intersection delete it. As we read it, this is hand-built shaping rather
+   than principle, a patch to stop the planner from discovering that hovering on the lane
+   line is comfortable, and anyone porting the model should know it is there and decide
+   deliberately whether to keep it [Opinion].
+3. *`get_weights`, the norms, which is the real scenario content.* This function is the
+   driver's prior over what the *other* vehicle will normally do; the dynamics call it as
+   `normative_probability` when propagating beliefs about the target (chapter 06). All
+   three versions differ completely, and the progression is instructive: rear-end scores
+   position only (in its lane, weight 1; just outside, `weigh_particles`; off road,
+   `weigh_particles × full_violation_factor`); oncoming scores position relative to the
+   oncoming lane center **and speed**, through the quadratic speed norm
+   1 − 2.25·(v/v₀ − 1)² folded in by a minimum, with the code's own comment that braking
+   is to be treated as norm-violating like leaving the lane; intersection uses a
+   two-dimensional road-geometry mask with a quarter-circle corner of radius
+   10 + ½·lane width + ½·vehicle length, plus a term that down-weights the target running
+   the red light. Stay in your lane; then also keep your speed; then also stay on the road
+   and obey the light. This is where the modeling judgment lives, and it is written by
+   hand each time.
+
+Two smaller differences: rear-end keeps several selectable looming-reward variants
+(`V2`–`V7`, and a non-looming fallback) where the two lateral scenarios hard-code `V7`;
+and oncoming guards its braking-feasibility term with a check that the two vehicles are
+traveling in the same direction, which rear-end does not need. Parameters are almost
+entirely shared, with `lane_width` = 3.65 m in rear-end and oncoming against 3.5 m in
+intersection, and the one driver-side change already noted above (`w_sd_model`).
+
 ## The switching checklist
 
 To move the model to a new scenario — a cut-in, a cyclist overtake, a pedestrian crossing
@@ -622,7 +759,13 @@ items 4–7 are modeling judgments that deserve explicit argument in any write-u
    sweepable condition parameter. (`dynamics_true.py`)
 3. **Check observability.** Does the driver see the new agent through the same looming
    channel? A pedestrian subtends different angles than a truck; the decoder's geometry
-   (vehicle dimensions) must match. (`decoder_true.py`)
+   (vehicle dimensions) must match. (`decoder_true.py`) Note also that the released
+   applicability tests are binary: looming is perceived only while the target is ahead
+   and within 3 vehicle widths laterally, and the collision, safety-margin and closing-rate
+   terms apply only within 1.15 widths, so a target that is *partly* in the lane is
+   all-or-nothing to the driver [Code: `decoder.py::test_looming_viability`]. None of
+   the three released scenarios sustains that state; a cut-in does, for about 2.5 s in
+   recorded clips [Study] (chapter 07 says what follows).
 4. **Draw the lane structure into the preferences.** Define what lateral positions mean —
    own lane, oncoming, shoulder — for *this* road. This is hand geometry today; there is
    no map format. (`reward.py`, lateral term)
@@ -694,6 +837,14 @@ In steady following (chapter 02, t < 0.8 s), four things characterize the model'
   from the collision and safety-margin terms [OSF]. Extrapolated, the accumulator would
   re-plan on its own after 2–7 s of uneventful following at gaps of 2 s or less; the
   published simulations do not show this because they start 0.8 s before the lead brakes.
+  How much the pre-conflict drift matters for response timing turns out to be small when
+  a run opens a few seconds before a conflict at ordinary headways: across 23 rear-end
+  scenarios replayed from recorded lead-vehicle profiles (1.3–35.5 m/s), an open-loop
+  surrogate of the accumulator that starts its account at zero reproduced the closed
+  loop's brake onsets to a median 0.30 s, while giving the surrogate a half-full account
+  at the start, as if the driver arrived mid-cycle, over-corrected by about a second. The
+  drift is a real property with small near-conflict consequences; designs with long
+  benign run-ins are where it would bite [Study].
 - **Planning is incremental.** The plan is shifted and cheaply patched each step; the
   expensive candidate-generation machinery is dormant. Most timesteps of a normal drive
   never trigger a single full re-plan.
@@ -907,6 +1058,15 @@ norms shape the entire 6-second fan of imagined futures, which is where they inf
 decisions. One mechanism, two exposures; the second is where the behavioral consequences
 (relaxed following, late-but-not-too-late alarm) come from.
 
+*Added 2026-09-03.* A third exposure appears when the observation channel is closed:
+**coasting through an occlusion**. When we forced off-road glances through the code's own
+gaze gate (chapter 08), the same norm-shaped transition carried the cloud forward
+essentially uncorrected, and everything downstream kept consuming it: a driver who saw
+the lead start to brake and then looked away kept *inferring* the conflict's development
+from the coasting belief, kept accumulating evidence, and could commit to braking
+mid-glance. The belief machinery is not a passive sensor buffer; it is a short-horizon
+simulator that runs with or without fresh input [Study].
+
 Two dials size the raw variation the tournament chooses among (`a_sd_model`,
 `w_sd_model`): how much acceleration and steering wobble the driver attributes to
 "vehicles in general". Chapter 04 showed the steering dial is the one number that
@@ -1028,6 +1188,36 @@ braking still suffice? Both assumptions are parameters — the assumed worst cas
 calibrated per scenario [SI] — and any absolute number derived from this term (a critical
 headway, a threshold gap) inherits them and should be quoted with them.
 
+*Added 2026-09-03.* Two properties of the released form matter to anyone taking this term
+outside the published scenarios, and we have met both. The term is an **indicator**, not
+a graded quantity: when the required deceleration exceeds what the vehicle can do
+(8 m/s²), or the gap has already closed before the reaction time ends, a fixed penalty of
+half the collision cost at the severity floor is charged, and otherwise nothing; and it
+applies only while the other vehicle is ahead and within 1.15 vehicle widths laterally,
+the same box the collision test uses [Code: `reward.py`, `decoder.py`]. So a vehicle that
+is *entering* the lane — a highway cut-in spends about 2.5 s straddling the boundary in
+recorded clips — is invisible to the term until the box test flips, and the term then
+switches on at full strength: at 30 m/s the indicator is already violated at a 10 m gap
+and at a 21 m gap alike, so two clips of very different urgency receive the same score
+[Study]. When we instead rendered the same counterfactual continuously, as the relative
+speed that would remain at impact under full braking after the reaction time, and asked
+whether it orders people's intervention judgments on those clips, it did not. In that
+study's regime (ego at 110–130 km/h, gaps 4–80 m) the counterfactual is violated almost
+everywhere, so the quantity measures how bad the worst case would be, which the absolute
+speeds set far more than the current gap does: about 0.3 m/s per meter of gap against
+1.5–2 m/s per m/s of either vehicle's speed. Within rows of matched time-to-collision it
+ranks clips by how fast the vehicles are going, while raters rank them by how far apart
+they are, and a plain gap threshold predicts the judgments far better: held-out RMSE 0.15
+against 0.35 for our continuous rendering of the six-term preference deficit, with chance
+at 0.32. About half of that deficit's loss is attributable to a lane-entry gate of our own
+construction, not the released box test, and the rest to the counterfactual magnitude;
+with our gate removed the deficit still scores 0.26 [Study]. We read this narrowly. A worst-case stopping counterfactual may be exactly the right
+reference for collision avoidance, where the outcome does depend on where the target will
+be and how fast everyone is going, and the wrong one for the earlier, comfort-like
+judgment the raters were making, which on these data looks like a distance judgment at a
+given closing rate; chapter 03 reports that the model's own looming variable is the
+scalar that fits those judgments best [Opinion].
+
 ## Part B: normal for the others — the three scenarios in detail
 
 The norm geometry that chapter 06's prediction machinery consumes, read directly from the
@@ -1104,11 +1294,18 @@ penalized is the total acceleration √(a_lat² + a_long²), not the longitudina
 boundary) and −15000 (road edge; the value in the released code), lane-structured per
 scenario (SI Eq. 52). Inverse-tau: Gaussian on 1/τ with mean 0.2 s⁻¹, sd 0.125 s⁻¹,
 evaluated on max(1/τ, 0.2) so that it is one-sided in the released code [Code:
-`reward.py`; SI Eq. 48 writes the symmetric form]. Collision: cost −10000 scaled by
-severity = max(Δv/10 m/s, 0.2) — the floor is SI Eq. 48, not a fudge. Safety margin (SI
-Eqs. 49–51): required deceleration under the counterfactual (lead brakes at min(observed,
-assumed worst); own response after t_react = 1 s), compared against the achievable
-8 m/s². Norm weights: Part B's geometries with factors 0.001 and 0.001 × 0.01
+`reward.py`; SI Eq. 48 writes the symmetric form]. Collision: cost −10000 times a
+severity factor 0.2 + 0.8·Δv/(10 m/s), with Δv the absolute longitudinal speed
+difference at first contact, so 0.2 for a touch, 1.0 at 10 m/s and, uncapped, 1.8 at
+20 m/s — the 0.2 floor is SI Eq. 48, not a fudge [Code: `reward.py`; revised 2026-09-03:
+the first edition wrote max(Δv/10, 0.2), which is not the released form]. Safety margin
+(SI Eqs. 49–51): required deceleration under the counterfactual (lead brakes at
+min(observed, assumed worst); own response after t_react = 1 s), compared against the
+achievable 8 m/s² (`a_max`); charged as an indicator, 0.5 × collision cost × the severity
+factor at its floor, that is −1000 per step, whenever the required deceleration exceeds
+8 m/s² or the gap closes before the reaction time ends, and 0 otherwise. Both this term
+and the inverse-tau term are multiplied by the lateral applicability test (target ahead,
+within 1.15 widths) [Code: `reward.py`, `decoder.py::test_looming_viability`]. Norm weights: Part B's geometries with factors 0.001 and 0.001 × 0.01
 (`weigh_particles`, `full_violation_factor`); oncoming's speed compliance
 1 − 2.25 (v/v₀ − 1)², clipped [Code]. The thirteen hand-tuned parameters are listed in
 the paper's methods [Paper].
@@ -1149,6 +1346,19 @@ with an evidence price attached, and the published collision-avoidance model was
 forbidden from choosing them. The earlier paper in this line (Engström et al. 2024)
 demonstrates exactly this machinery on uncertainty-and-looking tasks [Paper]; the
 collision-avoidance paper switched it off to isolate avoidance behavior.
+
+*Added 2026-09-03.* We have since exercised the dormant gate by forcing off-road glance
+schedules on the released rear-end model, with the planner's prohibition lifted for the
+schedule and everything else as shipped. The result is worth knowing before using the
+gate for causation work: **it blocks new observations, not inference.** A driver that has
+registered the lead's braking and is then blinded keeps responding *during* the glance,
+at essentially the attentive onset, even under a near-total observation blackout, because
+the belief cloud coasts forward on its own norm-shaped prediction (chapter 06) and the
+accumulator keeps filling from the extrapolated evidence. The architecture therefore
+predicts that a glance beginning *after* the conflict has been registered costs little,
+while a glance covering the onset costs the whole detection; a model that assumes no
+accumulation while the eyes are off the road predicts the opposite in the first case.
+That is a testable behavioral distinction that neither description states [Study].
 
 **2. Perception-quality causation [Code] [SI].** Observation noise scales are parameters,
 and looming makes perceptual difficulty state-dependent for free: small visual angles and
@@ -1357,6 +1567,12 @@ responsible — and a fitted value can be badly wrong while the fit looks fine:
 | Accepted headway / margin location | assumed worst-case braking **and** reaction-time budget (chapter 07) |
 | Maneuver choice vs speed | steering-effort tolerance, lane costs, collision severity scaling |
 | "Cautiousness" overall | collision cost, severity floor, safety-margin assumptions — jointly |
+
+One pair deserves its own sentence: the accumulation rate λ and the collision cost g_C
+are a single degree of freedom for response timing. The accumulator fires when λ·Σε
+passes 1, and in a conflict ε is dominated by terms proportional to g_C, so only their
+product sets the timing; g_C is separately identified through the maneuver trade-offs, λ
+is not [Opinion].
 
 The defenses are standard but non-optional:
 
