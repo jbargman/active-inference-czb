@@ -133,6 +133,58 @@ the stimulus. Everything in the project's claims is a statement about one of the
 Before the parts, the result that makes them worth having: the next slide.
 """)
 
+    # 3c closing the loop: what a vehicle would actually do with this (Jonas, 2026-09-03:
+    # "the model predicts share who intervene, but what would later be used in the ADAS?")
+    s = head(prs, "What a vehicle would actually do with this",
+             kicker="closing the loop")
+    text(s, MARGIN, BODY_TOP - 0.5, BODY_W, 1.5,
+         [("The model predicts a POPULATION. A vehicle needs ONE number. The percentile is the step between them",
+           15.5, GREY, False)], align=PP_ALIGN.CENTER)
+    cw = 7.3; ytop = BODY_TOP + 1.3
+    for i, (step, title_, body_, col) in enumerate([
+        ("1", "FIT", "on each stimulus, predict the share of drivers who would intervene — the quantity we can check against data", GREY),
+        ("2", "INVERT", "behind that share is a population of per-driver LEVELS: one threshold each, median 1.8°/s, spread 0.87 log units", BLUE),
+        ("3", "CHOOSE", "pick a percentile. This is a POLICY decision, not a measurement: the 80th means \"act when 80% of drivers would already have acted\" — 3.8°/s", PURPLE),
+        ("4", "TRIGGER", "in the car: is the gate open, and is the axis above the chosen level? If yes, act. One threshold, on a quantity a camera can measure", DEEPTEAL)]):
+        x = MARGIN + i * (cw + 0.55)
+        panel(s, x, ytop, cw, 8.3, BEIGE); rule(s, x + 0.7, ytop + 0.6, 1.8, col, 4.0)
+        text(s, x + 0.7, ytop + 1.05, cw - 1.4, 7.0,
+             [(step + "  " + title_, 18, col, True, 0), (body_, 12, INK, False, 10)], spacing=1.2)
+        if i < 3:
+            text(s, x + cw + 0.02, ytop + 3.9, 0.6, 1.0, [("→", 18, GREY, True)])
+    text(s, MARGIN, 14.4, BODY_W, 2.6,
+         [("What this is NOT, yet: a fleet trigger. The population is 43 drivers judging video, and on this axis a 5-point "
+           "change of percentile moves the trigger 0.24 s while the level's own uncertainty moves it 0.52 s — "
+           "the estimate, not the policy, is still the bottleneck", 13, GREY, False)], align=PP_ALIGN.CENTER)
+    notes(s, 1.6, """
+Jonas asked the right question: the model predicts "share who intervene", but a car cannot
+act on a share. So what would actually be used?
+
+Four steps. Step one is what we can test: for each situation, what fraction of drivers would
+intervene. That is a population quantity, and it is the only thing the data can check us on.
+
+Step two is the inversion, and it is where the value is. Behind that share sits a population
+of individual thresholds — one level per driver. We do not observe those directly; the
+hierarchical fit estimates their distribution. Median 1.8 degrees per second, spread 0.87 log
+units.
+
+Step three is the one engineers and lawyers should argue about, not modellers. Choose a
+percentile of that distribution. The 80th percentile means: act at the point where 80% of
+drivers would already have acted. That is a policy choice about how forward a system should
+be — and the model's job is to make it an informed choice rather than a guess, by saying what
+each percentile costs in seconds.
+
+Step four is what runs in the car, and it is deliberately simple: gate open, axis above the
+chosen level, act. One threshold on a quantity a forward camera already computes.
+
+The caveat at the bottom is the honest one and I would say it out loud. This is a method for
+setting a threshold, not a calibrated fleet trigger. Forty-three drivers judging frozen video
+is enough to show the method works; it is not enough to certify a number. And right now a
+five-point change of the percentile moves the trigger by a quarter of a second while our own
+uncertainty about the level moves it by half a second — so more drivers would help more than
+arguing about the percentile would.
+""")
+
     # 3b the same, with the model (Jonas, 2026-09-03: "something like slide 4 but with the
     # current model, to the extent possible") -- card TR.1, out/driver_levels.md
     TRAIT_MODEL = dict(
