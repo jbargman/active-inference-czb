@@ -1927,3 +1927,50 @@ is a few paragraphs of speaker notes that are read by one person.
     and the caveat that the floor is itself estimated from observed rates.
 
 No new slides and no animation changes; 19 slides, 12 animated, notes budget 29.1 min.
+
+### Handover updated, and the slide-skill additions written (2026-09-03 evening)
+
+Jonas: hand the authors'-handbook review to a more capable model; update the handover for
+everything else; and list what should be added to the `chalmers-slide-generation-jonas` skill,
+which he will fold in himself this session.
+
+`handover.md` updated in place (it keeps its "written for a less capable model" framing, with
+a dated note that a second arc ran the same day):
+  - a banner at the top handing the authors'-handbook review to a capable session and pointing
+    at `docs/authors_handbook_review_brief.md`, with an instruction not to redo that scan;
+  - section 1 now carries Jonas's standing genericity ruling and card TR.1's result;
+  - the presentations paragraph now records the deck at v8 and states the three animation rules
+    that must not be broken (render once then transcode; first-frame poster taken from the GIF;
+    verify the video, not the slide still);
+  - section 3's query table rewritten: Q5.Q1 / EL.Q1 / EL1.Q1 marked answered with their
+    rulings, EL.Q2 and G1R.Q1 replaced by EL.Q4 and G1R.Q3, DECK.Q1 and DECK.Q4 added, C.Q2
+    flagged stale;
+  - section 4 gains item 0 (Q5.1 is unblocked and has nothing waiting on it) and EL.2's entry
+    now points at TR.1 as the diagnostic already done.
+
+`docs/authors_handbook_review_brief.md` is new and is the handover for the one task NOT in the
+queue. It states why a delta exists at all (method_review 2026-08-23 and the authors' edition
+2026-08-24 both predate R.2 and everything after), then: candidate 1, the safety term's
+counterfactual is violated in nearly every cell of the second cut-in study's regime so the term
+tracks absolute speeds rather than the gap (0.33 (m/s)/m of gap against 1.5-2.0 (m/s) per (m/s)
+of either speed) with the scope caveat from pipeline-review section 3.3 that this is a verdict
+on the term AS A COMFORT CRITERION; candidate 2, the looming perception stage is independently
+vindicated by an axis comparison that had no stake in the authors' choices, with the unverified
+Xue citation flagged; candidate 3, the lane-entry gate finding, marked explicitly as a property
+of OUR gate and not the released one, to be put as a question or checked first. It also lists
+what was never read (chapters 10 and 13 of the authors' edition, r2_gate_decisions in full) so
+the capable session does not mistake a partial scan for a finished review.
+
+`docs/skill_additions_video.md` is the proposed skill chapter: prefer a moving figure when the
+point is a process; font sizes about one step larger than were used today, with a table and an
+rcParams block (and a note that the v8 animations are deliberately NOT re-rendered for it);
+embed .mp4 rather than .gif; render once and transcode; first-frame poster; verify the video
+not the still; drawing rules for build-ups (no zero-anchored bar for a quantity rising toward
+zero, no hard-coded limits on derived data, ArtistList is read-only, place annotations against
+the FINAL frame); combining-mark glyphs do not render; rebuild economics; and two content
+habits (put the takeaway on the slide, pre-empt the obvious objection in the notes).
+
+@SKILL.Q1(minor, jonas): the font-size table in `docs/skill_additions_video.md` is calibrated
+by eye from today's figures at 12.8 x 7.2 in, not from a projection test in a real room. If he
+has a room and a projector to hand, one slide checked at the back would turn the recommendation
+into a measurement.

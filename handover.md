@@ -1,12 +1,19 @@
 # handover.md — start every session here
 
-*Rewritten 2026-09-03 for a less capable model, by the tier-1 session that ran the
-2026-09-01 → 09-03 arc (dated record: `handover_2026-09-03.md`; the previous arc's record:
-`handover_2026-09-02.md`). This file says what the project is, what the model now is and
-what it rests on, what the rules are, what is waiting on Jonas, what to do in what order,
-and when to stop and ask. It does not repeat the science; the documents it points to do
-that. Where this file and the repository disagree, the repository wins, and you should say
-so in your reply.*
+*Rewritten 2026-09-03 for a less capable model; **updated the evening of 2026-09-03** after a
+second arc that day (Jonas's rulings on four queries, card TR.1, and the concepts deck v2 → v8).
+Dated records: `handover_2026-09-03.md`, and the previous arc's `handover_2026-09-02.md`. This
+file says what the project is, what the model now is and what it rests on, what the rules are,
+what is waiting on Jonas, what to do in what order, and when to stop and ask. It does not repeat
+the science; the documents it points to do that. Where this file and the repository disagree, the
+repository wins, and you should say so in your reply.*
+
+> **Handed to a capable session, 2026-09-03 evening:** the review of the **authors' edition of
+> the handbook** (`docs/handbook_authors/`) against what has been learned about the *published*
+> model since 2026-08-24. Jonas asked for it explicitly and it is deliberately NOT in the queue
+> below. The starting brief, with the one verified finding, the strongest positive finding, one
+> thing that must not be misattributed, and what was never checked, is
+> **`docs/authors_handbook_review_brief.md`**. Do not redo that scan from scratch; start there.
 
 ## 0 What to do when a session starts
 
@@ -62,7 +69,23 @@ term; the concepts deck animates each one):
   held-out log-likelihood units and is now the primary. A 5-point percentile step moves the
   implied trigger by 0.24 s against 0.52 s from the level's own uncertainty.
 - **The trait**: the per-driver level is largely the same person across four scenarios
-  (about 69% of the reliability ceiling, `out/cross_scenario_consistency.md`).
+  (about 69% of the reliability ceiling, `out/cross_scenario_consistency.md`). Since
+  **card TR.1** (`out/driver_levels.md`, `out/driver_levels.csv`) this also holds of the
+  *fitted* levels, not just the model-free propensity: over the 43 drivers who appear in both,
+  the cut-in level (rad/s) and the left-turn level (s of PET) agree at Spearman **+0.647**
+  (bootstrap +0.407 to +0.798) against **+0.659** for the model-free propensity on the same
+  drivers. Two of the four scenarios only — the truck overtake has no axis or gate (B.2
+  unstarted) and the cyclist overtake's level is not fitted (B.1.Q1). The two levels are never
+  put on one scale; that is EL.2, gated on EL.Q4.
+
+**Jonas's standing ruling on genericity (2026-09-03).** The *machinery* is scenario-agnostic —
+gate, axis, level, percentile over driver levels — and the *axis* is scenario-specific and may
+be multi-dimensional. Every scenario runs the EL.1-style second-axis test with its pre-stated
+0.01 held-out margin before its axis is fixed; a one-dimensional axis is a finding, never an
+assumption. On the cut-in a second axis DID earn its place (gap 0.1522 against the 2-D rule
+0.1137); it is *named* one-dimensionally only because the fitted weight came out at 0.497, at
+which weight the rule is algebraically the looming rate. On the left turn it did not
+(+0.0018, inside the margin), because that design holds one oncoming speed per cell.
 
 **The real-driving anchor** (handbook appendix 17, `out/ltapod_testtrack.md`, card TT.1).
 Jonas's 2013 test-track study of real left turns (`external/02_LTAPOD_DBIN/`), fitted with the
@@ -81,9 +104,29 @@ deceleration-type cues, both find a reliable per-driver criterion. Their fixed-h
 is where our gate came from. The folder `OthersWork/` is gitignored and is not context.
 
 **Presentations** (`presentation/talk/README.md`): the 60-minute talk, the 15–20 minute
-project-group deck, the 10–15 minute status deck, and the concepts deck (`-v2`: one animated
-slide per term; Jonas reviewed v1 and v2 answers his points; v2 awaits his look). Animation
-S1 (the belief cloud) is built; S2–S7 are specified in the shot list.
+project-group deck, the 10–15 minute status deck, and the concepts deck, now at
+**`ai_czb_concepts_talk-v8.pptx`** (19 slides, 12 animated, notes budget 29.1 min) after three
+review rounds with Jonas on 2026-09-03. Animation S1 (the belief cloud) is built; S2–S7 are
+specified in the shot list.
+
+*The concepts deck's animations are embedded as H.264 `.mp4` through `add_movie`, not as GIFs,
+so PowerPoint gives a scrub bar and a pause that resumes.* Three rules were learned the hard
+way and are now enforced in `make_concept_animations.save()`; break any of them and the videos
+go wrong silently:
+1. **Render once, then transcode.** Never call `anim.save()` twice on one `FuncAnimation`. The
+   second pass replays from frame 0 with the artists still holding the first pass's final
+   state, and these frame functions only ADD to their artists — so every `.mp4` opened with the
+   whole animation already drawn while the `.gif` was fine.
+2. **The poster is the FIRST frame, taken from the GIF** (`Image.open(gif); im.seek(0)`). A
+   last-frame poster makes the slide wipe itself when played; re-calling `fn(0)` produces a
+   hybrid still for the same artist-state reason.
+3. **Verify the video, not the slide still.** The still comes from the poster and can be right
+   while the video is wrong. Extract frame 0 of each `.mp4` with ffmpeg and diff it against
+   frame 0 of the `.gif`. Do not compare frame counts — GIF encoders merge identical
+   consecutive frames, so a 112-frame animation may be stored as 7.
+
+The full set of lessons, written for the `chalmers-slide-generation-jonas` skill, is
+`docs/skill_additions_video.md`; Jonas intends to fold it into the skill.
 
 ## 2 The rules that bind every session (long form: `docs/czb_work_orders.md` §2)
 
@@ -129,25 +172,38 @@ S1 (the belief cloud) is built; S2–S7 are specified in the shot list.
 
 ## 3 What is waiting on Jonas, and what each answer unblocks
 
-The register is `replication/czb/out/query_register.md` (40 open). Do not start a gated item
-until its query is answered in the worklog with a `RESOLVED <id>:` line.
+The register is `replication/czb/out/query_register.md` (40 open, 31 resolved). Do not start a
+gated item until its query is answered in the worklog with a `RESOLVED <id>:` line.
+
+**Answered by Jonas on 2026-09-03** (do not re-ask): **Q5.Q1** yes, the two-object framing
+stands, so card Q5.1 is unblocked. **EL.Q1** population **B** — the percentile is over drivers'
+boundary levels throughout, which makes EL.2 the deliverable and EL.3 a check. **EL1.Q1** yes,
+adopt the two-scalar wording, with the standing genericity ruling in §1 as the caveat.
 
 | query | question, in one line | unblocks |
 |---|---|---|
-| **EL.Q1**, EL.Q2 (judgment) | Is the ellipse's percentile over observed states or over drivers' levels; which scale convention? | card EL.2 |
-| **Q5.Q1** (judgment) | Is "surprise defines the onset, a population percentile defines the level" the working framing? | card Q5.1 |
-| **G1R.Q1** (judgment) | Amend the roadmap and scope map to the looming axis; regenerate card C's report on it? | the document sweep in §4 item 6 |
-| **EL1.Q1** (judgment) | Adopt the wording "gap leads among single scalars; a two-scalar rule (= looming) reaches the noise floor"? | the same sweep |
+| **EL.Q4** (judgment) | The old EL.Q2 restated after Jonas said it was opaque: each scenario's axis is in different units (rad/s, s, m), so what does EL.2 divide by to share one population? Recommendation on file — normalise by each scenario's between-driver spread, with the design-span version reported as a sensitivity | **card EL.2**, the largest blocked item |
+| **G1R.Q3** (judgment) | The paperwork half of the old G1R.Q1 (its generic half is settled by the §1 ruling): dated notes in the roadmap and scope map saying the deliverable is a percentile over driver levels on *each scenario's own axis*; regenerate card C's report on the looming axis? | the document sweep in §4 item 6 |
+| **DECK.Q1** (judgment) | The Xue et al. (2018) citation on the deck's motivation slide reaches us only through Sarang's note, whose references appendix 16.5 records as unverified. Verify, or use generic wording? | showing the concepts deck outward; also the authors'-handbook review |
+| **DECK.Q4** (judgment) | The deck's title slide names the model "a gated threshold model of the comfort-zone boundary", filling Jonas's placeholder. Accept or rename | one string in `build_concepts_talk.py` |
+| C.Q2 (judgment) | Should the percentile deliverable stay on the deficit axis? **Stale** — G1.Q1 already moved it to looming. Flagged to Jonas as closable; he has not ruled | nothing |
 | ANIM.Q1 (minor) | Build order for animations S2–S7; a labeled synthetic figure acceptable? | §4 item 4 |
 | TT.Q1, TT.Q3, TT.Q4 (judgment / minor) | Go = not intervening on video?; 26 versus the paper's 22 participants; the orientation of the video's PS rating | wording in appendix 17; a small rerun if TT.Q3 says drop four drivers |
 | TT.Q2 | which PET the dread boundary lives on | parked by Jonas; do nothing |
 | B3.Q1 (resolved by assumption) | the Random LTAP clip ends at 13.5 s | re-run `ltap_two_axis.py` only if Jonas gives another number (`T_DECISION_S` in `src/comfortzone/ltap.py`) |
-| REV.Q1–Q3, TALK.Q1–Q3, Q5.Q2–Q3, EXT.Q1–Q3, F1.Q1, G1.Q2, G1R.Q2 | wording, attribution, small options | nothing; answer when convenient |
+| REV.Q1–Q3, TALK.Q1–Q3, Q5.Q2–Q3, EXT.Q1–Q3, F1.Q1, G1.Q2, G1R.Q2, DECK.Q3 | wording, attribution, small options | nothing; answer when convenient |
 
 ## 4 The queue, in order, with what "done" means
 
+0. **Card Q5.1 — now unblocked** (Q5.Q1 answered yes). See item 2 below; it moved to the front
+   of the queue because nothing else is waiting on it.
+
 1. **Card EL.2 — one level per driver across every scenario's rule**
-   (`docs/czb_ellipse_design_note.md` §6). After EL.Q1 and EL.Q2. The cut-in's form is the
+   (`docs/czb_ellipse_design_note.md` §6). After **EL.Q4** (EL.Q1 is answered: population B).
+   Card **TR.1** (`out/driver_levels.md`) is the diagnostic that motivates it and is already
+   done — per-driver fitted levels for the two scenarios that have a current rule, each in its
+   own units, agreeing at Spearman +0.647. EL.2 is what puts them on one scale, which is
+   exactly what EL.Q4 must settle first. The cut-in's form is the
    gated looming rule (G.1 + EL.1b), the left turn's is distance (B.3.v2), the cyclist
    overtake's is lateral clearance (B.1); the level population is shared. Deliverable: a
    script in the EL.1 style with a pre-stated rule, output `out/el2_shared_level.md`.
