@@ -155,6 +155,107 @@ def parse_testtrack():
 
 
 # ---------------------------------------------------------------------------------
+# 3b THE TRAIT, WITH THE MODEL  (Jonas, 2026-09-03: "slide 4 but with the current model")
+# ---------------------------------------------------------------------------------
+def make_traitmodel_gif():
+    """Card TR.1: each driver's FITTED level in the two scenarios that have a current rule.
+
+    The trait slide shows a model-free propensity across four scenarios. This is the same
+    question asked of the model: one fitted level per driver per scenario. Two scenarios,
+    not four, and the two that are missing are drawn as empty strips with the reason on
+    them, because "to the extent possible" is the honest headline.
+
+    The two levels are in different units and are NEVER put on one scale (that is EL.2,
+    gated on EL.Q4). The shared vertical axis is each driver's PERCENTILE RANK within their
+    own scenario, which no convention is needed to compute; each strip is labelled with its
+    own real units at the 10th, 50th and 90th.
+    """
+    d = pd.read_csv(OUT / "driver_levels.csv")
+    txt = (OUT / "driver_levels.md").read_text(encoding="utf-8")
+    m = re.search(r"\| fitted LEVEL, this card \| ([-+0-9.]+) \| ([-+0-9.]+) to ([-+0-9.]+) \|", txt)
+    rho, lo, hi = float(m.group(1)), float(m.group(2)), float(m.group(3))
+    mp = re.search(r"\| model-free propensity, the slide-4 rule \| ([-+0-9.]+) \|", txt)
+    rho_p = float(mp.group(1))
+
+    # "Acts early" is a LOW looming level but a LONG PET, so the left turn is ranked on -PET
+    # to put "acts early" at the same end of both strips. Stated on the figure.
+    # Both strips are oriented so that the CAUTIOUS driver is at the top: a LOW looming level
+    # (acts while the car is still growing slowly) and a LONG PET level (wants a bigger gap).
+    rank = lambda a: 100.0 * (pd.Series(a).rank(method="average") - 0.5) / len(a)
+    y_c = rank(-d.level_cutin_log.to_numpy()).to_numpy()
+    y_v = rank(d.level_ltap_pet_s.to_numpy()).to_numpy()
+    n = len(d)
+
+    fig = plt.figure(figsize=(12.8, 7.2), dpi=100)
+    ax = fig.add_axes([0.10, 0.20, 0.87, 0.63])
+    fig.suptitle("The same driver, with the MODEL: each person's fitted level, scenario by scenario",
+                 fontsize=15, color=INK, y=0.955)
+    ax.set_xlim(-0.55, 3.55); ax.set_ylim(-8, 108)
+    ax.set_ylabel("where this driver sits among the 43\n(percentile within that scenario)", fontsize=11.5)
+    ax.set_xticks([0, 1, 2, 3])
+    ax.set_xticklabels(["CUT-IN\ngated looming level\n[rad/s]",
+                        "LEFT TURN (video)\nPET level\n[s]",
+                        "CYCLIST OVERTAKE\n—", "TRUCK OVERTAKE\n—"], fontsize=11)
+    for lab, col in zip(ax.get_xticklabels(), (PURPLE, TEAL, GREY, GREY)):
+        lab.set_color(col)
+    ax.spines[["top", "right"]].set_visible(False)
+    ax.text(-0.5, 103, "the CAUTIOUS driver is at the top of both strips: acts while the car is still growing slowly, "
+                       "and wants a longer gap before turning", fontsize=10, color=GREY)
+
+    for xx in (2, 3):
+        ax.axvspan(xx - 0.42, xx + 0.42, color="#F3F3F3", zorder=0)
+    ax.text(2, 55, "no per-driver level:\nthe study's third\nquestion for this\nscenario is\nundocumented\n(B.1.Q1)",
+            ha="center", va="center", fontsize=10.5, color=GREY)
+    ax.text(3, 55, "no axis and no gate\nyet: the construction\nnote has not been\nwritten (card B.2)",
+            ha="center", va="center", fontsize=10.5, color=GREY)
+
+    # real-unit ticks on each strip, so the percentile axis does not hide the numbers
+    # Unit ticks go on the OUTSIDE of each strip (cut-in left, left turn right) so that the
+    # bundle of connecting lines between the two strips never runs over them.
+    for xx, vals, fmt_, col, side in ((0, np.exp(d.level_cutin_log.to_numpy()), "%.3f", PURPLE, -1),
+                                      (1, d.level_ltap_pet_s.to_numpy(), "%.1f", TEAL, +1)):
+        yy = y_c if xx == 0 else y_v
+        order = np.argsort(yy)
+        for q in (10, 50, 90):
+            v = np.interp(q, yy[order], vals[order])
+            ax.plot([xx + side * 0.30, xx + side * 0.24], [q, q], color=col, lw=1.4)
+            ax.text(xx + side * 0.33, q, fmt_ % v, ha="right" if side < 0 else "left",
+                    va="center", fontsize=9.5, color=col)
+
+    lines = [ax.plot([], [], color=GREY, lw=1.0, alpha=0.55, zorder=2)[0] for _ in range(n)]
+    pts_c, = ax.plot([], [], "o", color=PURPLE, ms=8, alpha=0.9, zorder=3)
+    pts_v, = ax.plot([], [], "o", color=TEAL, ms=8, alpha=0.9, zorder=3)
+    stat = ax.text(0.72, 0.10, "", fontsize=12, color=INK, ha="center", va="center",
+                   transform=ax.transAxes,
+                   bbox=dict(boxstyle="round,pad=0.6", fc=BEIGE, ec="none"))
+    stat.set_visible(False)
+    cap = caption(fig, "")
+
+    p1 = n; p2 = p1 + n; n_frames = p2 + 4 * FPS
+
+    def fn(i):
+        k = min(i + 1, n)
+        pts_c.set_data(np.zeros(k), y_c[:k])
+        if i < p1:
+            cap.set_text("Each dot is one driver's FITTED level on the cut-in — not a raw response rate, but where the model puts that person's threshold")
+        else:
+            j = min(i - p1 + 1, n)
+            pts_v.set_data(np.ones(j), y_v[:j])
+            for q in range(j):
+                lines[q].set_data([0, 1], [y_c[q], y_v[q]])
+            cap.set_text("The same 43 people on the left turn, fitted with that scenario's own rule. Flat lines mean the model found the same person twice")
+        if i >= p2:
+            stat.set_visible(True)
+            stat.set_text("the fitted LEVEL agrees across scenarios at %+.2f  (95%% %+.2f to %+.2f)\n"
+                          "the model-free propensity of the trait slide, same drivers: %+.2f"
+                          % (rho, lo, hi, rho_p))
+            cap.set_text("Two of four scenarios: the other two have no per-driver level to compute yet. The units differ and are never merged — that is card EL.2, and it waits on a decision")
+        return [pts_c, pts_v] + lines
+
+    return save(fig, fn, n_frames, "concept_traitmodel.gif")
+
+
+# ---------------------------------------------------------------------------------
 # 8  THE TEST TRACK AGAINST THE VIDEO  (Jonas, 2026-09-03: "demonstrate the difference")
 # ---------------------------------------------------------------------------------
 def make_trackvideo_gif():

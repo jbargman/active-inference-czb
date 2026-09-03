@@ -106,6 +106,41 @@ the stimulus. Everything in the project's claims is a statement about one of the
 Before the parts, the result that makes them worth having: the next slide.
 """)
 
+    # 3b the same, with the model (Jonas, 2026-09-03: "something like slide 4 but with the
+    # current model, to the extent possible") -- card TR.1, out/driver_levels.md
+    TRAIT_MODEL = dict(
+        kicker="the same result, with the model",
+        title="The same picture, but now each driver's FITTED level",
+        gif="concept_traitmodel.gif",
+        cap="Card TR.1. The two scenarios that have a settled current-model rule and per-driver data; each strip in its own units, drivers ranked within their own scenario. The other two scenarios have no per-driver level to compute yet.",
+        minutes=1.8,
+        script="""
+The slide before used no model at all. This one asks the same question of the model we have.
+
+For each driver, fit their LEVEL: on the cut-in, the expansion rate at which that person says
+"now", in radians per second; on the left turn, the gap in seconds of PET that person wants
+before turning. Two different scenarios, two different rules, two different units, one
+threshold per person in each.
+
+Then ask whether it is the same person. It is: the fitted levels agree across drivers at
+Spearman 0.65, with a bootstrap interval of 0.41 to 0.80. Put that next to the model-free
+number on the previous slide, recomputed on exactly these drivers and these two scenarios,
+and it is 0.66. The model has not lost the trait, and it has not invented it either: it
+recovers what the raw responses already showed, but now in physical units you could put on a
+vehicle.
+
+Two honest limits, both on the slide. First, two scenarios, not four. The cyclist overtake's
+third question is undocumented in the study's own materials, so we do not fit a level there;
+the truck overtake has no axis and no gate yet, because its construction note has not been
+written. Second, the two strips are never merged into one scale. Merging them is exactly card
+EL.2, and it needs a decision about what to normalise by that I have asked for and not yet
+had. Everything on this slide is a rank, so nothing here depends on that decision.
+
+The median driver acts at about 0.027 radians per second on the cut-in and wants about 2.4
+seconds on the left turn, and the middle 80% of drivers spans 0.011 to 0.089 and 0.5 to 3.8.
+That spread is the thing a percentile deliverable is a choice about.
+""")
+
     # 2b every term in the equation (Jonas, 2026-09-03: "we need to explain the terms")
     s = head(prs, "Every term in that equation, in one line",
              kicker="the map, term by term")
@@ -159,6 +194,9 @@ to 0.74, about 69% of the ceiling that measurement noise allows
 (out/cross_scenario_consistency.md). No model was used. So there is one level per person to
 measure; the rest of the deck is how.
 """)
+
+    concept(prs, TRAIT_MODEL["kicker"], TRAIT_MODEL["title"], TRAIT_MODEL["gif"],
+            TRAIT_MODEL["cap"], TRAIT_MODEL["minutes"], TRAIT_MODEL["script"])
 
     # 4 axis
     concept(prs, "1  the axis",

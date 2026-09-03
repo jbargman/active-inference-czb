@@ -1,0 +1,7 @@
+cut-in: building trials
+cut-in: 3096 trials, 43 drivers; fitting
+cut-in fit: mu -3.4520 sigma_pop 0.8677 sigma_resp 0.5742  [23s]
+left turn (video, 50 km/h): 1548 trials, 43 drivers; fitting
+left turn fit: PET_50 2.1843 sigma_pop 1.3611 sigma_resp 0.8584  [31s]
+wrote C:\Users\bargman\OneDrive - Chalmers\1_Work\1_Code\WaymoActiveInference\replication\czb\out\driver_levels.md
+oriented Spearman: level +0.647, propensity +0.659

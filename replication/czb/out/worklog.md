@@ -1639,6 +1639,58 @@ exponent at 0.39–0.42 against our implied 0.5 (handbook appendix 16.3). The ca
 al. (2018), who found inverse TTC the better brake-onset cue in a simulator where this video
 paradigm reverses the order (0.113 against 0.168).
 
+### Card TR.1 — the trait slide with the current model; concepts deck v4
+
+Jonas, on deck slide 4: "is it possible to create something like slide 4 but with the current
+model (to the extent possible)?" Slide 4 shows a MODEL-FREE quantity — each driver's mean
+residual from the cell mean, across four scenarios, no axis and no level in it. TR.1 asks the
+same question of the model: one FITTED level per driver per scenario.
+
+`replication/czb/driver_levels.py` (pre-stated in its docstring) → `out/driver_levels.md`,
+`out/driver_levels.csv`, log `out/driver_levels.log`. Two scenarios, and the answer to "to
+what extent" is **two of the four**: the cut-in (gated log theta_dot, the stage-1 primary
+since G1.Q1) and the left turn on video at 50 km/h (−PET; B.3.v2 chose distance for this
+scenario and at its single oncoming speed distance is a monotone transform of PET, so the
+TT.1 video fit IS the current model here). Excluded by construction, not by choice: the truck
+overtake has no axis and no gate (card B.2 unstarted, no construction note), and the cyclist
+overtake's per-driver level is not fitted because that scenario's third question is
+undocumented in the study's own materials (B.1.Q1). Both exclusions are drawn on the slide
+with the reason, since "to the extent possible" is the honest headline.
+
+Method: refit each scenario with the estimator its own card used (nothing re-implemented;
+`F.fit_hier_lapse_gated`, and `TT.fit_threshold` which wraps it), then a pre-stated
+reproduction gate before any per-driver number is used — mu, sigma_pop and sigma_resp must
+match the tracked cards to 0.01. They do: cut-in −3.4520 / 0.8677 / 0.5742 exactly, left turn
+2.1843 / 1.3611 / 0.8584 against the card's 2.18 / 1.36 / 0.86, worst difference 0.0043. Then
+each driver's posterior-mean level by the same 48×48 Gauss-Hermite reweighting TT.1 uses in
+T7. The whole run takes 41 s; no long fit was needed because the hyperparameters were only
+being reproduced, not searched for from scratch.
+
+**Result.** 43 drivers appear in both scenarios. Cut-in level median 0.0267 rad/s (10th–90th
+0.0113–0.0875); left-turn level median 2.44 s of PET (0.49–3.78). Across drivers the two
+fitted levels agree at Spearman **+0.647** (driver bootstrap 95% +0.407 to +0.798), against
+**+0.659** (+0.408 to +0.821) for the model-free propensity recomputed on exactly these
+drivers and these two scenarios. The model neither loses the trait nor invents it: it recovers
+what the raw responses already showed, in physical units. No verdict is attached — the
+cross-scenario claim belongs to EL.2.
+
+Deliberately NOT done: the two levels are never put on one scale or pooled into one
+population. That is EL.2, and its scale convention is the open query EL.Q4. Every number
+reported is a rank statistic and so is invariant to that convention; a Pearson correlation on
+raw units is not reported, because it would silently assume the convention EL.Q4 exists to
+settle. New animation `concept_traitmodel` puts each strip in its own units with drivers
+ranked within their own scenario, cautious driver at the top of both.
+
+Two corrections during the build, both caught by looking at the picture: the strips were first
+oriented with "acts late" at the top while the annotation said "acts early" (both are now
+flipped so the cautious driver is on top; the Spearman is unchanged, and the plotted ranks
+were checked to reproduce +0.647); and the left turn's unit ticks sat under the bundle of
+connecting lines, so each strip's ticks now go on its outer side.
+
+Deck built as **`ai_czb_concepts_talk-v4.pptx`** (18 slides, 11 animated, notes budget
+27.1 min), not v3: the v3 build raised `PermissionError`, so Jonas had it open in PowerPoint
+and the standing rule is to write a versioned copy and say so. v4 is v3 plus this one slide.
+
 ### Concepts deck v3, second pass — Jonas's six review points on v2
 
 Jonas reviewed `ai_czb_concepts_talk-v2.pptx` and raised six things. All six are done in
