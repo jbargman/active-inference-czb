@@ -263,7 +263,9 @@ SetPET is the stimulus (appendix 17 and TT.Q2 say why).
 | the real-driving anchor | handbook `docs/handbook/17_appendix_test_track.md`, `replication/czb/out/ltapod_testtrack.md`, `notes/06_bargman2015_ltapod_testtrack.md`, `external/README.md` |
 | the external analysis, read in our terms | handbook `docs/handbook/16_appendix_external_rh_model.md` |
 | the decisive negative result and its scope | `docs/r2_gate_decisions.md`, `docs/r2_pipeline_review.md`, `replication/czb/out/cutin2_field_vs_gap.md` |
-| what survives (the trait, the boundary distribution) | `replication/czb/out/cross_scenario_consistency.md`, `out/stage1_summary.md` (the old deficit axis, superseded), `out/percentile_sensitivity.md` |
+| what survives (the trait, the boundary distribution) | `replication/czb/out/cross_scenario_consistency.md` (model-free), **`out/driver_levels.md` + `.csv` (card TR.1: the same question of the fitted levels)**, `out/stage1_summary.md` (the old deficit axis, superseded), `out/percentile_sensitivity.md` |
+| **the authors' edition of the handbook, and its review** | `docs/handbook_authors/` (one-off, 2026-08-24, does not track the internal handbook — see its README), `docs/method_review.md` (2026-08-23), and **`docs/authors_handbook_review_brief.md`** — the starting brief for the revision review Jonas handed to a capable session |
+| **how the decks and their animations are built** | `presentation/talk/README.md`, and **`docs/skill_additions_video.md`** — the video pipeline and its traps, written to be folded into the `chalmers-slide-generation-jonas` skill |
 | the design notes | `docs/surprise_without_the_field.md`, `docs/czb_ellipse_design_note.md`, `docs/ltap_construction_note.md`, `docs/lane_entry_note.md`, `docs/overtake_construction_note.md` |
 | the cards and the standing rules | `docs/czb_work_orders.md` |
 | the worklog (source of truth for decisions and queries) and the register | `replication/czb/out/worklog.md`, `out/query_register.md` |

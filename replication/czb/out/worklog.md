@@ -1974,3 +1974,30 @@ habits (put the takeaway on the slide, pre-empt the obvious objection in the not
 by eye from today's figures at 12.8 x 7.2 in, not from a projection test in a real room. If he
 has a room and a projector to hand, one slide checked at the back would turn the recommendation
 into a measurement.
+
+### Correction: DECK.Q2's recorded resolution was reversed by Jonas, and the register still shows it resolved
+
+Found in an end-of-session audit. DECK.Q2 asked what shows in PowerPoint's normal view for an
+animated slide, since a GIF's first frame is empty axes and "if you read the deck rather than
+present it, every animated slide looks blank". It was recorded RESOLVED on 2026-09-03 by making
+the poster frame the animation's LAST frame.
+
+**Jonas then reversed that**, on the ground that a last-frame poster makes the slide wipe itself
+the moment the video is played ("it has the dots, removes them and adds them again"). Posters
+are now the FIRST frame, taken from the GIF. So the register's Resolved entry for DECK.Q2
+describes a design that is no longer in the code, and the underlying question — a sparse still
+in normal view — is live again, now by an explicit decision rather than by oversight.
+
+The collector keys on the first `RESOLVED <id>:` line, so DECK.Q2 stays closed rather than being
+re-opened under the same number; the live form is DECK.Q5 below.
+
+**Do not "fix" this by switching posters back to the last frame.** That trade was made
+deliberately, in Jonas's favour, after he hit the wipe in the room.
+
+@DECK.Q5(minor, jonas): the poster (what shows in normal, non-slideshow view) is the
+animation's FIRST frame, which for most of these is an empty or near-empty set of axes. That is
+the deliberate consequence of removing the wipe-on-play. If reading the deck on paper or
+scrolling it ever matters more than playing it, the options are: a static PNG of the final frame
+placed beside the video on the slide; a duplicate hidden slide carrying the final frame; or
+designing each animation so frame 0 already shows the scene at rest rather than empty axes (most
+work, best result). Recording the trade-off so no later session silently reverses it.
