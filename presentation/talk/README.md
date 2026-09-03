@@ -14,8 +14,8 @@
 | `ai_czb_status_talk.pptx` | the 10-15 minute "where we are now" deck (2026-09-02): 10 slides, four animated, little text, the talk in the notes (budget 13.0 min) |
 | `build_status_talk.py` | builds the status deck; `make_status_animations.py` builds its three GIFs (the model on one real cut-in; the held-out scoreboard; the 43-driver trait) from tracked data and outputs |
 | `ai_czb_concepts_talk-v2.pptx` | the concepts deck, revised the same evening on Jonas's review (the `-v2` name because the first version was open in PowerPoint when it was rebuilt; the first version is superseded): 13 slides, 9 animated, notes budget 18.1 min. Order: map, the trait first, axis (with what participants did and the takeaway on the picture), level, gate (projection drawn as an arrow), the noise floor (new, popular-science), how we test (dots named), the deliverable, the whole model on a study-2 clip and on a study-1 clip against the observed cells (new), what is next |
-| `ai_czb_concepts_talk-v3.pptx` | the concepts deck as of 2026-09-03, on Jonas's ask for "a slide that describes the components of log θ̇, and maybe a motivation why": **15 slides, 10 animated, notes budget 21.4 min**. Two slides inserted after the axis slide — *the axis, taken apart* (animated: log θ̇ = log W − log gap − log TTC assembled on one real clip, against the fitted level) and *why THIS quantity* (three motivations and one honest caveat). v2 is left untouched and is superseded |
-| `build_concepts_talk.py` | builds the concepts deck; `make_concept_animations.py` builds its eight GIFs from tracked outputs (`out/stage1_looming.md`, `out/cutin2_gate.md`, `out/cutin2_looming.md`, `out/cutin2_cells.csv`, the study-2 traces). Build v3 with `--out presentation/talk/ai_czb_concepts_talk-v3.pptx` |
+| `ai_czb_concepts_talk-v3.pptx` | the concepts deck as of 2026-09-03, answering Jonas's review of v2. **17 slides, 10 animated, notes budget 25.3 min.** New: *every term in that equation* (lapse, GATE, AXIS, LEVEL, spread, Φ, one line each); *the axis, taken apart* (animated: log θ̇ = log W − log gap − log TTC on one real clip); *why THIS quantity* (three motivations, one caveat); *frozen video against a real car* (animated, card TT.1, placed late). Changed: the noise slide now defines a cell on the picture; the level animation carries its percentile lines down into the histogram; the deliverable's y-axis says the gate is off and that zero is the start of the lateral motion. **The animations are embedded as H.264 .mp4, not GIF**, so PowerPoint gives a scrub bar and a pause that resumes. v2 is left untouched and superseded |
+| `build_concepts_talk.py` | builds the concepts deck; `make_concept_animations.py` builds its nine animations from tracked outputs (`out/stage1_looming.md`, `out/cutin2_gate.md`, `out/cutin2_looming.md`, `out/cutin2_cells.csv`, `out/ltapod_testtrack.md`, the study-2 traces), each written three ways — `.gif`, `.mp4` and a `.png` poster of the final frame. Build v3 with `--out presentation/talk/ai_czb_concepts_talk-v3.pptx` |
 | `ai_czb_short_talk.pptx` | the 15-20 minute project-group version: 13 slides (notes budget 19.8 min; two CUTTABLE slides bring it to ~16.5) |
 | `build_short_talk.py` | builds the short deck; imports the layout helpers from `build_talk.py`, so the two decks share one set of conventions |
 | `make_talk_figures.py` | the talk versions of the diagrams and the two live-computed figures |
@@ -66,6 +66,20 @@ python presentation/talk/build_short_talk.py
 Notes budget 19.8 min; slides 5 (animation) and 8 (R.1) are marked CUTTABLE in that
 order, bringing it to ~16.5 min. The same copy-and-augment rule below applies once
 Jonas has hand-edited either deck.
+
+## Why the concepts deck embeds .mp4 and the others embed .gif
+
+An embedded GIF is played by PowerPoint as an image: there is no scrub bar, and pausing it
+restarts it from the first frame. Jonas hit both on 2026-09-03. `add_movie` with an H.264
+`.mp4` gets PowerPoint's own media controls instead — a slider, and a pause that resumes —
+and takes a **poster frame**, which is what shows in normal (non-slideshow) view. The poster
+is the animation's *last* frame, so a printed or scrolled deck shows the finished picture
+rather than the empty axes a GIF's first frame gives.
+
+`save()` in `make_concept_animations.py` therefore writes all three (`.gif`, `.mp4`, `.png`)
+and `gif()` in `build_concepts_talk.py` prefers the `.mp4`, falling back to the picture when
+no `.mp4` sits beside the `.gif`. The other decks and the handbook still use the GIFs. The
+`.mp4` and poster `.png` files are tracked alongside the GIFs.
 
 ## The animation
 

@@ -45,7 +45,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from matplotlib.animation import FuncAnimation, PillowWriter
+from matplotlib.animation import FFMpegWriter, FuncAnimation, PillowWriter
 from matplotlib.patches import FancyArrowPatch, Rectangle
 from scipy.stats import norm
 
@@ -77,11 +77,26 @@ def caption(fig, text, y=0.04, size=14.5):
 
 
 def save(fig, fn, n, name, fps=FPS):
+    """Write the animation three ways: .gif, .mp4 and a poster .png of the LAST frame.
+
+    Jonas, 2026-09-03: an embedded GIF gives no scrub bar in PowerPoint, and pausing it
+    restarts it from the beginning. An embedded H.264 .mp4 gets PowerPoint's own media
+    controls -- play/pause that resumes, and a slider. The poster frame is what shows in
+    normal (non-slideshow) view, so the slide is no longer blank on paper: it shows the
+    finished picture. GIFs are still written, both as a fallback and because the handbook
+    and the other decks link to them.
+    """
     anim = FuncAnimation(fig, fn, frames=n, interval=1000 / fps, blit=False)
     out = FIGS / name
     anim.save(str(out), writer=PillowWriter(fps=fps))
+    mp4 = out.with_suffix(".mp4")
+    # yuv420p + even dimensions is what PowerPoint (and everything else) will play.
+    anim.save(str(mp4), writer=FFMpegWriter(fps=fps, codec="libx264", bitrate=-1,
+                                            extra_args=["-pix_fmt", "yuv420p", "-crf", "20"]))
+    fn(n - 1)                                   # leave the figure on its final frame
+    fig.savefig(str(out.with_suffix(".png")), dpi=100)
     plt.close(fig)
-    print("wrote", out)
+    print("wrote", out, "+ .mp4 + .png poster")
     return out
 
 
@@ -113,6 +128,120 @@ def looming_threshold_rad():
     txt = (OUT / "cutin2_looming.md").read_text(encoding="utf-8")
     c = float(re.search(r"threshold c on log\(theta_dot\) = ([-0-9.]+)", txt).group(1))
     return c, float(re.search(r"theta_dot at threshold = ([0-9.]+) rad/s", txt).group(1))
+
+
+def parse_testtrack():
+    """Section 1's model-free table, the two fits, and T6's transfer row, from card TT.1."""
+    txt = (OUT / "ltapod_testtrack.md").read_text(encoding="utf-8")
+    rows = []
+    for m in re.finditer(r"^\| (-?[0-9.]+) \| (?:([0-9.]+) \((\d+)\)|–) \| (?:([0-9.]+) \((\d+)\)|–) \|$",
+                         txt, re.MULTILINE):
+        pet, tp, tn, vp, vn = m.groups()
+        rows.append(dict(pet=float(pet),
+                         track=float(tp) if tp else np.nan, track_n=int(tn) if tn else 0,
+                         video=float(vp) if vp else np.nan, video_n=int(vn) if vn else 0))
+    tab = pd.DataFrame(rows)
+
+    def fit(label):
+        m = re.search(r"\| " + label + r" \| PET_50 ([0-9.]+) s \(SE ([0-9.]+)\); sigma_pop ([0-9.]+) s "
+                      r"\(SE [0-9.]+\); sigma_resp ([0-9.]+) s", txt)
+        return dict(pet50=float(m.group(1)), se=float(m.group(2)),
+                    sig_pop=float(m.group(3)), sig_resp=float(m.group(4)))
+
+    t6 = re.search(r"\| track cells \| ([0-9.]+) \| ([0-9.]+) \| ([0-9.]+) \| ([0-9.]+) \|", txt)
+    transfer = dict(chance=float(t6.group(1)), own=float(t6.group(2)),
+                    other=float(t6.group(3)), floor=float(t6.group(4)))
+    return tab, fit("track comfort"), fit("video 50 km/h"), transfer
+
+
+# ---------------------------------------------------------------------------------
+# 8  THE TEST TRACK AGAINST THE VIDEO  (Jonas, 2026-09-03: "demonstrate the difference")
+# ---------------------------------------------------------------------------------
+def make_trackvideo_gif():
+    """Card TT.1 as one picture: the same left turn judged on video and driven on a track.
+
+    Everything is parsed from out/ltapod_testtrack.md. Left: what people did, paradigm by
+    paradigm, against the manipulated PET. Right: the two fitted populations of per-driver
+    comfort boundaries, on the same axis, with the medians marked. Then the transfer result.
+    """
+    tab, trk, vid, tr = parse_testtrack()
+    fig = plt.figure(figsize=(12.8, 7.2), dpi=100)
+    gs = fig.add_gridspec(1, 2, width_ratios=[1.15, 1], left=0.075, right=0.975,
+                          top=0.845, bottom=0.235, wspace=0.26)
+    ax_r = fig.add_subplot(gs[0]); ax_p = fig.add_subplot(gs[1])
+    fig.suptitle("Frozen video against a real car: the same left turn, two paradigms (card TT.1)",
+                 fontsize=15, color=INK, y=0.955)
+
+    ax_r.set_xlim(-0.3, 6.3); ax_r.set_ylim(-0.03, 1.05)
+    ax_r.set_xlabel("PET the turn was set up for [s]", fontsize=11.5)
+    ax_r.set_ylabel("share who went / would not have intervened", fontsize=11.5)
+    ax_r.spines[["top", "right"]].set_visible(False)
+    ax_r.set_title("what people did", fontsize=12.5, color=INK)
+    # One scatter, updated in place: ax.collections is read-only in this matplotlib.
+    trk_pts = ax_r.scatter([], [], color=PINK, alpha=0.55, zorder=3,
+                           label="test track: drove it (2013, 26 drivers)")
+    vid_pts, = ax_r.plot([], [], "-s", color=BLUE, lw=2.2, ms=8, label="video: judged a frozen clip (43 drivers, 50 km/h)")
+    ax_r.legend(loc="lower right", fontsize=10, frameon=False)      # the data rises left to right
+    ax_r.text(-0.2, 1.02, "marker size = runs in that cell (1 to 32)", ha="left", fontsize=9, color=GREY)
+
+    ax_p.set_xlim(-0.3, 6.3); ax_p.set_ylim(0, 0.72)
+    ax_p.set_xlabel("each driver's own comfort boundary [s of PET]", fontsize=11.5)
+    ax_p.set_ylabel("density of drivers", fontsize=11.5)
+    ax_p.spines[["top", "right", "left"]].set_visible(False); ax_p.set_yticks([])
+    ax_p.set_title("the fitted population of boundaries", fontsize=12.5, color=INK)
+    grid = np.linspace(-0.3, 6.3, 400)
+    curve_t, = ax_p.plot([], [], color=PINK, lw=2.8)
+    curve_v, = ax_p.plot([], [], color=BLUE, lw=2.8)
+    med_t = ax_p.axvline(trk["pet50"], color=PINK, lw=2.0, ls="--"); med_t.set_visible(False)
+    med_v = ax_p.axvline(vid["pet50"], color=BLUE, lw=2.0, ls="--"); med_v.set_visible(False)
+    # The two medians are 0.27 s apart, so centred labels would sit on top of each other:
+    # push the track's to the right of its line and the video's to the left of its own.
+    lab_t = ax_p.text(trk["pet50"] + 0.12, 0.50, "", color=PINK, fontsize=11, ha="left", fontweight="bold")
+    lab_v = ax_p.text(vid["pet50"] - 0.12, 0.44, "", color=BLUE, fontsize=11, ha="right", fontweight="bold")
+    # Upper right: the only corner of this panel the two densities leave empty.
+    score = ax_p.text(0.98, 0.97, "", fontsize=10.5, color=INK, transform=ax_p.transAxes,
+                      va="top", ha="right", bbox=dict(boxstyle="round,pad=0.5", fc=BEIGE, ec="none"))
+    cap = caption(fig, "")
+
+    tt = tab.dropna(subset=["track"]); vv = tab.dropna(subset=["video"])
+    p1 = 2 * FPS; p2 = p1 + 2 * FPS; p3 = p2 + 2 * FPS; n_frames = p3 + 4 * FPS
+
+    def fn(i):
+        if i < p1:                                            # the video curve draws first
+            k = max(int((i + 1) / p1 * len(vv)), 1)
+            vid_pts.set_data(vv.pet.to_numpy()[:k], vv.video.to_numpy()[:k])
+            cap.set_text("On video, 43 drivers judged a frozen left turn: the longer the gap the turn was set up for, the fewer would have intervened")
+        else:
+            vid_pts.set_data(vv.pet, vv.video)
+        if p1 <= i < p2:                                      # then the track's own runs
+            k = max(int((i - p1 + 1) / (p2 - p1) * len(tt)), 1)
+            sub = tt.iloc[:k]
+            trk_pts.set_offsets(np.c_[sub.pet, sub.track])
+            trk_pts.set_sizes(18 + 9 * sub.track_n.to_numpy())
+            cap.set_text("On the test track in 2013, 26 drivers actually drove the turn. Far noisier: many of these points are one or two runs")
+        elif i >= p2:
+            trk_pts.set_offsets(np.c_[tt.pet, tt.track])
+            trk_pts.set_sizes(18 + 9 * tt.track_n.to_numpy())
+        if i >= p2:                                           # the two fitted populations
+            f = min((i - p2 + 1) / (p3 - p2), 1.0)
+            curve_t.set_data(grid, f * norm.pdf(grid, trk["pet50"], trk["sig_pop"]))
+            curve_v.set_data(grid, f * norm.pdf(grid, vid["pet50"], vid["sig_pop"]))
+            if f >= 1.0:
+                med_t.set_visible(True); med_v.set_visible(True)
+                lab_t.set_text("track %.2f s" % trk["pet50"]); lab_v.set_text("video %.2f s" % vid["pet50"])
+            cap.set_text("Fit the SAME model to both. The median comfort boundary lands at %.2f s on the track and %.2f s on video — %.2f s apart, inside the design resolution"
+                         % (trk["pet50"], vid["pet50"], trk["pet50"] - vid["pet50"]))
+        if i >= p3:
+            score.set_text(
+                "Video model scored on the TRACK, nothing refitted\n"
+                "     %.3f     against the track's own fit %.3f\n"
+                "     and chance %.3f  →  it carries over\n\n"
+                "But within-driver spread is %.2f s on the track\nand %.2f s on video: four times sharper in the car"
+                % (tr["other"], tr["own"], tr["chance"], trk["sig_resp"], vid["sig_resp"]))
+            cap.set_text("The video paradigm reproduces the real boundary to a quarter of a second — but a frozen clip is a blunter instrument for one person's own threshold")
+        return [vid_pts, curve_t, curve_v]
+
+    return save(fig, fn, n_frames, "concept_trackvideo.gif")
 
 
 def gate_params():
@@ -324,10 +453,18 @@ def make_level_gif():
     ticks_art = [ax.plot([], [], color=TEAL, lw=1.2, alpha=0.7)[0] for _ in range(n_drv)]
     edges = np.linspace(xs[0], xs[-1], 26)
     bars = axh.bar(0.5 * (edges[:-1] + edges[1:]), np.zeros(25), width=(xs[-1] - xs[0]) / 25 * 0.9, color=TEAL, alpha=0.8)
+    # Jonas, 2026-09-03: carry the dashed percentile lines down into the histogram as well,
+    # so that "the percentile is read off the distribution of levels" is visible rather than
+    # asserted. The two panels already share an x-axis, so the lines align by construction.
     pct_lines = {}
     for q, col, yy in ((50, PURPLE, 0.62), (80, PINK, 0.9)):
-        pct_lines[q] = (ax.axvline(np.log(pct[q]), color=col, lw=2.2, ls="--"), ax.text(np.log(pct[q]) + 0.03, yy, "", color=col, fontsize=12, fontweight="bold"))
-        pct_lines[q][0].set_visible(False)
+        top = ax.axvline(np.log(pct[q]), color=col, lw=2.2, ls="--")
+        bot = axh.axvline(np.log(pct[q]), color=col, lw=2.2, ls="--")
+        lab = ax.text(np.log(pct[q]) + 0.03, yy, "", color=col, fontsize=12, fontweight="bold")
+        blab = axh.text(np.log(pct[q]) - 0.04, 11.6, "", color=col, fontsize=11.5,
+                        fontweight="bold", ha="right")
+        pct_lines[q] = (top, lab, bot, blab)
+        top.set_visible(False); bot.set_visible(False)
     cap = caption(fig, "")
     n_cells = len(open_); phase1 = n_cells; phase2 = n_cells + 2 * FPS; phase3 = phase2 + n_drv; n_frames = phase3 + 3 * FPS
 
@@ -344,8 +481,10 @@ def make_level_gif():
             for b, v in zip(bars, h):
                 b.set_height(v)
         if i >= phase3:
-            for q, (ln, tx) in pct_lines.items():
-                ln.set_visible(True); tx.set_text(f"{q}th percentile: {np.degrees(pct[q]):.1f}°/s")
+            for q, (ln, tx, bln, btx) in pct_lines.items():
+                ln.set_visible(True); bln.set_visible(True)
+                tx.set_text(f"{q}th percentile: {np.degrees(pct[q]):.1f}°/s")
+                btx.set_text(f"{q}% of drivers ←")
         if i < phase1:
             cap.set_text("Each dot is one design cell after the lane change has started: the share who said \"I would intervene\" against how fast the car was growing")
         elif i < phase2:
@@ -430,10 +569,17 @@ def make_noise_gif():
     ax_p = fig.add_subplot(gs[0]); ax_h = fig.add_subplot(gs[1]); ax_s = fig.add_subplot(gs[2])
     fig.suptitle("The NOISE FLOOR: the error a perfect model would still show, because each cell is a handful of people",
                  fontsize=14.5, color=INK, y=0.95)
-    ax_p.set_xlim(-0.5, 3.5); ax_p.set_ylim(-0.9, 3.5); ax_p.set_aspect("equal"); ax_p.axis("off")
-    ax_p.set_title("one cell: 16 people, true chance 50%", fontsize=12, color=INK)
+    ax_p.set_xlim(-0.5, 3.5); ax_p.set_ylim(-1.9, 4.3); ax_p.set_aspect("equal"); ax_p.axis("off")
+    # Jonas, 2026-09-03: "it is not obvious what a cell is". Say it on the picture, in the
+    # study's own terms (glossary chapter 13: one design condition, its share and its n).
+    ax_p.set_title("A CELL = one clip, frozen at one moment,\nanswered by 12–24 people",
+                   fontsize=12.5, color=INK, fontweight="bold")
+    ax_p.text(1.5, 3.85, "here: 16 people whose true chance of \"yes\" is exactly 50%",
+              ha="center", fontsize=10.5, color=GREY)
     dots = [ax_p.add_patch(plt.Circle((k % 4, 3 - k // 4), 0.36, fc="#DDDDDD", ec="none")) for k in range(n_people)]
     frac_txt = ax_p.text(1.5, -0.7, "", ha="center", fontsize=12.5, color=INK)
+    ax_p.text(1.5, -1.55, "one speed × one starting TTC × one lane-change duration\n× one freeze point  →  one cell.  This study has 288 of them",
+              ha="center", fontsize=10, color=PURPLE)
     ax_h.set_xlim(0, 1); ax_h.set_ylim(0, 8); ax_h.set_xlabel("observed share of \"yes\"", fontsize=11.5); ax_h.set_ylabel("how many draws", fontsize=11.5)
     ax_h.axvline(0.5, color=PINK, lw=2, ls="--"); ax_h.text(0.52, 7.4, "truth 0.50", color=PINK, fontsize=11)
     ax_h.spines[["top", "right"]].set_visible(False)
@@ -549,8 +695,19 @@ def make_percentile_gif():
                  fontsize=14, color=INK, y=0.96)
     ax.set_xlim(48, 97); ax.set_ylim(-1.2, 3.0)
     ax.set_xlabel("percentile of drivers' levels used as the trigger", fontsize=12)
-    ax.set_ylabel("implied trigger moment [s after lane-change onset]", fontsize=12)
+    # Jonas, 2026-09-03: "what is zero on the y-axis, how can it be before the lateral motion
+    # starts?" Zero is the lane-change onset, and the crossing IS before it on the TTC 4 s
+    # stimulus, because this curve is the AXIS crossing with the gate deliberately left off
+    # (out/stage1_looming.md section 5 says so in as many words). Label it and shade it.
+    ax.set_ylabel("when the axis crosses the level, GATE OFF\n[s from the start of the lateral motion]", fontsize=12)
     ax.spines[["top", "right"]].set_visible(False)
+    ax.axhspan(-1.2, 0, color="#EEEEEE", zorder=0)
+    ax.axhline(0, color=INK, lw=1.2)
+    ax.text(96.5, 0.06, "0 = the lane change starts (the car begins to move sideways)",
+            ha="right", va="bottom", fontsize=11, color=INK)
+    ax.text(96.5, -0.12, "below the line: the car is already growing fast enough for this driver — but the GATE is still shut,\n"
+                         "so the model predicts (and participants showed) almost no intervention until the lateral motion begins",
+            ha="right", va="top", fontsize=10.5, color=GREY)
     l4, = ax.plot([], [], "-o", color=PURPLE, lw=2.5, ms=7, label="TTC 4 s stimulus")
     l6, = ax.plot([], [], "-o", color=TEAL, lw=2.5, ms=7, label="TTC 6 s stimulus")
     band = ax.fill_between([], [], [], color=PURPLE, alpha=0.15)
@@ -634,4 +791,4 @@ def make_whole_gif():
 
 if __name__ == "__main__":
     make_axis_gif(); make_components_gif(); make_level_gif(); make_gate_gif(); make_noise_gif()
-    make_heldout_gif(); make_percentile_gif(); make_whole_gif()
+    make_heldout_gif(); make_percentile_gif(); make_whole_gif(); make_trackvideo_gif()

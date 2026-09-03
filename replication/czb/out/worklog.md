@@ -1639,6 +1639,67 @@ exponent at 0.39–0.42 against our implied 0.5 (handbook appendix 16.3). The ca
 al. (2018), who found inverse TTC the better brake-onset cue in a simulator where this video
 paradigm reverses the order (0.113 against 0.168).
 
+### Concepts deck v3, second pass — Jonas's six review points on v2
+
+Jonas reviewed `ai_czb_concepts_talk-v2.pptx` and raised six things. All six are done in
+`ai_czb_concepts_talk-v3.pptx` (now 17 slides, 10 animated, notes budget 25.3 min), which also
+carries the two slides added earlier today. v2 remains untouched.
+
+1. **The equation's terms.** New slide 3, "Every term in that equation, in one line": one row
+   each for share who intervene, lapse, GATE, AXIS, LEVEL, spread and Φ. Three of the six
+   symbols had been on the map slide with no gloss anywhere in the deck.
+2. **What a cell is** (slide 10, the noise floor). The animation now carries the definition as
+   its left-panel heading ("A CELL = one clip, frozen at one moment, answered by 12-24
+   people") and the factorial construction underneath ("one speed × one starting TTC × one
+   lane-change duration × one freeze point → one cell; this study has 288"). The slide caption
+   and the speaker notes say it too; the wording follows handbook chapter 13's definition.
+3. **Video format, no scrub bar** (all animated slides). PowerPoint plays an embedded GIF as
+   an image: no slider, and pausing restarts it. `save()` now writes each animation three ways
+   -- `.gif`, an H.264 `.mp4`, and a `.png` poster of the LAST frame -- and `gif()` in the
+   build script embeds the `.mp4` through `add_movie`, falling back to the picture when no
+   `.mp4` exists. PowerPoint then supplies its own transport controls. The poster also fixes
+   DECK.Q2 below: in normal view a slide now shows the finished picture instead of empty axes.
+   `make_status_animations.py::make_model_gif` got the same treatment, since the concepts deck
+   embeds `status_model.gif` on its slide 13; the status deck still uses the GIF and is
+   unaffected. Verified: 10 of the 17 slides carry a video part.
+4. **The percentile lines pulled down** (slide 8, the level). The dashed 50th/80th lines now
+   run through the histogram panel as well as the response panel, labelled "50% of drivers ←".
+   The two panels already shared an x-axis, so they align by construction.
+5. **Slide 12's y-axis** -- "what is zero, and how can it be before the lateral motion starts?"
+   Zero is the lane-change onset, and the crossing genuinely is 0.80 s before it at the 50th
+   percentile on the TTC4 stimulus. Not a bug: `out/stage1_looming.md` section 5 states that
+   the gate is deliberately NOT applied to this crossing, so the curve is the moment the AXIS
+   passes the level with the gate ignored. The axis label now says so ("when the axis crosses
+   the level, GATE OFF"), zero is drawn as a line and named, the pre-onset region is shaded,
+   and a note reads: below the line the car is already growing fast enough for this driver,
+   but the gate is still shut, so the model predicts (and participants showed) almost no
+   intervention until the lateral motion begins. No number changed.
+6. **Test track against video** (new slide 15, animated, placed late as asked). New
+   `concept_trackvideo.gif/.mp4` from `make_trackvideo_gif`, every number parsed out of
+   `out/ltapod_testtrack.md`: the two paradigms' model-free curves (marker size = runs per
+   cell, 1 to 32), then the two fitted populations of per-driver boundaries with medians
+   2.45 s track and 2.18 s video, then T6's transfer -- the video-fitted population scored on
+   the track's cells at 0.200 against the track's own 0.231 and chance 0.289 -- and the
+   sharpness contrast, within-driver spread 0.20 s on the track against 0.86 s on video. The
+   notes say what the track does NOT test: one oncoming speed and one decision moment, so
+   neither the axis nor the gate.
+
+Three drawing bugs found and fixed while building: `ax.collections.clear()` is not available
+on this matplotlib (ArtistList is read-only), so the track scatter is one artist updated by
+`set_offsets`/`set_sizes`; the components animation's total was a zero-anchored bar, which
+SHRANK as criticality rose because log theta_dot climbs toward zero, and is now a marker on a
+number line; and the "θ̇" glyph renders badly in the Chalmers template's font, so the
+equation-terms slide names the quantity in words instead.
+
+RESOLVED DECK.Q2: fixed rather than answered -- the poster frame introduced in point 3 above
+is the animation's last frame, so every animated slide now shows its finished picture in
+normal view. This applies to all ten.
+
+@DECK.Q3(minor, jonas): the concepts deck now embeds ten H.264 videos and the file is
+correspondingly larger. If it ever has to travel by email or be opened on a machine without
+the codec, the fallback is one line in `gif()` (prefer the `.gif` again). Recording the
+trade-off, not asking for a decision.
+
 @DECK.Q1(judgment, jonas): the new motivation slide puts **Xue et al. (2018)** on a slide, but
 that citation reaches us only through the colleague's external note, whose references handbook
 appendix 16.5 explicitly records as unverified ("from memory"). Nothing else on the slide

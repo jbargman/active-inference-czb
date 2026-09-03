@@ -38,6 +38,13 @@ from build_talk import (  # noqa: E402
 
 
 def gif(slide, name, x, y, box_w, box_h):
+    """Embed the animation as a MOVIE when an .mp4 sits beside the .gif, else as a picture.
+
+    Jonas, 2026-09-03: an embedded GIF has no scrub bar, and pausing it restarts it from the
+    beginning. PowerPoint gives an embedded H.264 .mp4 its own media controls -- a slider,
+    and a pause that resumes where it stopped. The poster frame is the animation's LAST
+    frame, so the slide shows the finished picture in normal view instead of empty axes.
+    """
     path = find_figure(name)
     if path is None:
         return None
@@ -45,7 +52,13 @@ def gif(slide, name, x, y, box_w, box_h):
         iw, ih = im.size
     scale = min(Cm(box_w) / iw, Cm(box_h) / ih)
     w, h = int(iw * scale), int(ih * scale)
-    return slide.shapes.add_picture(str(path), Cm(x) + (Cm(box_w) - w) // 2, Cm(y) + (Cm(box_h) - h) // 2, width=w, height=h)
+    left, top = Cm(x) + (Cm(box_w) - w) // 2, Cm(y) + (Cm(box_h) - h) // 2
+    mp4, poster = path.with_suffix(".mp4"), path.with_suffix(".png")
+    if mp4.exists():
+        return slide.shapes.add_movie(str(mp4), left, top, w, h,
+                                      poster_frame_image=str(poster) if poster.exists() else None,
+                                      mime_type="video/mp4")
+    return slide.shapes.add_picture(str(path), left, top, width=w, height=h)
 
 
 def caption(slide, line, y=17.05):
@@ -91,6 +104,44 @@ number the boundary is a threshold on; the level is that threshold, one per driv
 spread is how sharply a driver switches, and the lapse is the share of answers that ignore
 the stimulus. Everything in the project's claims is a statement about one of these three.
 Before the parts, the result that makes them worth having: the next slide.
+""")
+
+    # 2b every term in the equation (Jonas, 2026-09-03: "we need to explain the terms")
+    s = head(prs, "Every term in that equation, in one line",
+             kicker="the map, term by term")
+    text(s, MARGIN, BODY_TOP - 0.5, BODY_W, 1.6,
+         [("share who intervene = lapse + (1 − lapse) × GATE × Φ((AXIS − LEVEL) / spread)", 18, INK, True)],
+         align=PP_ALIGN.CENTER)
+    rows = [("share who intervene", "what we predict and what we observe: of the people shown this exact situation, the fraction who said they would act", INK),
+            ("lapse", "the share of answers that ignore the stimulus altogether — a mis-click, a misread, someone answering \"yes\" to everything. Fitted, and small here (about 1.6%)", GREY),
+            ("GATE", "does this vehicle count yet? 0 to 1. On the cut-in: will its lateral clearance drop below a minimum within 3 s at its current closing rate", BLUE),
+            ("AXIS", "the one number read off the scene at this moment. On the cut-in, how fast the other car grows in the eye — the optical expansion rate, taken apart two slides from now", PURPLE),
+            ("LEVEL", "where THIS driver says \"now\" on that axis. One value per driver; the population of them is the deliverable", DEEPTEAL),
+            ("spread", "how sharply one driver switches from \"no\" to \"yes\" as the axis rises. Small = a crisp threshold; large = a gradual one", DEEPPINK),
+            ("Φ", "the cumulative normal — the S-shaped curve that turns \"how far past my level am I\" into a probability between 0 and 1", GREY)]
+    yy = BODY_TOP + 1.6
+    for term, gloss, col in rows:
+        panel(s, MARGIN, yy, BODY_W, 1.42, BEIGE)
+        text(s, MARGIN + 0.5, yy + 0.24, 5.4, 1.1, [(term, 14, col, True)])
+        text(s, MARGIN + 6.2, yy + 0.24, BODY_W - 6.9, 1.1, [(gloss, 12, INK, False)])
+        yy += 1.60
+    notes(s, 1.5, """
+Jonas asked for this slide, and he was right to: the equation was on the map with three of
+its six symbols unexplained.
+
+Read it left to right. The share who intervene is what we predict and what we observe. The
+lapse is the floor: a few answers ignore the stimulus entirely, and if you do not allow for
+them the model bends its threshold to chase them. It is fitted, and here it is small.
+
+Then the three parts proper. The gate is a yes/no-ish weight: does this vehicle count yet.
+The axis is the number the boundary lives on. The level is where one particular driver sits
+on that axis — the quantity this whole project exists to measure.
+
+Two more. The spread is how sharply one driver switches: it is a property of the person and
+the paradigm, and it is much larger on video than in a real car, which is a slide near the
+end. And Phi is just the S-curve that turns "how far past my level" into a probability.
+
+Everything the project claims is a statement about one of these terms.
 """)
 
     # 3 the trait (leads)
@@ -252,8 +303,20 @@ reach the crossing before I clear it". The axis and the level are what we claim 
     concept(prs, "4  the noise floor",
             "The NOISE FLOOR: the error a perfect model would still show",
             "concept_noise.gif",
-            "Left: one cell of 16 people, true chance one half, asked again and again. Right: all 288 cells under a model that knows every true rate. Its error is the floor, 0.118.",
-            1.5, """
+            "A CELL is one clip frozen at one moment, answered by 12–24 people; this study has 288. Left: one such cell, true chance one half, asked again and again. Right: all 288 under a model that knows every true rate — its error is the floor, 0.118.",
+            1.7, """
+First, what a cell is, because the word is everywhere in this deck and nowhere defined.
+
+The studies are factorial. Each stimulus is one combination of closing speed, starting time
+to collision and lane-change duration; each clip is frozen at one of five moments; and each
+of those freeze points was answered by 12 to 24 participants. One combination, frozen at one
+moment, is a CELL, and what we record for it is two numbers: the share who said they would
+intervene, and how many people that share is based on. The second cut-in study has 378 cells,
+288 of them after the lane change has started. Every fit in this project is to cell means,
+weighted by how many people saw each one.
+
+That second number is the whole point of this slide.
+
 Popular-science version: flip 16 fair coins. You expect 8 heads; you rarely get exactly 8.
 Ask 16 people whose true chance of saying "yes" is one half, and the same thing happens: the
 observed share scatters around 0.5 with a spread of about 0.12. Each of our cells is 12 to 24
@@ -326,6 +389,43 @@ gate opens and the axis passes more and more drivers' levels. The model was fitt
 cells of study 1, so this is a fit, not a held-out prediction; the held-out evidence is the
 earlier slide. What the picture shows is that gate × axis × level, and nothing else, is the
 model.
+""")
+
+    # 11b frozen video against a real car (Jonas, 2026-09-03: "demonstrate the difference
+    # between the test-track study and the video study, quite late, preferably with a video")
+    concept(prs, "8  does any of this survive real driving?",
+            "Frozen video against a real car: the same left turn, two paradigms",
+            "concept_trackvideo.gif",
+            "Jonas's 2013 test-track study (26 drivers who actually drove the turn) against the video left turn at 50 km/h, both fitted with the same model. Card TT.1, out/ltapod_testtrack.md.",
+            2.2, """
+Everything so far is frozen video: people watched a clip and said what they would do. The
+obvious objection is that watching is not driving. This slide is the one test we have against
+real driving.
+
+In 2013 we ran a test-track study of exactly this manoeuvre: 26 drivers, in a real car, turning
+left across a real oncoming vehicle, with the gap staircased run by run. The video study asked
+43 drivers to judge the same manoeuvre frozen on a screen. Same manoeuvre, same manipulated
+quantity, two very different paradigms.
+
+Left: what people did. The video curve is smooth because each point is 172 judgments; the
+track points are ragged because many are one or two runs. Real driving is expensive.
+
+Right: fit the same hierarchical model to both. The median comfort boundary comes out at
+2.45 seconds on the track and 2.18 on video. A quarter of a second apart, inside the design
+resolution, and the standard error on the video estimate is 0.20 alone.
+
+Then the strong test. Take the population fitted on video, refit nothing at all, and score it
+on the track's data: 0.200, against the track's own fit at 0.231 and chance at 0.289. The
+video model predicts real driving better than the track's own fit does, which sounds odd until
+you remember the track has 218 runs and the video has 1548 judgments.
+
+Where the paradigms genuinely differ is sharpness. The within-driver spread is 0.20 seconds
+on the track and 0.86 on video: in a real car a driver's own boundary is four times crisper.
+For a population percentile that is tolerable. For one person's threshold it is not, and it is
+the honest limit of the video work.
+
+Two things this does NOT test, and I want to say so: the track had one oncoming speed and one
+decision moment, so it tests neither the axis nor the gate.
 """)
 
     # 12 what next

@@ -34,7 +34,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from matplotlib.animation import FuncAnimation, PillowWriter
+from matplotlib.animation import FFMpegWriter, FuncAnimation, PillowWriter
 from matplotlib.patches import Rectangle
 from scipy.stats import norm
 
@@ -189,6 +189,14 @@ def make_model_gif() -> Path:
     anim = FuncAnimation(fig, frame, frames=len(idx), interval=1000 / FPS, blit=False)
     out = FIGS / "status_model.gif"
     anim.save(str(out), writer=PillowWriter(fps=FPS))
+    # The concepts deck embeds this one as a movie (Jonas, 2026-09-03: a GIF gives no scrub
+    # bar and restarts on pause), so write the .mp4 and a poster of the final frame beside
+    # it. The status deck still uses the .gif and is unaffected.
+    anim.save(str(out.with_suffix(".mp4")),
+              writer=FFMpegWriter(fps=FPS, codec="libx264", bitrate=-1,
+                                  extra_args=["-pix_fmt", "yuv420p", "-crf", "20"]))
+    frame(len(idx) - 1)
+    fig.savefig(str(out.with_suffix(".png")), dpi=100)
     plt.close(fig)
     print("wrote", out, "levels (deg/s):", {k: round(v, 4) for k, v in levels.items()}, "W =", W)
     return out
