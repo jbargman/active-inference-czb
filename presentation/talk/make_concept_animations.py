@@ -40,6 +40,7 @@ import sys
 from pathlib import Path
 
 import matplotlib
+from PIL import Image
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -93,8 +94,18 @@ def save(fig, fn, n, name, fps=FPS):
     # yuv420p + even dimensions is what PowerPoint (and everything else) will play.
     anim.save(str(mp4), writer=FFMpegWriter(fps=fps, codec="libx264", bitrate=-1,
                                             extra_args=["-pix_fmt", "yuv420p", "-crf", "20"]))
-    fn(n - 1)                                   # leave the figure on its final frame
-    fig.savefig(str(out.with_suffix(".png")), dpi=100)
+    # The poster is the FIRST frame, not the last. Jonas, 2026-09-03 (second review): with a
+    # last-frame poster the slide shows the finished picture and then WIPES it the moment the
+    # video is played, because playback starts at frame 0 -- "it has the dots, removes them
+    # and adds them again". A first-frame poster is continuous with playback.
+    #
+    # It is taken from the GIF rather than by calling fn(0) again: these frame functions only
+    # ADD to their artists and never clear them, so re-calling fn(0) on the live figure leaves
+    # every other artist in its final state and produces a hybrid still that matches neither
+    # end of the animation.
+    with Image.open(out) as im:
+        im.seek(0)
+        im.convert("RGB").save(out.with_suffix(".png"))
     plt.close(fig)
     print("wrote", out, "+ .mp4 + .png poster")
     return out
@@ -893,3 +904,4 @@ def make_whole_gif():
 if __name__ == "__main__":
     make_axis_gif(); make_components_gif(); make_level_gif(); make_gate_gif(); make_noise_gif()
     make_heldout_gif(); make_percentile_gif(); make_whole_gif(); make_trackvideo_gif()
+    make_traitmodel_gif()          # needs out/driver_levels.csv (card TR.1) to exist first

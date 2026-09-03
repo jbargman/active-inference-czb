@@ -42,8 +42,9 @@ def gif(slide, name, x, y, box_w, box_h):
 
     Jonas, 2026-09-03: an embedded GIF has no scrub bar, and pausing it restarts it from the
     beginning. PowerPoint gives an embedded H.264 .mp4 its own media controls -- a slider,
-    and a pause that resumes where it stopped. The poster frame is the animation's LAST
-    frame, so the slide shows the finished picture in normal view instead of empty axes.
+    and a pause that resumes where it stopped. The poster frame is the animation's FIRST
+    frame: a last-frame poster showed the finished picture and then wiped it the instant the
+    video was played, because playback starts at frame 0 (Jonas, 2026-09-03).
     """
     path = find_figure(name)
     if path is None:
@@ -77,15 +78,41 @@ def build(out: Path) -> None:
     prs = Presentation(str(ensure_template()))
     drop_existing_slides(prs)
 
-    # 1 title
+    # 1 title (Jonas, 2026-09-03: this title and subtitle, with the concepts sprinkled below)
     s = blank(prs)
     bg = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, 0, 0, Cm(SLIDE_W), Cm(SLIDE_H)); _plain(bg, PURPLE)
-    rule(s, 2.3, 6.8, 3.2, TEAL, 5.0)
-    text(s, 2.3, 7.7, 29.0, 5.0, [("The concepts, one at a time", 40, WHITE, True),
-                                  ("trait · axis · level · gate · noise floor · how we test · the deliverable · the whole model", 20, TEAL, True, 8)], spacing=1.15)
-    text(s, 2.3, 14.4, 29.0, 2.4, [("Jonas Bärgman  ·  Chalmers University of Technology", 17, WHITE, False),
-                                   ("each slide is one moving picture; the words are in the notes and in handbook chapter 13", 13.5, MUTED, False, 8)], spacing=1.15)
-    notes(s, 0.3, "A vocabulary deck: one animated slide per term. The written definitions are in the handbook's glossary, chapter 13, 'the measurement vocabulary'.")
+    rule(s, 2.3, 3.6, 3.2, TEAL, 5.0)
+    text(s, 2.3, 4.4, 29.0, 3.0, [("Yet another modeling perspective", 40, WHITE, True)])
+    text(s, 2.3, 7.5, 29.0, 3.2,
+         [("Starting with active inference, developing into a gated threshold model", 20, TEAL, True),
+          ("of the comfort-zone boundary: the concepts one at a time", 20, TEAL, True, 4)], spacing=1.15)
+    # The vocabulary, sprinkled rather than listed: the deck's own running order, laid out so
+    # the eye wanders instead of reading a line. Sizes and tints vary on purpose.
+    for word, x, y, sz, col in [
+            ("the trait", 2.6, 11.2, 21, WHITE), ("the gate", 9.9, 11.9, 17, TEAL),
+            ("the axis", 15.4, 11.1, 24, WHITE), ("looming", 22.0, 11.9, 16, MUTED),
+            ("the level", 27.3, 11.2, 20, TEAL),
+            ("spread", 3.4, 13.5, 16, MUTED), ("lapse", 8.2, 14.1, 15, MUTED),
+            ("the noise floor", 12.6, 13.4, 19, TEAL), ("held out", 20.4, 14.0, 17, WHITE),
+            ("the percentile", 25.2, 13.4, 21, WHITE),
+            ("one level per driver", 6.0, 15.7, 16, TEAL),
+            ("and then the whole model", 17.2, 15.6, 18, MUTED)]:
+        text(s, x, y, 12.0, 1.4, [(word, sz, col, True)])
+    text(s, 2.3, 17.3, 29.0, 1.6, [("Jonas Bärgman  ·  Chalmers University of Technology", 15, WHITE, False)])
+    notes(s, 0.4, """
+The title is deliberately modest: this is one more way of looking at the same problem, not a
+replacement for anything.
+
+The subtitle is the honest arc of the work. We started from the published active-inference
+collision-avoidance model, asked whether its preference field could measure comfort-zone
+boundaries, and found that it could not — that is a pre-registered result, not an opinion.
+What came out the other side is a smaller and more ordinary thing: a gated threshold model,
+where a gate decides whether the other vehicle counts yet, a scenario-specific axis is read
+off the scene, and each driver has their own level on it. Active inference is still where the
+axis came from — the model's perception stage computes exactly the quantity that won.
+
+The words scattered below are the deck's running order, one animated slide each.
+""")
 
     # 2 the map
     s = head(prs, "The model has three parts; the slides explain them one by one", kicker="the map")
@@ -265,7 +292,7 @@ scored the exact one (out/cutin2_looming.md), so nothing here rests on the appro
           "its preference field lost at gate R.2 — but the quantity it perceives with survived"], PURPLE),
         ("TWO PIPELINES LANDED ON IT",
          ["a threshold on expansion rate implies gap grows as the square root of closing speed",
-          "a colleague's independent model, different cue and different fitter, fitted that exponent at 0.39–0.42 against our implied 0.5 (appendix 16)"], DEEPTEAL)]):
+          "Sarang's independently developed model, different cue and different fitter, fitted that exponent at 0.39–0.42 against our implied 0.5 (appendix 16)"], DEEPTEAL)]):
         x = MARGIN + i * (cw + 0.75)
         panel(s, x, ytop, cw, 9.4, BEIGE); rule(s, x + 0.8, ytop + 0.7, 2.4, col, 4.0)
         runs = [(title, 17, col, True, 0)] + [("–  " + ln, 12.5, INK, False, 8) for ln in lines]
@@ -288,14 +315,14 @@ perceptible. So when the axis comparison picked the expansion rate, it picked th
 observable. The preference field lost at gate R.2; the perceptual front end did not.
 
 Third, two independent analyses landed on the same cue. A threshold on expansion rate implies
-that the accepted gap grows as the square root of closing speed. A colleague, fitting a
+that the accepted gap grows as the square root of closing speed. Sarang, independently fitting a
 completely different model with a different cue and a different fitter, got a speed exponent
 of 0.39 to 0.42 where ours implies 0.5. Their exponent had no mechanism; ours supplies one.
 
 The caveat at the bottom is real and belongs on the slide. Xue and colleagues, in a simulator
 with real self-motion, found inverse TTC better than expansion rate for brake onset. Our
 frozen-video paradigm reverses that order. I do not know which is the paradigm and which is
-the task, and I would not claim to. That reference comes from a colleague's note and we have
+the task, and I would not claim to. That reference comes from Sarang's note and we have
 not verified it ourselves.
 """)
 
@@ -331,7 +358,7 @@ now and how fast that clearance is shrinking (measured over the last 0.3 s), pro
 ahead; w is the probability that the projection comes within a minimum clearance. Two
 parameters, fitted on post-onset cells only; the gate then predicted the 90 pre-onset cells
 out of sample to 0.032 (card G.1, out/cutin2_gate.md), and improved the post-onset fit too.
-The idea came from the colleague's analysis (handbook appendix 16).
+The idea came from Sarang's independently developed analysis (handbook appendix 16).
 
 The gate is where scenario knowledge enters. On a left turn it is "will the oncoming car
 reach the crossing before I clear it". The axis and the level are what we claim carry over.

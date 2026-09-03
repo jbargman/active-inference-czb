@@ -1779,3 +1779,49 @@ G1.Q1's stage-1 run already carries the card C translation on the looming axis
 (`out/stage1_looming.md`: a 5-point percentile step moves the implied onset 0.244 s against
 0.520 s from the level's own CI), so regenerating card C is a presentation decision, not a new
 result.
+
+### Concepts deck v5 — Jonas's second review pass
+
+Six points, all applied; `ai_czb_concepts_talk-v5.pptx`, 18 slides, 12 animated, notes budget
+27.2 min. Slide numbering is unchanged from v4, so his references still resolve.
+
+1. **Slides 9 and 16 were the same bug, and it was mine.** "Slide 9 was better before where
+   the dots are added before the rest" and "something is weird with video 16 — it has the
+   dots, removes them and adds them again. Why?" The animations were never reordered: frames
+   extracted from `concept_level.gif` confirm dots first, histogram last, exactly as before.
+   What changed was the POSTER. v3 introduced a last-frame poster, so the slide displayed the
+   finished picture and PowerPoint wiped it the moment the video played, because playback
+   starts at frame 0. Posters are now the FIRST frame.
+   A second defect was found while fixing it: the first implementation called `fn(0)` on the
+   live figure, but these frame functions only ADD to their artists and never clear them, so
+   the "first frame" poster kept every other artist in its final state — a hybrid still
+   matching neither end. Posters are now read from the GIF's frame 0 with PIL, which cannot
+   drift from what the video actually shows.
+2. **Sarang named** on the motivation slide and in three places in the notes, replacing "a
+   colleague": "Sarang's independently developed model, different cue and different fitter".
+3. **Title slide rewritten to Jonas's wording**: "Yet another modeling perspective", subtitle
+   "Starting with active inference, developing into a gated threshold model of the
+   comfort-zone boundary: the concepts one at a time", with the vocabulary sprinkled below in
+   varied sizes and tints rather than listed on one line. The model name is mine to defend:
+   he left it as "[what we should call this model]", and "gated threshold model" is chosen
+   over anything with "looming" in it because his own standing ruling of this morning makes
+   the axis scenario-specific — the cut-in's axis is looming, the left turn's is distance, so
+   naming the model after one scenario's axis would contradict the ruling. See DECK.Q4.
+4. **Slide 4's trait animation**: the topmost (yellow) driver ran off the top of the frame.
+   The y-limits were hard-coded at ±2.8 while the largest z-score is 3.14; they now come from
+   the data (±1.12 × max |z|). It is also embedded as video now, so it scrubs like the rest —
+   `make_status_animations.make_trait_gif` writes .mp4 and a poster, as `make_model_gif`
+   already did.
+
+Rebuild note: the animations and .mp4 files were already correct from the earlier run — only
+the posters were wrong — so the posters were regenerated directly from the tracked GIFs
+rather than re-encoding nine animations for 45 minutes. That is the identical operation
+`save()` now performs, so a future full rebuild reproduces them.
+
+@DECK.Q4(judgment, jonas): the title slide now calls the model **"a gated threshold model of
+the comfort-zone boundary"**, filling the placeholder in Jonas's requested subtitle. Chosen to
+be scenario-agnostic, because his standing ruling makes the axis scenario-specific and
+possibly multi-dimensional, so "looming" would over-name it. Alternatives if he prefers:
+"a gated perceptual-threshold model" (names the mechanism, slightly more committal about
+perception); "a gated threshold model of driver comfort" (drops the CZB term for a general
+audience); or his own. One string in `build_concepts_talk.py`.

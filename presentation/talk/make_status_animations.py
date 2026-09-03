@@ -29,6 +29,7 @@ import sys
 from pathlib import Path
 
 import matplotlib
+from PIL import Image
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -195,8 +196,11 @@ def make_model_gif() -> Path:
     anim.save(str(out.with_suffix(".mp4")),
               writer=FFMpegWriter(fps=FPS, codec="libx264", bitrate=-1,
                                   extra_args=["-pix_fmt", "yuv420p", "-crf", "20"]))
-    frame(len(idx) - 1)
-    fig.savefig(str(out.with_suffix(".png")), dpi=100)
+    # FIRST-frame poster, taken from the GIF: re-calling frame(0) would leave every artist
+    # the frame function never clears in its final state (see make_concept_animations.save).
+    with Image.open(out) as im:
+        im.seek(0)
+        im.convert("RGB").save(out.with_suffix(".png"))
     plt.close(fig)
     print("wrote", out, "levels (deg/s):", {k: round(v, 4) for k, v in levels.items()}, "W =", W)
     return out
@@ -312,7 +316,10 @@ def make_trait_gif() -> Path:
                  fontsize=15, color=INK, y=0.95)
     ax.set_xticks(range(4)); ax.set_xticklabels([SHORT[s] for s in SCENARIOS], fontsize=13)
     ax.set_ylabel("intervention propensity, criticality-adjusted (z)", fontsize=12)
-    ax.set_xlim(-0.4, 3.4); ax.set_ylim(-2.8, 2.8)
+    # Jonas, 2026-09-03: the topmost (yellow) driver ran off the top of the frame. The old
+    # fixed +-2.8 was narrower than the data; take the limit from the z-scores themselves.
+    lim = 1.12 * float(np.abs(Z.to_numpy()).max())
+    ax.set_xlim(-0.4, 3.4); ax.set_ylim(-lim, lim)
     ax.spines[["top", "right"]].set_visible(False)
     ax.axhline(0, color="#CCCCCC", lw=1)
     lines = [ax.plot([], [], color=cols[i], lw=1.8, alpha=0.85)[0] for i in range(n)]
@@ -334,8 +341,18 @@ def make_trait_gif() -> Path:
     anim = FuncAnimation(fig, frame, frames=n_frames, interval=1000 / FPS, blit=False)
     out = FIGS / "status_trait.gif"
     anim.save(str(out), writer=PillowWriter(fps=FPS))
+    # The concepts deck embeds this as a movie too (Jonas, 2026-09-03), so write the .mp4 and
+    # a FIRST-frame poster beside it, as make_concept_animations.save does.
+    anim.save(str(out.with_suffix(".mp4")),
+              writer=FFMpegWriter(fps=FPS, codec="libx264", bitrate=-1,
+                                  extra_args=["-pix_fmt", "yuv420p", "-crf", "20"]))
+    # FIRST-frame poster, taken from the GIF: re-calling frame(0) would leave every artist
+    # the frame function never clears in its final state (see make_concept_animations.save).
+    with Image.open(out) as im:
+        im.seek(0)
+        im.convert("RGB").save(out.with_suffix(".png"))
     plt.close(fig)
-    print("wrote", out, "drivers", n, "shared", share)
+    print("wrote", out, "+ .mp4 + .png poster", "drivers", n, "shared", share)
     return out
 
 
