@@ -36,6 +36,7 @@ study-1 clip against what participants did.
 from __future__ import annotations
 
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -46,7 +47,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from matplotlib.animation import FFMpegWriter, FuncAnimation, PillowWriter
+from matplotlib.animation import FuncAnimation, PillowWriter
 from matplotlib.patches import FancyArrowPatch, Rectangle
 from scipy.stats import norm
 
@@ -77,6 +78,26 @@ def caption(fig, text, y=0.04, size=14.5):
                     bbox=dict(boxstyle="round,pad=0.5", fc=BEIGE, ec="none"))
 
 
+def gif_to_mp4(gif: Path, fps: int = FPS) -> Path:
+    """Transcode a finished .gif to an H.264 .mp4 and write a poster of its FIRST frame.
+
+    Both outputs are derived from the one GIF, so the still, the video and the animation
+    cannot disagree. yuv420p and even dimensions are what PowerPoint will play; the poster
+    is frame 0 so that pressing play does not wipe the still and rebuild it.
+    """
+    mp4, poster = gif.with_suffix(".mp4"), gif.with_suffix(".png")
+    subprocess.run(
+        ["ffmpeg", "-y", "-v", "error", "-i", str(gif),
+         "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2", "-r", str(fps),
+         "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20",
+         "-movflags", "+faststart", str(mp4)],
+        check=True)
+    with Image.open(gif) as im:
+        im.seek(0)
+        im.convert("RGB").save(poster)
+    return mp4
+
+
 def save(fig, fn, n, name, fps=FPS):
     """Write the animation three ways: .gif, .mp4 and a poster .png of the LAST frame.
 
@@ -90,10 +111,14 @@ def save(fig, fn, n, name, fps=FPS):
     anim = FuncAnimation(fig, fn, frames=n, interval=1000 / fps, blit=False)
     out = FIGS / name
     anim.save(str(out), writer=PillowWriter(fps=fps))
-    mp4 = out.with_suffix(".mp4")
-    # yuv420p + even dimensions is what PowerPoint (and everything else) will play.
-    anim.save(str(mp4), writer=FFMpegWriter(fps=fps, codec="libx264", bitrate=-1,
-                                            extra_args=["-pix_fmt", "yuv420p", "-crf", "20"]))
+    # The .mp4 is TRANSCODED FROM THE GIF, never rendered a second time. Jonas, 2026-09-03
+    # (third review): saving the same FuncAnimation twice re-runs the frame function from
+    # frame 0 with the artists still holding the first pass's final state, and because every
+    # frame function here only ADDS to its artists and never clears them, the second render
+    # began with the whole animation already drawn -- "it shows all the lines at the same
+    # time now". One render, then a transcode, cannot drift.
+    plt.close(fig)
+    gif_to_mp4(out, fps)
     # The poster is the FIRST frame, not the last. Jonas, 2026-09-03 (second review): with a
     # last-frame poster the slide shows the finished picture and then WIPES it the moment the
     # video is played, because playback starts at frame 0 -- "it has the dots, removes them
@@ -103,10 +128,6 @@ def save(fig, fn, n, name, fps=FPS):
     # ADD to their artists and never clear them, so re-calling fn(0) on the live figure leaves
     # every other artist in its final state and produces a hybrid still that matches neither
     # end of the animation.
-    with Image.open(out) as im:
-        im.seek(0)
-        im.convert("RGB").save(out.with_suffix(".png"))
-    plt.close(fig)
     print("wrote", out, "+ .mp4 + .png poster")
     return out
 
@@ -403,7 +424,9 @@ def make_axis_gif():
     ax1.text(t0 / 2, ax1.get_ylim()[1] * 0.9, "before onset", ha="center", color=GREY, fontsize=11)
     ax3.set_xlim(0.5, 5.5); ax3.set_ylim(0, 1.05); ax3.set_xticks([1, 2, 3, 4, 5]); ax3.set_xticklabels(["CP1\n(before)", "CP2", "CP3", "CP4", "CP5"], fontsize=10.5)
     ax3.set_ylabel("share of participants who said \"I would intervene\"", fontsize=11); ax3.spines[["top", "right"]].set_visible(False)
-    ax3.set_title("what participants did", fontsize=12, color=INK)
+    # Jonas, 2026-09-03: "is it the drivers' actual data? Any modelling in there?" - say so.
+    ax3.set_title("what participants ACTUALLY did\nraw response rates, no model of any kind",
+                  fontsize=11.5, color=INK)
     h2 = hum[hum.lcd == 2].sort_values("cpn"); h4 = hum[hum.lcd == 4].sort_values("cpn")
     p2, = ax3.plot([], [], "-o", color=INK, lw=2.2, ms=9, label="2 s lane change")
     p4, = ax3.plot([], [], "--s", color=INK, lw=2.2, ms=8, mfc="white", label="4 s lane change")

@@ -35,7 +35,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from matplotlib.animation import FFMpegWriter, FuncAnimation, PillowWriter
+from matplotlib.animation import FuncAnimation, PillowWriter
 from matplotlib.patches import Rectangle
 from scipy.stats import norm
 
@@ -49,6 +49,8 @@ sys.path.insert(0, str(CZB))
 sys.path.insert(0, str(REPO / "src"))
 
 import cutin2_two_axis as T                      # noqa: E402  (fit_reg; imports R and cutin)
+sys.path.insert(0, str(HERE))
+import make_concept_animations as C               # noqa: E402  (gif_to_mp4 only)
 from comfortzone.cutin import cutin_params, cutin_predictors, load_cutin_trace  # noqa: E402
 from comfortzone.czb_data import load_joint       # noqa: E402
 
@@ -193,14 +195,12 @@ def make_model_gif() -> Path:
     # The concepts deck embeds this one as a movie (Jonas, 2026-09-03: a GIF gives no scrub
     # bar and restarts on pause), so write the .mp4 and a poster of the final frame beside
     # it. The status deck still uses the .gif and is unaffected.
-    anim.save(str(out.with_suffix(".mp4")),
-              writer=FFMpegWriter(fps=FPS, codec="libx264", bitrate=-1,
-                                  extra_args=["-pix_fmt", "yuv420p", "-crf", "20"]))
-    # FIRST-frame poster, taken from the GIF: re-calling frame(0) would leave every artist
-    # the frame function never clears in its final state (see make_concept_animations.save).
-    with Image.open(out) as im:
-        im.seek(0)
-        im.convert("RGB").save(out.with_suffix(".png"))
+    # The .mp4 and the poster are derived FROM THE GIF (see make_concept_animations
+    # .gif_to_mp4): re-rendering the same FuncAnimation a second time replays it with
+    # the artists still holding the first pass's final state, which drew the whole
+    # animation into frame 0 of the video.
+    plt.close(fig)
+    C.gif_to_mp4(out, FPS)
     plt.close(fig)
     print("wrote", out, "levels (deg/s):", {k: round(v, 4) for k, v in levels.items()}, "W =", W)
     return out
@@ -343,14 +343,12 @@ def make_trait_gif() -> Path:
     anim.save(str(out), writer=PillowWriter(fps=FPS))
     # The concepts deck embeds this as a movie too (Jonas, 2026-09-03), so write the .mp4 and
     # a FIRST-frame poster beside it, as make_concept_animations.save does.
-    anim.save(str(out.with_suffix(".mp4")),
-              writer=FFMpegWriter(fps=FPS, codec="libx264", bitrate=-1,
-                                  extra_args=["-pix_fmt", "yuv420p", "-crf", "20"]))
-    # FIRST-frame poster, taken from the GIF: re-calling frame(0) would leave every artist
-    # the frame function never clears in its final state (see make_concept_animations.save).
-    with Image.open(out) as im:
-        im.seek(0)
-        im.convert("RGB").save(out.with_suffix(".png"))
+    # The .mp4 and the poster are derived FROM THE GIF (see make_concept_animations
+    # .gif_to_mp4): re-rendering the same FuncAnimation a second time replays it with
+    # the artists still holding the first pass's final state, which drew the whole
+    # animation into frame 0 of the video.
+    plt.close(fig)
+    C.gif_to_mp4(out, FPS)
     plt.close(fig)
     print("wrote", out, "+ .mp4 + .png poster", "drivers", n, "shared", share)
     return out
