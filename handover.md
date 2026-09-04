@@ -228,9 +228,17 @@ adopt the two-scalar wording, with the standing genericity ruling in §1 as the 
    `docs/czb_validation_roadmap.md` and `docs/active_inference_scope_map.md` moving the
    percentile deliverable to the looming axis; regenerate card C's sensitivity report on it;
    update the status and short decks' notes where they say "gap leads".
-7. **Naturalistic data.** The data request (`docs/data_requirements.md`) stands; appendix 17
-   gives the first offset number (a quarter of a second on the left turn). Nothing to run
-   until data arrive.
+7. **Naturalistic data, at Volvo Cars, without moving it.** The data request
+   (`docs/data_requirements.md`) stands; appendix 17 gives the first offset number (a quarter
+   of a second on the left turn). The data will stay at VCC, with no shared repository; the
+   way of working is the **split-site protocol** (`docs/split_site_protocol.md`, PDF for
+   VCC's sign-off; the rules in `transfer/transfer_policy.yaml`; the tool
+   `transfer/bundle.py`; the interface `transfer/interface_schema.yaml` with a synthetic
+   fixture; the brief for either site's LLM `transfer/SITE_LLM_BRIEF.md`; the generic method
+   is the `split-site-collaboration` skill, mirrored in `docs/skills/`). Waiting on VCC's
+   sign-off (query SS.Q1). Until then: make the shared analysis path run end to end on
+   `transfer/fixtures/synthetic/` through the interface, so the first bundle to VCC is
+   runnable on arrival.
 
 Not to be started without a new instruction: any handbook chapter rewrite beyond dated
 notes, manuscript text, any change to a pre-registered script, card EL.3, the dread
@@ -273,6 +281,7 @@ SetPET is the stimulus (appendix 17 and TT.Q2 say why).
 | the cards and the standing rules | `docs/czb_work_orders.md` |
 | the worklog (source of truth for decisions and queries) and the register | `replication/czb/out/worklog.md`, `out/query_register.md` |
 | the decks and the animations | `presentation/talk/README.md`, `presentation/talk/animation_shot_list.md` |
+| **working with Volvo Cars without moving the data** | `docs/split_site_protocol.md` (+ PDF, the sign-off document), `transfer/README.md`, `transfer/transfer_policy.yaml`, `transfer/SITE_LLM_BRIEF.md`, `tests/test_transfer.py`; the skill mirror `docs/skills/split-site-collaboration.SKILL.md` |
 | the data and its traps | `docs/czb_study1_data_plan.md`; the study's `DATA_DICTIONARY.md` under `external/01_studies/` (read its gotchas first); `external/README.md` for the test-track file's columns |
 | the deep research context and environment (older) | `HANDOFF.md`, then the dated handovers `handover_2026-08-26.md` → `handover_2026-09-03.md` in order |
 

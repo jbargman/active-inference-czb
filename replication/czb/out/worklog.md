@@ -2083,3 +2083,68 @@ term was motivated by that reading.
 @AH.Q3(minor, jonas): the edition's README used to say "one-off, will not track". It now says
 "revised only when a review of the published model warrants it". Confirm, or restore the
 one-off rule and keep this revision as the last.
+
+## 2026-09-04 (continuing the 09-03 evening session) — the split-site protocol for working with Volvo Cars without moving the data
+
+Jonas: the naturalistic-data test will run on data at Volvo Cars (VCC) that cannot move; no
+common git repository; files by e-mail; VCC's LLMs and ours must both follow the same
+structure; VCC must sign off; keep the data pre-processing and ingestion scripts and all raw
+data out; make it generic for other projects, "maybe a skill".
+
+**Built.** A skill, `split-site-collaboration` (live in `~/.claude/skills/`, mirrored at
+`docs/skills/split-site-collaboration.SKILL.md`), carrying the tool `scripts/bundle.py` and
+four templates (policy, interface schema, sign-off document, LLM brief); and its instance here:
+- `transfer/transfer_policy.yaml` — the machine-readable rule set (sites, roles, allow/never
+  globs, size limits, scanned text types, allowed binaries, forbidden and warning regexes,
+  the aggregation rule: min_n 5, forbidden columns, count columns, per-person rows only by
+  recorded exception). Status DRAFT until VCC signs; travels inside every bundle; its hash is
+  in every manifest.
+- `transfer/bundle.py` — make / check / apply / scan / selftest. Make lists what changed since
+  a named earlier bundle (or --all), keeps only allowed files, runs the content checks, writes
+  the zip with MANIFEST.json (per-file sha256, base sha256, policy hash) and a generated
+  REVIEW.md with the steward's tick list and signature line; a violation means no bundle,
+  a steward exception is recorded with --override. Apply detects local edits since the
+  sender's base by hash (three-way) and stops on conflict. Each site's outbox, inbox,
+  manifests and log are never re-bundled. Works without PyYAML (built-in reader for the
+  subset; the selftest checks it agrees with PyYAML).
+- `transfer/interface_schema.yaml` — the only data shape the shared code reads, derived from
+  `docs/data_requirements.md` §3–6 with pseudonymous ids and exclusions (no timestamps,
+  positions, vehicle ids, free text). `transfer/validate_interface.py` checks a directory
+  without printing rows; `transfer/make_synthetic_fixture.py` writes 12 made-up events
+  (`transfer/fixtures/synthetic/`) so the pipeline runs where there is no data.
+- `transfer/SITE_LLM_BRIEF.md` — ten rules for the assistant at either site.
+- `docs/split_site_protocol.md` (+ .docx, .pdf, 4 pages) — the sign-off document: roles, the
+  two layers and the interface, what crosses and what never does, the procedure, traceability,
+  the LLM rules, seven decisions VCC is asked to make, change control, signature table.
+- `tests/test_transfer.py` — 19 checks (the tool's own 20-check end-to-end selftest counted as
+  one; policy parses identically with and without PyYAML; never-paths refused at both sites;
+  shared layer allowed at both; content rules at VCC; fixture validates; broken fixtures caught).
+  Suite: 31, 33, 40, 96, 62 and 19 green.
+
+**Checked end to end on this repository.** `scan --site CTH` refuses nothing after the policy
+was tightened (excluded: `tools/czb_explorer/`, the causation `cond_*.csv` outputs, the
+handbook's generated pdf/word folders); a trial `make --all` produced a 15.4 MB zip of 336
+files with the policy and the fixture inside and nothing from `external/`, and `check` passed.
+The trial's records were deleted (no shipment is made until VCC signs).
+
+**Design decisions to know.** Bundle size is checked on the zip (the e-mail ceiling), file size
+on the raw file. PDFs and Word files are refused from the data site (they can embed data);
+notebooks and logs from both. Notes across sites go in per-site append-only files
+(`docs/notes_from_CTH.md` / `docs/notes_from_VCC.md`) so they never conflict. Per-driver
+fitted levels — the trait result — would need a recorded steward exception under the draft
+rule; that is deliberate and is decision 2 in the sign-off document.
+
+@SS.Q1(blocker, jonas): VCC's sign-off of `docs/split_site_protocol.pdf` and policy v1,
+including the seven decisions in its §8 (min_n; per-driver exceptions; figures; names; extra
+path patterns; schema review; retention). Nothing is sent to VCC before this.
+@SS.Q2(judgment, jonas): Chalmers's own position on the aggregation rule before it goes to
+VCC — min_n 5 is a draft; and whether to ask for per-driver fitted levels as a standing
+exception (the trait claim needs them) or to compute the cross-scenario correlation at VCC
+and export only the statistic.
+@SS.Q3(judgment, review): the shared analysis path does not yet read the interface format —
+the loaders read the study traces. Next card (proposed NDS.1): an interface loader in
+`src/comfortzone/` that turns an interface directory into the gated-looming pipeline's inputs,
+run end to end on `transfer/fixtures/synthetic/` with property checks, so that the first
+bundle to VCC is runnable on arrival. Not started.
+@SS.Q4(minor, jonas): `tools/czb_explorer/` is excluded from the shared layer (a standalone web
+tool with a cache CSV); say if VCC should have it.

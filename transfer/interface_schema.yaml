@@ -1,0 +1,85 @@
+# The data interface between the site layer and the shared layer.
+#
+# The shared code (everything that may cross sites) reads ONLY files of this shape. The data
+# site writes an adapter in its site layer that produces them from its own sources; that
+# adapter never leaves the data site. The home site develops against synthetic fixtures of
+# the same shape (transfer/make_synthetic_fixture.py). transfer/validate_interface.py checks
+# a directory against this file, at either site.
+#
+# Derived from docs/data_requirements.md sections 3 to 6 (the data request), with the
+# identifier and exclusion rules of the split-site protocol added.
+
+schema_version: 1
+project: WaymoActiveInference
+layout:
+  events_dir: one CSV per event, named <event_id>.csv
+  metadata_file: events.csv, one row per event
+  drivers_file: drivers.csv, optional, one row per pseudonymous driver
+  encoding: UTF-8, comma-separated, header row, '.' decimal, NaN for missing
+
+identifiers:
+  event_id: 'opaque pseudonym generated at the data site, pattern ^E[0-9]{4,6}$; no date, trip or vehicle content'
+  driver_id: 'opaque pseudonym generated at the data site, pattern ^D[0-9]{2,5}$; the mapping to any real identifier stays at the data site'
+  never_in_interface: [vin, vehicle_id, trip_id, timestamp, wall-clock time, date, GPS or map position, road name, free text copied from logs, video frames]
+
+time_series:
+  sampling_hz: 10 minimum, 20 to 50 preferred, uniform step, one time base for all columns
+  t_zero: 'the start of the event window; t is seconds since t_zero'
+  columns:
+    t:         {unit: s,     required: true,  note: monotonic, uniform step}
+    ego_x:     {unit: m,     required: true,  note: longitudinal position in a fixed frame along the ego path}
+    ego_y:     {unit: m,     required: true,  note: signed lateral offset from lane center is preferred}
+    ego_psi:   {unit: rad,   required: true,  note: heading relative to the lane direction}
+    ego_v:     {unit: m/s,   required: true,  note: accuracy 0.1 m/s or better}
+    ego_ax:    {unit: m/s^2, required: true,  note: measured or differentiated from ego_v}
+    ego_delta: {unit: rad,   required: false, note: road-wheel steering angle; NaN if not recorded}
+    oth_x:     {unit: m,     required: true,  note: partner longitudinal position, same frame as ego}
+    oth_y:     {unit: m,     required: true,  note: partner lateral position; the signal most often poor}
+    oth_psi:   {unit: rad,   required: true}
+    oth_v:     {unit: m/s,   required: true}
+    oth_ax:    {unit: m/s^2, required: true,  note: may be differentiated from oth_v}
+    oth_class: {unit: text,  required: true,  values: [car, truck, motorcycle, pedestrian, cyclist, other]}
+    valid:     {unit: flag,  required: true,  values: [0, 1], note: 1 when the partner track is measured, 0 when interpolated or missing}
+
+metadata:
+  columns:
+    event_id:           {required: true,  note: see identifiers}
+    dataset:            {required: true,  note: a short label for the source collection, no dates}
+    scenario:           {required: true,  values: [rear_end, cut_in, ltap_od, overtake_cyclist, overtake_truck, other]}
+    driver_id:          {required: true,  note: see identifiers}
+    lane_width:         {unit: m, required: true}
+    n_lanes_same:       {required: true}
+    n_lanes_opposite:   {required: true}
+    ego_len:            {unit: m, required: true}
+    ego_wid:            {unit: m, required: true}
+    oth_len:            {unit: m, required: true,  note: class default acceptable if unknown; then set geometry_default = 1}
+    oth_wid:            {unit: m, required: true}
+    geometry_default:   {values: [0, 1], required: true, note: 1 if partner dimensions are class defaults}
+    ref_point:          {required: true,  values: [front_bumper, rear_axle, cog]}
+    t_conflict_onset:   {unit: s, required: true,  note: when the partner's behavior created the conflict; seconds since t_zero}
+    t_brake_onset:      {unit: s, required: true,  note: NaN if no brake response; never 0 for absent}
+    t_steer_onset:      {unit: s, required: false, note: NaN if none}
+    outcome:            {required: false, values: [crash, near_crash, conflict, normal]}
+    quality_flag:       {required: false, values: [ok, lateral_poor, sync_uncertain, geometry_default]}
+
+drivers_optional:
+  columns:
+    driver_id:      {required: true}
+    age_band:       {required: false, values: ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'], note: bands, never exact age}
+    sex:            {required: false}
+    mileage_band:   {required: false, note: bands, not exact}
+    n_events:       {required: false}
+
+export_rule_for_results:
+  # What the shared analysis scripts are allowed to write into results/aggregate/ at the data site.
+  # Everything else they produce stays in the site layer.
+  allowed_outputs:
+    - population summaries of fitted levels (median, percentiles, confidence intervals, spread)
+    - per-cell tables (scenario x criticality bin) with the count column n and n >= min_n
+    - held-out scores, fold tables, fitted parameters and their intervals
+    - figures of aggregates (curves, bands, histograms with bins of n >= min_n)
+    - run records (script name, commit id, parameter values, date), never data paths
+  never_outputs:
+    - per-event rows, per-trip rows, individual traces
+    - per-driver rows, except as a steward-approved recorded exception
+    - anything carrying event_id, driver_id, timestamps or positions

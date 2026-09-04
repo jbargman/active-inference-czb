@@ -1,0 +1,161 @@
+# Transfer policy for the split-site collaboration between Chalmers (CTH) and Volvo Cars (VCC)
+# on the WaymoActiveInference project. This file is the machine-readable rule set that
+# `transfer/bundle.py` enforces on both sides. It travels inside every bundle, so both sites
+# always hold the version that was in force. Changing it changes what may cross; every change
+# is a new policy_version and needs both signatures again (docs/split_site_protocol.md, §9).
+#
+# Syntax kept to a subset of YAML (maps, lists, scalars, inline lists) so the tool can read
+# it without PyYAML. Use single quotes for regular expressions.
+
+protocol_version: 1
+project: WaymoActiveInference
+policy_version: 1
+policy_date: '2026-09-03'
+policy_status: DRAFT, awaiting VCC sign-off
+
+sites:
+  CTH:
+    name: Chalmers University of Technology, Vehicle Safety division
+    role: home
+    lead: Jonas Bargman
+    holds_data: false
+  VCC:
+    name: Volvo Cars
+    role: data
+    steward: TO BE NAMED BY VCC
+    lead: TO BE NAMED BY VCC
+    holds_data: true
+
+transfer:
+  channel: e-mail attachment (zip); no shared repository, no shared drive
+  max_file_bytes: 3000000
+  max_bundle_bytes: 25000000
+  text_extensions: [.py, .md, .yaml, .yml, .json, .csv, .txt, .toml, .cfg, .ini, .ps1, .sh, .bat, .cmd, .tex, .bib, .svg, .js, .mjs, .html, .css, .gitignore]
+  binary_extensions_allowed: [.png, .pdf, .docx, .jpg]
+
+roles:
+
+  # ---- the home site (CTH): owns the model and the methods, holds no VCC data ----
+  home:
+    allow:
+      - "src/**"
+      - "tests/**"
+      - "tools/**"
+      - "transfer/**"
+      - "docs/**/*.md"
+      - "docs/**/*.pdf"
+      - "docs/**/*.docx"
+      - "docs/**/*.png"
+      - "docs/**/*.py"
+      - "notes/**/*.md"
+      - "replication/**/*.py"
+      - "replication/**/*.md"
+      - "replication/**/out/**/*.csv"
+      - "replication/**/out/**/*.png"
+      - "figures/**/*.png"
+      - "presentation/**/*.py"
+      - "presentation/**/*.md"
+      - "*.md"
+      - "*.py"
+      - ".gitignore"
+    never:
+      - "external/**"
+      - "OthersWork/**"
+      - "papers/**"
+      - "site/**"
+      - "replication/causation/out/cond_*.csv"
+      - "tools/czb_explorer/**"
+      - "docs/handbook/pdf/**"
+      - "docs/handbook/word/**"
+      - "transfer/outbox/**"
+      - "transfer/inbox/**"
+      - "*.pkl"
+      - "*.partial"
+      - "*.parquet"
+      - "*.h5"
+      - "*.pptx"
+      - "*.log"
+      - "*.ipynb"
+      - "notes/paper_text/**"
+    forbidden_patterns: {}
+    warn_patterns: {}
+    aggregate_tables: ["replication/**/out/**/*.csv", "transfer/fixtures/**/*.csv"]
+    forbidden_columns: []
+    count_columns: []
+    min_n: 1
+    max_rows: 200000
+    per_person_rows_allowed: true
+    person_columns: []
+
+  # ---- the data site (VCC): holds the naturalistic data; exports code, documents and
+  #      aggregate results only, each bundle reviewed by the steward ----
+  data:
+    allow:
+      - "src/**"
+      - "tests/**"
+      - "transfer/**"
+      - "docs/**/*.md"
+      - "docs/**/*.py"
+      - "replication/**/*.py"
+      - "replication/**/*.md"
+      - "results/aggregate/**/*.csv"
+      - "results/aggregate/**/*.md"
+      - "results/aggregate/**/*.json"
+      - "results/aggregate/**/*.png"
+      - "*.md"
+      - ".gitignore"
+    never:
+      - "site/**"
+      - "**/ingest/**"
+      - "**/preprocess/**"
+      - "**/data/**"
+      - "**/raw/**"
+      - "external/**"
+      - "OthersWork/**"
+      - "papers/**"
+      - "transfer/outbox/**"
+      - "transfer/inbox/**"
+      - "*.pkl"
+      - "*.partial"
+      - "*.parquet"
+      - "*.h5"
+      - "*.mat"
+      - "*.feather"
+      - "*.xlsx"
+      - "*.log"
+      - "*.ipynb"
+      - "*.pptx"
+      - "*.docx"
+      - "*.pdf"
+    # Any match refuses the bundle. Regular expressions, single-quoted. VCC should extend
+    # 'site_path' with the roots of its own data shares before signing.
+    forbidden_patterns:
+      windows_or_unc_path: '(?<![A-Za-z0-9])[A-Za-z]:\\|\\\\[A-Za-z0-9_.$-]+\\'
+      unix_data_path: '(/mnt/|/data/|/srv/|/home/[a-z]+/)'
+      vin: '\b[A-HJ-NPR-Z0-9]{17}\b'
+      nordic_coordinate_pair: '\b(5[5-9]|6[0-9])\.[0-9]{4,}\s*,\s*([4-9]|[12][0-9]|3[0-2])\.[0-9]{4,}\b'
+      iso_timestamp: '\b20[0-9]{2}-[01][0-9]-[0-3][0-9][T ][0-2][0-9]:[0-5][0-9]'
+    # Any match is flagged for the steward but does not refuse the bundle.
+    warn_patterns:
+      email_address: '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'
+      per_driver_word: '(?i)\b(driver|participant|subject)[ _-]?(id|no|number)\b'
+    aggregate_tables: ["results/aggregate/**/*.csv"]
+    forbidden_columns: [event_id, trip_id, driver_id, participant_id, vin, vehicle_id, timestamp, time_utc, date, datetime, lat, lon, latitude, longitude, x_utm, y_utm, notes, comment, free_text]
+    count_columns: [n, N, count, n_events, n_drivers, n_trips, n_cells, n_obs]
+    min_n: 5
+    max_rows: 2000
+    per_person_rows_allowed: false
+    person_columns: [driver, participant, subject, driver_idx, driver_index]
+
+# What the aggregation rule means, in words (the tool checks the numbers; people check the intent):
+#   * a row of a results table is an aggregate over at least min_n drivers, and at least min_n
+#     events, and no row identifies an individual trip, drive, vehicle, day or place;
+#   * per-driver values (one number per pseudonymous driver, no other attribute) may be exported
+#     only as a recorded exception, approved by the steward, with the bundle's --override text
+#     naming the approval; the pseudonym mapping never leaves VCC;
+#   * figures follow the same rule as tables: aggregates only, no individual traces.
+
+sign_off:
+  VCC_steward: {name: null, date: null}
+  VCC_lead: {name: null, date: null}
+  CTH_lead: {name: null, date: null}

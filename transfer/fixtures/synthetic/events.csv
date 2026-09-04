@@ -1,0 +1,13 @@
+event_id,dataset,scenario,driver_id,lane_width,n_lanes_same,n_lanes_opposite,ego_len,ego_wid,oth_len,oth_wid,geometry_default,ref_point,t_conflict_onset,t_brake_onset,t_steer_onset,outcome,quality_flag
+E0001,SYNTH,rear_end,D01,3.50,2,0,4.60,1.85,4.50,1.85,0,front_bumper,2.00,3.70,NaN,conflict,ok
+E0002,SYNTH,rear_end,D01,3.50,2,0,4.60,1.85,4.50,1.85,0,front_bumper,2.00,4.10,NaN,conflict,ok
+E0003,SYNTH,cut_in,D01,3.50,2,0,4.60,1.85,4.50,1.85,0,front_bumper,2.00,4.00,NaN,conflict,ok
+E0004,SYNTH,cut_in,D01,3.50,2,0,4.60,1.85,4.50,1.85,0,front_bumper,2.00,4.80,NaN,conflict,ok
+E0005,SYNTH,rear_end,D02,3.50,2,0,4.60,1.85,4.50,1.85,0,front_bumper,2.00,4.05,NaN,conflict,ok
+E0006,SYNTH,rear_end,D02,3.50,2,0,4.60,1.85,4.50,1.85,0,front_bumper,2.00,4.45,NaN,conflict,ok
+E0007,SYNTH,cut_in,D02,3.50,2,0,4.60,1.85,4.50,1.85,0,front_bumper,2.00,4.45,NaN,conflict,ok
+E0008,SYNTH,cut_in,D02,3.50,2,0,4.60,1.85,4.50,1.85,0,front_bumper,2.00,5.30,NaN,conflict,ok
+E0009,SYNTH,rear_end,D03,3.50,2,0,4.60,1.85,4.50,1.85,0,front_bumper,2.00,3.40,NaN,conflict,ok
+E0010,SYNTH,rear_end,D03,3.50,2,0,4.60,1.85,4.50,1.85,0,front_bumper,2.00,3.75,NaN,conflict,ok
+E0011,SYNTH,cut_in,D03,3.50,2,0,4.60,1.85,4.50,1.85,0,front_bumper,2.00,3.55,NaN,conflict,ok
+E0012,SYNTH,cut_in,D03,3.50,2,0,4.60,1.85,4.50,1.85,0,front_bumper,2.00,4.30,NaN,conflict,ok

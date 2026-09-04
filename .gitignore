@@ -31,3 +31,7 @@ __pycache__/
 # full-population (5000-seed) condition CSVs: 60-250 MB each, over GitHub limits;
 # regenerable from the commands in replication/causation/out/log_fullp*.txt
 replication/causation/out/cond_*_fullp*.csv
+
+# Split-site transfer bundles (each site keeps its own; see transfer/README.md)
+transfer/outbox/
+transfer/inbox/
