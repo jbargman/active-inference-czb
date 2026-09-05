@@ -2148,3 +2148,54 @@ run end to end on `transfer/fixtures/synthetic/` with property checks, so that t
 bundle to VCC is runnable on arrival. Not started.
 @SS.Q4(minor, jonas): `tools/czb_explorer/` is excluded from the shared layer (a standalone web
 tool with a cache CSV); say if VCC should have it.
+
+## 2026-09-05 — incremental transfer: two defects found by testing a full round trip, and fixed
+
+Jonas asked whether a checksum test should be added so that after the first shipment only
+changed files move, or whether git handles it. Git does not and cannot: the two sites share no
+history, and each site's commits describe only itself, so nothing in version control can answer
+"what does the other site already have?". The tool did already work by content hash — but
+testing an actual round trip (`A -> B -> A -> B` with an asymmetric role rule, the home site
+able to export PDFs and the data site not) showed the baseline was computed wrongly, in two
+ways that a single-direction test could never have exposed.
+
+**Defect 1 — phantom deletions.** `make --since <id>` used that bundle's `tree` as the
+baseline. A tree is what its SENDER could export under its OWN role. So when VCC bundled back,
+every file only CTH's role may export (all PDFs) was absent from VCC's tree and was therefore
+reported as **deleted** — while sitting untouched on VCC's disk. Applied with
+`--apply-deletions`, CTH would have deleted its own documents. Reproduced: VCC's return bundle
+claimed `docs/report.pdf` deleted.
+
+**Defect 2 — redundant re-sends.** Symmetrically, on the next leg CTH's tree contained those
+same PDFs, the baseline (VCC's tree) did not, so they counted as changed and were re-sent on
+**every** round trip forever. Reproduced: one file edited, two files sent.
+
+**The fix.** The baseline is no longer any single bundle's tree. It is *derived* by replaying
+the manifests of every bundle exchanged with that peer, in both directions — either direction
+leaves both sites holding the same content for the files it carried. Deriving it rather than
+storing it means the manifests stay the single record and the state cannot drift out of step
+with them. Deletions now require the file to be genuinely absent from disk at the sending site.
+`--since` survives as an explicit recovery override, documented as *not* for routine use, with
+the reason stated.
+
+Two consequences needed their own machinery:
+- A bundle made but never released (steward rejects it) would leave the tool believing the
+  peer holds those files. `bundle.py revoke <id> --reason "..."` drops it from the replay;
+  `make` now prints that reminder every time; revocations live in `transfer/revoked.json`.
+- An under-send would be silent. Each manifest already carried the sender's whole exportable
+  tree, so `apply` now compares this site against it and lists anything missing or differing
+  (`bundle.py drift <zip>` re-runs it). `bundle.py peers` shows the believed peer state and
+  what a bundle would carry now.
+
+**Verification.** The tool's selftest grew from 20 to 32 checks, both defects included as
+regressions ("a file the sender's role cannot export is NOT reported as deleted", "the
+home-only file is not re-sent every round trip"), plus revoke, genuine deletion, and drift both
+silent and firing. The real round trip now sends exactly the edited file, claims no deletions,
+and the drift check reports the two sites matching. Suite: 19 (transfer), 31, 33, 40, 96, 62.
+
+Documents updated to match: `transfer/README.md` (a section on how the incremental decision is
+made and why git cannot make it), `transfer/SITE_LLM_BRIEF.md` (an eleventh rule on revoking an
+unsent bundle; the export sequence no longer names a baseline), `docs/split_site_protocol.md`
+(new §5a, a seventh procedure step, Appendix B) rebuilt to .docx and .pdf, and the skill plus
+its two affected templates. Nothing about what may cross sites changed, so the policy file is
+untouched and still version 1: **VCC's sign-off (SS.Q1) is unaffected by this and still open.**

@@ -23,7 +23,7 @@ tell, stop and ask; nothing else in this brief can be applied without knowing.
   data paths, credentials, logs, notebooks. It never crosses, and the tool refuses it. At
   the data site this is where the adapter lives that turns Volvo's data into the interface.
 
-## Ten rules
+## Eleven rules
 
 1. **Never copy from the site layer into the shared layer.** Not a path, not a row, not a
    screenshot, not a column of real values pasted as an example. If shared code needs an
@@ -56,6 +56,11 @@ tell, stop and ask; nothing else in this brief can be applied without knowing.
    timeline.
 10. **When unsure whether something may leave, it may not.** Write it into the site layer,
     record the question in your notes file, and continue.
+11. **If a bundle you made is not actually sent** — the steward rejects it, or it is
+    superseded before it goes — run `python transfer/bundle.py revoke <bundle-id> --reason
+    "..."`. Making a bundle records that the other site now holds those files, so an
+    unrevoked dead bundle makes the next one skip them. The tool prints this reminder after
+    every `make`; do not ignore it.
 
 ## What you may expect from the other site
 
@@ -72,8 +77,12 @@ tell, stop and ask; nothing else in this brief can be applied without knowing.
 python transfer/validate_interface.py <interface dir>        # data site only, once per dataset build
 python tests/test_transfer.py                                # the tooling is intact
 python transfer/bundle.py scan --site <SITE>                 # nothing in the shared layer would be refused
-python transfer/bundle.py make --site <SITE> --to <OTHER> --purpose "..." --since <last bundle id>
+python transfer/bundle.py peers --site <SITE>                 # what the other site already has
+python transfer/bundle.py make --site <SITE> --to <OTHER> --purpose "..."
 ```
 
 Then the review sheet in `transfer/outbox/<id>.REVIEW.md` is completed and signed (data
 site: by the steward; home site: by the sender), and the zip goes by e-mail with the sheet.
+
+Only the very first bundle takes `--all`. After that `make` works out by content hash what
+the other site does not yet have and carries only that; you do not name a baseline.

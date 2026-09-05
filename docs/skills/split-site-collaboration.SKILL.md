@@ -60,17 +60,43 @@ which extensions are scanned text and which binaries are permitted, `forbidden_p
 paths, forbidden columns, count columns, `min_n`, row limit, per-person rows. It carries a
 version and a sign-off block, travels inside every bundle, and its hash is in every manifest.
 
-**Bundles.** `bundle.py make` lists what changed since a named earlier bundle (or
-everything, `--all`, for the first shipment), keeps only allowed files, runs the content
-checks, and writes a zip with `MANIFEST.json` (hashes, base hashes, policy hash, purpose,
-in-reply-to) and `REVIEW.md` (one row per file with its check result, the warnings, the
-steward's tick list and signature line). A violation means no bundle; a steward-approved
-exception is recorded with `--override "<who approved what, when>"` and shown on the sheet.
-`bundle.py check` re-verifies at either end. `bundle.py apply` checks, detects files edited
-locally since the sender's base (three-way, by hash) and stops on conflict, writes the files,
-records manifest and sheet, appends to `transfer/TRANSFER_LOG.md`, and commits with the
-bundle id. `bundle.py scan` says what in the working tree would be refused. Each site's own
-outbox, inbox, manifests and log are never re-bundled.
+**Bundles.** `bundle.py make` carries only what the peer does not already hold (see
+*Incremental transfer* below; `--all` for the first shipment), keeps only allowed files, runs
+the content checks, and writes a zip with `MANIFEST.json` (per-file hashes, base hashes, the
+sender's whole exportable tree, policy hash, purpose, in-reply-to) and `REVIEW.md` (one row
+per file with its check result, the warnings, the steward's tick list and signature line). A
+violation means no bundle; a steward-approved exception is recorded with `--override "<who
+approved what, when>"` and shown on the sheet. `bundle.py check` re-verifies at either end.
+`bundle.py apply` checks, detects files edited locally since the sender's base (three-way, by
+hash) and stops on conflict, writes the files, records manifest and sheet, reports drift,
+appends to `transfer/TRANSFER_LOG.md`, and commits with the bundle id. `bundle.py scan` says
+what in the working tree would be refused. Each site's own outbox, inbox, manifests, log and
+revocations are never re-bundled.
+
+**Incremental transfer, and why git cannot do it.** After the first shipment only changed
+files move, decided by content hash. Git cannot answer "what does the peer already have?" —
+there is no shared history, and each site's commits describe only itself. So `make` derives
+the peer's holdings by replaying the manifests of every bundle exchanged with that peer, in
+both directions (either direction leaves both sites holding the same content for the files it
+carried), and sends the difference. `bundle.py peers` shows that picture and what a bundle
+would carry now.
+
+Two traps come with it, both handled:
+
+- *A bundle made but never released* (the steward rejects it, or it is superseded) would
+  leave the tool believing the peer has those files. `bundle.py revoke <id> --reason "..."`
+  drops it from the replay; `make` prints the reminder every time. Revocations are a list in
+  `transfer/revoked.json`, and because the state is *derived* from the manifests rather than
+  stored in a mutable file, it cannot silently drift out of step with them.
+- *An under-send* would otherwise be silent. Each manifest carries the sender's whole
+  exportable tree, so `apply` compares the receiving site against it and lists anything
+  missing or differing (`bundle.py drift <zip>` re-runs it).
+
+**Do not use one bundle's tree as the baseline** (`--since` exists for recovery, not for
+routine use). A tree is what its *sender* could export under its own role, so under
+asymmetric role rules — the home site may export PDFs, the data site may not — files only one
+role can export get re-sent every round trip and appear as deletions coming back. Both were
+real defects, found by testing a full round trip; the selftest now guards them.
 
 **Traceability.** Every exported result carries a run record (script, commit id at the data
 site, parameters, date, validator report), never a data path. The chain from a quoted number
@@ -103,7 +129,7 @@ never conflict. Questions do not stop the work; the numbered-query habit of
 5. Add a row to the project's handover and a line to its README pointing at `transfer/`,
    and record the open sign-off as a query for Jonas.
 6. First shipment: `make --site <HOME> --to <DATA> --purpose "..." --all`; every later
-   bundle names `--since` the last one exchanged.
+   bundle needs no baseline argument.
 
 ## 4 Rules for the assistant at either site (the brief, in short)
 
@@ -140,3 +166,9 @@ assistant with the first bundle.
 
 - 2026-09-03: written, with the WaymoActiveInference instance (`transfer/`,
   `docs/split_site_protocol.md`, `tests/test_transfer.py`) as the worked example.
+- 2026-09-05: incremental transfer reworked after a full round trip exposed two defects in
+  using one bundle's tree as the baseline (files only one role may export were re-sent every
+  round trip, and were reported as deletions coming back). The baseline is now derived by
+  replaying manifests; deletions require the file to be genuinely absent from disk; added
+  `peers`, `revoke` and `drift`; the selftest grew from 20 to 32 checks and covers both
+  defects as regressions.

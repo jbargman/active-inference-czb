@@ -30,6 +30,7 @@ policy file's subset of YAML (maps, lists, scalars, inline lists, comments).
 from __future__ import annotations
 
 import argparse
+import contextlib
 import csv
 import datetime as dt
 import hashlib
@@ -388,8 +389,9 @@ def walk_tree(root: Path, policy: Policy, site: str):
             ap = Path(dirpath) / fn
             rel = ap.relative_to(root).as_posix()
             if rel.startswith(("transfer/outbox/", "transfer/inbox/", "transfer/manifests/")) \
-                    or rel == "transfer/TRANSFER_LOG.md":
-                continue  # each site's own bundles, manifests and log are its records, never re-bundled
+                    or rel in ("transfer/TRANSFER_LOG.md", "transfer/revoked.json"):
+                continue  # each site's own bundles, manifests, log and revocations are its
+                          # own records of the exchange, never re-bundled
             c = policy.classify(rel, site)
             if c == "allowed":
                 allowed.append((rel, ap))
@@ -420,6 +422,63 @@ def manifests_dir(root: Path) -> Path:
     d = root / "transfer" / "manifests"
     d.mkdir(parents=True, exist_ok=True)
     return d
+
+
+# --- what the peer already holds ----------------------------------------------------
+#
+# There is no shared history, so "what does the other site already have?" cannot be asked
+# of git. It is DERIVED by replaying this site's manifests: every bundle we sent and every
+# bundle we received leaves both sites holding the same content for the files it carried.
+# Deriving it (rather than keeping a mutable state file) means the manifests remain the
+# single record, and a bundle that was made but never released can simply be revoked.
+
+BUNDLE_ID_RX = re.compile(r"^(?P<site>[A-Za-z0-9_]+)-(?P<date>\d{4}-\d{2}-\d{2})-(?P<seq>\d+)$")
+
+
+def _bundle_sort_key(man: dict):
+    m = BUNDLE_ID_RX.match(man.get("bundle_id", ""))
+    if m:
+        return (m.group("date"), int(m.group("seq")), m.group("site"))
+    return (man.get("created", ""), 0, "")
+
+
+def revoked_ids(root: Path) -> set:
+    p = root / "transfer" / "revoked.json"
+    if not p.exists():
+        return set()
+    try:
+        return {e["bundle_id"] for e in json.loads(p.read_text(encoding="utf-8"))}
+    except Exception:
+        return set()
+
+
+def load_manifests(root: Path, include_revoked=False):
+    out, skip = [], revoked_ids(root)
+    for p in sorted(manifests_dir(root).glob("*.json")):
+        try:
+            man = json.loads(p.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        if not include_revoked and man.get("bundle_id") in skip:
+            continue
+        out.append(man)
+    out.sort(key=_bundle_sort_key)
+    return out
+
+
+def peer_state(root: Path, site: str, peer: str):
+    """path -> sha256 of the content we believe `peer` holds. Also returns the bundles used."""
+    state, used = {}, []
+    for man in load_manifests(root):
+        pair = {man.get("from_site"), man.get("to_site")}
+        if pair != {site, peer}:
+            continue
+        for f in man.get("files", []):
+            state[f["path"]] = f["sha256"]
+        for d in man.get("deleted", []):
+            state.pop(d, None)
+        used.append(man["bundle_id"])
+    return state, used
 
 
 def next_bundle_id(root: Path, site: str, date: str) -> str:
@@ -474,6 +533,8 @@ def review_sheet(man: dict, policy: Policy) -> str:
     L.append(f"- Files: {len(man['files'])} included, {len(man.get('deleted', []))} deletions listed; "
              f"{man['excluded']['never']} paths refused by 'never' rules and {man['excluded']['unlisted']} "
              f"not on the allow list were not even considered")
+    L.append(f"- Unchanged since the peer last had them, so not re-sent: "
+             f"{man.get('unchanged_count', 0)} file(s)")
     L.append("")
     L.append("| path | status | kind | bytes | sha256 | checks |")
     L.append("|---|---|---|---|---|---|")
@@ -521,19 +582,31 @@ def cmd_make(a):
     for rel, ap in allowed:
         tree[rel] = sha256(ap.read_bytes())
 
-    base_tree, base_desc = {}, "everything (first bundle, --all)"
-    if a.since:
+    # The baseline is what we believe the peer already holds. By default that is derived from
+    # every bundle exchanged with this peer (see peer_state); --since pins it to one bundle's
+    # tree, and --all ignores it. Never use one bundle's tree as the default: a tree is what
+    # its SENDER could export under its own role, so files only the other role may export
+    # would be re-sent every round trip and would look deleted coming back.
+    if a.all:
+        base_tree, base_desc = {}, "everything (--all)"
+    elif a.since:
         mp = manifests_dir(root) / f"{a.since}.json"
         if not mp.exists():
             raise SystemExit(f"no manifest {mp}; --since must name a bundle sent or received here")
-        base_man = json.loads(mp.read_text(encoding="utf-8"))
-        base_tree = base_man.get("tree") or {}
-        base_desc = f"bundle {a.since}"
-    elif not a.all:
-        raise SystemExit("give --since <bundle-id> or --all")
+        base_tree = json.loads(mp.read_text(encoding="utf-8")).get("tree") or {}
+        base_desc = f"the tree of bundle {a.since} (--since)"
+    else:
+        base_tree, used = peer_state(root, site, to)
+        if not used:
+            raise SystemExit(f"no bundles exchanged with {to} yet, so there is no baseline: "
+                             f"use --all for the first bundle (or --since <id>)")
+        base_desc = (f"what {to} already holds, from {len(used)} bundle(s) "
+                     f"{used[0]}..{used[-1]}" if len(used) > 1 else f"what {to} already holds, from {used[0]}")
 
     changed = [rel for rel in tree if tree[rel] != base_tree.get(rel)]
-    deleted = [rel for rel in base_tree if rel not in tree]
+    # A file counts as deleted only if it is genuinely gone from disk here. A file that
+    # merely cannot be exported under this site's role is not a deletion.
+    deleted = [rel for rel in base_tree if rel not in tree and not (root / rel).exists()]
     if a.only:
         wanted = set(a.only)
         changed = [r for r in changed if r in wanted or any(r.startswith(w.rstrip("/") + "/") for w in wanted)]
@@ -562,6 +635,7 @@ def cmd_make(a):
         "local_commit": git_head(root), "policy_path": Path(a.policy).as_posix() if not Path(a.policy).is_absolute() else Path(a.policy).relative_to(root).as_posix(),
         "policy_version": policy.raw.get("policy_version"), "policy_sha256": policy.sha,
         "excluded": {"never": n_never, "unlisted": n_unlisted},
+        "unchanged_count": len(tree) - len(changed),
         "files": files, "deleted": deleted, "override": a.override,
         "review": {"steward": None, "decision": None, "date": None, "notes": None},
         "tree": tree,
@@ -596,10 +670,14 @@ def cmd_make(a):
     append_log(root, f"| {date} | sent to {to} | {bundle_id} | {len(files)} (+{len(deleted)} del) | "
                      f"{a.purpose} | {man['local_commit'] or ''} |")
     print(sheet)
-    print(f"\nwrote {zpath}  ({zsize} B zipped, {total} B in {len(files)} files); review sheet beside it; "
+    print(f"\nwrote {zpath}  ({zsize} B zipped, {total} B in {len(files)} files, "
+          f"{man['unchanged_count']} unchanged file(s) not re-sent); review sheet beside it; "
           f"manifest saved to transfer/manifests/{bundle_id}.json")
     if role == "data":
         print("This bundle leaves the DATA site: the steward must complete the review sheet before it is sent.")
+    print(f"If this bundle is NOT released (the steward rejects it, or it is never e-mailed), run\n"
+          f"    python transfer/bundle.py revoke {bundle_id} --reason \"...\"\n"
+          f"so the next bundle does not assume {to} received these files.")
     return 0
 
 
@@ -736,11 +814,99 @@ def cmd_apply(a):
     append_log(root, f"| {dt.date.today().isoformat()} | received from {man['from_site']} | {man['bundle_id']} | "
                      f"{written} | {man['purpose']} | {git_head(root) or ''} |")
     print(f"\napplied {written} file(s) from {man['bundle_id']}; manifest and review sheet recorded")
+    report_drift(root, man)
     if a.commit:
         msg = f"Apply bundle {man['bundle_id']} from {man['from_site']}: {man['purpose']}"
         subprocess.run(["git", "add", "-A"], cwd=root, check=False)
         r = subprocess.run(["git", "commit", "-q", "-m", msg], cwd=root, check=False)
         print("committed" if r.returncode == 0 else "git commit failed or nothing to commit")
+    return 0
+
+
+# ----------------------------------------------------------------------------- drift
+
+def report_drift(root: Path, man: dict, limit=10):
+    """
+    The manifest carries the sender's whole exportable tree, not only what it sent. Comparing
+    it against this site tells us whether the incremental baseline has slipped: a file the
+    sender holds that never arrived here would otherwise be a silent under-send.
+    """
+    tree = man.get("tree") or {}
+    missing, differing = [], []
+    for rel, sha in tree.items():
+        p = root / rel
+        if not p.exists():
+            missing.append(rel)
+        elif sha256(p.read_bytes()) != sha:
+            differing.append(rel)
+    if not missing and not differing:
+        print(f"drift check: this site matches all {len(tree)} file(s) of {man['from_site']}'s "
+              f"shared layer.")
+        return [], []
+    print(f"drift check against {man['from_site']}'s shared layer ({len(tree)} files): "
+          f"{len(missing)} missing here, {len(differing)} differing.")
+    for rel in missing[:limit]:
+        print(f"  missing   {rel}")
+    for rel in differing[:limit]:
+        print(f"  differs   {rel}")
+    if len(missing) + len(differing) > limit:
+        print("  ...")
+    print("  Differences are expected where this site has edited a file or holds a newer version. "
+          "Anything MISSING that you expected to have should be requested with --all or --since.")
+    return missing, differing
+
+
+def cmd_drift(a):
+    z, top, man = read_bundle(Path(a.bundle))
+    root = Path(a.root).resolve() if a.root else Path.cwd()
+    report_drift(root, man, limit=a.limit)
+    return 0
+
+
+# ----------------------------------------------------------------------------- peers / revoke
+
+def cmd_peers(a):
+    policy = Policy(a.policy)
+    root = Path(a.root).resolve() if a.root else repo_root_from(Path(a.policy))
+    site = a.site
+    for peer in policy.sites:
+        if peer == site:
+            continue
+        state, used = peer_state(root, site, peer)
+        print(f"{peer}: believed to hold {len(state)} file(s) of the shared layer, "
+              f"from {len(used)} bundle(s)" + (f" [{used[0]}..{used[-1]}]" if used else " (none yet)"))
+        allowed, _, _ = walk_tree(root, policy, site)
+        tree = {rel: sha256(ap.read_bytes()) for rel, ap in allowed}
+        changed = [r for r in tree if tree[r] != state.get(r)]
+        gone = [r for r in state if r not in tree and not (root / r).exists()]
+        print(f"    a bundle now would carry {len(changed)} changed file(s) and "
+              f"{len(gone)} deletion(s)")
+        if a.verbose:
+            for r in sorted(changed)[:20]:
+                print(f"      {'new ' if r not in state else 'chg '} {r}")
+    rev = revoked_ids(root)
+    if rev:
+        print(f"revoked bundles (excluded from the baseline): {sorted(rev)}")
+    return 0
+
+
+def cmd_revoke(a):
+    root = Path(a.root).resolve() if a.root else Path.cwd()
+    mp = manifests_dir(root) / f"{a.bundle_id}.json"
+    if not mp.exists():
+        raise SystemExit(f"no manifest for {a.bundle_id}")
+    p = root / "transfer" / "revoked.json"
+    entries = json.loads(p.read_text(encoding="utf-8")) if p.exists() else []
+    if any(e["bundle_id"] == a.bundle_id for e in entries):
+        print(f"{a.bundle_id} is already revoked")
+        return 0
+    entries.append({"bundle_id": a.bundle_id, "reason": a.reason,
+                    "at": dt.datetime.now().isoformat(timespec="seconds")})
+    p.write_text(json.dumps(entries, indent=1), encoding="utf-8")
+    append_log(root, f"| {dt.date.today().isoformat()} | REVOKED | {a.bundle_id} | - | {a.reason} | "
+                     f"{git_head(root) or ''} |")
+    print(f"revoked {a.bundle_id}: its files are no longer assumed to be at the peer, so the next "
+          f"bundle will carry them again.")
     return 0
 
 
@@ -782,10 +948,10 @@ transfer:
   max_file_bytes: 100000
   max_bundle_bytes: 1000000
   text_extensions: [.py, .md, .yaml, .csv, .json]
-  binary_extensions_allowed: [.png]
+  binary_extensions_allowed: [.png, .pdf]
 roles:
   home:
-    allow: ["src/**", "docs/**/*.md", "transfer/**", "results/aggregate/**"]
+    allow: ["src/**", "docs/**/*.md", "docs/**/*.pdf", "transfer/**", "results/aggregate/**"]
     never: ["site/**", "*.pkl"]
     aggregate_tables: ["results/aggregate/**/*.csv"]
     forbidden_columns: [event_id, driver_id]
@@ -795,7 +961,7 @@ roles:
     person_columns: [driver]
   data:
     allow: ["src/**", "docs/**/*.md", "transfer/**", "results/aggregate/**"]
-    never: ["site/**", "*.pkl", "**/ingest/**"]
+    never: ["site/**", "*.pkl", "*.pdf", "**/ingest/**"]
     forbidden_patterns:
       vin: '\\b[A-HJ-NPR-Z0-9]{17}\\b'
       site_path: '[A-Za-z]:\\\\|\\\\\\\\[A-Za-z0-9_.$-]+\\\\'
@@ -821,12 +987,13 @@ class _Args:
         defaults = dict(policy=None, root=None, site=None, to=None, purpose="t", since=None, all=False,
                         only=None, bundle_id=None, in_reply_to=None, override=None, bundle=None,
                         force=False, dry_run=False, apply_deletions=False, commit=False, quiet=True,
-                        verbose=False)
+                        verbose=False, limit=10, reason="not released")
         defaults.update(kw)
         self.__dict__.update(defaults)
 
 
 def cmd_selftest(a):
+    from contextlib import redirect_stdout  # noqa: F401  (used below to keep the log readable)
     results = []
 
     def check(name, cond, detail=""):
@@ -854,6 +1021,9 @@ def cmd_selftest(a):
         _mk(A, "docs/note.md", "# note\n")
         _mk(A, "site/ingest/load.py", "SECRET = 'C:\\\\data\\\\raw'\n")
         _mk(A, "src/blob.pkl", "binary")
+        # a file only the HOME role may export: the asymmetry that broke incremental transfer
+        (A / "docs").mkdir(parents=True, exist_ok=True)
+        (A / "docs" / "report.pdf").write_bytes(b"%PDF-1.4 fake\n")
         ra = cmd_make(_Args(policy=str(A / "transfer/transfer_policy.yaml"), site="A", to="B",
                             purpose="first", all=True))
         z1 = A / "transfer" / "outbox" / f"A-{dt.date.today().isoformat()}-001.zip"
@@ -885,7 +1055,8 @@ def cmd_selftest(a):
         _mk(B, "docs/note.md", "# note\nsee \\\\\\\\vccserver\\\\share\\\\x\n")
         check("site path pattern refused", cmd_make(_Args(policy=pb, site="B", to="A", purpose="r", since=z1.stem)) == 2)
         _mk(B, "docs/note.md", "# note\nchanged at B\n")
-        r_ok = cmd_make(_Args(policy=pb, site="B", to="A", purpose="results", since=z1.stem))
+        # the default baseline is the derived peer state, not one bundle's tree
+        r_ok = cmd_make(_Args(policy=pb, site="B", to="A", purpose="results"))
         z2 = B / "transfer" / "outbox" / f"B-{dt.date.today().isoformat()}-001.zip"
         check("data-site bundle with aggregate table succeeds", r_ok == 0 and z2.exists())
         man2 = json.loads(zipfile.ZipFile(z2).read(f"{z2.stem}/MANIFEST.json"))
@@ -893,6 +1064,10 @@ def cmd_selftest(a):
               sorted(f["path"] for f in man2["files"]) == ["docs/note.md", "results/aggregate/levels.csv", "src/model.py"])
         check("base hashes recorded for modified files",
               all(f["base_sha256"] for f in man2["files"] if f["status"] == "modified"))
+        # regression: the home-only file exists at B but B may not export it -- not a deletion
+        check("a file the sender's role cannot export is NOT reported as deleted",
+              man2["deleted"] == [] and (B / "docs/report.pdf").exists(), str(man2["deleted"]))
+        check("peer state counts what is NOT re-sent", man2["unchanged_count"] >= 1)
 
         # home edited model.py meanwhile -> conflict
         _mk(A, "src/model.py", "x = 3\n")
@@ -902,6 +1077,48 @@ def cmd_selftest(a):
         check("--force applies over the conflict",
               cmd_apply(_Args(bundle=str(z2), policy=pa, root=str(A), force=True)) == 0
               and (A / "src/model.py").read_text() == "x = 2\n")
+
+        # regression: the return leg must not re-send what the peer already holds
+        _mk(A, "docs/note.md", "# note, revised at A\n")
+        check("home bundle after a round trip succeeds",
+              cmd_make(_Args(policy=pa, site="A", to="B", purpose="doc fix")) == 0)
+        z3 = A / "transfer" / "outbox" / f"A-{dt.date.today().isoformat()}-002.zip"
+        man3 = json.loads(zipfile.ZipFile(z3).read(f"{z3.stem}/MANIFEST.json"))
+        sent3 = sorted(f["path"] for f in man3["files"])
+        check("only the edited file is re-sent after a round trip", sent3 == ["docs/note.md"], str(sent3))
+        check("the home-only file is not re-sent every round trip", "docs/report.pdf" not in sent3)
+
+        # a bundle that is never released is revoked, and its files go again
+        state_before, _ = peer_state(A, "A", "B")
+        check("peer state includes the file just bundled", bool(state_before.get("docs/note.md")))
+        cmd_revoke(_Args(bundle_id=z3.stem, root=str(A), reason="steward rejected it"))
+        state_after, _ = peer_state(A, "A", "B")
+        check("revoke removes the bundle from the baseline",
+              state_after.get("docs/note.md") != state_before.get("docs/note.md"))
+        check("the next bundle carries the revoked file again",
+              cmd_make(_Args(policy=pa, site="A", to="B", purpose="resend")) == 0
+              and "docs/note.md" in [f["path"] for f in json.loads(
+                  (manifests_dir(A) / f"A-{dt.date.today().isoformat()}-003.json").read_text())["files"]])
+
+        # a genuine deletion IS reported, and drift is detected
+        (A / "docs/note.md").unlink()
+        cmd_make(_Args(policy=pa, site="A", to="B", purpose="removal"))
+        man5 = json.loads((manifests_dir(A) / f"A-{dt.date.today().isoformat()}-004.json").read_text())
+        check("a file genuinely removed from disk IS reported as deleted",
+              man5["deleted"] == ["docs/note.md"], str(man5["deleted"]))
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            missing, differing = report_drift(B, man5)
+        check("drift is silent when the two sites match", not missing and not differing,
+              f"missing={missing[:3]} differing={differing[:3]}")
+        (B / "src/model.py").unlink()          # simulate a file that never arrived
+        _mk(B, "results/aggregate/levels.csv", "cell,n,mean\nc1,12,0.9\n")   # and one that diverged
+        with redirect_stdout(buf):
+            missing, differing = report_drift(B, man5)
+        check("drift reports a file the sender holds that the receiver lacks",
+              missing == ["src/model.py"], f"missing={missing}")
+        check("drift reports a file that differs between the sites",
+              differing == ["results/aggregate/levels.csv"], f"differing={differing}")
 
         # tampering is detected
         z3 = td / "tampered.zip"
@@ -937,7 +1154,8 @@ def main(argv=None):
     m.add_argument("--site", default=os.environ.get("TRANSFER_SITE"), required="TRANSFER_SITE" not in os.environ)
     m.add_argument("--to", required=True)
     m.add_argument("--purpose", required=True)
-    m.add_argument("--since", default=None, help="bundle id this one is relative to")
+    m.add_argument("--since", default=None,
+                   help="pin the baseline to one bundle's tree instead of the derived peer state")
     m.add_argument("--all", action="store_true", help="bundle the whole shared layer (first bundle)")
     m.add_argument("--only", nargs="*", default=None, help="restrict to these paths or folders")
     m.add_argument("--bundle-id", default=None)
@@ -964,6 +1182,22 @@ def main(argv=None):
     s.add_argument("--site", default=os.environ.get("TRANSFER_SITE"), required="TRANSFER_SITE" not in os.environ)
     s.add_argument("--verbose", action="store_true")
 
+    pe = sub.add_parser("peers", help="what each peer is believed to hold, and what a bundle would carry")
+    pe.add_argument("--policy", default=default_policy)
+    pe.add_argument("--root", default=None)
+    pe.add_argument("--site", default=os.environ.get("TRANSFER_SITE"), required="TRANSFER_SITE" not in os.environ)
+    pe.add_argument("--verbose", action="store_true")
+
+    rv = sub.add_parser("revoke", help="mark a bundle as never released, so its files are sent again")
+    rv.add_argument("bundle_id")
+    rv.add_argument("--reason", required=True)
+    rv.add_argument("--root", default=None)
+
+    dr = sub.add_parser("drift", help="compare this site against the sender's tree in a bundle")
+    dr.add_argument("bundle")
+    dr.add_argument("--root", default=None)
+    dr.add_argument("--limit", type=int, default=10)
+
     sub.add_parser("selftest", help="run the built-in end-to-end test in a temporary directory")
 
     a = ap.parse_args(argv)
@@ -975,6 +1209,12 @@ def main(argv=None):
         return cmd_apply(a)
     if a.cmd == "scan":
         return cmd_scan(a)
+    if a.cmd == "peers":
+        return cmd_peers(a)
+    if a.cmd == "revoke":
+        return cmd_revoke(a)
+    if a.cmd == "drift":
+        return cmd_drift(a)
     if a.cmd == "selftest":
         return cmd_selftest(a)
     return 1

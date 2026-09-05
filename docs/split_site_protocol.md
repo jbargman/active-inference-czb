@@ -82,11 +82,11 @@ with a cryptographic hash of every file and of the policy in force, and a review
 tool `transfer/bundle.py` makes, checks and applies bundles; it refuses anything the policy
 refuses. Bundles are named `<site>-<date>-<sequence>`, for example `VCC-2026-09-10-001`.
 
-1. **Make.** At the sending site: `bundle.py make --site VCC --to CTH --purpose "..."
-   --since <the last bundle received or sent>`. The tool lists what changed since that
-   bundle, keeps only files the policy allows, runs the content checks on each, and writes
-   the zip, the manifest and the review sheet. If any check fails, no bundle is written.
-   The first bundle from CTH carries the whole shared layer (`--all`).
+1. **Make.** At the sending site: `bundle.py make --site VCC --to CTH --purpose "..."`. The
+   tool works out what the other site does not yet have (§5a), keeps only files the policy
+   allows, runs the content checks on each, and writes the zip, the manifest and the review
+   sheet. If any check fails, no bundle is written. The first bundle from CTH carries the
+   whole shared layer (`--all`).
 2. **Check.** `bundle.py check <zip>` at either site re-verifies hashes and re-runs every
    policy check. Run it before sending and again on receipt.
 3. **Steward review** (every bundle leaving VCC). The steward reads the review sheet, which
@@ -101,6 +101,32 @@ refuses. Bundles are named `<site>-<date>-<sequence>`, for example `VCC-2026-09-
    appends to the transfer log and commits with the bundle id in the message.
 6. **Record.** Both sites keep `transfer/TRANSFER_LOG.md` and `transfer/manifests/`. If the
    two logs ever disagree, the manifests inside the bundles settle it.
+7. **Revoke, if a bundle is not released.** A bundle the steward rejects, or that is never
+   e-mailed, is marked with `bundle.py revoke <id> --reason "..."` so that its files are
+   sent again next time (§5a). The tool prints this reminder after every make.
+
+## 5a Only what has changed is sent, and how that is established
+
+After the first shipment, a bundle carries only the files the other site does not already
+hold. This cannot be established from version control: the two sites share no history, and
+each site's commits describe only itself. It is established by content, using the SHA-256
+hashes the manifests already carry.
+
+Every manifest records the hash of each file the bundle carried, and also of the sender's
+entire exportable shared layer at that moment. To prepare a new bundle, the tool replays the
+manifests of all bundles exchanged with that partner — sent and received alike, since either
+direction leaves both sites holding the same content for the files it carried — and compares
+the result against the working tree. Files whose hash differs are included; files genuinely
+deleted from disk are listed as deletions; everything else is left out, and the review sheet
+states how many files were unchanged and therefore not re-sent. `bundle.py peers` shows the
+current picture at any time.
+
+Two safeguards attach to this. A bundle that is made but never released would otherwise
+leave the tool believing the partner had received it, which is what revocation (step 7)
+exists for. And because each manifest carries the sender's whole tree, the receiving site
+can compare itself against it: `apply` reports any file the sender holds that is missing or
+different locally, so a file that should have arrived but did not is visible rather than
+silent.
 
 ## 6 Traceability of results
 
@@ -176,11 +202,14 @@ which columns are counts, `min_n`, the row limit, and whether per-person rows ar
 ## Appendix B: commands
 
 ```
-python transfer/bundle.py make  --site VCC --to CTH --purpose "..." --since CTH-2026-09-03-001
-python transfer/bundle.py make  --site CTH --to VCC --purpose "..." --all
+python transfer/bundle.py make  --site CTH --to VCC --purpose "..." --all    # first bundle only
+python transfer/bundle.py make  --site VCC --to CTH --purpose "..."         # every later bundle
 python transfer/bundle.py check transfer/inbox/<bundle>.zip
 python transfer/bundle.py apply transfer/inbox/<bundle>.zip --commit
 python transfer/bundle.py scan  --site VCC
+python transfer/bundle.py peers --site VCC
+python transfer/bundle.py revoke <bundle-id> --reason "not released"
+python transfer/bundle.py drift transfer/inbox/<bundle>.zip
 python transfer/bundle.py selftest
 python transfer/validate_interface.py <interface directory>
 python transfer/make_synthetic_fixture.py
