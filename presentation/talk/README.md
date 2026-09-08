@@ -9,6 +9,10 @@
 
 | File | What it is |
 |---|---|
+| `ai_paper_talk.pptx` | **the 60-minute talk on the PUBLISHED model** (2026-09-08): 44 slides, **7 of them video**, notes budget 54.8 min. Follows the *authors' edition* of the handbook (`docs/handbook_authors/`) chapter by chapter — I 01–02, II 03–08, III 09–10, IV 11–12. Paper and handbook only: no comfort-zone framing, no gate/axis/level, no R.1 or R.2. The two `[Study]` findings the authors' edition carries (the looming channel against human intervention judgments; the glance gate blocking observation but not inference) appear labeled as ours and unpublished, as that edition does |
+| `build_paper_talk.py` | builds the paper talk; imports the layout helpers from `build_talk.py`, so all four decks share one set of conventions |
+| `make_paper_animations.py` | builds its five new animations and transcodes the two older GIFs to `.mp4`. Writes `paper_anim_numbers.md` with every value it drew, so the slides can be checked without rerunning |
+| `paper_anim_numbers.md` | generated: the deposit-derived numbers behind the paper talk's animations |
 | `ai_czb_talk.pptx` | the 60-minute deck: 46 slides on the Chalmers Swedish template, every slide with speaker notes and a time budget (56 min of content, leaving room for questions in the hour) |
 | `build_talk.py` | builds the 60-minute deck from scratch |
 | `ai_czb_status_talk.pptx` | the 10-15 minute "where we are now" deck (2026-09-02): 10 slides, four animated, little text, the talk in the notes (budget 13.0 min) |
@@ -34,6 +38,51 @@ Rebuild everything with:
 ```bash
 python presentation/talk/make_event_animation.py && python presentation/talk/make_talk_figures.py && python presentation/talk/build_talk.py
 ```
+
+## The paper talk (`ai_paper_talk.pptx`) — build order, and the step that is easy to miss
+
+*Brief (Jonas, 2026-09-08): a presentation describing active inference in the same way and
+flow as the authors' handbook, about the Nature Communications paper and that handbook
+only, reusing what the other decks have, with videos as illustrations wherever they make
+it more pedagogic.*
+
+```bash
+python presentation/talk/make_paper_animations.py          # the seven videos
+python presentation/talk/build_paper_talk.py               # the deck
+pwsh ~/.claude/skills/chalmers-slide-generation-jonas/resources/video_click_sequence.ps1 \
+     -Deck presentation/talk/ai_paper_talk.pptx            # <- REQUIRED, see below
+```
+
+**The third command is not optional, and it has to run after every rebuild.** On the first
+build all seven videos had **no play effect at all** — python-pptx wrote the movie but no
+`<p:timing>` entry, which degrades to click-on-object, so the clicker would advance the
+slide and nothing would happen. Nobody would have found that before the talk. The script
+works on a copy and puts it back; run it again and it reports "already in the click
+sequence" for all seven.
+
+Five of the seven videos are new (`paper_loop`, `paper_tournament`, `paper_regimes`,
+`paper_preference`, `paper_maneuver`); the other two are the existing `event_anim` and
+`belief_anim`, which were GIF-only and are now transcoded to `.mp4` so they get
+PowerPoint's scrub bar and a pause that resumes. Everything that moves is read from the
+authors' deposit or computed from the released preference form, except the loop's ring,
+which is a labeled schematic carrying real per-step deposits. The numbers are regenerated
+into `paper_anim_numbers.md` at build time.
+
+Two judgment calls for review:
+
+- **The posters are first frames, so a printed hand-out shows a sparse picture.** That is
+  forced by the rule learned on 2026-09-03 (a last-frame poster makes the slide wipe
+  itself the moment the video plays). Each video slide therefore carries a caption that
+  states the point and its numbers, so the frozen frame is not the only clue. If the deck
+  is ever given out to be studied rather than presented, the fix in the slide skill is a
+  companion storyboard slide of stills per video, pulled from the `.mp4` with ffmpeg.
+- **No slide numbers or email footer**, matching `build_talk.py` and
+  `build_concepts_talk.py` (both put the address on the title and closing slides only)
+  rather than the skill's general house convention.
+
+Verified before hand-over: `check_slides.py` clean (0 off-slide, 0 overrun, 0 invisible);
+`measure_render.py` on a 44-slide PowerPoint render, 0 slides reaching the footer strip;
+the seven embedded `.mp4` parts byte-for-byte the size of the files on disk.
 
 ## The structure the deck follows
 

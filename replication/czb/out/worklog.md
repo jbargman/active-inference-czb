@@ -2199,3 +2199,80 @@ unsent bundle; the export sequence no longer names a baseline), `docs/split_site
 (new §5a, a seventh procedure step, Appendix B) rebuilt to .docx and .pdf, and the skill plus
 its two affected templates. Nothing about what may cross sites changed, so the policy file is
 untouched and still version 1: **VCC's sign-off (SS.Q1) is unaffected by this and still open.**
+
+## 2026-09-08 — a 60-minute talk on the published model, following the authors' handbook
+
+Jonas asked for a presentation that describes active inference in the same way and flow as
+the **authors' edition** of the handbook, about the Nature Communications paper and that
+edition only, reusing what the other decks have, with videos as illustrations wherever they
+make it more pedagogic.
+
+**The deck.** `presentation/talk/ai_paper_talk.pptx`, built by `build_paper_talk.py` (which
+imports the layout helpers from `build_talk.py`, so the four decks share one set of
+conventions). 44 slides, notes budget 54.8 min, following the authors' edition chapter by
+chapter: I 01–02, II 03–08, III 09–10, IV 11–12, with chapter 13 signposted rather than
+slid. Nothing from the CZB program appears — no gate/axis/level, no R.1 or R.2. The two
+`[Study]` findings that edition carries (the looming channel against human intervention
+judgments, ch. 03; the glance gate blocking observation but not inference, ch. 08) are in,
+labeled ours and unpublished, as that edition labels them.
+
+**Seven videos.** Five new, in `make_paper_animations.py`; two existing GIFs (`event_anim`,
+`belief_anim`) transcoded to `.mp4` so they get PowerPoint's scrub bar and a pause that
+resumes. Everything that moves is read from the deposit or computed from the released
+preference form; the loop's ring is a labeled schematic carrying real per-step deposits.
+Every value is regenerated into `presentation/talk/paper_anim_numbers.md` at build time.
+
+Three of the new ones reproduce claims of the authors' edition exactly, which is worth
+recording as verification of that edition rather than only as deck-building:
+- the maneuver mix by initial speed, from the deposit's own `Analysis_rear_end.xlsx`
+  (28 baseline rows): 10 m/s braking 86% / steering 0%; 15 m/s 33% / 54%; 20 m/s 1% / 96%;
+  25 m/s 0% / 40% with 58% road departure — the chapter-05 table, to the digit;
+- the pre-onset accumulator drift across all 28 baseline conditions, 2.6% of the threshold
+  per 0.8 s at the longest gap to 44.3% at the shortest — the chapter-05 range ("from 2%
+  … to 44%"), reproduced, and monotone in headway once speed is allowed for;
+- the trust cap as arithmetic: the compliant target's tournament spans a 50 000× ratio
+  between heaviest and lightest ticket, the violating target's spans 1.0× — the lottery is
+  exactly uniform, so the bias does dissolve without any dedicated switch, as ch. 06 says.
+
+**Two chapter-02 numbers did NOT reproduce**, and I have not touched the document. Recomputing
+`eps` from the deposit the way `make_event_animation.py` does (Exp_7, seed 0, the negative sum
+of the first seven pragmatic components, λ = 10^−5.95):
+
+| quantity | authors' edition, ch. 02 | recomputed here |
+|---|---|---|
+| deposit per step, quiet following | "about 68 000", 7.6% of threshold | 69 822 at t = 0.6 s, 7.8% (seed 0); 66 480, 7.5% (seed mean); **68 075 on the 8-component sum**, which is the closest match |
+| the rising sequence after onset | "68 000 → 197 000 → 267 000" | 69 822 → 130 965 → 196 875 → 249 219 (t = 0.6 … 1.2 s). The 197 000 matches t = 1.0 s; **no variant produces 267 000**, and the quoted sequence skips the t = 0.8 s step |
+| account at the lead's braking | "already stands at 0.31" | **0.28** at t = 0.6 s, the last step before onset (0.43 after the onset step); seed mean 0.29 |
+
+The differences are small and do not change any argument in the chapter, so the deck quotes
+the recomputed values and the animation writes them to a tracked file. The likely causes are
+a different component count (7 vs 8) and whether the onset step is counted, but I could not
+find a variant reproducing 267 000 or 0.31 together with the other two.
+
+@TALK2.Q1(minor, jonas): the authors' edition ch. 02 quotes a per-step sequence
+"68 000 → 197 000 → 267 000" and an account of "0.31" at the lead's braking; recomputation
+from the deposit gives 69 822 → 130 965 → 196 875 → 249 219 and 0.28 (0.43 if the onset step
+is included). Should the edition be corrected in a dated note, given it has already been sent
+to the authors, or is there a variant I have not found? The deck currently uses the
+recomputed values.
+
+@TALK2.Q2(judgment, jonas): the video slides' posters are FIRST frames (forced by the
+2026-09-03 wipe rule), so a printed hand-out shows a sparse picture with the caption carrying
+the point. If this deck is ever given out to be studied rather than presented, the slide
+skill's fix is a companion storyboard slide of stills per video. Want those built?
+
+@TALK2.Q3(minor, review): the deck has no slide-number/email footer, matching `build_talk.py`
+and `build_concepts_talk.py` rather than the slide skill's general house convention.
+
+**A trap worth recording for every future deck with video.** On the first build **all seven
+videos had no play effect at all** — python-pptx wrote the movie but no `<p:timing>` entry,
+which degrades to click-on-object: the clicker would advance and nothing would happen. The
+slide skill's `video_click_sequence.ps1` found and fixed all seven, and a second run reports
+"already in the click sequence". **It has to run after every rebuild**, because the build
+starts from the template again; the README now says so in the build order.
+
+Verification: `check_slides.py` clean (0 off-slide, 0 overrun, 0 invisible — it correctly
+caught white-on-accent5 in a provenance chip, now luminance-picked); `measure_render.py` over
+a 44-slide PowerPoint render, 0 slides reaching the footer strip (7 did before the video
+captions were raised); the seven embedded `.mp4` parts byte-for-byte the size of the files on
+disk. Suite: 31, 33, 40, 96, 62.
