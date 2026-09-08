@@ -1493,10 +1493,11 @@ rather than forcing it. Free energy, for instance, has no native human-factors e
            "them forward, score them against a preference distribution, act, and deposit "
            "the shortfall into an account that triggers a re-plan when it fills.",
            16, WHITE, False),
+          # the line the talk asks them to remember, so it is not the dimmest on the slide
           ("Perception and action are the same operation in two directions. Response time "
            "is not a parameter — it is what the account took to fill. The maneuver is not a "
            "rule — it is the best-scoring imagined future. Trust is not a dial — it is a "
-           "minimum in the sampling weights.", 16, MUTED, False, 12),
+           "minimum in the sampling weights.", 16, WHITE, False, 12),
           ("One driver, many worlds: of 65 configuration parameters, every driver-side one "
            "is identical across the three scenarios, save a single assumption about what "
            "kind of agent it faces.", 16, MUTED, False, 12)], spacing=1.16)
