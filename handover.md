@@ -23,13 +23,15 @@ repository wins, and you should say so in your reply.*
 1. Read this file in full. Then read `docs/czb_work_orders.md` §2 (the standing rules)
    and the card or note named for the task at hand. Do not read the papers or the handbook
    unless the card says to; do not open `OthersWork/` (§5).
-2. Run the test suite exactly like this, and confirm 31, 33, 40, 96 and 62 passed:
+2. Run the test suite exactly like this, and confirm 31, 33, 40, 96, 62, 19 and 28 passed:
    ```bash
    python tests/test_surprise.py
    python tests/test_comfortzone.py
    python tests/test_causation.py
    python tests/test_cutin.py
    python tests/test_ltap.py
+   python tests/test_transfer.py
+   python tests/test_interface.py
    ```
    (`pytest` reports fewer and is *not* the suite; the files are scripts that count checks.)
 3. Run `git status` and `git log --oneline -5`. The tree should be clean. If it is not,
@@ -236,9 +238,17 @@ adopt the two-scalar wording, with the standing genericity ruling in §1 as the 
    `transfer/bundle.py`; the interface `transfer/interface_schema.yaml` with a synthetic
    fixture; the brief for either site's LLM `transfer/SITE_LLM_BRIEF.md`; the generic method
    is the `split-site-collaboration` skill, mirrored in `docs/skills/`). Waiting on VCC's
-   sign-off (query SS.Q1). Until then: make the shared analysis path run end to end on
-   `transfer/fixtures/synthetic/` through the interface, so the first bundle to VCC is
-   runnable on arrival.
+   sign-off (query SS.Q1).
+   **Card NDS.1 is done** (2026-09-09): `src/comfortzone/interface.py` reads the interface
+   into the gated-looming pipeline by the video cards' own definitions of gap, clearance and
+   looming rate; `replication/czb/nds1_interface_smoke.py` → `out/nds1_interface_smoke.md`
+   runs it end to end on the synthetic fixture, all four pre-stated criteria met;
+   `tests/test_interface.py` has 28 property checks. **It found five gaps in the interface
+   schema** (NDS.Q2–NDS.Q5), two of them severe enough to make the fitted levels wrong by a
+   factor of about two. **The next step is one action: revise
+   `transfer/interface_schema.yaml` with Jonas's rulings and send the corrected schema to
+   VCC before their adapter is written** — decision 6 of the protocol offers them that
+   review, and after the adapter exists a change is expensive.
 
 Not to be started without a new instruction: any handbook chapter rewrite beyond dated
 notes, manuscript text, any change to a pre-registered script, card EL.3, the dread
@@ -282,6 +292,7 @@ SetPET is the stimulus (appendix 17 and TT.Q2 say why).
 | the worklog (source of truth for decisions and queries) and the register | `replication/czb/out/worklog.md`, `out/query_register.md` |
 | the decks and the animations | `presentation/talk/README.md`, `presentation/talk/animation_shot_list.md` |
 | **working with Volvo Cars without moving the data** | `docs/split_site_protocol.md` (+ PDF, the sign-off document), `transfer/README.md`, `transfer/transfer_policy.yaml`, `transfer/SITE_LLM_BRIEF.md`, `tests/test_transfer.py`; the skill mirror `docs/skills/split-site-collaboration.SKILL.md` |
+| **the naturalistic path: reading the interface, and what the schema still lacks** | `src/comfortzone/interface.py`, `transfer/interface_schema.yaml`, **`replication/czb/out/nds1_interface_smoke.md`** (card NDS.1: the convention gap quantified, and the five schema gaps), `tests/test_interface.py` |
 | the data and its traps | `docs/czb_study1_data_plan.md`; the study's `DATA_DICTIONARY.md` under `external/01_studies/` (read its gotchas first); `external/README.md` for the test-track file's columns |
 | the deep research context and environment (older) | `HANDOFF.md`, then the dated handovers `handover_2026-08-26.md` → `handover_2026-09-03.md` in order |
 

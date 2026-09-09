@@ -1,6 +1,6 @@
 ---
 name: performing-research
-description: How research work is executed for Jonas Bärgman — the interruption budget and the two operating modes (interactive versus batch/overnight), the numbered-query convention (Qs, tagged by severity and audience) that lets a session continue instead of blocking, reproducibility rules (every quoted number from a committed script), verification and test discipline, the rule that every parameter value carries a motivation, replication of published results when a component comes from a paper, documentation and handover conventions, model-tier awareness for deciding who a question can be deferred to, and the statistical conventions. Use when executing any research or analysis task, when starting or ending a work session, when writing or reading a handover, when a result is about to be quoted, and when work passes between models or sessions.
+description: How research work is executed for Jonas Bärgman — the interruption budget and the two operating modes (interactive versus batch/overnight), the numbered-query convention (Qs, tagged by severity and audience) that lets a session continue instead of blocking, reproducibility rules (every quoted number from a committed script), verification and test discipline, the rule that every parameter value carries a motivation, replication of published results — the default when a component is built from a paper, opt-in and asked for when a paper is being reviewed, documentation and handover conventions, model-tier awareness for deciding who a question can be deferred to, and the statistical conventions. Use when executing any research or analysis task, when starting or ending a work session, when writing or reading a handover, when a result is about to be quoted, and when work passes between models or sessions.
 ---
 
 # Performing research with Jonas
@@ -8,8 +8,13 @@ description: How research work is executed for Jonas Bärgman — the interrupti
 **Status: active. Approved by Jonas on 2026-08-27.** The live copy is
 `~/.claude/skills/performing-research/SKILL.md` and is authoritative; a tracked mirror
 sits in the project repository at `docs/skills/performing-research.SKILL.md` so that
-revisions are versioned. When the live copy changes, update the mirror in the same
-commit. Revision history is at the end.
+revisions are versioned. When the live copy changes **and the repository is at hand**,
+update the mirror in the same commit. When it is not — the edit was made from some other
+directory, as skill edits often are — **the sync is not this session's follow-up.** Do
+not carry it forward, do not hand it to Jonas to remember, and do not open a query for
+it: the next session that loads this skill **with the repository present** reconciles the
+mirror against the live copy and commits the difference. Verifying that the mirror
+matches is part of loading the skill there. Revision history is at the end.
 
 Applies to all research tasks for Jonas, in any of his repositories. The
 WaymoActiveInference project is the worked example.
@@ -124,11 +129,15 @@ This is the "no voodoo constants" rule (Anthropic, n.d., citing Ousterhout): *if
 not know the right value, how will anyone after you?*
 Values that move a result substantially must be restated wherever the result is quoted.
 
-## 6 Implementations from papers get replicated
+## 6 Replication: default when building on a paper, opt-in when reviewing one
 
-**When a core component is implemented from a published paper, propose to Jonas that a
-published result be replicated to verify the implementation** — and say which result you
-would target and what would count as agreement.
+Two activities pull in opposite directions here, and which one is in play decides
+whether replication happens without being asked for.
+
+**Building on a paper — replication is the default.** When a core component is
+implemented from a published paper, **propose to Jonas that a published result be
+replicated to verify the implementation** — say which result you would target and what
+would count as agreement, then continue under §1 rather than stopping for an answer.
 
 An implementation that matches the equations can still disagree with the source, and
 only a replication finds it. In this project the practice has repeatedly paid: comparing
@@ -140,6 +149,27 @@ in more than a dozen documented places. None of that was visible from the equati
 Prefer a published number that is (a) quantitative, (b) not the one the implementation
 was tuned on, and (c) cheap to reproduce. Where a deposit of the authors' own outputs
 exists, it beats the paper's printed figures.
+
+**Reviewing a paper — replication is opt-in, and asked for explicitly.** Reviewing a
+manuscript, a grant proposal, or a colleague's analysis is not building on it.
+Replication there is expensive and is usually not what the review needs, so **do not
+start one.** Ask once, in one line, and only when materials that could actually support
+a replication exist — a data deposit, released code, analysis scripts in the
+supplement:
+
+> Their code and data deposit is available — do you want me to try to replicate
+> \<specific result\>, or review from the text?
+
+If he does not answer, default to reviewing from the text, and say in the output which
+route was taken. This is a deliberate exception to §1's "raise a query and continue":
+it is a scope question rather than a judgment call, and guessing wrong spends hours on
+work he did not ask for. Where no such materials exist — most proposal reviews, ERC
+included — there is nothing to ask about, so do not raise the question at all.
+
+**Consistency checks are not replication and stay automatic.** In any review, check what
+the text can be held to on its own: do the Ns add up, do percentages sum, do units and
+scales match, does a number in the abstract match the table it came from. Cheap, needs
+no permission, and often where the review's value sits.
 
 ## 7 Reproducibility
 
@@ -294,6 +324,21 @@ treat their specific wording as unverified. The model line-up in §10 comes from
 bundled `claude-api` skill, whose table was cached 2026-06-24.
 
 ## 14 Revision history and open items
+
+**v6, 2026-08-29 — the mirror sync is not a carried follow-up.** The v5 edit was made
+from a directory without the project repository, leaving "update the mirror" as an open
+item handed back to Jonas. The header rule now says such a sync is never the editing
+session's follow-up: the next session that loads this skill with the repository present
+reconciles the mirror, and checking it is part of loading the skill there.
+
+**v5, 2026-08-29 — replication split by activity (§6).** Jonas reported that initiating a
+review made sessions start replicating the work under review. Cause: §6 was written for
+*implementing* a component from a paper, but with no rule covering *reviewing* one it was
+stretched to cover both, and §1's "do not stop and ask" pushed sessions past the
+"propose" wording straight into the work. §6 now separates the two: default-on when
+building on a paper, ask-first when reviewing one, asked only where materials exist, with
+text-internal consistency checks staying automatic. Frontmatter description updated to
+match.
 
 **v2, 2026-08-27 — rebuilt after Jonas's first review.** Settled by him: scope is all
 research tasks; the handover chain applies within a repository or chat; the name follows

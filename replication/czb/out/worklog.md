@@ -2276,3 +2276,80 @@ caught white-on-accent5 in a provenance chip, now luminance-picked); `measure_re
 a 44-slide PowerPoint render, 0 slides reaching the footer strip (7 did before the video
 captions were raised); the seven embedded `.mp4` parts byte-for-byte the size of the files on
 disk. Suite: 31, 33, 40, 96, 62.
+
+## 2026-09-09 — card NDS.1: the shared analysis path reads the split-site interface, and the schema does not survive contact with it
+
+Jonas asked what to do next with tokens available. NDS.1 was picked because it is the only
+substantial item on the critical path to the naturalistic phase that is blocked by nothing,
+and because of a sequencing argument: decision 6 of `docs/split_site_protocol.md` offers VCC
+a review of `transfer/interface_schema.yaml` *before* their adapter is written, so any gap in
+that schema is cheap now and expensive later. The schema had been derived from
+`docs/data_requirements.md` on paper and no analysis code had ever read it. Interactive mode.
+Suite green before (31, 33, 40, 96, 62, 19) and after (the same plus 28).
+
+**Built.** `src/comfortzone/interface.py` — the one place that reads the interface shape,
+computing the axis and the gate **by the video cards' own definitions**, which is what makes a
+level fitted on video comparable with one fitted at VCC: edge-to-edge `gap` as in
+`cutin_predictors`; `theta_dot = W*dv/(gap^2 + W^2/4)` through the shared `ltap.looming_rate`,
+the exact derivative of cards EL.1b and B.3.v2; `l0`, `ldot` and
+`w_gate = Phi((m_lat - (l0 + ldot*t_enc))/s_l)` as in card G.1, with G.1's fitted
+`m_lat = 0.149 m`, `s_l = 0.990 m`, `t_enc = 3.0 s` carried over unrefitted. Every constant
+carries its motivation in the module docstring; `LDOT_WINDOW_S = 0.3 s` is held at the video
+studies' sample spacing *precisely so that* `ldot` is the same quantity the gate was fitted
+against, not because 0.3 s is right for 50 Hz data.
+
+**Run.** `replication/czb/nds1_interface_smoke.py` → `out/nds1_interface_smoke.md`, acceptance
+criteria pre-stated in its docstring before the run. All four met: the 12 synthetic events load;
+every onset yields a finite axis and gate value (gate median 0.980, range 0.940–0.991); the
+per-driver order of the recovered levels matches the order the fixture was scripted with
+(D03 < D01 < D02); and an event declaring `ref_point = rear_axle` is **refused** rather than
+silently mis-computed.
+
+**The finding.** The recovered levels sit 2.6 to 3.4 times *above* the ones the fixture was
+scripted with (D01 0.0837 against 0.0300 rad/s; D02 0.1524 against 0.0450; D03 0.0521 against
+0.0200). Neither side is wrong: the fixture scripts onsets on a raw centre separation and the
+analysis uses an edge-to-edge gap, worth a factor of 1.98 at one worked onset (11.04 m against
+15.54 m), with the fixture's 0.2 s reaction delay closing the gap further. The exact-derivative
+correction is under a percent. **A level fitted under one gap convention and applied under the
+other is wrong by about a factor of two, and nothing in the pipeline would announce it.** That
+is the single most important thing to settle with VCC before the adapter exists.
+
+**Five schema gaps, each found by writing the loader against it** (detail in §4 of the report).
+They are one action, not five: a revision round on `transfer/interface_schema.yaml` before it
+goes to VCC. The schema has not been sent (SS.Q1 holds everything), so this is still free.
+
+@NDS.Q1(judgment, review): the estimator framing. The video paradigm's unit is a design cell —
+a frozen clip and the share of raters who would intervene — and naturalistic data has no such
+unit: one event, one driver, one realized onset. The module extracts the axis value AT the
+onset, with no-response events right-censored at the largest axis value the driver saw, which
+makes the NDS estimator a survival/threshold-crossing fit rather than a cell-share fit.
+Recommended and implemented, but not settled, and it interacts with EL.Q4: whatever puts the
+per-scenario levels on one scale has to accept a censored likelihood from this arm.
+
+@NDS.Q2(blocker, jonas): `ref_point` is one column serving both vehicles, which assumes the
+ego and the partner are referenced the same way. In naturalistic data they essentially never
+are — ego position from the vehicle's own signals (rear axle or CoG), partner position from
+radar or camera (nearest reflecting surface). Split it into `ego_ref_point` and
+`oth_ref_point`. Second half of the same query: `rear_axle` cannot be converted to a bumper
+position, because the interface carries total length but not the front overhang; either add
+overhangs or state that positions are delivered at the vehicle centre. Blocker because the gap
+convention is the factor-of-two error above.
+
+@NDS.Q3(blocker, jonas): the lateral frame is ambiguous. The schema calls `ego_y` a "signed
+lateral offset from lane center (preferred)" and `oth_y` a "partner lateral position". The gate
+needs their *difference*, so both must be in one frame; if the ego's is lane-relative and the
+partner's absolute, `l0` is wrong by the ego's own lane offset — which is exactly the quantity
+that moves during a cut-in, so the error is largest where the gate matters most.
+
+@NDS.Q4(judgment, jonas): `t_brake_onset` carries no criterion. Since the observation IS the
+axis value at that instant, the onset definition sets the level: a pedal-switch criterion and a
+deceleration-threshold criterion differ by a few tenths of a second and the gap closes
+throughout. Either carry the criterion as a field or fix one in the protocol.
+
+@NDS.Q5(minor, jonas): nothing requires `valid = 1` at the onset sample, so the partner track
+may be interpolated exactly where the observation is read. The loader reports `valid_at_onset`;
+the exclusion rule should be stated in the schema rather than left to each analysis.
+
+**Housekeeping.** The `performing-research` skill mirror in `docs/skills/` had drifted from the
+live copy (an older version entirely); reconciled in this commit, per that skill's own rule that
+the next session loading it with the repository present fixes the mirror.
