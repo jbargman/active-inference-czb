@@ -159,6 +159,13 @@ def split_row(line: str):
     return [c.strip() for c in line.split("|")]
 
 
+def _plain(text: str) -> str:
+    """Visible text of a markdown cell: links reduced to their text, emphasis and code marks
+    dropped. Used only to measure words, never for output."""
+    text = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", text)
+    return re.sub(r"[*`_]", "", text)
+
+
 def build_table(rows, avail_width, st):
     header, body = rows[0], rows[1:]
     ncol = len(header)
@@ -171,12 +178,18 @@ def build_table(rows, avail_width, st):
         typ = lens[int(0.75 * (len(lens) - 1))]          # 75th percentile
         weights.append(max(typ, len(header[c]), 6))
     # a column must at least fit the longest single word of its header, otherwise the
-    # header wraps mid-word ("Symb / ol") no matter how short the body cells are
+    # header wraps mid-word ("Symb / ol") no matter how short the body cells are.
+    # [2026-09-11] The same holds for body cells: a short column whose body carries one
+    # long word ("QUADRIS", "Test-track") broke it mid-word. Body words are measured in
+    # the body font and capped at a third of the page, so a single pathological token
+    # (a long path or URL) cannot starve the other columns.
     mins = []
     for c in range(ncol):
         longest = max(stringWidth(w, BOLD, 7.9)
                       for w in (header[c].split() or [""])) if header[c] else 0
-        mins.append(longest + 9)
+        body_words = [w for r in body if c < len(r) for w in _plain(r[c]).split()]
+        longest_body = max((stringWidth(w, BODY, 7.9) for w in body_words), default=0)
+        mins.append(max(longest, min(longest_body, avail_width / 3)) + 9)
 
     total = float(sum(weights))
     widths = [max(avail_width * w / total, mins[c]) for c, w in enumerate(weights)]

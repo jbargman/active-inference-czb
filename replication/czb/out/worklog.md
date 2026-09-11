@@ -2399,3 +2399,41 @@ in the project memory, so no session resumes it unprompted. The state is preserv
 NDS.1 is done; the next step, when he restarts, is the schema revision on his rulings for
 NDS.Q2–Q5, plus SS.Q5. The SS.* and NDS.* queries stay open in the register — parked, not stale,
 and not resolved.
+
+## 2026-09-11 — preparation for meeting Julian Schumann at the conference
+
+Jonas will meet the paper's authors next week, primarily Julian Schumann, and asked for (a) the
+questions we would like to ask them to take the comfort-zone work, the cut-in and the crash
+causation further, and (b) a four-to-five page document of what we implemented, tried, the data
+used, and open issues, to give Julian on paper. Written under the `jonas-academic-writing` house
+style (US English, readings stated as readings, limitations volunteered).
+
+- **The handout**, `docs/handout_schumann_2026-09.md` (+ .docx, .pdf; 4 pages): why we started;
+  the data in one table; what we built; the comfort-zone work (the idea, the two pre-registered
+  tests that went against the deficit and the decomposition of the second, the looming result,
+  the model as it stands, the trait, the test-track anchor); the cut-in; the crash-causation
+  study; eight open issues. Every number was checked against its tracked source before quoting
+  (median level 0.0317 rad/s and 1.815°/s in `out/stage1_looming.md`; the 71% between-seed
+  variance in `docs/severity_vs_timing.md`; the rest as cited in the handover). The R.2 result
+  is scoped as `docs/r2_pipeline_review.md` §3.3 scopes it: a statement about the counterfactual
+  *as a comfort criterion*. The review and the authors' reply are deliberately not mentioned on
+  paper.
+- **The question list**, `correspondence/2026-09_meeting_schumann_questions.md` (+ .pdf; 2 pages),
+  private and kept in `correspondence/` because it draws on the authors' letter: a
+  fifteen-minute version, an opening, verbal follow-ups to the review and the reply, and
+  questions by topic, each cross-referenced to the handout's open issues [H1]–[H8] and to where
+  the point is documented. λ = 10^EA_fac was checked in the code (`mpc_discrete.py:62`) before
+  it went into a question.
+- **A fix to the shared PDF builder**, found by looking at the rendered handout: `build_pdf.py`
+  guaranteed a table column fitted its header's longest word but not its body's, so "QUADRIS"
+  and "Test-track" broke mid-word. Body words now count too (in the body font, capped at a
+  third of the page). Regression check: the protocol, the 31-page authors' handbook and the
+  data requirements rebuild to the same page counts as their committed PDFs.
+
+@HO.Q1(minor, jonas): before printing the handout — (1) complete the three references the
+repository records only as author-year tags (Bärgman, Svärd, Lundell & Hartelius, 2024; Wu,
+Flannagan, Sander & Bärgman, 2025; Wu, Sander, Flannagan & Bärgman, 2026); they show as
+"[initials]" and "[to be completed]" rather than guessed; (2) confirm the wording for the two
+video studies ("from a related project"), for the colleague credited with the gate idea ("a
+colleague's parallel analysis"), and for the naturalistic data ("planned with an industry
+partner", not naming VCC while that track is paused).
