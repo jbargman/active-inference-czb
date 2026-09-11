@@ -64,6 +64,10 @@ def main():
               all(pol.classify(p, site) == "allowed" for p in
                   ["src/comfortzone/cutin.py", "tests/test_cutin.py", "transfer/bundle.py",
                    "transfer/transfer_policy.yaml", "docs/split_site_protocol.md", "README.md"]))
+    check("CTH: private correspondence is never bundled, whatever its file type",
+          all(pol.classify(p, "CTH") == "never" for p in
+              ["correspondence/2026-09-11_authors_reply_to_method_review.md",
+               "correspondence/any/depth/letter.pdf"]))
     data_only_never = ["site/data/E0001.csv", "src/site/preprocess/x.py", "notes/data/raw/x.csv",
                        "docs/x.pdf", "replication/czb/out/driver_levels.csv"]
     check("VCC: data-shaped paths and documents that could embed data are refused",

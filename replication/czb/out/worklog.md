@@ -2353,3 +2353,40 @@ the exclusion rule should be stated in the schema rather than left to each analy
 **Housekeeping.** The `performing-research` skill mirror in `docs/skills/` had drifted from the
 live copy (an older version entirely); reconciled in this commit, per that skill's own rule that
 the next session loading it with the repository present fixes the mirror.
+
+## 2026-09-11 — the authors' reply to the method review, filed
+
+Jonas passed on a reply from one of the Nature Communications paper's authors (writing as
+Julian Schumann's co-author), with the instruction: no actions, file it. Filed verbatim at
+`correspondence/2026-09-11_authors_reply_to_method_review.md`, with a five-point summary and a
+section on where it bears on our documents. In short: in the authors' assessment there were no
+errors in the model or the simulations; every flagged item is either a reporting error (a
+mislabeled scenario in a figure caption, typos in equations) or an undiscussed limitation (the
+evidence-accumulation starting point, the off-road behavior); Julian Schumann will prepare an
+official correction; and the analysis is judged free of hallucinated issues but one-sided in
+places, the road departures being their example, with an offer to elaborate at ITSC.
+
+**No contradiction with a documented finding of fact, recorded rather than reconciled.** Our
+review never claimed a model or simulation error (`docs/method_review.md` §1: the code does what
+the paper says and reproduces the deposit to the timestep). The difference is classification and
+emphasis. The authors' NB2 bears on two passages already marked [Opinion]:
+`docs/method_review.md` §4.1's closing sentence and the 25 m/s paragraph of the authors'
+edition's chapter 05. Nothing is changed now, per Jonas; the filed note lists what to add dated
+notes to when the correction is published (method_review §4.3 and §8, and the affected passages
+of the authors' edition). No query raised for the letter itself, by Jonas's instruction.
+
+**Filing it exposed a defect in the transfer policy I wrote.** A markdown file anywhere in the
+repository was eligible for bundling to VCC, the letter included, because the allow lists carry
+`*.md` and the matcher treats a pattern without a slash as a *basename* pattern: it matches every
+markdown file at any depth, not only root-level ones as intended. Fixed for the letter with a
+`never` rule for `correspondence/**` in the home role (draft v1 is unsigned, and the rule only
+restricts the home site), pinned by a new check in `tests/test_transfer.py` (19 → 20). Verified:
+the letter classifies `never` and no bundle would carry it. Suite 31, 33, 40, 96, 62, 20, 28.
+
+@SS.Q5(judgment, jonas): the data role's allow list has the same `*.md` looseness, and that one
+matters more. At VCC a markdown file of per-driver observations in, say, `notes/` would pass the
+path check and be protected only by the content scan. The intent was root-level markdown. Two
+fixes: list the root files explicitly (`README.md`, `handover.md`, and so on) in both roles, or
+add an anchored-pattern syntax to `bundle.py` so `/*.md` means root only. Either changes what VCC
+signs, so it should be settled before the policy goes to them with SS.Q1. Recommendation: the
+explicit list, since it needs no tool change and reads plainly to a steward.

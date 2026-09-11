@@ -62,6 +62,7 @@ roles:
       - "external/**"
       - "OthersWork/**"
       - "papers/**"
+      - "correspondence/**"        # private letters (e.g. from the paper's authors); never bundled
       - "site/**"
       - "replication/causation/out/cond_*.csv"
       - "tools/czb_explorer/**"
