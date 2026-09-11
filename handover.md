@@ -230,7 +230,9 @@ adopt the two-scalar wording, with the standing genericity ruling in §1 as the 
    `docs/czb_validation_roadmap.md` and `docs/active_inference_scope_map.md` moving the
    percentile deliverable to the looming axis; regenerate card C's sensitivity report on it;
    update the status and short decks' notes where they say "gap leads".
-7. **Naturalistic data, at Volvo Cars, without moving it.** The data request
+7. **PAUSED by Jonas, 2026-09-11 — do not work on this until he starts a new VCC round.**
+   Everything below is the state it was left in, for when he does.
+   **Naturalistic data, at Volvo Cars, without moving it.** The data request
    (`docs/data_requirements.md`) stands; appendix 17 gives the first offset number (a quarter
    of a second on the left turn). The data will stay at VCC, with no shared repository; the
    way of working is the **split-site protocol** (`docs/split_site_protocol.md`, PDF for
@@ -250,7 +252,9 @@ adopt the two-scalar wording, with the standing genericity ruling in §1 as the 
    VCC before their adapter is written** — decision 6 of the protocol offers them that
    review, and after the adapter exists a change is expensive.
 
-Not to be started without a new instruction: any handbook chapter rewrite beyond dated
+Not to be started without a new instruction: **anything on the VCC track** (the schema
+revision NDS.Q2–Q5, the policy fix SS.Q5, any bundle, anything sent to VCC — paused by Jonas
+2026-09-11; its queries stay open in the register, parked rather than stale); any handbook chapter rewrite beyond dated
 notes, manuscript text, any change to a pre-registered script, card EL.3, the dread
 boundary (TT.Q2), anything in `OthersWork/`.
 

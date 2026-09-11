@@ -2390,3 +2390,12 @@ fixes: list the root files explicitly (`README.md`, `handover.md`, and so on) in
 add an anchored-pattern syntax to `bundle.py` so `/*.md` means root only. Either changes what VCC
 signs, so it should be settled before the policy goes to them with SS.Q1. Recommendation: the
 explicit list, since it needs no tool change and reads plainly to a steward.
+
+## 2026-09-11 — the VCC track paused
+
+Jonas: "I feel we can pause the VCC part for now. I will tell you when to make a new round for
+VCC." Recorded in handover §4 item 7 (marked PAUSED) and in the handover's do-not-start list, and
+in the project memory, so no session resumes it unprompted. The state is preserved as left: card
+NDS.1 is done; the next step, when he restarts, is the schema revision on his rulings for
+NDS.Q2–Q5, plus SS.Q5. The SS.* and NDS.* queries stay open in the register — parked, not stale,
+and not resolved.
