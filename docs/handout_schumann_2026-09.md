@@ -168,9 +168,12 @@ and compared with the QUADRIS reference by the practical-equivalence method of W
 1. **Comfort or collision?** Was the safety-margin counterfactual meant to describe what drivers
    find comfortable, or only what avoids a collision? If comfort is in scope, would you model it
    as a level of the same preference, or against a different reference?
-2. **The closing-rate preference.** The one-sided inverse-tau term (mean 0.2 s⁻¹, a time to
-   collision of 5 s) is, as we read it, the model's closest thing to a comfort term. Where does
-   the 0.2 come from, and would a preference on the expansion rate itself be a natural variant?
+2. **The closing-rate preference.** The one-sided inverse-tau term takes its mean of 0.2 s⁻¹
+   from Markkula et al. (2016), where drivers in naturalistic rear-end emergencies seldom braked
+   before looming reached that level and mostly braked within a second after. In the model it
+   becomes the edge of a *preference*. As we read it, that turns an emergency-response level into
+   something close to a comfort standard, which is our own question. Was that reading intended,
+   and where does the spread of 0.125 s⁻¹ come from?
 3. **Individual differences.** Which parameters would you use to express a stable driver trait:
    the reaction-time budget, the assumed worst-case braking, the accumulation rate, the
    tolerances? We find one per-driver level shared across scenarios, and would like to know where
@@ -203,6 +206,10 @@ source to be completed.]
 
 Dinparastdjadid, A., Supeene, I., & Engström, J. (2023). *Measuring surprise in the wild*
 (arXiv:2305.07733). arXiv. https://arxiv.org/abs/2305.07733
+
+Markkula, G., Engström, J., Lodin, J., Bärgman, J., & Victor, T. (2016). A farewell to brake
+reaction times? Kinematics-dependent brake response in naturalistic rear-end emergencies.
+*Accident Analysis and Prevention, 95*, 209–226. https://doi.org/10.1016/j.aap.2016.07.007
 
 Schumann, J. F., Engström, J., Johnson, A., O'Kelly, M., Messias, J., Kober, J., & Zgonnikov,
 A. (2026). Active inference as a model of collision avoidance behavior in human drivers.

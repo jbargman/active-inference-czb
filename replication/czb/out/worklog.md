@@ -2437,3 +2437,45 @@ Flannagan, Sander & Bärgman, 2025; Wu, Sander, Flannagan & Bärgman, 2026); the
 video studies ("from a related project"), for the colleague credited with the gate idea ("a
 colleague's parallel analysis"), and for the naturalistic data ("planned with an industry
 partner", not naming VCC while that track is paused).
+
+## 2026-09-12 — the inverse-tau 0.2 is sourced: the handout question to Julian corrected
+
+Jonas asked for plain explanations of eight items on the meeting question list, and pointed at
+Markkula et al. (2016), "A farewell to brake reaction times?", as the likely source of the 0.2 s⁻¹
+inverse-tau value. He was right, and the handout had it wrong.
+
+**The source is stated in the SI.** SI §2.4, immediately after Eq. 48: "the mean for the normal
+distribution over τ⁻¹ … is taken from Markkula et al. [6]", and [6] in the SI's reference list is
+the Farewell paper (AAP 95, 209–226). The handout's question [H2] asked Julian where the 0.2 comes
+from, on paper, about a value his own SI attributes to a paper Jonas co-authored. Corrected in
+`docs/handout_schumann_2026-09.md` (rebuilt, still 4 pages; Markkula et al. added to the reference
+list) and in the private list. `docs/method_review.md` §6.1 is not wrong — it says the value is
+absent from the paper's Table 1, which holds — so it is left alone.
+
+**What the Farewell paper says**, read from the authors' accepted version on White Rose Research
+Online (eprint 102162), text extracted locally, not from search summaries: 116 crashes and 241
+near-crashes, cars, trucks and buses. τ⁻¹ = 0.2 s⁻¹ is an *observed demarcation*, not a fitted
+parameter — "a rather sharp demarcation at approximately τ⁻¹ = 0.2 s⁻¹" between eyes-on-threat and
+eyes-off-threat events. With eyes on the threat, few drivers responded before looming reached it
+and most within a second after; drivers who looked back after it was exceeded responded almost
+always within 1 s, faster with urgency. The same cut-off appeared at θ̇ ≈ 0.02 rad/s and
+v/τ ≈ 2 m/s², results largely unaffected by the measure (less clear for v/τ). The authors read it
+not as a fixed threshold but as the transition from slow to fast evidence accumulation, with
+responsiveness to looming depending on expectancy, driving style, drowsiness and visibility.
+Braking patterns were very similar for cars and for trucks and buses.
+
+**The better question**, now in both documents: the model turns an emergency brake-onset level
+into the centre of a *preference*, which reads like a comfort standard; was that intended, and
+where does the unattributed spread of 0.125 s⁻¹ come from (the code derives it from the collision
+cost, 0.25 / (log₁₀ 10 000 − 2))? A verbal talking point only: our video cut-in level has a
+population median of 0.032 rad/s (`out/stage1_looming.md`), the same variable as Farewell's
+0.02 rad/s and of similar order, though scenario and response differ.
+
+**Also verified for the explanations**, from the released code: below the looming threshold the
+encoder sets the observed expansion rate to 0 with sd 2 × 0.00215 = 0.0043 rad/s; above it the sd
+is 0.001 × `perc_noise_factor` 0.01 = 1e-5, a 430-fold drop (`encoder.py`, `simulation_rear_end.py`);
+the angle noise is constant in angle units, not scaled by distance (`decoder.compute_obs_dist`);
+the gaze factor multiplies the sd before the threshold override, so below threshold a glance
+changes nothing and above it 1e-5 becomes 3e-5; vehicle width d = 1.72 m in the rear-end setup.
+
+No new queries. The Farewell PDF was read from the tool's fetch cache and is not filed in `papers/`.

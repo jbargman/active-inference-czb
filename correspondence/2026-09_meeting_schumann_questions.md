@@ -61,9 +61,19 @@ f. **Perception noise above the looming threshold** is about 10⁻⁵ in the rel
    counterfactual (`docs/r2_pipeline_review.md` §3.2–3.3). If the term was only ever meant for
    collision avoidance, the result is not a criticism of it, and a comfort reference is a
    separate construction.
-2. **The inverse-tau preference** [H2]: mean 0.2 s⁻¹ and sd 0.125 s⁻¹; in the code the sd is
-   derived from the collision cost, 0.25 / (log₁₀(10 000) − 2). Where do the values come from?
-   Neither is among the paper's listed parameters (`method_review.md` §6.1).
+2. **The inverse-tau preference** [H2]. *Corrected 2026-09-12:* the mean of 0.2 s⁻¹ is
+   sourced. SI §2.4, just after Eq. 48, takes it from Markkula et al. (2016), the "Farewell"
+   paper: in 116 crashes and 241 near-crashes, few drivers braked before looming reached
+   0.2 s⁻¹ and most within a second after, with the same cut-off at θ̇ ≈ 0.02 rad/s. So do not
+   ask where it comes from. Ask instead: (a) turning an emergency brake-onset level into the
+   centre of a *preference* reads like a comfort standard — was that intended? (b) the spread of
+   0.125 s⁻¹ has no stated source; the code derives it from the collision cost,
+   0.25 / (log₁₀ 10 000 − 2). (c) Farewell reads responsiveness to looming as driver- and
+   situation-dependent (expectancy, driving style, drowsiness, visibility), which makes a
+   per-driver τ⁻¹ mean a candidate home for our trait (question 3).
+   *Talking point, verbal only:* our video cut-in level has a population median of 0.032 rad/s
+   (`out/stage1_looming.md`), the same variable as Farewell's 0.02 rad/s cut-off and of similar
+   order, though the scenario and the response differ.
 3. **Where a stable trait lives** [H3]. We find one per-driver level shared across four
    scenarios at about 69% of the reliability ceiling (`out/cross_scenario_consistency.md`),
    and fitted cut-in and left-turn levels agree at +0.65 (`out/driver_levels.md`). Which
