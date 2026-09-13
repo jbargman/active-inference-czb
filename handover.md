@@ -1,29 +1,29 @@
 # handover.md — start every session here
 
-*Rewritten 2026-09-03 for a less capable model; **updated the evening of 2026-09-03** after a
-second arc that day (Jonas's rulings on four queries, card TR.1, and the concepts deck v2 → v8).
-Dated records: `handover_2026-09-03.md`, and the previous arc's `handover_2026-09-02.md`. This
-file says what the project is, what the model now is and what it rests on, what the rules are,
-what is waiting on Jonas, what to do in what order, and when to stop and ask. It does not repeat
-the science; the documents it points to do that. Where this file and the repository disagree, the
-repository wins, and you should say so in your reply.*
+*Rewritten 2026-09-03 for a less capable model; **updated 2026-09-13** after the arc of
+2026-09-03 → 09-13 (the authors' edition revised, the authors' reply, the Volvo Cars protocol and
+its pause, the meeting with Julian Schumann prepared, and an overnight batch of four cards).
+Dated records, newest first: **`handover_2026-09-13.md`**, `handover_2026-09-03.md`,
+`handover_2026-09-02.md`. This file says what the project is, what the model now is and what it
+rests on, what the rules are, what is waiting on Jonas, what to do in what order, and when to stop
+and ask. It does not repeat the science; the documents it points to do that. Where this file and
+the repository disagree, the repository wins, and you should say so in your reply.*
 
-> **Done by a capable session, 2026-09-03 (later the same evening):** the review of the
-> **authors' edition of the handbook** (`docs/handbook_authors/`) against the released code and
-> what has been learned about the *published* model since 2026-08-24. The edition is revised in
-> place with dated notes and rebuilt; the worklog entry of that date lists every change, and the
-> internal chapters 03 and 07 carry the same two code corrections as {{R7}} notes. Waiting on
-> Jonas: **AH.Q1** (keep the two [Study] paragraphs in the shared edition?), **AH.Q3** (the
-> edition's README no longer says "one-off"); for review: **AH.Q2** (a docstring in
-> `preferences.py` misstates the released τ⁻¹ term's lateral gate). **DECK.Q1 is resolved by
-> verification** (Xue et al. 2018 says what the deck says). Do not redo the review.
+> **The latest arc, in four lines** (full record in `handover_2026-09-13.md`). Surprise as the onset
+> of a response was tested and did not replace the anticipatory gate (card HS.1); Farewell's emergency
+> braking levels do not carry over to comfort judgments (PT.1); a crossing norm for cut-ins is proposed
+> (PN.1); switching the dormant gaze system on showed that the released configuration does not hold
+> sustained car following (GZ.1). **The VCC track is paused.** Jonas meets Julian Schumann the week
+> after 2026-09-13; the handout and his private questions are ready for his review (HO.Q1).
+> Earlier and still open from the authors'-edition review: **AH.Q1**, **AH.Q3** (for Jonas), **AH.Q2**
+> (for review).
 
 ## 0 What to do when a session starts
 
 1. Read this file in full. Then read `docs/czb_work_orders.md` §2 (the standing rules)
    and the card or note named for the task at hand. Do not read the papers or the handbook
    unless the card says to; do not open `OthersWork/` (§5).
-2. Run the test suite exactly like this, and confirm 31, 33, 40, 96, 62, 20 and 28 passed:
+2. Run the test suite exactly like this, and confirm 31, 33, 40, 96, 62, 20, 28, 27 and 16 passed:
    ```bash
    python tests/test_surprise.py
    python tests/test_comfortzone.py
@@ -32,6 +32,8 @@ repository wins, and you should say so in your reply.*
    python tests/test_ltap.py
    python tests/test_transfer.py
    python tests/test_interface.py
+   python tests/test_situational.py
+   python tests/test_norms.py
    ```
    (`pytest` reports fewer and is *not* the suite; the files are scripts that count checks.)
 3. Run `git status` and `git log --oneline -5`. The tree should be clean. If it is not,
@@ -58,7 +60,15 @@ term; the concepts deck animates each one):
   clearance, projected 3 s ahead at its current closing rate, falls below a minimum. Fitted
   on post-onset cells it predicted the pre-onset cells out of sample (card G.1,
   `replication/czb/out/cutin2_gate.md`: 0.032; m_lat 0.149 m, s_l 0.990 m). The gate is the
-  part that changes between scenarios.
+  part that changes between scenarios. **Tested 2026-09-13 and not a substitute: surprise as
+  the onset** (card HS.1, `out/hs1_situational_surprise.md`). A parameter-free gate at the
+  surprise onset keeps every pre-onset cut-in clip closed (0.036) but scores 0.145 post-onset
+  against G.1's 0.103; in the cyclist overtake and the left turn participants respond *before*
+  any surprise registers, whether taken about the other road user or about the whole situation.
+  The reading on file (HS1.Q3, awaiting Jonas): what starts a response is anticipated conflict,
+  which is what G.1's projection computes. Also tested and lost on these judgments:
+  accumulating looming from the onset (0.196 against a state threshold's 0.144), and the
+  own-lane norm's trust withdrawal as the onset (0.288, card PN.1).
 - **The axis** is the number read off the scene. On the cut-in it is the **optical expansion
   rate** (how fast the other car grows in the eye, θ̇ ≈ W Δv / gap²): held-out error 0.113
   against 0.152 for gap alone and 0.347 for the field, at the noise floor 0.118
@@ -177,8 +187,22 @@ The full set of lessons, written for the `chalmers-slide-generation-jonas` skill
 
 ## 3 What is waiting on Jonas, and what each answer unblocks
 
-The register is `replication/czb/out/query_register.md` (40 open, 31 resolved). Do not start a
-gated item until its query is answered in the worklog with a `RESOLVED <id>:` line.
+The register is `replication/czb/out/query_register.md` (compiled from the worklog; 66 open before
+the gaze card's queries were added on 2026-09-13). Do not start a gated item until its query is
+answered in the worklog with a `RESOLVED <id>:` line.
+
+**Raised by the 2026-09-13 overnight batch, for Jonas** (details in the worklog entry of that date
+and in `handover_2026-09-13.md`):
+
+| query | question, in one line | unblocks |
+|---|---|---|
+| **HS1.Q3** (judgment) | Is the reading right that *anticipated conflict*, not surprise, starts the response — and should card PC.1 (a scenario-agnostic projected-conflict gate) be the next card? | §4 item 0b |
+| **GZ1.Q1** (judgment) | The released configuration does not hold sustained car following (it brakes after 3–5 s with nothing happening, some repeats to a stop, with gaze choice on or off and with the authors' own scripted lead). It is in the handout as a question for Julian: keep it? | the handout's glance question |
+| **GZ1.Q3** (judgment) | Fitting the model's own glances to SHRP2 is a model-design task first (a reason to look away, a noise-dependent cost, a non-instant look-back), then days of simulation. Pursue, or ask Julian first? | any gaze-fitting card |
+| **HO.Q1** (minor) | Before printing the handout for Julian: complete three references shown as "[initials]", and confirm the wording for the data sources and the colleague credited with the gate | printing `docs/handout_schumann_2026-09.pdf` |
+| **PT1.Q1** (judgment) | May the reading "Farewell's emergency-braking level sits near the quarter point of our comfort curve" be said to Julian? It compares shapes, not one quantity | the handout's section 3.5 wording |
+| HS1.Q1, PN1.Q1 (judgment) | σ0 = 0.1 m as the noticeable positional discrepancy is not a verified threshold; the crossing norm's 0.5 m/s lower bound is unverified against naturalistic lane-change durations | nothing blocks; both are stated as unverified |
+| HS1.Q2, HS1.Q4, HS1.Q5, PN1.Q2 (review) | retire card Q5.1; a study-2 manoeuvre-onset bug in `load_cutin_trace`; study-1 longitudinal position jitter; retire the old `cutin_norm_weight` | housekeeping |
 
 **Answered by Jonas on 2026-09-03** (do not re-ask): **Q5.Q1** yes, the two-object framing
 stands, so card Q5.1 is unblocked. **EL.Q1** population **B** — the percentile is over drivers'
@@ -200,8 +224,18 @@ adopt the two-scalar wording, with the standing genericity ruling in §1 as the 
 
 ## 4 The queue, in order, with what "done" means
 
-0. **Card Q5.1 — now unblocked** (Q5.Q1 answered yes). See item 2 below; it moved to the front
-   of the queue because nothing else is waiting on it.
+0. **Do not run card Q5.1 as pre-stated** (query HS1.Q2, 2026-09-13). Its predictor spread
+   cannot register a lane change at all (a fixed-horizon constant-velocity predictor sees at most
+   a·h²/2; at its settings a lane change would need ~5.6 m/s² of lateral acceleration), and its
+   tests 1 and 2 are answered, with corrected settings, by card HS.1. The proposed replacement
+   is item 0b.
+
+0b. **Card PC.1 (proposed, not started) — a scenario-agnostic projected-conflict gate.** After
+   HS1.Q3. Card HS.1's reading is that the response starts at *anticipated* conflict. PC.1 would
+   generalize G.1's gate from "lateral clearance projected 3 s ahead" to "the ego's path against
+   the other road user's predicted path", computed the same way in all four scenarios, and test
+   it with G.1's criteria on the cut-in plus the overtake and left-turn cells where surprise came
+   too late. Write the design note first; pre-state the rule; no per-scenario geometry.
 
 1. **Card EL.2 — one level per driver across every scenario's rule**
    (`docs/czb_ellipse_design_note.md` §6). After **EL.Q4** (EL.Q1 is answered: population B).
@@ -212,8 +246,7 @@ adopt the two-scalar wording, with the standing genericity ruling in §1 as the 
    gated looming rule (G.1 + EL.1b), the left turn's is distance (B.3.v2), the cyclist
    overtake's is lateral clearance (B.1); the level population is shared. Deliverable: a
    script in the EL.1 style with a pre-stated rule, output `out/el2_shared_level.md`.
-2. **Card Q5.1 — world surprise on the data in hand** (`docs/surprise_without_the_field.md`
-   §6). After Q5.Q1. Uses only `src/surprise/` and the trace loaders.
+2. ~~**Card Q5.1 — world surprise on the data in hand**~~ Superseded 2026-09-13; see item 0.
 3. **Card B.2 — the truck overtake.** No construction note exists. Write one first in the
    pattern of `docs/ltap_construction_note.md` (measure the traces with a committed script,
    name the gate for the scenario, state both routes, pre-state the comparison), and stop
@@ -296,6 +329,7 @@ SetPET is the stimulus (appendix 17 and TT.Q2 say why).
 | the worklog (source of truth for decisions and queries) and the register | `replication/czb/out/worklog.md`, `out/query_register.md` |
 | the decks and the animations | `presentation/talk/README.md`, `presentation/talk/animation_shot_list.md` |
 | **working with Volvo Cars without moving the data** | `docs/split_site_protocol.md` (+ PDF, the sign-off document), `transfer/README.md`, `transfer/transfer_policy.yaml`, `transfer/SITE_LLM_BRIEF.md`, `tests/test_transfer.py`; the skill mirror `docs/skills/split-site-collaboration.SKILL.md` |
+| **the 2026-09-13 overnight cards** | situational surprise as the onset: `src/surprise/situational.py`, `replication/czb/out/hs1_situational_surprise.md`; Farewell's emergency levels against comfort judgments: `out/pt1_farewell_thresholds.md`; the cut-in norm: `src/comfortzone/norms.py`, `out/pn1_cutin_norm.md`, **`docs/cutin_norm_proposal.md`** (+ PDF, for Julian); the dormant gaze system switched on: `replication/causation/gz1/gz1_gaze_choice_probe.md` (and `gz1/thw1.5/`); the arc's record `handover_2026-09-13.md` |
 | **the naturalistic path: reading the interface, and what the schema still lacks** | `src/comfortzone/interface.py`, `transfer/interface_schema.yaml`, **`replication/czb/out/nds1_interface_smoke.md`** (card NDS.1: the convention gap quantified, and the five schema gaps), `tests/test_interface.py` |
 | the data and its traps | `docs/czb_study1_data_plan.md`; the study's `DATA_DICTIONARY.md` under `external/01_studies/` (read its gotchas first); `external/README.md` for the test-track file's columns |
 | the deep research context and environment (older) | `HANDOFF.md`, then the dated handovers `handover_2026-08-26.md` → `handover_2026-09-03.md` in order |

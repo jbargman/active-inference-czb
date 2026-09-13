@@ -104,6 +104,27 @@ and whether that is the paradigm or the task is, as far as we can tell, open.
   refitted. Drivers were far more consistent in the car: a within-driver spread of 0.20 s against
   0.86 s.
 
+**3.5 Two things tried in the last few days (preliminary).**
+
+- **Emergency braking levels against comfort judgments.** Fixing the threshold at the level where
+  Markkula et al. (2016) found emergency braking to begin — 0.02 rad/s on the expansion rate, or
+  0.2 s⁻¹ inverse tau — made both fits clearly worse (0.153 against 0.113; 0.224 against 0.168).
+  The fitted 50% points sit 1.6–1.7 times higher on both variables, and Farewell's level falls near
+  the quarter point of the judgment curve. As we read it, the comfort boundary and the onset of
+  emergency braking lie on the same variable, with most of the comfort distribution above the
+  emergency level; a judgment on frozen video and an executed brake are of course not the same
+  response.
+- **Surprise as the start of the response.** We asked whether surprise could mark when a situation
+  starts to count, taken either about the other road user alone or about the whole situation
+  including the automated ego. With a constant-velocity predictor, surprise about the other road
+  user never registered in the cyclist overtake or the left turn, where it is the ego that moves.
+  Whole-situation surprise did register, but only after participants had begun to respond: 0.7–1.1 s
+  after the ego pulled out to pass, and after the clips ended in the left turn. On the cut-in, a
+  step at the surprise onset kept every pre-onset clip closed but fitted worse than our anticipatory
+  gate (0.145 against 0.103). As we read it, what starts a response is closer to *anticipated*
+  conflict than to surprise. On these judgments, accumulating looming from the onset also fitted
+  worse than a threshold on the looming rate (0.196 against 0.144).
+
 The limitations we see ourselves: both video studies show frozen clips without self-motion,
 the response is a judgment rather than an executed maneuver, and the left turn is the only
 scenario with a real-driving check. Naturalistic data, planned with an industry partner, is
@@ -128,9 +149,14 @@ asks of the model.
 - **Our fix, and what it cost.** We made lane entry continuous by projecting the lateral overlap
   to the moment of longitudinal closure. That is the construction behind the 44% share of the
   loss in section 3.2. Projecting over a fixed 3 s horizon instead removed that share.
-- **The norms do not fit.** None of the three published norm sets suits a vehicle that is
-  *transiently and legitimately* straddling the line. The cut-in seems to us to need a norm
-  that depends on the maneuver's progress. We have not built one.
+- **The norms do not fit, and a proposal.** None of the three published norm sets suits a vehicle
+  that is *transiently and legitimately* straddling the line. A positional norm withdraws trust as
+  the body leaves its lane, and on our 90 recorded lane changes that moment comes later for slower
+  ones (a median 0.53, 0.73 and 0.93 s after the change registers, for 2, 3 and 4 s lane changes),
+  which is the pace dependence participants do not show. We would propose a *crossing norm*:
+  either lane is normal, and straddling is normal while crossing toward the new lane at a plausible
+  lateral speed, but not when stalling, drifting back or swerving. It needs only the state the
+  particles already carry. A one-page proposal is attached; nothing has been run in the loop.
 
 ## 5 Crash causation
 
@@ -162,38 +188,62 @@ and compared with the QUADRIS reference by the practical-equivalence method of W
   independent: roughly 70% of the variation in impact speed comes from the scenario rather than
   the response. A model validated only on severity may therefore be close to unconstrained in its
   response timing.
+- **Letting the model choose its glances (preliminary).** We asked whether the planner's
+  "avoid off gaze" override could be lifted and the gaze parameters fitted to the SHRP2 glance
+  distribution. Lifting it is a one-line change, but the probe ran into something else first: in
+  steady following with nothing happening, the released configuration began braking after 3.2 s at
+  a 1.5 s headway and 4.6 s at 2.0 s, and in most repeats braked to a standstill — with gaze choice
+  on or off, and with your own scripted lead. With perception noise a hundred times larger, it
+  followed steadily and never looked away. Glances, where they occurred, always lasted one 0.2 s
+  step, against a SHRP2 median of about 0.75 s, and a near-blind glance was chosen about as readily
+  as an ordinary one. As we read it, fitting glances would first need a reason to look away, a cost
+  that depends on perception noise, and a way for a glance to last; we have not tried any of those.
 
-## 6 Open issues, where your view would help most
+## 6 The questions we would most like to ask
 
 1. **Comfort or collision?** Was the safety-margin counterfactual meant to describe what drivers
    find comfortable, or only what avoids a collision? If comfort is in scope, would you model it
    as a level of the same preference, or against a different reference?
-2. **The closing-rate preference.** The one-sided inverse-tau term takes its mean of 0.2 s⁻¹
+2. **The closing-rate preference.** The one-sided inverse-tau term takes its center of 0.2 s⁻¹
    from Markkula et al. (2016), where drivers in naturalistic rear-end emergencies seldom braked
    before looming reached that level and mostly braked within a second after. In the model it
-   becomes the edge of a *preference*. As we read it, that turns an emergency-response level into
-   something close to a comfort standard, which is our own question. Was that reading intended,
-   and where does the spread of 0.125 s⁻¹ come from?
-3. **Individual differences.** Which parameters would you use to express a stable driver trait:
-   the reaction-time budget, the assumed worst-case braking, the accumulation rate, the
-   tolerances? We find one per-driver level shared across scenarios, and would like to know where
-   in the model it would naturally live.
-4. **Cut-in norms and lateral entry.** How would you write the norm for a vehicle that is
-   legitimately partway into the lane, and did you consider a graded version of the binary
-   lateral tests?
-5. **The gate from inside the model.** The collapse of trust in the norm tournament, when the
-   observed state stops being normal, looks to us like a candidate for "when does the other
-   vehicle start to count". Could it replace our fitted clearance gate, and put the onset inside
-   your model?
-6. **Crash causation.** Is the coasting of beliefs through a closed observation channel the
-   intended behavior? Perception noise above the looming threshold is very small in the released
-   configuration; for work on visibility and distraction, would you recommend distance-dependent
-   uncertainty instead?
-7. **Continuous driving.** For naturalistic data, where nothing marks the start of an event, what
-   starting point for the accumulator would you use?
-8. **Practicalities.** Is the pointwise evaluation of section 2 a fair approximation in your view,
-   is there a faster implementation we should use, and would you be interested in a joint look at
-   the cut-in data?
+   becomes the center of a *preference*, which, as we read it, makes it close to a comfort standard.
+   Was that intended, and where does the spread of 0.125 s⁻¹ come from? Our comfort judgments put
+   the 50% point at 0.33 s⁻¹ on the same variable (section 3.5).
+3. **Perception noise, and where the glance multiplier acts.** Above the looming threshold the
+   observation noise is 0.001 × 0.01 = 10⁻⁵, which makes perception essentially exact once the
+   threshold is crossed: closing at 5 m/s, the threshold is crossed at 63 m and the distance is then
+   known to about ±2 cm. Was the factor 0.01 deliberate? The off-road multiplier of 3 is applied to
+   that noise *before* the threshold override, so below the threshold a glance changes nothing and
+   above it 10⁻⁵ becomes 3×10⁻⁵. As we read it, a glance then costs almost no information. Was that
+   the intended order?
+4. **A graded perception switch.** Both the looming detection threshold and the lateral
+   applicability tests (3 widths for perception, 1.15 for the preferences) are on/off. Did you
+   consider graded versions? Our own inclination would be a psychometric detection function at the
+   detection level, and to keep a Farewell-like transition at 0.2 s⁻¹ out of perception, since that
+   level describes responding rather than seeing — perhaps as a gain on accumulation instead.
+5. **Individual differences.** We find one per-driver comfort level shared across scenarios. Which
+   parameter would you make per-driver: the reaction-time budget, the assumed worst-case braking,
+   the accumulation rate, or a preference center such as the inverse-tau mean?
+6. **A norm for a vehicle changing into our lane.** How would you write it? Our crossing-norm
+   proposal (attached) keys straddling on lateral speed. Would you rather use a clock, or inferred
+   intention?
+7. **Graded lateral entry.** Did you consider weighting the collision and safety terms by lateral
+   overlap instead of the 1.15-width box?
+8. **The onset from inside the model.** When the norm tournament's "now" weight collapses, the model
+   effectively stops trusting the other vehicle, and its four-second held projection already looks
+   ahead. Could that projection play the role of our anticipatory gate, and put the onset inside the
+   model?
+9. **Glances, and sustained following.** Is the coasting of beliefs through a glance intended? And
+   would the gaze machinery of Engström et al. (2024) be ready to switch on here? In a quick probe
+   (section 5) we had two surprises: the released configuration did not hold sustained car following
+   — it began braking after 3–5 s with nothing happening — and glances, once allowed, always lasted a
+   single time step, since looking back is instantaneous. Is sustained following something you have
+   looked at, and how would you give the model a reason to look away, and a reason to stay away?
+10. **Practicalities.** Is the pointwise evaluation of section 2 a fair approximation in your view,
+    is there a faster implementation we should use, and would you be interested in a joint look at
+    cut-in data? For naturalistic data, where nothing marks the start of an event, what starting
+    point for the accumulator would you use?
 
 ## References
 
@@ -206,6 +256,10 @@ source to be completed.]
 
 Dinparastdjadid, A., Supeene, I., & Engström, J. (2023). *Measuring surprise in the wild*
 (arXiv:2305.07733). arXiv. https://arxiv.org/abs/2305.07733
+
+Engström, J., Wei, R., McDonald, A. D., Garcia, A., O'Kelly, M., & Johnson, L. (2024). Resolving
+uncertainty on the fly: Modeling adaptive driving behavior as active inference. *Frontiers in
+Neurorobotics, 18*, Article 1341750. https://doi.org/10.3389/fnbot.2024.1341750
 
 Markkula, G., Engström, J., Lodin, J., Bärgman, J., & Victor, T. (2016). A farewell to brake
 reaction times? Kinematics-dependent brake response in naturalistic rear-end emergencies.

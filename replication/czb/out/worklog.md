@@ -2602,4 +2602,59 @@ the whole-trace value is reported beside it.
 slower than ~7 s counts as lingering), is unverified against naturalistic lane-change durations.
 @PN1.Q2(minor, review): the older `comfortzone.cutin.cutin_norm_weight` weights straddling by `progress`,
 which needs the time the lane change will complete (future information a particle cannot have), and at
-its default tolerance never penalizes. Nothing uses it; recommend retiring it in favour of `norms.py`.
+its default tolerance never penalizes. Nothing uses it; recommend retiring it in favor of `norms.py`.
+
+### Card GZ.1 — switching the dormant gaze system on (a feasibility probe)
+
+`replication/causation/gz1_gaze_choice_probe.py` → `replication/causation/gz1/gz1_gaze_choice_probe.md`
+(part a, 2.0 s headway) and `gz1/thw1.5/gz1_gaze_choice_probe.md` (part b, 1.5 s). Jonas asked whether
+the hard-coded "always look at the road" could be switched off and the gaze parameters fitted to the
+SHRP2 glance distribution of the crash-causation work. The switch is a one-line change on the
+constructed agent (the planner's discrete proposal, `agent.planner.pi`); the authors' files are not
+edited. Steady following, lead at constant speed, 15 s, 4 repeats; road_pref = log 0.8 (the SHRP2
+baseline's ~80% on-road). Conditions: G0 released noise; G1 perception noise ×100; G2 released noise
+with a near-blind glance (multiplier 1000); and, added after the first run, G0c (gaze choice off,
+the released configuration exactly) and G0x (the same, with the authors' own scripted lead instead of
+this probe's replay class).
+
+**The finding that decides everything else: the released configuration does not hold sustained car
+following.** With nothing happening, every released-noise condition starts braking at the same moment
+— step 16 (3.2 s) at a 1.5 s headway, step 23 (4.6 s) at 2.0 s — with gaze choice on or off (G0c) and
+with the authors' own scripted lead (G0x), and 1–3 of 4 repeats brake to a standstill. With perception
+noise ×100 (G1) the car follows steadily at 14–15 m/s. This fits the review's extrapolation
+(`docs/method_review.md` §4.2: the accumulator re-plans by itself within 2–7 s at gaps up to 2 s) and
+adds what the re-plan does: it brakes. As far as can be found, the released repository never simulates
+sustained following (the rear-end runs brake the lead 0.6 s in; `simulation_benign.py` stages an
+oncoming pass). The cause of the braking, and why noisier perception suppresses it, is not established.
+
+**Glances.** Under part b's pre-stated validity rule (glances are read only where no repeat brakes),
+only G1 qualifies, and it never looks away. The released-noise glance shares (12–16%, near the 20% the
+preference encodes) come from cars that are braking and are not interpreted as glance behavior. Two
+observations hold regardless of the braking. First, a near-blind glance was chosen about as readily as
+a mild one in both parts (15.0% against 15.7% at 2.0 s; 11.3% against 12.3% at 1.5 s), consistent with
+the reading that at released noise a glance costs almost no information. Second, every glance lasted a
+single 0.2 s step (longest 0.6 s) against a SHRP2 median of 0.75 s: in the code the "attentive" action
+returns gaze to the road with probability 1 in one step (`dynamics.py`, B_I_0), so durations cannot
+emerge from planning.
+
+**Answer to Jonas's question, stated as a reading.** Not as it stands, and not first as a fitting
+problem. Before any fit: sustained following has to be stable; a glance needs a reason (the model has no
+competing task, so with realistic noise it never looks away) and a cost that depends on perception noise;
+and glance duration needs a mechanism (a non-instant look-back, or a switching cost). Then road_pref, the
+off-road multiplier, the noise and a look-back rate could be searched against the SHRP2 share and duration
+distribution by simulation. At ~5 s per step on this CPU, one 15 s condition takes 6–17 minutes, so a
+grid over three parameters with repeats is days.
+
+**Corrections during the card, recorded in the docstring.** The first part-b note called 1.5 s "the
+authors' own benign-following value" and blamed part a's braking on a headway beyond the calibration
+table; both were wrong and are withdrawn there. A smoke test also caught, before the long run, that the
+first draft recorded the whole planned gaze sequence instead of the executed gaze.
+
+@GZ1.Q1(judgment, jonas): the sustained-following braking is a new observation about the released model
+outside its tested regime. It is in the handout as a question for Julian; decide whether it stays before
+printing.
+@GZ1.Q2(judgment, review): the cause is open. The next diagnostic would decompose the pragmatic value of
+the plans at the first re-plan (which term makes braking win) in G0c against G1.
+@GZ1.Q3(judgment, jonas): fitting glances to SHRP2 is a model-design task first (a motive to look away, a
+noise-dependent cost, a non-instant look-back), then days of simulation. A scope decision whether to
+pursue it, and whether to ask Julian first.

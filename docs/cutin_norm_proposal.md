@@ -1,10 +1,9 @@
 # A norm for a vehicle changing into our lane: a proposal to discuss
 
 *Jonas Bärgman, Chalmers University of Technology, September 2026, drafted with assistance
-from Claude (Anthropic). A proposal for discussion with Julian Schumann, not a result. The
-functions are in `src/comfortzone/norms.py` with property tests in `tests/test_norms.py`, and
-the offline check on recorded lane changes is `replication/czb/pn1_cutin_norm.py`
-(output `replication/czb/out/pn1_cutin_norm.md`). Nothing here has been run in the closed loop.*
+from Claude (Anthropic). A proposal for discussion with Julian Schumann, not a result. The two
+norms are written as drop-in functions with property tests, and checked offline against 90
+recorded lane changes; nothing here has been run in the closed loop.*
 
 ## 1 The problem, as we understand it
 
@@ -27,7 +26,7 @@ is exactly that for a few seconds.
 - Under the oncoming form, applied to the cutting-in vehicle's own lane, trust is withdrawn when
   its body leaves that lane. On the 90 recorded lane changes of our second cut-in study this
   happens a median 0.53, 0.73 and 0.93 s after the lane change first registers, for lane changes
-  lasting 2, 3 and 4 s. The moment grows with the pace of the manoeuvre.
+  lasting 2, 3 and 4 s. The moment grows with the pace of the maneuver.
 - That pace dependence is what the human data speak against: at matched time since onset, the
   share of participants who would intervene does not depend on how fast the lane change goes.
   Used as the onset of the response in our comfort-zone model, the own-lane withdrawal moment
