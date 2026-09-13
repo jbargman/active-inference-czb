@@ -2479,3 +2479,127 @@ the gaze factor multiplies the sd before the threshold override, so below thresh
 changes nothing and above it 1e-5 becomes 3e-5; vehicle width d = 1.72 m in the rear-end setup.
 
 No new queries. The Farewell PDF was read from the tool's fetch cache and is not filed in `papers/`.
+
+## 2026-09-13 (overnight batch) — four cards from Jonas's questions of 2026-09-12
+
+Batch mode: Jonas went to bed after asking, in one message, whether the Farewell reading changes
+our CZB thinking; whether surprise can be taken about the situation as a whole (the automated ego
+and the other road users jointly) and used as the start of accumulation, and to test it; for a
+progress-dependent cut-in norm proposal and anything that can be tried; whether the perception
+switch should be a graded transition from 0.2 inverse tau, and to try it; whether the dormant gaze
+system could be switched on and fitted to the real-world glance data of the crash-causation work;
+to add the gaze x3 issue to the questions for Julian; to update the handout and his private
+question document; and to create a handover. Suite green before starting (31, 33, 40, 96, 62, 20,
+28). The VCC track stays paused and was not touched.
+
+### Card HS.1 — situational surprise as the start of the response
+
+`src/surprise/situational.py` (new): one constant-velocity predictor, three references differing
+only in what is monitored — `world` (other road users; card Q5.1's reference), `joint` (the ego and
+the others, Jonas's "system"), `relative` (the others relative to the ego, the driver's seat).
+`tests/test_situational.py`, 27 checks, including closed-form onset latencies and the property that
+separates the two holistic forms (two vehicles swerving in parallel are jointly surprising and
+relatively unremarkable). `replication/czb/hs1_situational_surprise.py` → `out/hs1_situational_surprise.md`,
+`out/hs1_onsets.csv`; rules pre-stated.
+
+**Two design findings before any data run, both kinematic.** (1) A fixed-horizon constant-velocity
+predictor only sees a change that leaves its band within one horizon (at most a·h²/2 after a constant
+acceleration). Card Q5.1's lowest pre-stated setting (h 0.5 s, σ 0.1 + 0.5h) would need about
+5.6 m/s² of lateral acceleration to register a lane change: Q5.1's own expectation of onset "within one
+frame" was unreachable with its spread. (2) The study-2 traces jitter: a one-sample velocity leaves up
+to 0.89 m of longitudinal prediction error on steady driving; a 0.3 s window leaves 0.065 m. Settings
+fixed from those floors: h 1 s, velocity over 0.3 s, σ0 0.1 m primary, sweep 0.05–0.4 m.
+
+**Test A (second cut-in study, 378 cells).** Reproductions exact (ungated 0.1137, G.1 gate 0.1027,
+CP1 0.4832 / 0.0319). The surprise gate, with no gate parameter fitted, keeps every pre-onset cell
+closed (onset a median +0.27 s after the CP1 clip end in all 90; CP1 out of sample 0.0357, passing
+G.1's own criterion), but post-onset it scores 0.1453 at the primary σ0 against G.1's 0.1027:
+**A1 NOT CREDITED** (post-onset criterion). Its best case, σ0 0.05 m, has the gate open in every
+post-onset cell and ties the ungated rule exactly (0.1137), still 0.011 behind G.1 — so G.1's graded,
+anticipatory gate carries information inside the post-onset clips that a step at the manoeuvre onset
+does not. A lagging onset costs fast (0.19 at 0.2 m, 0.27 at 0.4 m). Latency after the kinematic
+lateral onset at the primary: 0.08, 0.10, 0.17 s for 2, 3, 4 s lane changes. **A2:** world and joint
+identical (0.1453), relative 0.1380 — the ego holds its lane, as expected. **A3 STATE THRESHOLD
+PREFERRED:** accumulating looming from the surprise onset (x = log(θ(T) − θ(t_on)), the non-leaky
+integral of θ̇) scores 0.1955 against 0.1442 for the state threshold, and is worse by 0.016–0.051 at
+every σ0. Only this one accumulator form was tested.
+
+**Tests B and C (first study) — a correction after the first run.** The first run applied study 2's
+settings to study 1's 10 Hz traces unmeasured. Study 1's positions jitter by about 7% of each frame's
+advance against every clock in the files (0.106 m residual sd for the ego at 14.3 m/s), so the
+longitudinal floor is 1.2–3.2 m; every reference, world included, "onset" at the first instant of the
+search window. Those onsets were jitter and are withdrawn. Rerun with the same three-times-the-floor
+rule per axis on study 1's own floor: σ0 0.20 m lateral, 1.75 m longitudinal (effectively blind
+longitudinally), velocity over 1 s. Test A was not rerun; its code is unchanged. The module gained a
+per-axis spread (`sigma0_lon`) and two checks.
+
+**Test B, cyclist overtake (15 cells):** world surprise never onsets (the cyclist rides steadily).
+Joint and relative onset on the ego's pull-out at +1.10, +0.90, +0.70 s for 0.5, 1, 1.5 m clearance —
+latest for the closest pass. Participants already intervene at C1 (0.22, 0.20, 0.17), the moment of the
+ego's lateral onset, and up to 0.58 at C4 with every gate still closed. **Test C, left turn (18
+cells):** no reference registers before the decision moment where every clip ends (world never except
+one longitudinal blip at +0.21 s; joint and relative +0.72 to +0.92 s, the ego's turn), yet 11% to 91%
+intervene, ordered by PET.
+
+**Reading, marked opinion.** Jonas's scope is supported: surprise about other road users sees nothing
+in the overtake or the left turn, so if anything starts the response it has to include the ego. But
+kinematic surprise — departure from constant motion — is not what starts it: in two scenarios of three
+the responses come before it, and in the third a step at the manoeuvre onset does worse than G.1's
+anticipatory gate. What starts the response looks like **anticipated conflict** — the projected
+encroachment G.1 computes, or the approach to a known conflict geometry — rather than surprise. The
+natural next card is a scenario-agnostic projected-conflict gate (the ego's path against the other road
+user's predicted path) on all four scenarios.
+
+@HS1.Q1(judgment, jonas): σ0 = 0.1 m, the "noticeable positional discrepancy", is card Q5.1's value
+and three times the measured jitter floor, not a verified perceptual threshold. The verdicts are stated
+at it and the sweep shows the cost of moving it; say if a sourced value exists.
+@HS1.Q2(judgment, review): card Q5.1 should not run as pre-stated — its spread settings cannot see a
+lane change (above), and its tests 1 and 2 are answered, with corrected settings, by HS.1's A4 and B.
+Recommend retiring Q5.1 in favour of the projected-conflict card.
+@HS1.Q3(judgment, jonas): the interpretation above (anticipation rather than surprise starts the
+response) and the proposed next card. It bears on how the CZB model's onset is described in any paper.
+@HS1.Q4(minor, review): `comfortzone.cutin.load_cutin_trace` finds the manoeuvre onset at ~1.7 s on the
+second study's traces instead of ~15 s: the road runs at a slight angle to world x, every vehicle drifts
+~0.02 m/s in `Location_Y`, and the loader's 0.03 m absolute displacement rule fires on the drift. So
+`progress` (and `cutin_norm_weight`) is wrong on study 2. No registered comparison uses them; not fixed.
+@HS1.Q5(minor, review): the first study's longitudinal positions carry sampling jitter of ~7% of each
+frame's advance. Any covariate differentiating first-study positions longitudinally is affected; the
+loaders take speed from `Speed_mps`, which is clean, so nothing registered is known to be.
+
+### Card PT.1 — Farewell's looming levels, fixed, on comfort judgments
+
+`replication/czb/pt1_farewell_thresholds.py` → `out/pt1_farewell_thresholds.md`. Card EL.1b's 288 cells,
+folds and metric. **Neither carries over:** looming rate fitted 0.0336 rad/s (folds 0.0328–0.0341),
+0.1130, against 0.1526 fixed at Farewell's 0.02 rad/s; inverse tau fitted 0.327 s⁻¹ (folds
+0.326–0.339), 0.1679, against 0.2242 fixed at 0.2 s⁻¹. Both fitted 50% points sit 1.6–1.7 times
+Farewell's. Not part of the decision: the fitted comfort curves reach 25% at 0.0123 rad/s and 0.188 s⁻¹,
+so Farewell's emergency brake-onset level sits at about the quarter point of the comfort curve — about a
+quarter of raters would already intervene where naturalistic emergency braking begins. Every cell here
+is far above the model's own detection threshold (0.00215 rad/s), so this data cannot speak to that
+switch; the answer on the switch is a reading (detection versus response), recorded for the documents.
+
+@PT1.Q1(judgment, jonas): the quarter-point reading. Farewell's level is where emergency braking begins
+(few before, most within a second after) and our threshold is a 50% point of a judgment on frozen video,
+so the comparison is of shape, not of a shared quantity. Confirm the reading may be said to Julian.
+
+### Card PN.1 — a norm for a vehicle changing into our lane
+
+`src/comfortzone/norms.py` (the released own-lane form and the proposed crossing norm), `tests/test_norms.py`
+(16 checks), `replication/czb/pn1_cutin_norm.py` → `out/pn1_cutin_norm.md`, `out/pn1_cutin_norm_traces.csv`,
+and the proposal `docs/cutin_norm_proposal.md`. **D1:** the own-lane norm withdraws trust a median
++0.53, +0.73, +0.93 s after the surprise onset for 2, 3, 4 s lane changes — it grows with the pace, as
+expected. The crossing norm keeps a weight of 1.000 at every straddling moment shown to participants
+(only the 2 s and 3 s durations show straddling; the slowest lane changes' clips end before the body
+reaches the line). **S1 NOT CREDITED:** the own-lane withdrawal moment as the onset gate scores 0.2883
+post-onset and 0.4914 on CP1 (its gate is shut in every CP2 and CP3 cell, so the fit absorbs the
+responses there into a lapse near 0.5, which then predicts CP1). **Correction after the first run:**
+D1's crossing-norm minimum was first taken over the whole trace after the clip start and came out 0.032,
+from the simulator's last seconds after the final clip (stalled frames and a drift back as the ego
+catches the target at short TTC, e.g. LC_dv14_Tlc4p0_TTC02 at 18–20 s). Now taken over the shown window;
+the whole-trace value is reported beside it.
+
+@PN1.Q1(judgment, jonas): the crossing norm's lower lateral-speed bound, 0.5 m/s (a 3.5 m lane change
+slower than ~7 s counts as lingering), is unverified against naturalistic lane-change durations.
+@PN1.Q2(minor, review): the older `comfortzone.cutin.cutin_norm_weight` weights straddling by `progress`,
+which needs the time the lane change will complete (future information a particle cannot have), and at
+its default tolerance never penalizes. Nothing uses it; recommend retiring it in favour of `norms.py`.
