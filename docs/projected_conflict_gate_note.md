@@ -71,6 +71,27 @@ Whether the two will be there at the same time is what the axis measures. c is z
 projected paths overlap within the horizon, positive when they miss, and negative is not needed
 (overlap is zero).
 
+[Corrected 2026-09-16, before any run, on the evidence of the property tests. The corridor is the
+projected *path* over an extended span (20 s in the implementation, longer than any clip's
+remainder), while only the *positions* tested against the other's corridor are limited to the
+horizon. As first written, both were bounded by the horizon, and a cut-in car ahead that is not
+caught within three seconds then fell outside the ego's corridor, so the reduction of section 2.4
+held only for cells with a time to collision under the horizon. G.1's gate has the asymmetry
+implicitly: its lane strip is unbounded ahead, and the horizon limits how far the other car's
+lateral motion is extrapolated. The horizon is therefore a statement about how far ahead the other
+road user's motion is trusted, not about how far the ego's path extends. Section 2.4's premise
+"within the corridor's length" is dropped; the reduction now holds for every post-onset cell. The
+first bullet of section 7 is closed by the same correction. For the same reason the clearance has
+*one ordering, by role*: the other road user's positions within the horizon against the ego's
+path. The reverse ordering, the ego's positions against the other's extended path, extrapolates
+the other's lateral motion for the whole path span, and the tests showed it opening the gate on a
+cut-in car that would reach the ego's lane only after the horizon, which G.1 (rightly) leaves
+closed. Consequence for section 2.5, the left turn under P: the gate opens only where the oncoming
+car's positions within the horizon reach the ego's planned crossing of its lane, so at the primary
+horizon it is open in the low-PET cells and closed where the oncoming car arrives later than three
+seconds after the decision moment, and the horizon sweep is where the left turn speaks. The
+overtake predictions stand: the cyclist ahead in the lane is on the ego's straight path.]
+
 ### 2.3 The gate
 
 > g = Φ((m − c) / s)
