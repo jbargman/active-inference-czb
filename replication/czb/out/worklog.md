@@ -2855,3 +2855,39 @@ on the cut-in, decisive on the overtake as designed. A decay is the alternative;
 distinguishes them.
 @PC1.Q3(minor, review): the engaged-cell margin of 0.2 above the scenario's floor is a convention; the
 left-turn verdict is the same at 0.1, 0.2 and 0.3.
+
+## 2026-09-17 — Jonas: anticipation as a latent variable, or as an exposure-driven component? (assessment, not a card)
+
+Jonas, after card PC.1: should the model include "either a latent variable for the anticipation, or
+actually include the fact that drivers adapt over time (with anticipation) as a separate
+component/variable", on the reasoning that participants repeatedly exposed to critical clips may learn an
+unnatural anticipation that, trained on naturalistic data, would not be activated. No code run; the
+assessment rests on results already on file. Marked opinion throughout.
+
+What is on file. (1) Repeated exposure moves responding: in the second cut-in study every block-1 clip is
+shown twice, and P(intervene) rises from 0.547 to 0.575, +0.027 (SE 0.007) over 3 456 pairs
+(`out/cutin2_scope.md` §4). Whether that rise sits in the pre-onset cells (anticipation) or across all
+cells (a criterion shift) was never split. (2) Study 1 cannot see it: the within-session order slope is
++0.005 with a 95% interval of about ±0.10 (`out/response_style_and_anticipation.md`, test B). (3) The
+pre-onset floor is largely a person trait (+0.546 across cut-in and overtake, 61% of the reliable
+signal; same file, test A). (4) Exposure per participant is heavy in study 1: each left-turn clip four
+times (172 trials over 43 people), over two sessions, and the Button design always after the Random one.
+(5) The one real-driving comparison, card TT.1, puts the video left-turn boundary 0.27 s more cautious than
+the test track (SE 0.20), with drivers four times sharper in the car.
+
+Assessment given. The exposure-indexed component is the better of the two, for the reason Jonas gives: it
+has a value the naturalistic setting fixes (zero within-study exposure), whereas a free latent anticipation
+trait has no such anchor and is hard to separate from the level on a monotone axis. Two conditions make it
+sound. First, index it by exposure within the experiment (showings of the clip, trials of the scenario
+type), not by the base rate of critical events; drivers' lifetime experience is legitimate anticipation
+the deliverable should keep. Second, identify it only where exposure varies independently of the
+stimulus: study 2's first against second showing is the clean case; study 1's session index is confounded
+with design. Where it would enter the model depends on a split not yet made: if the repetition effect is
+concentrated pre-onset, it belongs in the gate (it opens earlier with exposure); if it is uniform across
+onset times, it belongs on the level or the lapse. The effect on file is small (+0.027), so it should be
+costed in seconds of trigger onset before it is built, as card C did for the percentile. It bears on PC.1
+too: the left turn's early responding could be partly learned, since each clip was seen four times.
+
+Proposed first step if Jonas takes it up (not started): split study 2's repetition effect by onset time
+and by driver, pre-stated, data in hand, minutes to run; and the same first-against-later-showing contrast
+on the study-1 left turn's far cells, where the gate should be closed.

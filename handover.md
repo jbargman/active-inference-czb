@@ -1,40 +1,40 @@
 # handover.md — start every session here
 
-*Rewritten 2026-09-03 for a less capable model; **updated 2026-09-13** after the arc of
-2026-09-03 → 09-13 (the authors' edition revised, the authors' reply, the Volvo Cars protocol and
-its pause, the meeting with Julian Schumann prepared, and an overnight batch of four cards).
-Dated records, newest first: **`handover_2026-09-13.md`**, `handover_2026-09-03.md`,
+*Rewritten 2026-09-03 for a less capable model; updated 2026-09-13; **updated 2026-09-17** after the
+arc of 2026-09-16 → 09-17 (GZ2.Q2, card PC.1, the software overview). Dated records, newest first:
+**`handover_2026-09-17.md`**, `handover_2026-09-13.md`, `handover_2026-09-03.md`,
 `handover_2026-09-02.md`. This file says what the project is, what the model now is and what it
 rests on, what the rules are, what is waiting on Jonas, what to do in what order, and when to stop
 and ask. It does not repeat the science; the documents it points to do that. Where this file and
 the repository disagree, the repository wins, and you should say so in your reply.*
 
-> ## RESUME HERE — model switch, 2026-09-16
+> ## RESUME HERE — 2026-09-17, nothing authorized
 >
-> Jonas is changing models mid-session and wants the next session to **continue exactly where this
-> one stopped**. State at hand-off: last commit `2b83419` (card GZ.2), suite green at
-> 31/33/40/96/62/20/28/27/16 (nine files, §0 step 2). **Jonas's instruction, verbatim: "Please go with
-> 1, and then 2."** That means, in order:
+> State: last commit is the one that added `handover_2026-09-17.md`; suite green at
+> 31/33/40/96/62/20/28/27/16/30 (**ten files**, §0 step 2). Both of Jonas's instructions of 2026-09-16
+> are done (full record in `handover_2026-09-17.md`):
 >
-> 1. ~~**GZ2.Q2 — which state channel suppresses the spontaneous re-plan**~~ **Done 2026-09-16** (worklog
->    entry of that date, `RESOLVED GZ2.Q2`): the lateral and heading channels, through the belief update;
->    the mechanism inside the belief update is open as GZ2.Q3 (minor). Also done that day on Jonas's
->    request: `docs/software_overview.md`, the software in blocks.
-> 2. ~~**Card PC.1 — the projected-conflict gate**~~ **Done 2026-09-17** (worklog entry of 2026-09-16 →
->    09-17; `docs/projected_conflict_gate_note.md` §6b; `out/pc1_projected_conflict.md`): credited on the
->    cut-in by 0.0001 as a step, closed on the left turn where people respond at every horizon to 6 s,
->    trivially open on the overtake; no reading adopted. One fixed-horizon projected conflict is not the
->    scenario-agnostic onset; the anticipation horizon is the scenario's own. **PC1.Q4 is for Jonas**
->    (which reading to carry forward). Both instructions of 2026-09-16 are complete; there is no next card
->    authorized. §4 lists what could come next; wait for Jonas.
+> 1. **GZ2.Q2, done.** The released model's spontaneous re-plan in steady following is suppressed by
+>    the assumed noise on the lateral and heading channels, through the belief update. The mechanism
+>    inside the belief update is open (GZ2.Q3, minor).
+> 2. **Card PC.1, done, not adopted.** One fixed-horizon projected-conflict gate is credited on the
+>    cut-in by 0.0001 as a step, open throughout the overtake, and closed on the left turn where people
+>    respond at every horizon to 6 s. **PC1.Q4 is Jonas's:** carry a scenario-specific anticipation
+>    horizon, or G.1's gate on the cut-in only.
 >
-> Work in interactive mode under the `performing-research` skill: pre-state before running, commit per
-> card, queries into the worklog. **One uncommitted file is Jonas's own:** `docs/handout_schumann_2026-09.docx`
-> carries his edits made in Word. Do not stage, overwrite or rebuild onto it; the latest build from the
-> markdown is `docs/handout_schumann_2026-09-v2.docx`. Ask him before any rebuild of that handout whether
-> his Word edits should first be folded back into the `.md`. He meets Julian Schumann this week.
+> **Under discussion, not a card (Jonas, 2026-09-17):** anticipation as a latent variable, or as a
+> separate exposure-driven component (learned from repeated critical clips) that would be off on
+> naturalistic data. Do not start work on it without his instruction; the assessment given is in the
+> worklog entry of 2026-09-17.
+>
+> Work in interactive mode under the `performing-research` skill. **One uncommitted file is Jonas's
+> own:** `docs/handout_schumann_2026-09.docx` carries his Word edits. Do not stage, overwrite or rebuild
+> onto it; ask him first whether his edits should be folded back into the `.md`. **Pushing:** the
+> repo-local token file is refused on push (403); `gh` is logged in, so push with
+> `git -c credential.helper= -c credential.helper='!gh auth git-credential' push origin main`, and only
+> when Jonas asks.
 
-> **The latest arc, in four lines** (full record in `handover_2026-09-13.md`). Surprise as the onset
+> **The arc before last, in four lines** (full record in `handover_2026-09-13.md`). Surprise as the onset
 > of a response was tested and did not replace the anticipatory gate (card HS.1); Farewell's emergency
 > braking levels do not carry over to comfort judgments (PT.1); a crossing norm for cut-ins is proposed
 > (PN.1); switching the dormant gaze system on showed that the released configuration does not hold
@@ -48,7 +48,7 @@ the repository disagree, the repository wins, and you should say so in your repl
 1. Read this file in full. Then read `docs/czb_work_orders.md` §2 (the standing rules)
    and the card or note named for the task at hand. Do not read the papers or the handbook
    unless the card says to; do not open `OthersWork/` (§5).
-2. Run the test suite exactly like this, and confirm 31, 33, 40, 96, 62, 20, 28, 27, 16 and 28 passed:
+2. Run the test suite exactly like this, and confirm 31, 33, 40, 96, 62, 20, 28, 27, 16 and 30 passed:
    ```bash
    python tests/test_surprise.py
    python tests/test_comfortzone.py
@@ -414,7 +414,7 @@ SetPET is the stimulus (appendix 17 and TT.Q2 say why).
 
 ## 7 Environment notes
 
-Windows 11, Python 3.14 with torch CPU-only, pandoc on PATH, no LaTeX, no `gh`, no GPU.
+Windows 11, Python 3.14 with torch CPU-only, pandoc on PATH, no LaTeX, no GPU. `gh` is installed and logged in (2026-09-16; see the banner for pushing).
 The repository lives in OneDrive: an open Word or PowerPoint file is locked, so write a
 versioned copy rather than fight the lock. `external/` and `papers/` (except their READMEs)
 and `OthersWork/` are not tracked. The `.pptx` decks are gitignored; their build scripts,
