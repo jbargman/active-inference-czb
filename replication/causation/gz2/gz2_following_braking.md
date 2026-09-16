@@ -237,3 +237,220 @@ Total evidence per step before the first re-plan: 0.0023 (the re-plan fires at 1
 |---|---|---|---|---|---|---|
 | mean [m/s^2] | +0.000 | +0.129 | +0.128 |
 | spread [m/s^2] | 0.002 | 0.217 | 0.238 |
+
+## D1: {'perc_noise_factor': 0.01, 'decoder_x100': ['x_sd', 'v_sd', 'a_sd']}
+
+Desired speed 15.00 m/s; assumed worst-case lead braking -8.00 m/s^2; evidence factor 1.12e-06.
+
+| repeat | first full re-plan (step) | first braking < -1 m/s^2 (step) | min speed [m/s] | min gap [m] | re-plans |
+|---|---|---|---|---|---|
+| 0 | 14 | none | 15.00 | 22.50 | 1 |
+| 1 | 14 | none | 15.00 | 22.50 | 1 |
+| 2 | 14 | none | 15.00 | 22.50 | 1 |
+| 3 | 13 | 14 | 14.96 | 22.50 | 1 |
+
+**Q2, what accumulates the evidence** (followed plan, pragmatic terms, summed over the steps before each repeat's first re-plan; share of the total shortfall and the mean evidence increment per step it contributes):
+
+| term | share | evidence per step |
+|---|---|---|
+| v | 0.000 | 0.0000 |
+| a | 0.001 | 0.0000 |
+| omega | 0.000 | 0.0000 |
+| y | 0.000 | 0.0000 |
+| theta | 0.000 | 0.0000 |
+| gaze | 0.000 | 0.0000 |
+| collision_safety | 0.999 | 0.0748 |
+
+Total evidence per step before the first re-plan: 0.0748 (the re-plan fires at 1).
+
+**Q3, what the first re-plan traded** (chosen minus followed plan, per term; positive = the chosen plan is better on that term):
+
+| repeat | step | executed accel | v | a | omega | y | theta | gaze | collision_safety | epistemic |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 0 | 14 | -0.08 | -2013 | -8980 | -165 | -15355 | +0 | +0 | +61289 | +67 |
+| 1 | 14 | -0.20 | -1728 | -7378 | -346 | -22256 | +0 | +0 | +64563 | +61 |
+| 2 | 14 | -0.20 | -2135 | -6709 | -338 | -13389 | +0 | +0 | +62445 | +13 |
+| 3 | 13 | -0.20 | -2241 | -8598 | -390 | -13523 | +0 | +0 | +75182 | +30 |
+
+**The belief about the lead's acceleration** (weighted over particles, mean over repeats):
+
+| step | 1 | 5 | 10 | 15 | 20 | 25 |
+|---|---|---|---|---|---|---|
+| mean [m/s^2] | +0.000 | +0.063 | +0.073 |
+| spread [m/s^2] | 0.002 | 0.191 | 0.212 |
+
+## D2: {'perc_noise_factor': 0.01, 'decoder_x100': ['y_sd', 'theta_sd', 'delta_sd', 'w_sd']}
+
+Desired speed 15.00 m/s; assumed worst-case lead braking -8.00 m/s^2; evidence factor 1.12e-06.
+
+| repeat | first full re-plan (step) | first braking < -1 m/s^2 (step) | min speed [m/s] | min gap [m] | re-plans |
+|---|---|---|---|---|---|
+| 0 | none | none | 15.00 | 22.50 | 0 |
+| 1 | none | none | 15.00 | 22.50 | 0 |
+| 2 | none | none | 15.00 | 22.50 | 0 |
+| 3 | none | none | 15.00 | 22.50 | 0 |
+
+**Q2, what accumulates the evidence** (followed plan, pragmatic terms, summed over the steps before each repeat's first re-plan; share of the total shortfall and the mean evidence increment per step it contributes):
+
+| term | share | evidence per step |
+|---|---|---|
+| v | 0.000 | 0.0000 |
+| a | 0.004 | 0.0000 |
+| omega | 0.000 | 0.0000 |
+| y | 0.000 | 0.0000 |
+| theta | 0.000 | 0.0000 |
+| gaze | 0.000 | 0.0000 |
+| collision_safety | 0.996 | 0.0024 |
+
+Total evidence per step before the first re-plan: 0.0024 (the re-plan fires at 1).
+
+**Q3, what the first re-plan traded** (chosen minus followed plan, per term; positive = the chosen plan is better on that term):
+
+| repeat | step | executed accel | v | a | omega | y | theta | gaze | collision_safety | epistemic |
+|---|---|---|---|---|---|---|---|---|---|---|
+
+**The belief about the lead's acceleration** (weighted over particles, mean over repeats):
+
+| step | 1 | 5 | 10 | 15 | 20 | 25 |
+|---|---|---|---|---|---|---|
+| mean [m/s^2] | +0.000 | +0.142 | +0.119 |
+| spread [m/s^2] | 0.000 | 0.247 | 0.236 |
+
+## D3: {'perc_noise_factor': 0.01, 'planner_decoder_x100': ['y_sd', 'theta_sd', 'delta_sd', 'w_sd']}
+
+Desired speed 15.00 m/s; assumed worst-case lead braking -8.00 m/s^2; evidence factor 1.12e-06.
+
+| repeat | first full re-plan (step) | first braking < -1 m/s^2 (step) | min speed [m/s] | min gap [m] | re-plans |
+|---|---|---|---|---|---|
+| 0 | 13 | none | 14.96 | 22.50 | 1 |
+| 1 | 14 | none | 15.00 | 22.50 | 1 |
+| 2 | 13 | none | 15.00 | 22.50 | 1 |
+| 3 | 13 | 14 | 14.96 | 22.50 | 1 |
+
+**Q2, what accumulates the evidence** (followed plan, pragmatic terms, summed over the steps before each repeat's first re-plan; share of the total shortfall and the mean evidence increment per step it contributes):
+
+| term | share | evidence per step |
+|---|---|---|
+| v | 0.000 | 0.0000 |
+| a | 0.000 | 0.0000 |
+| omega | 0.000 | 0.0000 |
+| y | 0.000 | 0.0000 |
+| theta | 0.000 | 0.0000 |
+| gaze | 0.000 | 0.0000 |
+| collision_safety | 1.000 | 0.0764 |
+
+Total evidence per step before the first re-plan: 0.0764 (the re-plan fires at 1).
+
+**Q3, what the first re-plan traded** (chosen minus followed plan, per term; positive = the chosen plan is better on that term):
+
+| repeat | step | executed accel | v | a | omega | y | theta | gaze | collision_safety | epistemic |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 0 | 13 | -0.20 | -2265 | -9120 | -366 | -5776 | +0 | +0 | +65626 | -10 |
+| 1 | 14 | -0.20 | -1296 | -7089 | -250 | -15451 | +0 | +0 | +58347 | -8 |
+| 2 | 13 | +0.09 | -3107 | -9926 | -354 | -8686 | +0 | +0 | +76634 | -13 |
+| 3 | 13 | -0.20 | -2247 | -7477 | -898 | -16180 | +0 | +0 | +77114 | -13 |
+
+**The belief about the lead's acceleration** (weighted over particles, mean over repeats):
+
+| step | 1 | 5 | 10 | 15 | 20 | 25 |
+|---|---|---|---|---|---|---|
+| mean [m/s^2] | +0.000 | +0.067 | +0.076 |
+| spread [m/s^2] | 0.000 | 0.203 | 0.204 |
+
+## E0: {'perc_noise_factor': 0.01}
+
+Desired speed 15.00 m/s; assumed worst-case lead braking -8.00 m/s^2; evidence factor 1.12e-06.
+
+| repeat | first full re-plan (step) | first braking < -1 m/s^2 (step) | min speed [m/s] | min gap [m] | re-plans |
+|---|---|---|---|---|---|
+| 0 | 13 | none | 14.96 | 22.50 | 1 |
+| 1 | 14 | none | 15.00 | 22.50 | 1 |
+| 2 | 13 | none | 15.00 | 22.50 | 1 |
+| 3 | 13 | 14 | 14.96 | 22.50 | 1 |
+
+**Q2, what accumulates the evidence** (followed plan, pragmatic terms, summed over the steps before each repeat's first re-plan; share of the total shortfall and the mean evidence increment per step it contributes):
+
+| term | share | evidence per step |
+|---|---|---|
+| v | 0.000 | 0.0000 |
+| a | 0.000 | 0.0000 |
+| omega | 0.000 | 0.0000 |
+| y | 0.000 | 0.0000 |
+| theta | 0.000 | 0.0000 |
+| gaze | 0.000 | 0.0000 |
+| collision_safety | 1.000 | 0.0764 |
+
+Total evidence per step before the first re-plan: 0.0764 (the re-plan fires at 1).
+
+**Q3, what the first re-plan traded** (chosen minus followed plan, per term; positive = the chosen plan is better on that term):
+
+| repeat | step | executed accel | v | a | omega | y | theta | gaze | collision_safety | epistemic |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 0 | 13 | -0.20 | -2265 | -9122 | -366 | -5776 | +0 | +0 | +65651 | -10 |
+| 1 | 14 | -0.20 | -1296 | -7089 | -250 | -15451 | +0 | +0 | +58343 | -9 |
+| 2 | 13 | +0.09 | -3105 | -9917 | -354 | -8686 | +0 | +0 | +76328 | -14 |
+| 3 | 13 | -0.20 | -2247 | -7475 | -898 | -16180 | +0 | +0 | +77123 | -12 |
+
+**The belief about the lead's acceleration** (weighted over particles, mean over repeats):
+
+| step | 1 | 5 | 10 | 15 | 20 | 25 |
+|---|---|---|---|---|---|---|
+| mean [m/s^2] | +0.000 | +0.067 | +0.076 |
+| spread [m/s^2] | 0.000 | 0.203 | 0.204 |
+
+**The belief's lateral state** (weighted over particles, mean over repeats; the last row is the share of particles in which the lead is in the ego's path and both head the same way, which is where `reward.py` applies the collision and safety checks):
+
+| step | 1 | 3 | 5 | 7 | 10 | 14 |
+|---|---|---|---|---|---|---|
+| ego y spread [m] | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 |
+| ego heading spread [rad] | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 |
+| lead y spread [m] | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 |
+| lead heading spread [rad] | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 |
+| in-path-and-following share | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+
+## E2: {'perc_noise_factor': 0.01, 'decoder_x100': ['y_sd', 'theta_sd', 'delta_sd', 'w_sd']}
+
+Desired speed 15.00 m/s; assumed worst-case lead braking -8.00 m/s^2; evidence factor 1.12e-06.
+
+| repeat | first full re-plan (step) | first braking < -1 m/s^2 (step) | min speed [m/s] | min gap [m] | re-plans |
+|---|---|---|---|---|---|
+| 0 | none | none | 15.00 | 22.50 | 0 |
+| 1 | none | none | 15.00 | 22.50 | 0 |
+| 2 | none | none | 15.00 | 22.50 | 0 |
+| 3 | none | none | 15.00 | 22.50 | 0 |
+
+**Q2, what accumulates the evidence** (followed plan, pragmatic terms, summed over the steps before each repeat's first re-plan; share of the total shortfall and the mean evidence increment per step it contributes):
+
+| term | share | evidence per step |
+|---|---|---|
+| v | 0.000 | 0.0000 |
+| a | 0.004 | 0.0000 |
+| omega | 0.000 | 0.0000 |
+| y | 0.000 | 0.0000 |
+| theta | 0.000 | 0.0000 |
+| gaze | 0.000 | 0.0000 |
+| collision_safety | 0.996 | 0.0024 |
+
+Total evidence per step before the first re-plan: 0.0024 (the re-plan fires at 1).
+
+**Q3, what the first re-plan traded** (chosen minus followed plan, per term; positive = the chosen plan is better on that term):
+
+| repeat | step | executed accel | v | a | omega | y | theta | gaze | collision_safety | epistemic |
+|---|---|---|---|---|---|---|---|---|---|---|
+
+**The belief about the lead's acceleration** (weighted over particles, mean over repeats):
+
+| step | 1 | 5 | 10 | 15 | 20 | 25 |
+|---|---|---|---|---|---|---|
+| mean [m/s^2] | +0.000 | +0.142 | +0.119 |
+| spread [m/s^2] | 0.000 | 0.247 | 0.236 |
+
+**The belief's lateral state** (weighted over particles, mean over repeats; the last row is the share of particles in which the lead is in the ego's path and both head the same way, which is where `reward.py` applies the collision and safety checks):
+
+| step | 1 | 3 | 5 | 7 | 10 | 14 |
+|---|---|---|---|---|---|---|
+| ego y spread [m] | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 |
+| ego heading spread [rad] | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 | 0.000 |
+| lead y spread [m] | 0.002 | 0.002 | 0.002 | 0.002 | 0.002 | 0.002 |
+| lead heading spread [rad] | 0.021 | 0.020 | 0.019 | 0.019 | 0.019 | 0.020 |
+| in-path-and-following share | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |

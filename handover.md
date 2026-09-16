@@ -16,9 +16,13 @@ the repository disagree, the repository wins, and you should say so in your repl
 > 31/33/40/96/62/20/28/27/16 (nine files, §0 step 2). **Jonas's instruction, verbatim: "Please go with
 > 1, and then 2."** That means, in order:
 >
-> 1. **GZ2.Q2 — which state channel suppresses the spontaneous re-plan** (§4 item 0a). Not started.
-> 2. **Card PC.1 — the projected-conflict gate** (§4 item 0b). Authorized by the same instruction, which
->    answers HS1.Q3 as "yes, go" (recorded as `RESOLVED HS1.Q3` in the worklog). Design note first.
+> 1. ~~**GZ2.Q2 — which state channel suppresses the spontaneous re-plan**~~ **Done 2026-09-16** (worklog
+>    entry of that date, `RESOLVED GZ2.Q2`): the lateral and heading channels, through the belief update;
+>    the mechanism inside the belief update is open as GZ2.Q3 (minor). Also done that day on Jonas's
+>    request: `docs/software_overview.md`, the software in blocks.
+> 2. **Card PC.1 — the projected-conflict gate** (§4 item 0b-now). **NEXT.** Authorized by the same
+>    instruction, which answers HS1.Q3 as "yes, go" (recorded as `RESOLVED HS1.Q3` in the worklog). Design
+>    note first.
 >
 > Work in interactive mode under the `performing-research` skill: pre-state before running, commit per
 > card, queries into the worklog. **One uncommitted file is Jonas's own:** `docs/handout_schumann_2026-09.docx`
@@ -214,6 +218,7 @@ and in `handover_2026-09-13.md`):
 | query | question, in one line | unblocks |
 |---|---|---|
 | HS1.Q3 (**answered 2026-09-16: go**) | Should card PC.1 (a scenario-agnostic projected-conflict gate) be the next card? Jonas: "go with 1, and then 2" | §4 items 0a, 0b-now |
+| GZ2.Q3 (minor, review) | The mechanism inside the belief update by which looser assumed lateral noise empties the imagined futures of collisions: record the filter's effective sample size and the reference plan's unsafe share (two 14-step runs) | nothing; only if the finding goes to Julian as more than "the lateral senses" |
 | **GZ2.Q1** (judgment) | Wording of the sustained-following finding in the handout and private questions: confirm | printing the handout |
 | **GZ1.Q1** (judgment) | The released configuration does not hold sustained car following (it brakes after 3–5 s with nothing happening, some repeats to a stop, with gaze choice on or off and with the authors' own scripted lead). It is in the handout as a question for Julian: keep it? | the handout's glance question |
 | **GZ1.Q3** (judgment) | Fitting the model's own glances to SHRP2 is a model-design task first (a reason to look away, a noise-dependent cost, a non-instant look-back), then days of simulation. Pursue, or ask Julian first? | any gaze-fitting card |
@@ -242,7 +247,11 @@ adopt the two-scalar wording, with the standing genericity ruling in §1 as the 
 
 ## 4 The queue, in order, with what "done" means
 
-0a. **NEXT — GZ2.Q2: which state channel suppresses the spontaneous re-plan.** Authorized 2026-09-16.
+0a. ~~**GZ2.Q2: which state channel suppresses the spontaneous re-plan.**~~ **Done 2026-09-16**: parts C, D
+   and E in the same script; the lateral and heading channels (`y_sd`, `theta_sd`, `delta_sd`, `w_sd`)
+   carry it, through the belief update and not the planner's sampled observations (D3); the in-path
+   exemption is not the mechanism (E0/E2, share 1.000 in both); open as GZ2.Q3. The original brief follows
+   for the record. Authorized 2026-09-16.
    Context: card GZ.2 (`replication/causation/gz2_following_braking.py`, report
    `replication/causation/gz2/gz2_following_braking.md`, worklog entry of 2026-09-16) showed that in
    steady following (15 m/s, 1.5 s headway, lead at constant speed) the released model re-plans by

@@ -65,8 +65,13 @@ modeling. As I read the results, in six ways. All are fresh and not yet reviewed
    failed safety checks (68 090 per step, the same value our method review read from their deposit),
    and the new plan buys safety margin by braking. The inverse-tau preference and epistemic value play no
    part. Noise on the car's *state* channels (not the looming channels) slows the accumulation 30-fold
-   and prevents it. For us this is the most useful single result of the week: the same shortfall our
-   comfort-zone field was built on makes the released model unstable in plain following.
+   and prevents it; split further (GZ2.Q2), it is the assumed noise on the lateral and heading
+   channels, acting through the particle filter's belief update and not through the observations the
+   planner samples (the same noise in the planner's decoder alone changes nothing). Why a looser
+   lateral belief empties the imagined futures of collisions is not yet explained; the belief stays
+   in the lane in both cases. Worth asking Julian whether this rings a bell. For us this is the most
+   useful single result of the week: the same shortfall our comfort-zone field was built on makes
+   the released model unstable in plain following.
 
 ## 1 If there are only fifteen minutes
 

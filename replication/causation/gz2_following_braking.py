@@ -58,6 +58,58 @@ READINGS (evidence per step before any re-plan, against B0's 0.0764 and B1's 0.0
   preference does. C2 near B1 -> noise on the looming channels is what suppresses it; C3 near B1 -> noise
   on the state channels is. Both or neither -> reported as found.
 
+PART C, pre-stated 2026-09-16 (query GZ2.Q2, authorized by Jonas) before its runs. Part B found that
+x100 on the seven state-channel scales (C3) suppresses the re-plan and x100 on the three looming scales
+(C2) does not. Which state channels carry it? What the seven scales act on, read from
+`external/aica/src/common/decoder.py` (`compute_obs_dist`) and `simulation_benign.py`: they are the
+generative model's ASSUMED observation noise, used in the particle filter's likelihood and in the
+planner's sampled observations; the environment's true observation noise is these values x0.001
+(`Decoder_true`), so x100 does not make the world noisier, it makes the model expect noise.
+  * x_sd, v_sd  -- ego and target position and speed in the planner's observations (state layout);
+                   the ego's position and speed in the belief update (looming layout, where the target
+                   is seen through the looming angle and its derivatives)
+  * a_sd        -- the target's acceleration in the planner's observations only
+  * y_sd, theta_sd, delta_sd -- the target's lateral position, heading and steering angle in the
+                   planner's observations (the ego's are clamped to 1e-6 there); both vehicles' in the
+                   belief update
+  * w_sd        -- the target's steering rate, in both
+Two runs, T = 14, batch 4, everything else as B0:
+  D1  released, but x_sd, v_sd, a_sd x100            (the longitudinal channels)
+  D2  released, but y_sd, theta_sd, delta_sd, w_sd x100 (the lateral and heading channels)
+READINGS (evidence per step before any re-plan, against B0's 0.0764 and C3's 0.0023): whichever of
+D1/D2 lands near C3 carries the effect. Both near B0 -> the channels act only together; both near C3 ->
+either group suffices; either way reported as found. The ROUTE is then checked in part D.
+
+PART D, pre-stated 2026-09-16 after part C's readings were fixed and before its run. The scales reach
+the accumulated evidence by two routes: (i) the belief update (the particle filter's likelihood, so a
+wider or narrower belief about the two cars), and (ii) the planner's scoring of imagined futures, which
+draws an observation per particle from the assumed noise (`BeliefReward(sample_mean=False)`,
+`src/common/belief_reward.py`) and evaluates the collision-and-safety term on that draw. One run:
+  D3  released, but the group found in part C x100 in the PLANNER'S decoder only -- a copy of the
+      decoder with the scaled noise is installed in `agent.planner.reward.ig_estimator.decoder`
+      after the agent is built; the encoder keeps the released decoder, so the belief update is
+      untouched. Same T = 14, batch 4.
+READING: D3 near the part-C suppressor -> route (ii), the sampled observations in planning, carries it;
+D3 near B0 -> route (i), the belief update, carries it; in between -> both, reported with the two numbers.
+The recorded belief spread about the lead's acceleration is reported alongside as the check that the
+encoder was indeed untouched in D3.
+
+PART E, pre-stated 2026-09-16 after parts C and D were read (D2 suppresses, D3 does not: the route is
+the belief update) and before its runs. The collision and safety checks in `reward.py` apply only where
+the imagined lead is in the ego's path (`test_looming_viability(o, perc=False)`: |y_ego - y_tar| <
+1.15 d) and both cars are heading the same way (`following`, the sign of cos(theta)); elsewhere they
+are switched off. Hypothesis: with the assumed observation noise on the lateral and heading channels
+x100, the particle filter can no longer pin the two cars' lateral state, the belief spreads laterally
+under the model's own process noise, and the imagined lead leaves the path before the safety check
+can fail. Two runs, T = 14, batch 4, recording per step the weighted belief spread of y and theta for
+both cars and the weighted share of particles in which the lead is in the path and following:
+  E0  released (B0's settings), recording added
+  E2  D2's settings (the four lateral and heading scales x100), recording added
+READING: the in-path-and-following share near 1 in E0 and clearly lower in E2, with the lateral
+spreads larger in E2 -> the mechanism is the loosened lateral belief exempting the imagined lead from
+the checks; share near 1 in both -> the route is in the belief update but not through this exemption,
+reported as unexplained.
+
 Nothing is fitted and no default is changed. The authors' files are not edited: the scenario reuses
 card GZ.1's lead-replay setup, which GZ.1's adapter check G0x showed behaves like the authors' own
 scripted lead in this regime.
@@ -105,8 +157,38 @@ CONDITIONS = {
     "C2": {"perc_noise_factor": 0.01, "_decoder_x100": ["LA_sd", "d_LA_sd", "dd_LA_sd"]},
     "C3": {"perc_noise_factor": 0.01, "_decoder_x100": ["x_sd", "y_sd", "theta_sd", "delta_sd",
                                                         "v_sd", "a_sd", "w_sd"]},
+    # part C (GZ2.Q2): C3's seven channels split into longitudinal and lateral-heading groups
+    "D1": {"perc_noise_factor": 0.01, "_decoder_x100": ["x_sd", "v_sd", "a_sd"]},
+    "D2": {"perc_noise_factor": 0.01, "_decoder_x100": ["y_sd", "theta_sd", "delta_sd", "w_sd"]},
+    # part D (the route): the part-C group scaled in the planner's decoder only. Part C's result
+    # (2026-09-16): D2 suppresses (0.0025 per step, no re-plan), D1 does not (re-plans at step 13-14
+    # like B0), so the group is the lateral and heading channels.
+    "D3": {"perc_noise_factor": 0.01, "_planner_decoder_x100": ["y_sd", "theta_sd", "delta_sd", "w_sd"]},
+    # part E (the mechanism): B0's and D2's settings with the belief's lateral spread recorded
+    "E0": {"perc_noise_factor": 0.01},
+    "E2": {"perc_noise_factor": 0.01, "_decoder_x100": ["y_sd", "theta_sd", "delta_sd", "w_sd"]},
 }
-PART_B_STEPS = 14
+PART_B_STEPS = 14            # parts B to E (tags C*, D*, E*) run 14 steps; part A (B*) runs T_STEPS
+# belief columns: gaze (2), ego x y theta delta v (2..6), target x y theta delta v (7..11), a_tar, w_tar
+I_Y_EGO, I_TH_EGO, I_Y_TAR, I_TH_TAR = 3, 4, 8, 9
+# index of each noise scale in the decoder's three sd vectors (decoder.py: o_state_sd, o_ctrl_sd, o_loom_sd)
+DECODER_SD_INDEX = {"x_sd": [("o_state_sd", 0)], "y_sd": [("o_state_sd", 1), ("o_loom_sd", 3)],
+                    "theta_sd": [("o_state_sd", 2), ("o_loom_sd", 4)],
+                    "delta_sd": [("o_state_sd", 3), ("o_loom_sd", 5)], "v_sd": [("o_state_sd", 4)],
+                    "a_sd": [("o_ctrl_sd", 0)], "w_sd": [("o_ctrl_sd", 1), ("o_loom_sd", 6)],
+                    "LA_sd": [("o_loom_sd", 0)], "d_LA_sd": [("o_loom_sd", 1)], "dd_LA_sd": [("o_loom_sd", 2)]}
+
+
+def scaled_decoder_copy(decoder, keys, factor=100.0):
+    """A deep copy of the authors' Decoder with the named noise scales multiplied, for part D."""
+    import copy
+    dec = copy.deepcopy(decoder)
+    for k in keys:
+        for vec, i in DECODER_SD_INDEX[k]:
+            v = getattr(dec, vec).clone()
+            v[i] = v[i] * factor
+            setattr(dec, vec, v)
+    return dec
 
 
 def run_condition(tag: str, overrides: dict) -> dict:
@@ -117,7 +199,10 @@ def run_condition(tag: str, overrides: dict) -> dict:
 
     overrides = dict(overrides)
     scale_keys = overrides.pop("_decoder_x100", [])
-    t_steps = PART_B_STEPS if tag.startswith("C") else T_STEPS
+    planner_keys = overrides.pop("_planner_decoder_x100", [])
+    if "_planner_decoder_x100" in CONDITIONS[tag] and not planner_keys:
+        raise SystemExit(f"{tag}: the planner-only group is set after part C has run (docstring, part D)")
+    t_steps = PART_B_STEPS if tag[0] in "CDE" else T_STEPS
     model_params = build_model_params()
     model_params.update(overrides)
     initial_state = build_initial_state()
@@ -143,7 +228,15 @@ def run_condition(tag: str, overrides: dict) -> dict:
     a_lead = np.zeros(T_STEPS + 1)
     saved_dyn, saved_run = sim.Dynamics_true, sim.run_simulation
     rec = {k: [] for k in ("ref", "opt", "evidence", "replanned", "acc", "speed", "gap",
-                           "a_tar_mean", "a_tar_sd")}
+                           "a_tar_mean", "a_tar_sd",
+                           # part E: the belief's lateral spread and the share of particles in which
+                           # the lead is in the ego's path and heading the same way (reward.py's
+                           # looming_viable and following, evaluated on the belief itself)
+                           "y_ego_sd", "th_ego_sd", "y_tar_sd", "th_tar_sd", "in_path_share")}
+
+    def wsd(x, bw):
+        m = (x * bw).sum(-1)
+        return torch.sqrt(((x - m.unsqueeze(-1)) ** 2 * bw).sum(-1))
 
     def replay_factory(**kw):
         return T2.DynamicsLeadReplay(a_lead, **kw)
@@ -154,6 +247,12 @@ def run_condition(tag: str, overrides: dict) -> dict:
         env.dynamics.reset_clock()
         eta = env.state.clone()
         pl = agent.planner
+        if planner_keys:
+            # part D: the planner scores imagined futures on observations drawn from THIS decoder;
+            # the encoder (agent.encoder) keeps the shared released one, so the belief update is untouched
+            assert pl.reward.ig_estimator.decoder is agent.encoder.decoder
+            pl.reward.ig_estimator.decoder = scaled_decoder_copy(agent.encoder.decoder, planner_keys)
+            assert pl.reward.ig_estimator.decoder is not agent.encoder.decoder
         for t in range(1, cfg["T"] + 1):
             t0 = time.time()
             with torch.no_grad():
@@ -168,6 +267,15 @@ def run_condition(tag: str, overrides: dict) -> dict:
             a_t = agent.b[..., I_A_TAR].detach()
             m = (a_t * bw).sum(-1)
             sd = torch.sqrt(((a_t - m.unsqueeze(-1)) ** 2 * bw).sum(-1))
+            b = agent.b.detach()
+            d_width = agent.encoder.decoder.d
+            in_path = (torch.abs(b[..., I_Y_EGO] - b[..., I_Y_TAR]) < 1.15 * d_width) \
+                & (torch.sign(torch.cos(b[..., I_TH_EGO])) * torch.sign(torch.cos(b[..., I_TH_TAR])) >= 0)
+            rec["y_ego_sd"].append(wsd(b[..., I_Y_EGO], bw).cpu().numpy())
+            rec["th_ego_sd"].append(wsd(b[..., I_TH_EGO], bw).cpu().numpy())
+            rec["y_tar_sd"].append(wsd(b[..., I_Y_TAR], bw).cpu().numpy())
+            rec["th_tar_sd"].append(wsd(b[..., I_TH_TAR], bw).cpu().numpy())
+            rec["in_path_share"].append((in_path.to(bw.dtype) * bw).sum(-1).cpu().numpy())
             o = env.step(a_disc[0], a_cont[0])
             rec["ref"].append(ref)
             rec["opt"].append(opt)
@@ -195,6 +303,8 @@ def run_condition(tag: str, overrides: dict) -> dict:
 
     if scale_keys:
         overrides["decoder_x100"] = scale_keys
+    if planner_keys:
+        overrides["planner_decoder_x100"] = planner_keys
     result = {"tag": tag, "overrides": overrides, "runtime_s": runtime, "data": data,
               "evidence_fac": 10 ** model_params["EA_fac"], "v_des": V + v_diff,
               "a_tar_min": float(a_tar_min)}
@@ -274,6 +384,19 @@ def report(results: dict) -> str:
         L.append("| mean [m/s^2] | " + " | ".join(f"{d['a_tar_mean'][:, c].mean():+.3f}" for c in cols) + " |")
         L.append("| spread [m/s^2] | " + " | ".join(f"{d['a_tar_sd'][:, c].mean():.3f}" for c in cols) + " |")
         L.append("")
+        if "in_path_share" in d:
+            # part E: the belief's lateral spread and the in-path share (mean over repeats)
+            cols = [0, 2, 4, 6, 9, 13]
+            cols = [c for c in cols if c < d["in_path_share"].shape[1]]
+            L += ["**The belief's lateral state** (weighted over particles, mean over repeats; the last row "
+                  "is the share of particles in which the lead is in the ego's path and both head the same "
+                  "way, which is where `reward.py` applies the collision and safety checks):", "",
+                  "| step | " + " | ".join(str(c + 1) for c in cols) + " |", "|---|" + "---|" * len(cols)]
+            for key, name in (("y_ego_sd", "ego y spread [m]"), ("th_ego_sd", "ego heading spread [rad]"),
+                              ("y_tar_sd", "lead y spread [m]"), ("th_tar_sd", "lead heading spread [rad]"),
+                              ("in_path_share", "in-path-and-following share")):
+                L.append(f"| {name} | " + " | ".join(f"{d[key][:, c].mean():.3f}" for c in cols) + " |")
+            L.append("")
     return "\n".join(L)
 
 

@@ -204,8 +204,11 @@ and compared with the QUADRIS reference by the practical-equivalence method of W
   condition in your OSF deposit — and the new plan trades speed, pedal effort and lane position for
   safety margin. The inverse-tau preference and the epistemic term play no part. Raising the noise on
   the state channels alone slows the accumulation 30-fold and the car keeps following; raising it on
-  the looming channels alone does not. The published runs never show this, since the lead brakes
-  0.6 s in.
+  the looming channels alone does not. Split further, it is the assumed noise on the lateral and
+  heading channels (y, heading, steering angle, steering rate) that does it, not the longitudinal
+  ones, and it acts through the belief update rather than through the observations the planner
+  samples when scoring plans: the same noise installed in the planner's decoder only leaves the
+  braking unchanged. The published runs never show this, since the lead brakes 0.6 s in.
 
 ## 6 The questions we would most like to ask
 

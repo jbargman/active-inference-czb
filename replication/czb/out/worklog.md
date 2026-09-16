@@ -2718,3 +2718,56 @@ starts the response" stands as the working hypothesis PC.1 tests; it is not ther
 
 Note for the next session: `docs/handout_schumann_2026-09.docx` has uncommitted edits Jonas made in Word.
 Leave that file alone; ask him before rebuilding the handout from its markdown.
+
+## 2026-09-16 — GZ2.Q2: which state channel suppresses the spontaneous re-plan, and by what route
+
+Interactive mode, new model (Fable 5.1). Suite green before (31/33/40/96/62/20/28/27/16) and after (no source
+code touched; the only code change is the card's own script). Parts C, D and E added to
+`replication/causation/gz2_following_braking.py`, each pre-stated in the docstring before its runs; the
+report `replication/causation/gz2/gz2_following_braking.md` regenerated over all eleven conditions. Steady
+following at 15 m/s, 1.5 s headway, 14 steps, batch 4, as part B. Run logs `gz2/log_D1.txt` … `log_E2.txt`.
+
+**Part C, which channels.** C3's seven state-channel scales split into the longitudinal group (`x_sd`, `v_sd`,
+`a_sd`: D1) and the lateral-and-heading group (`y_sd`, `theta_sd`, `delta_sd`, `w_sd`: D2). D1 accumulates
+0.0748 per step and re-plans at step 13–14 in every repeat, like B0 (0.0764). D2 accumulates 0.0024 per
+step and never re-plans, like C3 (0.0023). **The lateral and heading channels carry the whole effect.** A
+note on what those scales mean, read from `decoder.py`: they are the generative model's assumed observation
+noise, not the world's (the environment's decoder uses them ×0.001), so ×100 does not make the world
+noisier, it makes the model expect its lateral senses to be poor.
+
+**Part D, which route.** The scales reach the evidence in two places: the particle filter's likelihood
+(the belief update) and the planner's scoring of imagined futures on observations sampled from the same
+decoder (`BeliefReward(sample_mean=False)`). D3 installs the ×100 lateral scales in a copy of the decoder
+used by the planner only, with the encoder untouched (asserted in the script): 0.0764 per step, re-plans at
+13–14, identical to B0 in every recorded number. **The route is the belief update**, not the planner's
+sampled observations.
+
+**Part E, the mechanism — hypothesis refuted.** The collision and safety checks in `reward.py` apply only
+where the imagined lead is in the ego's path and both cars head the same way; the hypothesis was that a
+loosened lateral belief lets the imagined lead leave the path before the check can fail. E0 (released) and
+E2 (D2's settings) recorded the belief's weighted lateral spread and the share of particles in the path and
+following, per step: **1.000 in both**, lead heading spread 0.000 against 0.020 rad, lead lateral spread
+0.000 against 0.002 m. The belief stays in the lane; the exemption is not the mechanism. Reported as
+unexplained per the pre-stated reading. One lead in the data: in every suppressing condition the believed
+lead acceleration sits higher (B1 +0.14 to +0.16, C3 +0.13, E2 +0.12 to +0.14 m/s²) than in every
+non-suppressing one (B0, C2, D1, D3, E0: +0.06 to +0.08), with the truth at 0. With the released lateral
+scales (heading 0.0002 rad) against the model's own lateral process noise, the filter's weights are decided
+by lateral fit alone, which is a lottery with respect to the longitudinal state; with those scales ×100 the
+looming channels decide instead. How that changes the share of imagined futures that fail the safety check
+is the open step; it would take recording the effective sample size and the reference plan's unsafe share
+per horizon step, another pair of 14-step runs.
+
+RESOLVED GZ2.Q2: the lateral and heading channels (`y_sd`, `theta_sd`, `delta_sd`, `w_sd`) carry the
+suppression, through the belief update and not through the planner's sampled observations; the step from a
+loosened lateral belief to fewer imagined collisions is not the in-path exemption and remains unexplained.
+
+Documents: one line added to the handout's "Why it brakes" bullet (`docs/handout_schumann_2026-09.md`) and
+to the private questions' point 6 (`correspondence/2026-09_meeting_schumann_questions.md`), PDFs rebuilt;
+`docs/handout_schumann_2026-09.docx` (Jonas's Word edits) left untouched, its markdown build is the `-v2`
+docx. Also this session, on Jonas's request: `docs/software_overview.md` (+ docx, pdf, eight figures), the
+software in blocks for jumping into the work, committed separately.
+
+@GZ2.Q3(minor, review): the mechanism inside the belief update — record the particle filter's effective
+sample size and the reference plan's unsafe share per horizon step in B0's and D2's settings (two 14-step
+runs, ~10 min) — is worth one more part if the finding goes to Julian as more than "the lateral senses";
+left undone so that card PC.1 could start.
