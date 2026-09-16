@@ -2771,3 +2771,87 @@ software in blocks for jumping into the work, committed separately.
 sample size and the reference plan's unsafe share per horizon step in B0's and D2's settings (two 14-step
 runs, ~10 min) — is worth one more part if the finding goes to Julian as more than "the lateral senses";
 left undone so that card PC.1 could start.
+
+## 2026-09-16 → 09-17 — card PC.1: the projected-conflict gate, one construction for every scenario
+
+Authorized by Jonas on 2026-09-16 ("go with 1, and then 2"; HS1.Q3 = go). Interactive mode, then
+overnight for the runs. Design note first, `docs/projected_conflict_gate_note.md` (+ docx, pdf), written
+before any code; construction `src/comfortzone/conflict.py`; property tests `tests/test_conflict.py`
+(30 checks; the suite is now ten files, 31/33/40/96/62/20/28/27/16/30, green before and after);
+pre-stated script `replication/czb/pc1_projected_conflict.py` → `out/pc1_projected_conflict.md`,
+`out/pc1_gates.csv`, `out/pc1_cutin_clearance.csv`. Two corrections to the construction were made
+BEFORE any run, both found by the property tests and both dated in the note and the module: the corridor
+is the ego's path over an extended span (20 s) while only the other road user's positions are limited to
+the horizon (the first draft bounded both, and a cut-in car not caught within three seconds fell outside
+the corridor), and the clearance has one ordering by role (the reverse extrapolated the other's lateral
+motion beyond the horizon and opened the gate where G.1 leaves it closed). The left-turn prediction under
+the planned reading was restated accordingly before the run. One correction was made AFTER the first run
+(54 min; report kept as `out/pc1_projected_conflict_run1.md`): the planned path's continuation past the
+end of a trace took its velocity from the last two jittered samples, and the cut-in's |cK − cP| check
+reached 1.619 m on an ego that drives straight; fixed to the last window's velocity, one property test
+added, rerun in full (167 min under load). Every verdict and every number below is identical between the
+two runs except that check, 1.619 → 0.598 m (median 0.000 in both; the residual is the ego's real
+lateral drift over the 20 s span under the two readings, not verified per cell: PC1.Q6).
+
+**Test 1, the cut-in — CREDITED, by 0.0001.** Implementation check against G.1: median |c − max(l0 +
+l̇·3, 0)| 0.000 m, max 0.045 m (rule: median < 0.05, max < 0.20). Post-onset held out 0.1126 against
+the bound 0.1127 (G.1's gated 0.1027 + 0.01); CP1 out of sample 0.0356 (G.1: 0.0319); fitted m 0.524 m,
+s 0.314 m against G.1's 0.149 / 0.990. The gate is a step: 0.952 in every post-onset cell and 0.000 in
+every CP1 cell, identical at every horizon and with or without persistence. Reason: the construction
+clamps a projected incursion at zero (overlap is zero clearance), so every post-onset cell, whose
+extrapolated lateral clearance is negative, gets the same gate value, whereas G.1's signed extrapolation
+grades them (0.55 to 1.00) and that grading is the 0.01 G.1 gains. The cut-in cannot identify the
+horizon, as G.1 said.
+
+**Test 2, the left turn — NOT CONSISTENT at any horizon, K or P.** As predicted before the run, K
+(constant velocity) is closed in all 18 cells at every horizon: the ego's projected path at the decision
+moment is straight and the oncoming car never enters it. P (the recorded future) opens in 2, 6, 9 and 14
+of 18 cells at 3, 4, 5 and 6 s: exactly the cells whose oncoming car reaches the ego's planned crossing
+within the horizon (its arrival is 2.9 to 7.1 s after the decision moment across the design). Engaged
+cells (share ≥ floor + 0.2, 13 of 18): 2, 6, 9, 12 open. Cost of gating B.3.v2's distance rule
+(ungated 0.0558): +0.232 at 3 s (chance is 0.288), +0.113, +0.055, +0.024 at 4, 5, 6 s. KP equals P
+throughout. The left turn's response starts while the oncoming car is still five to seven seconds from
+the crossing, so a three-second projected conflict is closed where people respond, and lengthening the
+horizon toward those arrival times opens the gate everywhere, where it does no work; what carries the
+left turn is the axis (distance), as B.3.v2 found.
+
+**Test 3, the overtake — consistent, trivially.** Under every reading and horizon the gate opens at the
+first evaluated moment (9.0 s before C1, the window's start plus the velocity window) in all three
+clearances: the cyclist ahead in the lane is on the ego's straight path. Open (0.952) in all 15 cells;
+the instantaneous clearance grows through the pull-out (0.00 → 0.62 m under K at 1.5 m C5) and
+persistence keeps the gate open, as designed. The gate does no work in the overtake.
+
+**Adoption (pre-stated rule): none.** No reading is credited on the cut-in and consistent on both other
+scenarios at the primary horizon, nor at any horizon in the sweep. **The finding, marked opinion:** a
+projected-conflict gate with one fixed horizon, computed identically in every scenario, is not the
+scenario-agnostic onset. HS.1's reading that anticipated conflict starts the response survives
+qualitatively in each scenario, but what is anticipated differs: a lateral incursion within about three
+seconds on the cut-in, presence in the lane ahead on the overtake, an arrival five to seven seconds away
+on the left turn. Either the gate's horizon is scenario-specific, which under Jonas's genericity ruling
+makes it like the axis (generic machinery, scenario-specific parameter), or the gate is needed only where
+the other road user does not count from the outset (the cut-in), and elsewhere the axis alone carries the
+response. On the evidence in hand the second reading is the simpler.
+
+RESOLVED HS1.Q3 (follow-up): the strong form, one fixed-horizon construction for all scenarios, is
+falsified by the left turn; the weak form, that anticipation rather than surprise starts the response,
+stands in every scenario.
+
+@PC1.Q4(judgment, jonas): which reading of the result to carry forward — a scenario-specific horizon
+for the gate (like the axis), or G.1's gate on the cut-in only with no gate where the other road user
+counts from the outset? The handbook's chapter 13 says "the gate is the part that changes between
+scenarios"; the result sharpens that to "and it is a step at the scenario's own anticipation horizon".
+@PC1.Q5(minor, review): the construction clamps a projected incursion at zero; a signed clearance
+(penetration depth) would restore G.1's graded post-onset gate and its 0.1027. Worth one addition only
+if the construction is kept.
+@PC1.Q6(minor, review): |cK − cP| max 0.598 m on the cut-in after the fix, median 0.000; the residual
+is presumably the ego's real lane-keeping drift under P against a constant lateral velocity under K over
+the 20 s path span; which cells, not checked.
+The three design queries of the note, restated here so the register carries them:
+@PC1.Q1(judgment, jonas): the planned reading P uses the ego's recorded future as "what the participant
+knew the automated car would do"; is that an acceptable reading of the study instructions, or did
+participants only know the scenario type? It matters less now that no reading was adopted.
+@PC1.Q2(judgment, review): persistence (once counted, keeps counting) was added here, not in G.1; harmless
+on the cut-in, decisive on the overtake as designed. A decay is the alternative; no data on file
+distinguishes them.
+@PC1.Q3(minor, review): the engaged-cell margin of 0.2 above the scenario's floor is a convention; the
+left-turn verdict is the same at 0.1, 0.2 and 0.3.

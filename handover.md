@@ -20,9 +20,13 @@ the repository disagree, the repository wins, and you should say so in your repl
 >    entry of that date, `RESOLVED GZ2.Q2`): the lateral and heading channels, through the belief update;
 >    the mechanism inside the belief update is open as GZ2.Q3 (minor). Also done that day on Jonas's
 >    request: `docs/software_overview.md`, the software in blocks.
-> 2. **Card PC.1 — the projected-conflict gate** (§4 item 0b-now). **NEXT.** Authorized by the same
->    instruction, which answers HS1.Q3 as "yes, go" (recorded as `RESOLVED HS1.Q3` in the worklog). Design
->    note first.
+> 2. ~~**Card PC.1 — the projected-conflict gate**~~ **Done 2026-09-17** (worklog entry of 2026-09-16 →
+>    09-17; `docs/projected_conflict_gate_note.md` §6b; `out/pc1_projected_conflict.md`): credited on the
+>    cut-in by 0.0001 as a step, closed on the left turn where people respond at every horizon to 6 s,
+>    trivially open on the overtake; no reading adopted. One fixed-horizon projected conflict is not the
+>    scenario-agnostic onset; the anticipation horizon is the scenario's own. **PC1.Q4 is for Jonas**
+>    (which reading to carry forward). Both instructions of 2026-09-16 are complete; there is no next card
+>    authorized. §4 lists what could come next; wait for Jonas.
 >
 > Work in interactive mode under the `performing-research` skill: pre-state before running, commit per
 > card, queries into the worklog. **One uncommitted file is Jonas's own:** `docs/handout_schumann_2026-09.docx`
@@ -88,8 +92,13 @@ term; the concepts deck animates each one):
   surprise onset keeps every pre-onset cut-in clip closed (0.036) but scores 0.145 post-onset
   against G.1's 0.103; in the cyclist overtake and the left turn participants respond *before*
   any surprise registers, whether taken about the other road user or about the whole situation.
-  The reading on file (HS1.Q3, awaiting Jonas): what starts a response is anticipated conflict,
-  which is what G.1's projection computes. Also tested and lost on these judgments:
+  The reading on file (HS1.Q3, answered "go" 2026-09-16): what starts a response is anticipated conflict,
+  which is what G.1's projection computes. **Tested as one construction for every scenario on
+  2026-09-17 (card PC.1, `out/pc1_projected_conflict.md`) and not adopted:** a projected path conflict
+  with one fixed horizon reproduces G.1 on the cut-in only as a step (credited by 0.0001), is open
+  throughout the overtake, and is closed on the left turn at every horizon to 6 s where people respond
+  to a car still five to seven seconds from the crossing. The anticipation horizon is the scenario's
+  own (PC1.Q4, for Jonas). Also tested and lost on these judgments:
   accumulating looming from the onset (0.196 against a state threshold's 0.144), and the
   own-lane norm's trust withdrawal as the onset (0.288, card PN.1).
 - **The axis** is the number read off the scene. On the cut-in it is the **optical expansion
@@ -221,6 +230,8 @@ and in `handover_2026-09-13.md`):
 |---|---|---|
 | HS1.Q3 (**answered 2026-09-16: go**) | Should card PC.1 (a scenario-agnostic projected-conflict gate) be the next card? Jonas: "go with 1, and then 2" | §4 items 0a, 0b-now |
 | GZ2.Q3 (minor, review) | The mechanism inside the belief update by which looser assumed lateral noise empties the imagined futures of collisions: record the filter's effective sample size and the reference plan's unsafe share (two 14-step runs) | nothing; only if the finding goes to Julian as more than "the lateral senses" |
+| **PC1.Q4** (judgment) | Card PC.1's result: which reading to carry forward — a scenario-specific anticipation horizon for the gate (generic machinery, scenario parameter, like the axis), or G.1's gate on the cut-in only, with no gate where the other road user counts from the outset (overtake, left turn)? | the wording of "the gate" in handbook chapter 13 and the concepts deck; whether PC1.Q5's signed clearance is worth adding |
+| PC1.Q1–Q3, Q5, Q6 (judgment / minor) | the planned reading's use of the recorded future as "what the participant knew"; persistence; the engaged-cell margin; a signed clearance to restore G.1's graded gate; the 0.6 m residual between the two readings on the cut-in | nothing |
 | **GZ2.Q1** (judgment) | Wording of the sustained-following finding in the handout and private questions: confirm | printing the handout |
 | **GZ1.Q1** (judgment) | The released configuration does not hold sustained car following (it brakes after 3–5 s with nothing happening, some repeats to a stop, with gaze choice on or off and with the authors' own scripted lead). It is in the handout as a question for Julian: keep it? | the handout's glance question |
 | **GZ1.Q3** (judgment) | Fitting the model's own glances to SHRP2 is a model-design task first (a reason to look away, a noise-dependent cost, a non-instant look-back), then days of simulation. Pursue, or ask Julian first? | any gaze-fitting card |
@@ -273,7 +284,9 @@ adopt the two-scalar wording, with the standing genericity ruling in §1 as the 
    bullet and the private questions' point 6 — rebuilding their PDFs as `-v3` copies if the originals
    are locked, and never touching `docs/handout_schumann_2026-09.docx`.
 
-0b-now. **THEN — card PC.1, authorized 2026-09-16** (see item 0b below for the idea). Steps: (1) write
+0b-now. ~~**THEN — card PC.1, authorized 2026-09-16**~~ **Done 2026-09-17**; see the banner and the worklog.
+   The construction is `src/comfortzone/conflict.py` (30 property checks), the design note has a result
+   section (§6b), and the verdict is: not adopted. The original steps follow for the record. Steps: (1) write
    `docs/projected_conflict_gate_note.md`: the construction (the ego's predicted path against the other
    road user's predicted path, both extrapolated over a fixed horizon from recent motion; the gate is
    the probability that the two come within a minimum clearance, generalizing card G.1's

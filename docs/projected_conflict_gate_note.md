@@ -240,6 +240,23 @@ consistent, the finding is stated as such, with the scenario that breaks each re
 - @PC1.Q3(minor, review): the engaged-cell margin of 0.2 above the scenario's floor is a convention
   chosen for the test; both neighbors are reported.
 
+## 6b Result (added 2026-09-17, the day after)
+
+*The card ran (`replication/czb/pc1_projected_conflict.py` → `out/pc1_projected_conflict.md`; the
+worklog entry of 2026-09-16 → 09-17 has the full record, including a first run kept as
+`out/pc1_projected_conflict_run1.md` and the one correction made after it). Test 1: credited, by
+0.0001 (post-onset 0.1126 against the bound 0.1127; CP1 0.0356), with a step-shaped gate (0.952 in
+every post-onset cell, 0.000 at CP1) because the construction clamps a projected incursion at zero
+where G.1's signed extrapolation grades it; identical at every horizon. Test 2: the kinematic reading
+closed in all 18 cells as predicted; the planned reading open in 2, 6, 9 and 14 cells at 3, 4, 5 and
+6 s, the cells whose oncoming car reaches the crossing within the horizon; not consistent at any
+horizon, and gating the distance rule costs +0.23 at 3 s and +0.02 at 6 s. Test 3: open from the
+first evaluated moment in every cell under every reading, as predicted. No reading adopted. The
+reading on file: anticipated conflict starts the response in each scenario, but with a horizon of
+its own (about three seconds on the cut-in, five to seven on the left turn, none needed on the
+overtake); one fixed-horizon construction is not the scenario-agnostic onset. Queries PC1.Q4 to Q6
+in the worklog; Q4 is Jonas's.*
+
 ## 7 Where I may be wrong
 
 - The reduction in section 2.4 assumes the ego's corridor is longer than the gap in every post-onset
