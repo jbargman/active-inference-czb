@@ -369,6 +369,7 @@ SetPET is the stimulus (appendix 17 and TT.Q2 say why).
 | purpose | file |
 |---|---|
 | the model in plain words, every term defined | handbook `docs/handbook/13_glossary.md` ("the measurement vocabulary"); the concepts deck `presentation/talk/build_concepts_talk.py` |
+| **the software in blocks, for jumping into the work** | `docs/software_overview.md` (+ docx, pdf; 2026-09-16): the repository as six engines with inputs and outputs, one figure per block naming the files, a "where to go for a question" table, the tests and the rules |
 | the cut-in's axis, gate and level (the three cards) | `replication/czb/out/cutin2_looming.md`, `out/cutin2_gate.md`, `out/stage1_looming.md`; the field attribution `out/cutin2_field_horizon_gate.md` |
 | the left turn | `docs/ltap_construction_note.md` (§5b has the result), `replication/czb/out/ltap_two_axis.md`, `src/comfortzone/ltap.py` |
 | the real-driving anchor | handbook `docs/handbook/17_appendix_test_track.md`, `replication/czb/out/ltapod_testtrack.md`, `notes/06_bargman2015_ltapod_testtrack.md`, `external/README.md` |

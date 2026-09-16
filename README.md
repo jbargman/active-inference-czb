@@ -9,6 +9,7 @@ surprise measures, and developing a method for establishing driver **comfort-zon
 | Document | What it is |
 |---|---|
 | [`HANDOFF.md`](HANDOFF.md) | **Context reload after clearing a chat** — scope decisions, environment constraints, choices that were made rather than inherited, and what was deliberately not done. Nothing here is repeated from the notes |
+| [`docs/software_overview.md`](docs/software_overview.md) | **The software in blocks** (2026-09-16) — the whole repository divided into six engines, three kinds of input and three kinds of output, one figure per block with the files behind each stage (`docs/make_software_overview_figures.py`), a table of where to go for a given question, and the floor of tests and rules. Written for jumping into the work; the handbook explains the model, this explains the software |
 | [`notes/01_paper_summaries.md`](notes/01_paper_summaries.md) | One summary per paper (7 active-inference papers), with the mechanisms and parameter values worth remembering |
 | [`notes/02_active_inference_overview.md`](notes/02_active_inference_overview.md) | The method itself: what active inference is, how it is instantiated for driving, what it buys over the alternatives, where it is weak, and how it connects to comfort zones. Includes the wider literature search |
 | [`notes/03_replication.md`](notes/03_replication.md) | Replication report — what ran, what matched, what did not, and why |
