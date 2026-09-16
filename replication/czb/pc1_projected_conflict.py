@@ -53,6 +53,16 @@ ADOPTION. A reading credited in test 1 and consistent in tests 2 and 3 at the pr
 adopted, in the order K, P, KP. Consistent only at a longer horizon -> reported, adoption deferred to
 Jonas. None -> the finding is stated with the scenario that breaks each reading.
 
+[RERUN, 2026-09-16, after the first run (its report kept as out/pc1_projected_conflict_run1.md).
+The first run's |cK - cP| check reached 1.619 m on the cut-in, where the ego drives straight, and the
+cause was in the construction, not the data: the planned path's continuation past the end of a trace
+took its velocity from the last two samples, so a jittered last sample bent the corridor. Fixed in
+`conflict.planned_path` (velocity over the last window) with a new property test; nothing else
+changed, no rule changed. The first run's verdicts: test 1 credited (0.1126 against <= 0.1127, CP1
+0.0356); left turn K 0/18 open at every horizon, P and KP 2/6/9/14 of 18 at 3/4/5/6 s, cost +0.23 to
++0.02, not consistent; overtake open in all 15 cells under every reading; no reading adopted. The
+rerun's numbers replace them below, and both sets are in the worklog.]
+
 Output: replication/czb/out/pc1_projected_conflict.md, out/pc1_gates.csv (one row per cell, reading,
 horizon), out/pc1_cutin_clearance.csv (the cut-in's c per video and horizon).
 Run:    python replication/czb/pc1_projected_conflict.py   (background; about an hour)

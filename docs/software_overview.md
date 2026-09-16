@@ -28,7 +28,7 @@ Underneath everything sits a floor of property tests and working rules.
 | 5 Crash causation | `src/quadris/`, `src/causation/`, `src/equivalence/`, `replication/causation/` | crashes generated around an active-inference response and tested for equivalence | `docs/crash_causation_results.md` | complete study; the gaze probes GZ.1 and GZ.2 live here too |
 | 6 Split-site transfer | `transfer/`, `src/comfortzone/interface.py` | work with Volvo Cars without moving their data | `transfer/README.md` | ready; paused by Jonas 2026-09-11 |
 | Outputs | `replication/*/out/`, `docs/`, `notes/`, `presentation/`, `tools/` | reports, documents, decks, explorers | `handover.md` | living |
-| The floor | `tests/`, `docs/czb_work_orders.md` §2 | nine test scripts and the standing rules | `handover.md` §0 and §2 | 353 checks, all passing on 2026-09-16 |
+| The floor | `tests/`, `docs/czb_work_orders.md` §2 | ten test scripts and the standing rules | `handover.md` §0 and §2 | 381 checks, all passing on 2026-09-16 |
 
 ## 2 Block 1: the reference model, and how it is replicated
 
@@ -209,7 +209,7 @@ all 224 rear-end runs in the deposit.
 
 ## 9 The floor: tests, the working cycle, and the rules
 
-Nine test scripts, each a plain script that counts checks in the `check(...)` style, must pass
+Ten test scripts, each a plain script that counts checks in the `check(...)` style, must pass
 before and after every card. `pytest` reports fewer and is not the suite.
 
 | script | checks | covers |
@@ -223,6 +223,7 @@ before and after every card. `pytest` reports fewer and is not the suite.
 | `tests/test_interface.py` | 28 | the split-site interface reader |
 | `tests/test_situational.py` | 27 | situational surprise |
 | `tests/test_norms.py` | 16 | the cut-in norm |
+| `tests/test_conflict.py` | 28 | the projected-conflict gate (card PC.1, added 2026-09-16) |
 
 The cycle every card follows is the same, and the figure shows it with the files at each step.
 

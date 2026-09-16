@@ -44,7 +44,7 @@ the repository disagree, the repository wins, and you should say so in your repl
 1. Read this file in full. Then read `docs/czb_work_orders.md` §2 (the standing rules)
    and the card or note named for the task at hand. Do not read the papers or the handbook
    unless the card says to; do not open `OthersWork/` (§5).
-2. Run the test suite exactly like this, and confirm 31, 33, 40, 96, 62, 20, 28, 27 and 16 passed:
+2. Run the test suite exactly like this, and confirm 31, 33, 40, 96, 62, 20, 28, 27, 16 and 28 passed:
    ```bash
    python tests/test_surprise.py
    python tests/test_comfortzone.py
@@ -55,8 +55,10 @@ the repository disagree, the repository wins, and you should say so in your repl
    python tests/test_interface.py
    python tests/test_situational.py
    python tests/test_norms.py
+   python tests/test_conflict.py
    ```
-   (`pytest` reports fewer and is *not* the suite; the files are scripts that count checks.)
+   (`pytest` reports fewer and is *not* the suite; the files are scripts that count checks. The
+   tenth file, `test_conflict.py`, was added with card PC.1 on 2026-09-16.)
 3. Run `git status` and `git log --oneline -5`. The tree should be clean. If it is not,
    stop and report what is uncommitted before doing anything.
 4. If Jonas said "load handover.md" and nothing else: reply with a short statement of

@@ -175,6 +175,22 @@ def main():
     check("overtake in miniature: a cyclist beside the path has the lateral edge clearance (1.77 m)",
           abs(c_side - (3.0 - 0.94 - 0.29)) < 0.02, f"{c_side:.3f}")
 
+    # --- 8 the planned path past the end of the trace ------------------------------------------
+    # a straight trace whose last sample carries a lateral jitter step: the continuation must use
+    # the last window's velocity, not the last two samples (the defect PC.1's first run showed)
+    ts = np.arange(0.0, 5.0, 0.1)
+    yj = np.zeros_like(ts)
+    yj[-1] = 0.004
+    jit = Body(t=ts, x=20.0 * ts, y=yj, heading=np.zeros_like(ts), length=4.6, width=1.88)
+    pp = planned_path(jit, 4.0, DT, v_window=1.0)
+    drift = float(np.abs(pp.y[pp.tau >= 1.0]).max())
+    check("the planned path continues past the trace end at the last window's velocity (drift under "
+          "0.1 m over 20 s despite a 4 mm jitter step in the last sample)", drift < 0.1, f"{drift:.3f}")
+    other = straight(60.0, 5.0, 20.0, ts)
+    c_cont = corridor_clearance(jit, pp, other, kinematic_path(other, 4.0, 1.0, DT), 3.0)
+    check("and the clearance to a parallel body beyond the trace end is the lateral edge clearance (3.12 m)",
+          abs(c_cont - (5.0 - 1.88)) < 0.05, f"{c_cont:.3f}")
+
     print(f"\n{len(PASS)} passed, {len(FAIL)} failed")
     if FAIL:
         sys.exit(1)

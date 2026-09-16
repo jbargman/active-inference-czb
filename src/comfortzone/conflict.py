@@ -159,18 +159,25 @@ def kinematic_path(body: Body, t_at: float, v_window: float, dt: float, t_path: 
                          heading=np.full_like(tau, head))
 
 
-def planned_path(body: Body, t_at: float, dt: float, t_path: float = T_PATH) -> ProjectedPath:
-    """Reading P: the body's recorded future over the path span (continued at its final velocity
-    past the end of the trace). The heading along the path is the direction of the recorded
-    motion, so the traces' heading convention never enters; the recorded heading is used only
-    where the body is stationary."""
+def planned_path(body: Body, t_at: float, dt: float, t_path: float = T_PATH,
+                 v_window: float = 1.0) -> ProjectedPath:
+    """Reading P: the body's recorded future over the path span, continued past the end of the
+    trace at the velocity over its last `v_window` seconds. The heading along the path is the
+    direction of the recorded motion, so the traces' heading convention never enters; the
+    recorded heading is used only where the body is stationary.
+
+    [2026-09-16, after card PC.1's first run: the continuation took its velocity from the last two
+    samples, which on a jittered trace is dominated by the jitter (a 0.004 m lateral step over
+    0.033 s is 0.12 m/s, 2.4 m of drift over the path span), and the cut-in's |cK - cP| check
+    reached 1.6 m on an ego that drives straight. The velocity is now taken over the same window
+    the kinematic reading uses.]"""
     i = _index_at(body.t, t_at)
     tau = np.arange(0.0, t_path + 0.5 * dt, dt)
     tq = body.t[i] + tau
     x, y = np.interp(tq, body.t, body.x), np.interp(tq, body.t, body.y)
     beyond = tq > body.t[-1]
     if np.any(beyond):
-        k = max(len(body.t) - 2, 0)
+        k = _index_at(body.t, body.t[-1] - v_window)
         span = max(float(body.t[-1] - body.t[k]), 1e-9)
         vx_end, vy_end = (body.x[-1] - body.x[k]) / span, (body.y[-1] - body.y[k]) / span
         x = np.where(beyond, body.x[-1] + vx_end * (tq - body.t[-1]), x)
@@ -246,7 +253,7 @@ def clearance_series(ego: Body, other: Body, times: np.ndarray, reading: str, t_
         if reading in ("K", "KP"):
             cs.append(corridor_clearance(ego, kinematic_path(ego, t_at, v_window, dt), other, other_path, t_enc))
         if reading in ("P", "KP"):
-            cs.append(corridor_clearance(ego, planned_path(ego, t_at, dt), other, other_path, t_enc))
+            cs.append(corridor_clearance(ego, planned_path(ego, t_at, dt, v_window=v_window), other, other_path, t_enc))
         out[k] = min(cs)
     return out
 

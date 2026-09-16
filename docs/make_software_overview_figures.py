@@ -134,7 +134,7 @@ def fig_map():
     # the floor: tests and conventions
     ax.add_patch(FancyBboxPatch((0.2, 0.12), 12.0, 0.62, boxstyle="round,pad=0.04",
                                 facecolor="white", edgecolor=INK, linewidth=1.4, linestyle="--"))
-    ax.text(6.2, 0.43, "THE FLOOR: nine property-test scripts (tests/), the standing rules (docs/czb_work_orders.md "
+    ax.text(6.2, 0.43, "THE FLOOR: ten property-test scripts (tests/), the standing rules (docs/czb_work_orders.md "
             "section 2), the worklog and its query register, one commit per card",
             ha="center", va="center", fontsize=8.2, color=INK)
     fig.tight_layout()
@@ -382,7 +382,7 @@ def fig_work_cycle():
          "out/<card>.md  (+ .csv, .pkl)"),
         (7.35, "Worklog + queries", "one paragraph per card;\n@CARD.Qn(severity, who);\nregister compiled by script", PURPLE,
          "out/worklog.md  collect_queries.py"),
-        (9.7, "Suite green, commit", "nine test scripts before\nand after; one commit\nper card; push on request", TEAL,
+        (9.7, "Suite green, commit", "ten test scripts before\nand after; one commit\nper card; push on request", TEAL,
          "tests/*.py"),
     ]
     for x, t, s, c, m in steps:
