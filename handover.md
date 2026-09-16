@@ -9,6 +9,23 @@ rests on, what the rules are, what is waiting on Jonas, what to do in what order
 and ask. It does not repeat the science; the documents it points to do that. Where this file and
 the repository disagree, the repository wins, and you should say so in your reply.*
 
+> ## RESUME HERE — model switch, 2026-09-16
+>
+> Jonas is changing models mid-session and wants the next session to **continue exactly where this
+> one stopped**. State at hand-off: last commit `2b83419` (card GZ.2), suite green at
+> 31/33/40/96/62/20/28/27/16 (nine files, §0 step 2). **Jonas's instruction, verbatim: "Please go with
+> 1, and then 2."** That means, in order:
+>
+> 1. **GZ2.Q2 — which state channel suppresses the spontaneous re-plan** (§4 item 0a). Not started.
+> 2. **Card PC.1 — the projected-conflict gate** (§4 item 0b). Authorized by the same instruction, which
+>    answers HS1.Q3 as "yes, go" (recorded as `RESOLVED HS1.Q3` in the worklog). Design note first.
+>
+> Work in interactive mode under the `performing-research` skill: pre-state before running, commit per
+> card, queries into the worklog. **One uncommitted file is Jonas's own:** `docs/handout_schumann_2026-09.docx`
+> carries his edits made in Word. Do not stage, overwrite or rebuild onto it; the latest build from the
+> markdown is `docs/handout_schumann_2026-09-v2.docx`. Ask him before any rebuild of that handout whether
+> his Word edits should first be folded back into the `.md`. He meets Julian Schumann this week.
+
 > **The latest arc, in four lines** (full record in `handover_2026-09-13.md`). Surprise as the onset
 > of a response was tested and did not replace the anticipatory gate (card HS.1); Farewell's emergency
 > braking levels do not carry over to comfort judgments (PT.1); a crossing norm for cut-ins is proposed
@@ -196,7 +213,8 @@ and in `handover_2026-09-13.md`):
 
 | query | question, in one line | unblocks |
 |---|---|---|
-| **HS1.Q3** (judgment) | Is the reading right that *anticipated conflict*, not surprise, starts the response — and should card PC.1 (a scenario-agnostic projected-conflict gate) be the next card? | §4 item 0b |
+| HS1.Q3 (**answered 2026-09-16: go**) | Should card PC.1 (a scenario-agnostic projected-conflict gate) be the next card? Jonas: "go with 1, and then 2" | §4 items 0a, 0b-now |
+| **GZ2.Q1** (judgment) | Wording of the sustained-following finding in the handout and private questions: confirm | printing the handout |
 | **GZ1.Q1** (judgment) | The released configuration does not hold sustained car following (it brakes after 3–5 s with nothing happening, some repeats to a stop, with gaze choice on or off and with the authors' own scripted lead). It is in the handout as a question for Julian: keep it? | the handout's glance question |
 | **GZ1.Q3** (judgment) | Fitting the model's own glances to SHRP2 is a model-design task first (a reason to look away, a noise-dependent cost, a non-instant look-back), then days of simulation. Pursue, or ask Julian first? | any gaze-fitting card |
 | **HO.Q1** (minor) | Before printing the handout for Julian: complete three references shown as "[initials]", and confirm the wording for the data sources and the colleague credited with the gate | printing `docs/handout_schumann_2026-09.pdf` |
@@ -224,14 +242,49 @@ adopt the two-scalar wording, with the standing genericity ruling in §1 as the 
 
 ## 4 The queue, in order, with what "done" means
 
+0a. **NEXT — GZ2.Q2: which state channel suppresses the spontaneous re-plan.** Authorized 2026-09-16.
+   Context: card GZ.2 (`replication/causation/gz2_following_braking.py`, report
+   `replication/causation/gz2/gz2_following_braking.md`, worklog entry of 2026-09-16) showed that in
+   steady following (15 m/s, 1.5 s headway, lead at constant speed) the released model re-plans by
+   itself at step 13 and brakes, driven entirely by the collision-and-safety shortfall (0.0764
+   evidence per step). ×100 noise on the three looming channels changes nothing (condition C2, 0.0757);
+   ×100 on the seven state channels stops it (C3, 0.0023, no re-plan). **Do:** add two part-C
+   conditions to the same script, in its docstring before running, T = 14, batch 4, same readings:
+   **D1** ×100 on the ego-longitudinal channels only (`x_sd`, `v_sd`, `a_sd`) and **D2** ×100 on the
+   lateral and heading channels only (`y_sd`, `theta_sd`, `delta_sd`, `w_sd`). Mechanism in the script:
+   list the keys under `_decoder_x100`; conditions whose tag starts with a letter other than B run
+   `PART_B_STEPS` = 14 steps — extend that test to include `D`. Reading: whichever of D1/D2 lands near
+   C3's 0.0023 carries the effect; then check the route (the planner scores futures on observations
+   sampled with this noise, `BeliefReward(sample_mean=False)`, `src/common/belief_reward.py`). Run in the
+   background (`python replication/causation/gz2_following_braking.py --only D1`, then D2, then
+   `--report`); steps take 5–100 s depending on machine load. **Done** = report regenerated, worklog
+   paragraph with `RESOLVED GZ2.Q2`, commit, and one line added to the handout's "Why it brakes"
+   bullet and the private questions' point 6 — rebuilding their PDFs as `-v3` copies if the originals
+   are locked, and never touching `docs/handout_schumann_2026-09.docx`.
+
+0b-now. **THEN — card PC.1, authorized 2026-09-16** (see item 0b below for the idea). Steps: (1) write
+   `docs/projected_conflict_gate_note.md`: the construction (the ego's predicted path against the other
+   road user's predicted path, both extrapolated over a fixed horizon from recent motion; the gate is
+   the probability that the two come within a minimum clearance, generalizing card G.1's
+   `Phi((m_lat - (l0 + ldot*t_enc))/s_l)`), how it reduces exactly to G.1 on the cut-in, what it
+   computes in the cyclist overtake (ego pulling out toward a steady cyclist) and the left turn (ego
+   turning across an oncoming car), and the pre-stated rule; (2) implement in `src/comfortzone/` with
+   property tests in the `check()` style, including the reduction to G.1; (3) a script in the style of
+   `replication/czb/hs1_situational_surprise.py` (whose scene loaders `scene_tracks` and
+   `study2_scenes`, and first-study jitter settings, can be imported) scoring it on the cut-in with
+   G.1's two criteria (CP1 out of sample < 0.05; post-onset held-out ≤ 0.1027 + 0.01) and reporting
+   when the gate opens in the overtake and left-turn cells against when participants respond. Watch
+   the two traps card HS.1 hit: measure each study's jitter floor before choosing any spread, and
+   restrict every statistic to what participants were shown.
+
 0. **Do not run card Q5.1 as pre-stated** (query HS1.Q2, 2026-09-13). Its predictor spread
    cannot register a lane change at all (a fixed-horizon constant-velocity predictor sees at most
    a·h²/2; at its settings a lane change would need ~5.6 m/s² of lateral acceleration), and its
    tests 1 and 2 are answered, with corrected settings, by card HS.1. The proposed replacement
    is item 0b.
 
-0b. **Card PC.1 (proposed, not started) — a scenario-agnostic projected-conflict gate.** After
-   HS1.Q3. Card HS.1's reading is that the response starts at *anticipated* conflict. PC.1 would
+0b. **Card PC.1 (authorized 2026-09-16, not started) — a scenario-agnostic projected-conflict gate.**
+   HS1.Q3 answered "go". Card HS.1's reading is that the response starts at *anticipated* conflict. PC.1 would
    generalize G.1's gate from "lateral clearance projected 3 s ahead" to "the ego's path against
    the other road user's predicted path", computed the same way in all four scenarios, and test
    it with G.1's criteria on the cut-in plus the overtake and left-turn cells where surprise came

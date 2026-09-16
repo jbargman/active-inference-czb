@@ -2705,3 +2705,16 @@ results this is invisible, because the lead brakes 0.6 s into every run.
 3 and 9; the documents are updated to say it plainly but as our probe, not a flaw. Confirm the wording.
 @GZ2.Q2(minor, review): split C3's seven channels (ego longitudinal versus the lead's lateral channels) to
 find which carries the effect, and trace the route through the sampled observations. Two short runs.
+
+## 2026-09-16 — Jonas: "go with 1, and then 2"; model switch
+
+Jonas authorized, in order, (1) GZ2.Q2 and (2) card PC.1, then asked for a handover because he is changing
+models mid-session. Nothing was run between the instruction and the handover. `handover.md` carries a
+"RESUME HERE" banner and §4 items 0a and 0b-now with the exact steps for both.
+
+RESOLVED HS1.Q3: go. Card PC.1, the scenario-agnostic projected-conflict gate, is the next card after
+GZ2.Q2 (Jonas, 2026-09-16, "go with 1, and then 2"). The reading "anticipated conflict rather than surprise
+starts the response" stands as the working hypothesis PC.1 tests; it is not thereby confirmed.
+
+Note for the next session: `docs/handout_schumann_2026-09.docx` has uncommitted edits Jonas made in Word.
+Leave that file alone; ask him before rebuilding the handout from its markdown.
