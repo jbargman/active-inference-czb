@@ -60,6 +60,13 @@ modeling. As I read the results, in six ways. All are fresh and not yet reviewed
    as readily as a mild one (consistent with a glance costing almost no information at released noise),
    and every glance lasted one 0.2 s step because looking back is instantaneous in the code. So fitting
    to SHRP2 is a design task before it is a fitting task (D2).
+   **Why it brakes (card GZ.2, 2026-09-16, `replication/causation/gz2/`).** Not a mystery any more:
+   the evidence accumulator re-plans by itself at about 2.6 s, fed entirely by imagined collisions and
+   failed safety checks (68 090 per step, the same value our method review read from their deposit),
+   and the new plan buys safety margin by braking. The inverse-tau preference and epistemic value play no
+   part. Noise on the car's *state* channels (not the looming channels) slows the accumulation 30-fold
+   and prevents it. For us this is the most useful single result of the week: the same shortfall our
+   comfort-zone field was built on makes the released model unstable in plain following.
 
 ## 1 If there are only fifteen minutes
 
@@ -263,7 +270,9 @@ modeling. As I read the results, in six ways. All are fresh and not yet reviewed
      starts braking at the same moment in every released-noise run — 3.2 s at a 1.5 s headway, 4.6 s at
      2.0 s — with gaze choice on or off, and with the authors' own scripted lead instead of our replay;
      1–3 of 4 repeats stop. With 100× perception noise it follows steadily. Our review predicted the
-     re-plan (§4.2); what it does after re-planning was not known. The cause is open.
+     re-plan (§4.2). *The cause, found 2026-09-16 (GZ.2):* one evidence-triggered re-plan at step 13,
+     fed only by imagined collisions and safety failures; the new plan brakes to buy margin. Noise on the
+     state channels, not the looming channels, prevents it. Which state channel is not yet known.
   2. *With realistic noise the model never looks away.* Nothing in it gives a reason to — there is no
      competing task — and looking away now costs information.
   3. *At released noise a near-blind glance is chosen as readily as a mild one* (15.0% against 15.7%).
@@ -281,7 +290,8 @@ modeling. As I read the results, in six ways. All are fresh and not yet reviewed
   model a reason to look away, and a reason to stay away?"
 - **Listen for:** "the rear-end runs never needed it" (follow up: would the 2024 paper's configuration
   hold it?); "the accumulator's starting point" (follow up: it re-plans by itself — is braking the
-  intended outcome of that re-plan?); "a secondary task is the motive" (follow up: is that in any
+  intended outcome of that re-plan? and if the perception noise was tuned, was steady following part of
+  what it was tuned against?); "a secondary task is the motive" (follow up: is that in any
   released code?). Be careful to present point 1 as something we saw in a quick probe, not a flaw.
 
 **D3 Continuous driving** (verbal)

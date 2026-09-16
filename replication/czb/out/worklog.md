@@ -2658,3 +2658,50 @@ the plans at the first re-plan (which term makes braking win) in G0c against G1.
 @GZ1.Q3(judgment, jonas): fitting glances to SHRP2 is a model-design task first (a motive to look away, a
 noise-dependent cost, a non-instant look-back), then days of simulation. A scope decision whether to
 pursue it, and whether to ask Julian first.
+
+## 2026-09-16 — card GZ.2: why the released model brakes during steady car following
+
+Jonas asked what could move things forward with tokens left. Picked GZ1.Q2 because it needs no ruling,
+runs in minutes, and he meets Julian Schumann this week. Interactive mode. Suite unchanged (no source
+code touched). `replication/causation/gz2_following_braking.py` → `replication/causation/gz2/gz2_following_braking.md`,
+questions and readings pre-stated in its docstring (part B added before its runs). The planner's own
+bookkeeping is recorded per step (`returns_initial`, `returns_optimized`, `evidence`), nothing edited.
+Steady following at 15 m/s, 1.5 s headway, batch 4. The machine was loaded (steps 7–390 s), so the runs
+took about two hours of wall time.
+
+**Part A (25 steps).**
+- **Q1 — braking is a re-plan decision.** In the released configuration (B0) the evidence reaches 1 at
+  step 13 (14 in one repeat) and fires a full re-plan; the new plan eases off one step and brakes at
+  3–5 m/s² from the next, with no further re-plan. The braking is written into that one plan.
+- **Q2 — the collision-and-safety term produces all of the evidence**, 0.0764 per step. Divided by the
+  evidence factor 10^-5.95 that is a shortfall of 68 090 per step, which reproduces the 68 100 that
+  `docs/method_review.md` §4.2 read from the authors' OSF deposit for the same condition — two independent
+  routes, the deposit and our closed-loop run.
+- **Q3 — what the re-plan buys:** +58 000 to +77 000 on collision-and-safety, paid for with speed
+  (−1 300 to −3 100), pedal effort (−7 100 to −9 900), lane position (−5 800 to −16 200) and steering.
+- **Q4 — perception noise ×100 (B1) acts on the evidence, not the choice:** 0.0029 per step, 25 times
+  slower, no re-plan in 25 steps (the threshold would take about 60 s).
+- **Q5 — epistemic value plays no part:** B2 (alpha 0) is identical to B0 in every recorded number.
+
+**Part B (14 steps), on part A's open point.**
+- **C1**, collision and safety checks removed (inverse-tau preference only): 0.0002 per step. The inverse-tau
+  preference contributes nothing; the imagined collisions and failed safety checks are the whole shortfall.
+- **C2**, noise ×100 on the three looming channels only: 0.0757, re-plans at step 13–14, like B0.
+- **C3**, noise ×100 on the seven state channels only: 0.0023, no re-plan, like B1.
+So it is the noise on the state channels that suppresses the spontaneous re-plan. With looming perception
+on, the lead's longitudinal state is observed through the looming channels, so the state channels here
+are the ego's own position, speed and acceleration and the lead's lateral position and heading. Which of
+those carries the effect, and by what route (the planner scores imagined futures on observations sampled
+with this noise), is not established.
+
+**Reading, marked opinion.** The spontaneous re-plan the method review predicted from the deposit happens in
+the closed loop, and what it does is brake. It is driven entirely by imagined collisions and failed safety
+checks in steady following — the same collision-and-safety shortfall our comfort-zone field was built on —
+and it disappears when the model's perception of its own state is noisier. So the released perception noise
+(factor 0.01) and the evidence accumulator together make sustained following unstable. For the published
+results this is invisible, because the lead brakes 0.6 s into every run.
+
+@GZ2.Q1(judgment, jonas): the finding is worth putting to Julian as a concrete version of handout questions
+3 and 9; the documents are updated to say it plainly but as our probe, not a flaw. Confirm the wording.
+@GZ2.Q2(minor, review): split C3's seven channels (ego longitudinal versus the lead's lateral channels) to
+find which carries the effect, and trace the route through the sampled observations. Two short runs.

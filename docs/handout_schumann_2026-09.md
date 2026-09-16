@@ -198,6 +198,14 @@ and compared with the QUADRIS reference by the practical-equivalence method of W
   step, against a SHRP2 median of about 0.75 s, and a near-blind glance was chosen about as readily
   as an ordinary one. As we read it, fitting glances would first need a reason to look away, a cost
   that depends on perception noise, and a way for a glance to last; we have not tried any of those.
+- **Why it brakes (preliminary).** Reading the planner's own bookkeeping, the braking is a single
+  evidence-triggered re-plan at about 2.6 s. The evidence comes entirely from imagined collisions and
+  failed safety checks in the followed plan — 68 090 per step, which matches the value for this
+  condition in your OSF deposit — and the new plan trades speed, pedal effort and lane position for
+  safety margin. The inverse-tau preference and the epistemic term play no part. Raising the noise on
+  the state channels alone slows the accumulation 30-fold and the car keeps following; raising it on
+  the looming channels alone does not. The published runs never show this, since the lead brakes
+  0.6 s in.
 
 ## 6 The questions we would most like to ask
 
@@ -239,7 +247,9 @@ and compared with the QUADRIS reference by the practical-equivalence method of W
    (section 5) we had two surprises: the released configuration did not hold sustained car following
    — it began braking after 3–5 s with nothing happening — and glances, once allowed, always lasted a
    single time step, since looking back is instantaneous. Is sustained following something you have
-   looked at, and how would you give the model a reason to look away, and a reason to stay away?
+   looked at? The braking traces to the accumulator re-planning on imagined collisions, and noisier
+   perception of the car's own state prevents it — was the small perception noise chosen with that in
+   view? And how would you give the model a reason to look away, and a reason to stay away?
 10. **Practicalities.** Is the pointwise evaluation of section 2 a fair approximation in your view,
     is there a faster implementation we should use, and would you be interested in a joint look at
     cut-in data? For naturalistic data, where nothing marks the start of an event, what starting
