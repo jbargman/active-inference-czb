@@ -3076,3 +3076,46 @@ and Arkady Zgonnikov (meetings 2026-09-17 and 09-18). Reports are written so a s
 marks what is ours and unpublished; nothing is sent by a session.
 RESOLVED NAT.Q4: the comfort-zone cards first (NC.1–NC.4); of the paper cards, NM.1, pre-registered as soon
 as NC.0 yields steady-following episodes and run overnight.
+
+## 2026-09-17 (evening) — Jonas and Johan Engström: other cognitive perspectives on what has been found
+
+Jonas, sitting with Johan: think about other cognitive paradigms that could frame the work so far, "very
+generally". Given in chat, recorded here so it survives the model switch that followed. Marked opinion
+throughout; the references are from memory and UNVERIFIED (never cite without checking).
+
+Starting point: the project's model is a classical psychometric threshold with a lapse rate plus a
+relevance gate, and this week's findings (exposure moves the level, not the spread; anticipation precedes
+surprise; a perceived quantity beats the field as the axis) sit more naturally in that frame than in the
+active-inference one. Eight framings, each with a reading of our results and a test:
+1. Signal detection theory (Green & Swets 1966): level = criterion, spread = sensitivity; EX.1/EX.2's
+   criterion-only shift is what SDT predicts of a payoff or prior change; the track's four-times-sharper
+   drivers is a sensitivity difference attributable to the stimulus. Test in hand: PS ratings plus button
+   presses on the same study-1 trials as a two-response SDT design.
+2. Adaptation-level / range-frequency theory (Helson 1964; Parducci 1965): the criterion settles relative
+   to the experienced stimulus range; the biggest threat to naturalistic transfer of the levels. Test in
+   hand: the fitted level as a fraction of each study's stimulus range across the two cut-in studies;
+   highD's census then places real cut-ins in that range.
+3. Ecological / affordance-based control (Gibson & Crooks 1938; Lee 1976; Fajen 2005; Fajen & Devaney
+   2006): the boundary as an action boundary ("can I still stop") scaled to capability, recalibrating with
+   practice; the released model's safety term is an affordance boundary in disguise. Test: refit study 2 on
+   required deceleration relative to a capability estimate (appendix 16's colleague model is adjacent).
+4. Task-capability interface / risk allostasis / satisficing (Fuller 2005, 2011; Summala 2007; Wilde 1982):
+   the per-driver trait as a target feeling of task difficulty; extra motives move the target for everyone.
+   Needs a manipulation (the simulator study of the roadmap).
+5. Evidence accumulation with a starting-point bias and urgency (Ratcliff 1978; Cisek et al. 2009;
+   Markkula et al. 2016): anticipation before surprise = a starting point near the bound; a scenario-
+   specific anticipation horizon (PC.1) = a scenario-specific urgency gain; reconciles R.1's negative
+   result. Test: a starting-point diffusion fit on study 1's cut-in response times against the threshold
+   model, held out.
+6. Predictive processing, the other slice (Engström et al. 2018): on the left turn only the driver's own
+   planned path opened the gate (PC.1's P reading), so intention, not kinematics, starts the response; the
+   gate as precision on one prediction-error channel; glances (GZ.1) as uncertainty-driven sampling. The
+   most direct bridge back to the authors.
+7. Hazard perception and schemas (Horswill & McKenna 2004; Crundall et al. 2012): scenario-specific
+   anticipation horizons as learned hazard scripts; the level may correlate with experience.
+8. Intent attribution: the gate as an inference about the other driver's intention rather than a
+   projection. Test on study 2: does the gate open earlier when the cut-in's onset is more legible at the
+   same lateral rate?
+Recommended first: 2 (decides transfer, data in hand), 5 (one mechanism for R.1 and the anticipation
+findings), 3 (a cognitive reading of the safety term with a highD transfer prediction). Not authorized;
+Jonas may turn any into a card or ask for a literature search.

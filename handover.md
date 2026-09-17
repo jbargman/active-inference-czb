@@ -8,55 +8,32 @@ rests on, what the rules are, what is waiting on Jonas, what to do in what order
 and ask. It does not repeat the science; the documents it points to do that. Where this file and
 the repository disagree, the repository wins, and you should say so in your reply.*
 
-> ## RESUME HERE — 2026-09-17, nothing authorized
+> ## RESUME HERE — model switch, 2026-09-17 evening, nothing authorized
 >
-> State: last commit is card EX.2's result; suite green at
-> 31/33/40/96/62/20/28/27/16/30 (**ten files**, §0 step 2). Both of Jonas's instructions of 2026-09-16
-> are done (full record in `handover_2026-09-17.md`):
+> Jonas is moving to a more capable model. State: tree clean apart from his own
+> `docs/handout_schumann_2026-09.docx` (Word edits; never stage or rebuild onto it); suite green at
+> 31/33/40/96/62/20/28/27/16/30 (ten files, §0 step 2); nothing pushed since commit `ff0507a` (push only
+> when he asks, with `git -c credential.helper= -c credential.helper='!gh auth git-credential' push origin main`).
+> The dated record of the day is **`handover_2026-09-17.md`**, parts 1 and 2. What the day settled:
 >
-> 1. **GZ2.Q2, done.** The released model's spontaneous re-plan in steady following is suppressed by
->    the assumed noise on the lateral and heading channels, through the belief update. The mechanism
->    inside the belief update is open (GZ2.Q3, minor).
-> 2. **Card PC.1, done, not adopted.** One fixed-horizon projected-conflict gate is credited on the
->    cut-in by 0.0001 as a step, open throughout the overtake, and closed on the left turn where people
->    respond at every horizon to 6 s. **PC1.Q4 is Jonas's:** carry a scenario-specific anticipation
->    horizon, or G.1's gate on the cut-in only.
+> 1. **GZ2.Q2, done.** The released model's spontaneous re-plan in steady following is suppressed by the
+>    assumed noise on the lateral and heading channels, through the belief update (GZ2.Q3 open, minor).
+> 2. **Card PC.1, done, not adopted.** One fixed-horizon projected-conflict gate does not generalize; the
+>    anticipation horizon is the scenario's own. **PC1.Q4 for Jonas.**
+> 3. **Cards EX.1 and EX.2, done.** Exposure shifts the criterion, not the gate, at population level only;
+>    **first exposure is now the primary setting** for the levels (cut-in median 0.034 rad/s, left-turn
+>    video PET_50 2.42 s against the track's 2.45 s). **EX2.Q1 for Jonas** (handbook and deck numbers).
+> 4. **highD and inD requested; plan written** (`docs/naturalistic_data_plan.md`), NAT.Q1–Q4 answered;
+>    starts only on access and his word. Comfort-zone cards first, then NM.1.
+> 5. **Perspectives for Johan Engström** (worklog, 2026-09-17 evening): eight cognitive framings with
+>    tests; recommended range-frequency theory, a starting-point diffusion model, affordance boundaries.
+>    References unverified. May become cards or a literature search.
 >
-> **Card EX.1, done 2026-09-17 on Jonas's instruction** (`out/ex1_exposure_split.md`, worklog entry of
-> that date). His idea: an exposure-driven "learned anticipation" component that would be off in
-> naturalistic data. Tested and not supported as anticipation: on the cut-in, pre-onset responding does
-> not change on a second showing (+0.001 [−0.011, +0.013]); post-onset it rises 2.7 points. On the left
-> turn, responding *falls* about 9 points over four showings, in every distance band, mostly across the
-> session boundary; the boundary distance shrinks from 87 to 77 m with no change in sharpness. Neither
-> effect is reliable per driver. So the left turn's long horizon (PC.1) is largest at first exposure,
-> not learned. The old +0.027 was post-onset only.
->
-> **Card EX.2, done 2026-09-17** (`out/ex2_first_exposure_levels.md`): all showings kept, one shared
-> session term on the level, reported at first exposure (EX1.Q4 resolved by Jonas's "do as you
-> propose"). The term is reliable in both scenarios, in opposite directions: first-exposure cut-in
-> median 0.0341 rad/s (pooled 0.0317; trigger +0.136 s later), left-turn video PET_50 2.42 s (pooled
-> 2.18 s). **First exposure is now the primary setting**; the per-driver trait is unchanged (+0.642).
-> Arithmetic only: the video-to-track offset on the left turn shrinks from −0.27 s to about −0.03 s.
-> **EX2.Q1 is Jonas's:** dated notes in the handbook and deck numbers; §1 below still quotes pooled values.
->
-> **Naturalistic data, planned 2026-09-17, not started.** Jonas requested access to highD and inD. The plan is
-> `docs/naturalistic_data_plan.md`: a shared ingest step (NC.0, a validated onset detector, a census), a
-> comfort-zone program (NC.1, inD left-turn gap acceptance, recommended first) and a paper-assessment
-> program (NM.1, the released model on replayed highD following, recommended first). Nothing starts
-> before access. NAT.Q1–Q4 answered 2026-09-17: a response is an acceleration threshold with a minimum
-> duration (and possibly a speed drop), swept in NC.0b; no highD or inD data to Volvo Cars (code and
-> results may go; per-track derived files only under `external/`); results nominally internal, Jonas may
-> share parts with Julian Schumann, Johan Engström and Arkady Zgonnikov; priority the comfort-zone cards,
-> then NM.1. Raw data stays in `external/` (license: non-commercial, no redistribution).
->
-> Work in interactive mode under the `performing-research` skill. **One uncommitted file is Jonas's
-> own:** `docs/handout_schumann_2026-09.docx` carries his Word edits. Do not stage, overwrite or rebuild
-> onto it; ask him first whether his edits should be folded back into the `.md`. **Pushing:** the
-> repo-local token file is refused on push (403); `gh` is logged in, so push with
-> `git -c credential.helper= -c credential.helper='!gh auth git-credential' push origin main`, and only
-> when Jonas asks.
+> Quick wins if he asks: EX2.Q2 (refit TT.1 with the session term, ~15 min) turns the indicative "video
+> at first exposure sits within 0.03 s of the track" into a result with an interval. §1 below quotes the
+> pooled numbers with dated notes; §4's queue predates this arc.
 
-> **The arc before last, in four lines** (full record in `handover_2026-09-13.md`). Surprise as the onset
+> **The arc of 2026-09-13, in four lines** (full record in `handover_2026-09-13.md`). Surprise as the onset
 > of a response was tested and did not replace the anticipatory gate (card HS.1); Farewell's emergency
 > braking levels do not carry over to comfort judgments (PT.1); a crossing norm for cut-ins is proposed
 > (PN.1); switching the dormant gaze system on showed that the released configuration does not hold
