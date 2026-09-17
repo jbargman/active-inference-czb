@@ -10,7 +10,7 @@ the repository disagree, the repository wins, and you should say so in your repl
 
 > ## RESUME HERE — 2026-09-17, nothing authorized
 >
-> State: last commit is the one that added `handover_2026-09-17.md`; suite green at
+> State: last commit is card EX.2's result; suite green at
 > 31/33/40/96/62/20/28/27/16/30 (**ten files**, §0 step 2). Both of Jonas's instructions of 2026-09-16
 > are done (full record in `handover_2026-09-17.md`):
 >
@@ -29,8 +29,15 @@ the repository disagree, the repository wins, and you should say so in your repl
 > turn, responding *falls* about 9 points over four showings, in every distance band, mostly across the
 > session boundary; the boundary distance shrinks from 87 to 77 m with no change in sharpness. Neither
 > effect is reliable per driver. So the left turn's long horizon (PC.1) is largest at first exposure,
-> not learned. **EX1.Q4 is Jonas's:** fit levels on first showings only? Also note the old +0.027 was
-> post-onset only.
+> not learned. The old +0.027 was post-onset only.
+>
+> **Card EX.2, done 2026-09-17** (`out/ex2_first_exposure_levels.md`): all showings kept, one shared
+> session term on the level, reported at first exposure (EX1.Q4 resolved by Jonas's "do as you
+> propose"). The term is reliable in both scenarios, in opposite directions: first-exposure cut-in
+> median 0.0341 rad/s (pooled 0.0317; trigger +0.136 s later), left-turn video PET_50 2.42 s (pooled
+> 2.18 s). **First exposure is now the primary setting**; the per-driver trait is unchanged (+0.642).
+> Arithmetic only: the video-to-track offset on the left turn shrinks from −0.27 s to about −0.03 s.
+> **EX2.Q1 is Jonas's:** dated notes in the handbook and deck numbers; §1 below still quotes pooled values.
 >
 > Work in interactive mode under the `performing-research` skill. **One uncommitted file is Jonas's
 > own:** `docs/handout_schumann_2026-09.docx` carries his Word edits. Do not stage, overwrite or rebuild
@@ -116,7 +123,9 @@ term; the concepts deck animates each one):
   `out/ltap_two_axis.md`).
 - **The level** is where one driver says "now" on the axis; drivers' levels form a
   population whose percentile is the deliverable. On the cut-in the stage-1 estimator on the
-  gated looming axis (card G1.Q1, `out/stage1_looming.md`) gives median 0.032 rad/s (1.8°/s),
+  gated looming axis (card G1.Q1, `out/stage1_looming.md`) gives median 0.032 rad/s (1.8°/s) pooled
+  over all showings [2026-09-17: at first exposure, now primary, 0.034 rad/s and 80th percentile
+  0.071 rad/s; card EX.2, `out/ex2_first_exposure_levels.md`],
   80th percentile 0.066 rad/s, spread 0.87 log units; it beats the old field axis by 14.9
   held-out log-likelihood units and is now the primary. A 5-point percentile step moves the
   implied trigger by 0.24 s against 0.52 s from the level's own uncertainty.
@@ -236,7 +245,7 @@ and in `handover_2026-09-13.md`):
 | HS1.Q3 (**answered 2026-09-16: go**) | Should card PC.1 (a scenario-agnostic projected-conflict gate) be the next card? Jonas: "go with 1, and then 2" | §4 items 0a, 0b-now |
 | GZ2.Q3 (minor, review) | The mechanism inside the belief update by which looser assumed lateral noise empties the imagined futures of collisions: record the filter's effective sample size and the reference plan's unsafe share (two 14-step runs) | nothing; only if the finding goes to Julian as more than "the lateral senses" |
 | **PC1.Q4** (judgment) | Card PC.1's result: which reading to carry forward — a scenario-specific anticipation horizon for the gate (generic machinery, scenario parameter, like the axis), or G.1's gate on the cut-in only, with no gate where the other road user counts from the outset (overtake, left turn)? | the wording of "the gate" in handbook chapter 13 and the concepts deck; whether PC1.Q5's signed clearance is worth adding |
-| **EX1.Q4** (judgment) | Card EX.1 found no learned anticipation, but a population-level criterion shift with exposure (cut-in +2.7 points post-onset on a second showing; left turn −9 points and a 12% shorter boundary distance over four showings). Fit the levels on first showings only, or keep pooling? | the stage-1 and TR.1 level fits; the naturalistic prediction setting |
+| **EX2.Q1** (judgment) | Card EX.2 makes first exposure the primary setting: cut-in median 0.032 → 0.034 rad/s, 80th 0.066 → 0.071; left-turn video PET_50 2.18 → 2.42 s, video-to-track offset −0.27 → about −0.03 s. Dated notes in handbook ch. 13 and appendix 17, and update the concepts deck's numbers? | the document sweep; the deck |
 | EX1.Q1–Q3 (minor / judgment, review) | the 0.5 reliability convention; A4's threshold shift is uninterpretable because the axis weight was refitted per showing; the left-turn change is confounded with the session | nothing |
 | PC1.Q1–Q3, Q5, Q6 (judgment / minor) | the planned reading's use of the recorded future as "what the participant knew"; persistence; the engaged-cell margin; a signed clearance to restore G.1's graded gate; the 0.6 m residual between the two readings on the cut-in | nothing |
 | **GZ2.Q1** (judgment) | Wording of the sustained-following finding in the handout and private questions: confirm | printing the handout |

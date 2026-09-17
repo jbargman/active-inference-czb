@@ -2966,3 +2966,61 @@ help. Any exposure term fitted on study 1 carries that confound.
 exposure, should the level fits use first showings only (or carry a first-showing setting for
 naturalistic prediction)? It moves the left-turn boundary by about 10 m and the cut-in intervention rate by
 about 3 points; stage-1 and TR.1 fits currently pool all showings.
+
+## 2026-09-17 — card EX.2: the level fits with a shared exposure term, reported at first exposure
+
+Jonas: "Do as you propose" (the middle route of the session: measure the effect on study 1's cut-in
+first, then keep all data, add one shared exposure term on the level, report at first exposure).
+Pre-stated in `replication/czb/ex2_first_exposure_levels.py`, committed before the run (`08e7c8d`);
+report `out/ex2_first_exposure_levels.md`, per-driver levels `out/ex2_driver_levels_first_exposure.csv`,
+log `out/log_ex2.txt` (10 min). No pre-registered script or its output edited. Suite green on all ten
+files.
+
+- **Step 1, the count on study 1's cut-in** (the data stage 1 uses). Session 2 minus session 1: pre-onset
+  −0.008 [−0.047, +0.031], post-onset +0.027 [−0.010, +0.066], pooled +0.021 [−0.012, +0.056]. Rule N:
+  NOT SHOWN NEGLIGIBLE (the interval crosses +0.03). Same direction and size as the second cut-in study's
+  post-onset +0.027; again nothing before onset.
+- **Step 2, reproduction gate.** Stage 1 reproduced exactly; TT.1's video fit to 0.0043 s. Proceed.
+- **Step 3, recovery gate.** A synthetic session shift of +0.300 on the left-turn design came back as
+  +0.275 (SE 0.092); mu within 2 SE. Proceed.
+- **Step 4, the session term.** Cut-in: beta −0.145 [−0.237, −0.052] log rad/s (drivers respond at a
+  lower looming rate in session 2). The first-exposure median level is 0.0341 rad/s against 0.0317
+  pooled; 80th percentile 0.0709 against 0.0658. The median's implied trigger onset moves +0.136 s later
+  at first exposure, about half of stage 1's 0.244 s per 5-point percentile step. Left turn: beta +0.476
+  [+0.290, +0.663] s (a shorter accepted PET in session 2); PET_50 2.422 s at first exposure against
+  2.184 s pooled and 1.946 s in session 2. The showing-index sensitivity fits agree in sign and implied
+  first-showing level (cut-in mu −3.363, left turn −2.485). Negative log posterior falls by 4.7 (cut-in)
+  and 12.5 (left turn) with the one added parameter. **Rule A: first exposure is primary in both
+  scenarios.**
+- **Step 5, TR.1 again.** Oriented Spearman between the two scenarios' per-driver levels at first
+  exposure +0.642 (bootstrap +0.394 to +0.798) against +0.647 pooled. Driver ranks are unchanged
+  (+1.000 cut-in, +0.995 left turn), as a shared term should leave them.
+
+**Reading, marked opinion.** Exposure moves the level in opposite directions in the two scenarios, as
+EX.1 found: repeated cut-ins make drivers intervene earlier, repeated left turns make them accept tighter
+gaps. At first exposure the cut-in boundary is slightly less cautious and the left-turn boundary more
+cautious than the pooled fits said. The trait result does not depend on the choice. **Not pre-stated,
+arithmetic on committed numbers only:** TT.1's test-track median is PET_50 2.45 s (SE 0.04); the video
+median moves from 2.18 s pooled (offset −0.27 s) to 2.42 s at first exposure (offset about −0.03 s). So
+the video-to-track gap on the left turn is almost entirely the session-2 shift. The track drivers also
+made repeated runs, and the paper reports no order effect in its four preset runs; exposure and session
+(day) remain confounded in study 1 (EX1.Q3).
+
+**What this changes on paper, not yet done.** The quoted deliverable numbers (handover §1, handbook
+chapter 13 and appendix 17, the concepts deck) are the pooled ones: cut-in median 0.032 rad/s, 80th
+percentile 0.066 rad/s; left-turn video 2.18 s and the −0.27 s offset. Card A.1-style rule: dated notes,
+no rewrites without Jonas.
+EX1.Q4 is answered by Jonas's instruction and this card:
+RESOLVED EX1.Q4: keep all showings and carry a shared session term on the level, reported at the
+first-exposure setting (Jonas, 2026-09-17, "do as you propose"; card EX.2, Rule A first exposure primary
+in both scenarios).
+
+@EX2.Q1(judgment, jonas): the deliverable's quoted numbers move (cut-in median 0.032 → 0.034 rad/s,
+80th 0.066 → 0.071; left-turn video PET_50 2.18 → 2.42 s, and the video-to-track offset −0.27 → about
+−0.03 s). May dated notes be added to handbook chapter 13 and appendix 17, and should the concepts deck's
+numbers be updated? The decks may carry your hand edits.
+@EX2.Q2(minor, review): the video-to-track comparison at first exposure is arithmetic, not a refit of
+TT.1 with the session term; a proper version would refit TT.1's comparison with the term and propagate
+both SEs.
+@EX2.Q3(minor, review): the cut-in count (step 1) is not reliable on its own while the model's beta is;
+the model uses trial-level covariates and driver effects, so it has more power. Both are reported.
