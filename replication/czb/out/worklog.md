@@ -3057,3 +3057,22 @@ paused VCC pipeline, sending nothing to Volvo Cars?
 2026-09-11; the meeting with Julian Schumann).
 @NAT.Q4(judgment, jonas): priority if time is short; recommended NC.1 first for the comfort-zone work and
 NM.1 first for the paper.
+
+Jonas's answers on the naturalistic plan, 2026-09-17, folded into `docs/naturalistic_data_plan.md` (§1, §2
+NC.0b, §5, §6; docx and pdf rebuilt):
+
+RESOLVED NAT.Q1: a highD response is a deceleration below an acceleration threshold held for a minimum
+duration, possibly with a minimum speed drop (Jonas: "an acceleration threshold (with some duration, maybe
+even change in speed)"). NC.0b pre-registers the three parameters with a sweep grid (a_th 0.5–2.0 m/s²,
+T_min 0.3–1.0 s, Δv_min none–1.0 m/s), chooses the primary values from the measured noise floor and a 5%
+false-positive bound before any event is scored, and reports the sweep beside every response-dependent
+result. For inD, a rejected gap.
+RESOLVED NAT.Q2: highD cut-ins may go through the split-site interface schema as a dry run; no highD or inD
+data goes to Volvo Cars, code and results may. The transfer policy already never bundles `external/**`;
+per-track derived files from either dataset are written only under `external/highD_derived/` and
+`external/inD_derived/`, and reports in `replication/` carry no track ids.
+RESOLVED NAT.Q3: results are nominally internal; Jonas may share parts with Julian Schumann, Johan Engström
+and Arkady Zgonnikov (meetings 2026-09-17 and 09-18). Reports are written so a section stands on its own and
+marks what is ours and unpublished; nothing is sent by a session.
+RESOLVED NAT.Q4: the comfort-zone cards first (NC.1–NC.4); of the paper cards, NM.1, pre-registered as soon
+as NC.0 yields steady-following episodes and run overnight.

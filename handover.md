@@ -43,8 +43,11 @@ the repository disagree, the repository wins, and you should say so in your repl
 > `docs/naturalistic_data_plan.md`: a shared ingest step (NC.0, a validated onset detector, a census), a
 > comfort-zone program (NC.1, inD left-turn gap acceptance, recommended first) and a paper-assessment
 > program (NM.1, the released model on replayed highD following, recommended first). Nothing starts
-> before access and Jonas's word; his decisions are NAT.Q1–Q4. Raw data stays in `external/` (license:
-> non-commercial, no redistribution).
+> before access. NAT.Q1–Q4 answered 2026-09-17: a response is an acceleration threshold with a minimum
+> duration (and possibly a speed drop), swept in NC.0b; no highD or inD data to Volvo Cars (code and
+> results may go; per-track derived files only under `external/`); results nominally internal, Jonas may
+> share parts with Julian Schumann, Johan Engström and Arkady Zgonnikov; priority the comfort-zone cards,
+> then NM.1. Raw data stays in `external/` (license: non-commercial, no redistribution).
 >
 > Work in interactive mode under the `performing-research` skill. **One uncommitted file is Jonas's
 > own:** `docs/handout_schumann_2026-09.docx` carries his Word edits. Do not stage, overwrite or rebuild

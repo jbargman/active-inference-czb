@@ -50,6 +50,13 @@ Consequences that shape every card:
 - **The license:** non-commercial research, no redistribution, citation required. Raw data stays in
   `external/` (untracked); only aggregate results enter the repository. No data or per-track derived
   data goes to anyone else, the authors of the published model included.
+- **Volvo Cars** [Jonas, 2026-09-17, NAT.Q2]: no highD or inD data goes to Volvo Cars; code and
+  aggregate results may be shipped. The transfer policy already never bundles `external/**` from
+  Chalmers. To keep per-track derived data out of reach of a bundle, every file holding one row per
+  track, event or frame derived from highD or inD is written under `external/highD_derived/` or
+  `external/inD_derived/`, never under `replication/`; the reports and aggregate tables in
+  `replication/` carry no track ids. The loaders' property tests check that no report written by a
+  naturalistic card contains a `trackId` column.
 
 ## 2 Step zero, shared by both programs
 
@@ -62,13 +69,25 @@ direction, heading. Measure the position and velocity jitter floor on steady dri
 before any spread or window is chosen (the trap card HS.1 fell into). Decide the route of the adapter
 (query NAT.Q2).
 
-**NC.0b — a validated deceleration-onset detector.** Onset as the start of a sustained deceleration
-beyond the vehicle's own baseline, by the piecewise-linear fit to the speed trace that
-`docs/data_requirements.md` §7.4 specifies (its attribution to Markkula et al. is marked unverified
-there and stays so here). Validated on synthetic traces with known onsets plus the measured jitter:
-report latency and false-positive rate. Stop rule: if the median latency exceeds 0.3 s or the
-false-positive rate on steady following exceeds 5%, no timing claim is made from highD and the cards
-below fall back to "responded within the window, yes or no".
+**NC.0b — a validated deceleration-onset detector.** [Revised 2026-09-17 on Jonas's ruling, NAT.Q1:
+"an acceleration threshold (with some duration, maybe even change in speed)".] A response is a
+deceleration episode that meets three conditions, each a parameter pre-registered in NC.0b:
+
+| parameter | meaning | grid for the sensitivity sweep | how the primary value is chosen |
+|---|---|---|---|
+| a_th | the follower's longitudinal acceleration falls below −a_th | 0.5, 1.0, 1.5, 2.0 m/s² | the smallest value whose false-positive rate on steady following is under 5% at the chosen duration, given the measured acceleration noise floor |
+| T_min | it stays below −a_th for at least this long | 0.3, 0.5, 1.0 s | the shortest duration that keeps the false-positive rate under 5%; not shorter than three frames |
+| Δv_min | the speed drops by at least this much over the episode | none, 0.5, 1.0 m/s | none as primary unless the first two conditions alone pass throttle-release coasting; the sweep reports the effect |
+
+The onset time is the first frame of the qualifying episode at which the acceleration crosses −a_th.
+An episode already under way when the event starts is not a response to that event (censored, and
+counted). Validated on synthetic traces with known onsets plus the measured jitter, reporting the
+detection latency (crossing time minus the true start of deceleration) and the false-positive rate.
+The primary thresholds are fixed in NC.0b's docstring before any event is scored, and every
+response-dependent card reports the sweep beside its primary result. Stop rule: if no setting in the
+grid keeps the false-positive rate under 5% with a median latency under 0.5 s, no timing claim is made
+from highD, and the cards below fall back to "responded within the window, yes or no". The inD
+gap-acceptance cards need no onset.
 
 **NC.0c — the census.** Counts, before any hypothesis is tested: highD cut-ins by gap and relative
 speed, steady-following episodes by speed and THW, lead-deceleration events by magnitude; inD turning
@@ -137,31 +156,41 @@ which is NM.3 and, for braking onsets, NM.1.
 
 ## 5 Order
 
+[Revised 2026-09-17 on Jonas's priority, NAT.Q4: the comfort-zone work first, and of the paper cards
+NM.1.]
+
 1. **On access:** NC.0, NC.0b, NC.0c. The census decides which of the cards below have the events they
    need.
-2. **Cheap and decisive:** NC.5 with NM.2 (one computation, two readings), NC.6, then **NC.1** (the
-   strongest comfort-zone test, no onset) and NC.2.
-3. **The onset-dependent cards:** NC.3, NC.4, NM.3.
-4. **The expensive one:** NM.1, pre-registered and run overnight, possibly over several nights.
-5. **Feasibility-gated:** NM.4.
+2. **The comfort-zone core:** NC.1 and NC.2 (inD, no onset), then NC.3 and NC.4 (highD, onset from
+   NC.0b). NC.6 comes free with the census.
+3. **NM.1, started early because it is machine time:** pre-register it as soon as NC.0 has produced
+   steady-following episodes, and run it overnight while the comfort-zone cards are worked on by day.
+4. **Later:** NC.5, NM.2, NM.3; NM.4 only after a feasibility check.
+
+**Sharing** [Jonas, 2026-09-17, NAT.Q3]: results are nominally for us; Jonas may share parts with
+Julian Schumann, Johan Engström and Arkady Zgonnikov. Reports are therefore written so that a section
+stands on its own, marks what is ours and unpublished, and never contains per-track data (which the
+license forbids sharing in any case). Nothing is sent by a session.
 
 Each card follows the standing rules: a pre-registered script, a generated report, a worklog entry,
 queries, the suite green, one commit.
 
-## 6 Decisions for Jonas
+## 6 Decisions
 
-- **NAT.Q1** (judgment): the mapping from video to naturalistic responses. Proposed: "would intervene"
-  on video corresponds to a deceleration onset beyond baseline for highD, and to rejecting the gap for
-  inD. Both are assumptions the reports will state.
-- **NAT.Q2** (judgment): route highD cut-ins through the split-site interface schema
-  (`transfer/interface_schema.yaml`, card NDS.1) as a dry run of the Volvo Cars pipeline on real data?
-  It would exercise the five schema gaps found by NDS.1 without sending anything to Volvo Cars. The VCC
-  track is paused, so this needs your word.
-- **NAT.Q3** (judgment): results about the published model (NM cards) are outward-sensitive, given the
-  authors' reply of 2026-09-11 and the meeting with Julian Schumann. Who sees them, and when, is yours
-  to decide; nothing is shared by a session.
-- **NAT.Q4** (judgment): priority if time is short. My recommendation is NC.1 first for the comfort-zone
-  work and NM.1 first for the paper; NM.1 costs the most machine time and the least of yours.
+Answered by Jonas on 2026-09-17:
+
+- **NAT.Q1**, the response definition: an acceleration threshold with a minimum duration, possibly with
+  a change in speed; parameterized and swept in NC.0b (§2). For inD, a rejected gap.
+- **NAT.Q2**, the Volvo Cars pipeline: highD cut-ins may go through the split-site interface schema as a
+  dry run; no highD or inD data goes to Volvo Cars, code and results may (§1).
+- **NAT.Q3**, sharing: nominally internal; Jonas may share parts with Julian Schumann, Johan Engström and
+  Arkady Zgonnikov (§5).
+- **NAT.Q4**, priority: the comfort-zone cards first, and NM.1 of the paper cards (§5).
+
+Still open, to settle in NC.0 or with Jonas when the card is written: the mapping assumption that
+"would intervene" on video corresponds to a highD response as defined in NC.0b is stated in every report
+that relies on it; whether a coasting follower (small deceleration, no threshold crossing) counts as
+having responded is exactly what the Δv_min sweep will show.
 
 ## 7 Where I may be wrong
 
