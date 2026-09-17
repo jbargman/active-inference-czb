@@ -1,0 +1,39 @@
+primary pass...
+C:\Users\bargman\OneDrive - Chalmers\1_Work\1_Code\WaymoActiveInference\replication\czb\cutin2_field_vs_gap.py:235: RuntimeWarning: overflow encountered in exp
+  b = 1.0 / (1.0 + np.exp(-b))                 # lapse in (0, 1) via logit
+main report written at 18 s
+sweeps...
+C:\Users\bargman\OneDrive - Chalmers\1_Work\1_Code\WaymoActiveInference\replication\czb\cutin2_field_vs_gap.py:236: RuntimeWarning: overflow encountered in exp
+  z = sign * (x - c) / np.exp(log_sig)
+  p0 = 0.02: post 0.3202, CP1 0.5381
+  p0 = 0.07: post 0.3202, CP1 0.5381
+  p0 = 0.2: post 0.3202, CP1 0.5381
+  sigma_v,lat = 0.1: post 0.3202, CP1 0.5381
+  sigma_v,lat = 0.33: post 0.3202, CP1 0.5381
+  sigma_v,lat = 0.6: post 0.3202, CP1 0.5381
+  sigma_a = 0.25: post 0.3202, CP1 0.5381
+  sigma_a = 0.5: post 0.3202, CP1 0.5381
+C:\Users\bargman\OneDrive - Chalmers\1_Work\1_Code\WaymoActiveInference\replication\czb\cutin2_field_vs_gap.py:235: RuntimeWarning: overflow encountered in exp
+  b = 1.0 / (1.0 + np.exp(-b))                 # lapse in (0, 1) via logit
+  sigma_a = 1.0: post 0.3202, CP1 0.5381
+  H = 3.0: post 0.3300, CP1 0.5381
+  H = 6.0: post 0.3202, CP1 0.5381
+seed sweep...
+  seed 1 done
+  seed 2 done
+  seed 3 done
+  seed 4 done
+| 5% of that spread | 0.0574 |
+| rule (e) | PASS |
+| worst cell's SE of log Delta G | 0.9079 |
+
+## 4 The verdict, in the design note's own words
+
+Deciding variant: **A** (the released six terms, Jonas's ruling JJ.Q2).
+
+**DROP.** Rule (a) fails: Delta G does not reach the gated looming rule.
+
+Rules at the deciding variant: (a) 0.3202 against 0.1127; (b) 0.5381 against 0.05; (c) 0 of 24 against 24; (e) 0.0052 against 0.0574.
+
+Run time 90 s.
+

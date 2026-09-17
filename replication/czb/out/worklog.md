@@ -3338,3 +3338,108 @@ confirm that this reading covers a flag defaulting to the released behavior.
 @JJ1.Q5(minor, review): The brief lets the implementer skip the released norm tournament (predictor P1)
 if wrapping `forward_tar_agent` open loop costs more than a day; P1 is a secondary in JJ.2. Confirm or
 require it.
+
+## 2026-09-18 (overnight, implementing session) — card JJ.1 built; card JJ.2 run: Delta G is DROPPED on the cut-in
+
+Jonas's instruction for this session: read `handover.md`, implement what it points to, take the
+decisions that come up and document them, do not stop and wait. The work is card JJ.1's
+implementation, delegated by `handover_jj1_implementation.md`, and then cards JJ.2 to JJ.4 in the
+order that brief fixes. The suite was green at 31/33/40/96/62/20/28/27/16/30/28 before anything
+was touched, and the tree was clean apart from Jonas's own `docs/handout_schumann_2026-09.docx`,
+which was never staged.
+
+**Step 1 — the package.** `src/rollout/` with the five modules the brief names (`belief`,
+`predictor`, `policies`, `efe`, `boundary`) and `tests/test_rollout.py` with the eighteen property
+claims of the brief's section 6, which come to **27 checks**. The suite list in `handover.md` §0
+step 2 now has twelve files and ends `python tests/test_rollout.py` → 27.
+
+One change in `src/aidriver/preferences.py`, the one the brief asked for: the flag
+`safety_term_enabled`, default True = released behavior, which is variant B of design note §1.4.
+Property test (16) checks that at its default `log_preference_terms` is bit-identical to the six
+released terms on `cutin_obs` of a study-1 trace, and the eleven other suite files are unchanged.
+JJ1.Q4 (Jonas's confirmation that rule 3 covers a flag defaulting to the *released* behavior
+rather than *off*) is still open; the brief directed the change, so it was made, and the flag is
+written so that answering JJ1.Q4 "no" costs one line to revert.
+
+The jitter floors are not typed in. `rollout.belief.verify_floors()` parses card HS.1's own module
+docstring and fails if the four measured values it cites stop being there, which is the brief's
+"do not type a floor from memory" made mechanical. The floors used: study 2, 0.3 s window,
+position 0.1 m and lateral rate 0.004 m/s; study 1, 1.0 s window, position 1.8 m longitudinal and
+0.20 m lateral, lateral rate 0.133 m/s.
+
+**Step 2 — card JJ.2, `replication/czb/jj2_rollout_cutin.py` → `out/jj2_rollout_cutin.md` (+
+`out/jj2_rollout_cutin_cells.csv`, no participant ids).** Cells, folds and metric imported from
+the registered R.2 script and reproduced exactly: 378 cells, 288 post-onset, 90 pre-onset, six
+leave-one-starting-TTC-out folds. No cell's trace ends before its freeze; the matched-TTC row
+grouping reproduces the diagnostic's by recovering the gap's own 24 of 24. The intention update
+behaves as the design note intends: P(changing) is 0.070 at every pre-onset cell and 1.000 at
+every post-onset cell.
+
+The pre-stated verdict is **DROP**, and rule (a) is what fails, at both variants:
+
+| rule | criterion | variant A | variant B |
+|---|---|---|---|
+| (a) post-onset held out | <= 0.1127 | 0.3202 FAIL | 0.2976 FAIL |
+| (b) pre-onset out of sample | < 0.05 | 0.5381 FAIL | 0.2495 FAIL |
+| (c) matched-TTC rows | >= 24 of 24 | 0 of 24 FAIL | 3 of 24 FAIL |
+| (e) Monte Carlo | median SE <= 5% of the spread | 0.0052 against 0.0574 PASS | — |
+
+0.3202 is chance (0.320 on file): the three-parameter threshold model collapses to the training
+mean, because log Delta G is *anti*-ordered with the response (Spearman -0.648 with the share,
++0.848 with the gap, where the share itself is -0.862 with the gap). Rule (d)'s sweep moves
+nothing: every value of p0, sigma_v,lat and sigma_a gives the same 0.3202, and H = 3 s gives
+0.3300.
+
+Two readings, in the report's §1b and stated there as readings:
+
+1. **Delta G is a value-of-action quantity and it collapses where no action helps.** It is large
+   where braking would avert a collision that continuing would cause, and small both where nothing
+   is going to happen and where the gap is already too small for anything in the menu to avoid
+   contact. The menu's own cost is the other half of the mechanism: braking at -3 m/s^2 costs a
+   fixed 20 308 nats of control effort over the horizon whatever the scene is doing, because
+   sigma_a = 0.1 m/s^2 in the released preference, so the minimum over the menu is floored.
+2. **The released magnitude still grades with speed rather than with the gap.** G(continue) alone
+   correlates +0.927 with dv and only -0.350 with the share, and a level on log G(continue) —
+   the rollout's criticality *without* the policy comparison, not this card's axis — also scores
+   0.3202. So the policy comparison and the preference function are not to be blamed for one
+   another: the R.2 pipeline review's finding reappears inside the rollouts.
+
+Nothing was reinterpreted to reach the verdict and nothing was tuned: the rules are the design
+note's, copied verbatim into the script's docstring before the run.
+
+Queries:
+
+@JJ1.Q6(judgment, jonas): The intention update is implemented one-sided — the log-likelihood ratio
+between "changing" and "keeping" is clipped below at zero, so an observation at the jitter floor
+returns the prior instead of driving it to about 1e-40. The reason is what p0 is in the design
+note's own words, "the prior before any lateral motion", motivated by card G.1's fitted gate
+sitting at 0.063-0.070 in *every* pre-onset cell: p0 is already the belief held while no lateral
+motion is seen. Property test (1) of the brief ("with the lateral rate at the jitter floor the
+posterior equals the prior to 1e-3") cannot pass otherwise, on any choice of the two spreads. The
+plain ratio is available as `one_sided=False`. Confirm the clip, or say that the design note meant
+the plain ratio and test (1) should be withdrawn.
+
+@JJ2.Q1(minor, review): Rule (c)'s matched-TTC row grouping lives inline in
+`cutin2_lane_gate_diagnostic.py::main()` and has no function to import, so `jj2_rollout_cutin.py`
+reproduces it (post-onset cells grouped by `ttc_true`, rows with at least 6 cells) and checks the
+reproduction by recovering the gap's own "24 of 24" from it. Extract it into a function in that
+script for the next card that needs it, or leave the check as the guarantee?
+
+@JJ2.Q2(judgment, jonas): Delta G's failure is structural rather than a matter of constants: a
+difference between the best alternative and continuing must vanish both where nothing is wrong and
+where nothing helps, so it cannot be monotone in criticality. Two repairs are available inside the
+JJ program and neither is authorized: (i) take the rollout's own criticality, G(continue), as the
+axis and keep the menu only for the report — it scores 0.3202 too, so it would need the preference
+magnitude fixed first; (ii) keep Delta G but measure it against a *feasible* alternative only,
+which is a different quantity and needs its own design note. Which, if either?
+
+@JJ2.Q3(judgment, review): The rollout menus' control-effort floor is a real design question the
+design note did not anticipate. With sigma_a = 0.1 m/s^2 the released preference charges a fixed
+20 308 nats for -3 m/s^2 over 30 steps and 69 912 for -6 m/s^2, so the alternatives are never
+cheap and Delta G is dominated by that constant wherever the collision cost is smaller. Is
+sigma_a = 0.1 m/s^2 (the released free-driving value) the right constant to score an *evasive*
+policy with, or does the menu need its own effort calibration?
+
+@JJ2.Q4(minor, review): The design note's §5 names the scripts `je2/je3/je4_*`; the implementer's
+brief names them `jj2/jj3/jj4_*`, which matches the card prefix JJ and the query prefix. The
+brief's names were used. The design note's §5 should be corrected when it is next touched.
