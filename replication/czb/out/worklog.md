@@ -2891,3 +2891,78 @@ too: the left turn's early responding could be partly learned, since each clip w
 Proposed first step if Jonas takes it up (not started): split study 2's repetition effect by onset time
 and by driver, pre-stated, data in hand, minutes to run; and the same first-against-later-showing contrast
 on the study-1 left turn's far cells, where the gate should be closed.
+
+## 2026-09-17 — card EX.1: where repeated exposure acts, and whether it is a learned anticipation
+
+Jonas: "Please run what you propose as cheap first step." Interactive mode, Claude Opus 5. Pre-stated in
+`replication/czb/ex1_exposure_split.py` and committed before the run (`bbe8037`); report
+`out/ex1_exposure_split.md`, per-driver values `out/ex1_driver_exposure.csv`, log `out/log_ex1.txt`
+(39 min, almost all in part B's refit bootstrap). Suite green on all ten files (no source code touched).
+
+**A correction to how an old number was read.** The +0.027 repetition effect in `out/cutin2_scope.md`
+was computed on post-onset cells only (`post = d[d.CP != "CP1"]`), reproduced exactly here (3 456 pairs,
+0.547 → 0.575). The worklog of 2026-08-28 and my assessment of 2026-09-17 read it as the overall effect.
+
+**Part A, the cut-in (144 participants, 5 184 first/second-showing pairs).**
+- A1: before the lane change starts (CP1) repetition changes nothing: 0.023 → 0.024, +0.001
+  [−0.011, +0.013], 77 discordant pairs (enough to identify it). After onset: +0.027 [+0.010, +0.045],
+  largest at CP4 (+0.045). Log-OR contrast CP1 against post-onset −0.29 [−0.86, +0.30]. **Pre-stated
+  reading: R2, exposure acts uniformly (a criterion shift on the level or lapse), not on the gate.** In
+  probability terms a learned pre-onset rise above about 1.3 points is excluded at a 2.3% base rate.
+- A2: neither clip familiarity (+0.005 at zero lag) nor general practice (+0.064 per session, interval
+  includes 0) is reliable post-onset. Reported without a verdict: on CP1 pairs the slope is −0.041
+  [−0.084, −0.001], so the little pre-onset change there is shrinks with the gap between showings.
+- A3: the per-driver repetition effect (mean +0.027, sd 0.107) has split-half reliability 0.352, under the
+  pre-stated 0.5: **a population-level term only.**
+- A4: card G.1's gated rule refitted on first showings and on second showings gives threshold −2.138
+  and −2.052 (+0.086), which reads as *less* responding on the second showing, against A1. **Not
+  interpretable as stated:** the fitted axis weight also moved (0.559 → 0.473), so the two thresholds are
+  on different axes. The pre-stated guard withheld the looming-rate conversion but not the raw shift.
+  m_lat, s_l and sigma barely move (0.158/0.138 m, 1.000/0.979 m, 0.699/0.695). EX1.Q2.
+
+**Part B, the left turn (43 participants, 18 cells × 4 showings over two sessions).**
+- B1: responding *falls* with exposure, by about the same amount in every distance band: last minus first
+  −0.093 (near), −0.093 (mid), −0.089 (far), −0.092 overall [−0.133, −0.050]. Almost all of it is at the
+  session boundary (showing 2 → 3: −0.065 [−0.094, −0.036]); within session 1 −0.034, within session 2
+  +0.006.
+- B2: the distance rule's boundary moves from 87.4 m to 77.4 m (ratio 0.885 [0.827, 0.958]); at 50 km/h
+  that is 6.3 s to 5.6 s of the oncoming car's travel, at 70 km/h 4.5 s to 4.0 s. Sigma does not change
+  (ratio 0.967 [0.782, 1.190]). **Pre-stated reading: L3, a general criterion shift** — toward *less*
+  caution, not more. Not a learned anticipation (L1 needed far-band responding to rise; it fell).
+- B3: neither familiarity nor practice within sessions is reliable (−0.019 at zero lag, +0.015 per
+  session).
+- B4: per-driver change (mean −0.078, sd 0.091) has split-half reliability 0.346: **population-level
+  only.**
+
+**Reading, marked opinion.** Jonas's proposal is tested in its specific form and not supported: there is
+no sign that repeated critical clips teach a pre-onset anticipation, in either scenario. What exposure
+does is shift the criterion a little, at the population level, and in opposite directions: the cut-in
+drivers intervene 2.7 points more on a second showing within one session; the left-turn drivers
+intervene about 9 points less across a session boundary days later, with the boundary distance 12%
+shorter and no change in sharpness. The left-turn change is confounded with the session (a different
+day) and cannot be attributed to exposure alone. Two consequences:
+1. **For PC.1.** The left turn's long anticipation horizon is not learned from repetition. It is
+   *largest* at the first showing (boundary 87 m, 6.3 s of the oncoming car's travel at 50 km/h) and
+   shrinks with exposure. So the scenario-specific horizon of PC1.Q4 is a property of the scenario as
+   first seen, not a lab artefact of repetition.
+2. **For naturalistic transfer.** If an exposure term is kept, it belongs on the level (or the lapse),
+   population-level, and its natural setting is "first exposure". The simplest equivalent is to fit on
+   first showings only, or to carry a showing/session covariate on the level and set it to the first
+   showing when predicting real driving. On the left turn that choice moves the boundary by about 10 m
+   (0.7 s at 50 km/h), which is larger than TT.1's video-to-track offset of 0.27 s, though on a
+   different quantity (distance at the decision moment, not post-encroachment time), so the two are not
+   compared.
+
+@EX1.Q1(minor, review): the 0.5 split-half reliability bar for a per-driver exposure parameter is a
+convention; both scenarios fall at 0.35, far enough below that the verdict would survive 0.4.
+@EX1.Q2(judgment, review): A4's threshold comparison is invalid because the axis weight is refitted per
+showing; refit the second showing with the first showing's weight fixed (or fit both jointly with a
+shared weight and a showing shift on the threshold) to get an interpretable size. The pre-stated guard
+covered the conversion but not the raw shift; flagged here, not reinterpreted.
+@EX1.Q3(judgment, review): the left-turn change sits at the session boundary, so exposure and session
+(day, fatigue, instructions) are confounded in study 1; the cut-in study has one session and cannot
+help. Any exposure term fitted on study 1 carries that confound.
+@EX1.Q4(judgment, jonas): given no learned anticipation but a population-level criterion shift with
+exposure, should the level fits use first showings only (or carry a first-showing setting for
+naturalistic prediction)? It moves the left-turn boundary by about 10 m and the cut-in intervention rate by
+about 3 points; stage-1 and TR.1 fits currently pool all showings.

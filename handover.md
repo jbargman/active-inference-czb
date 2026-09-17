@@ -22,10 +22,15 @@ the repository disagree, the repository wins, and you should say so in your repl
 >    respond at every horizon to 6 s. **PC1.Q4 is Jonas's:** carry a scenario-specific anticipation
 >    horizon, or G.1's gate on the cut-in only.
 >
-> **Under discussion, not a card (Jonas, 2026-09-17):** anticipation as a latent variable, or as a
-> separate exposure-driven component (learned from repeated critical clips) that would be off on
-> naturalistic data. Do not start work on it without his instruction; the assessment given is in the
-> worklog entry of 2026-09-17.
+> **Card EX.1, done 2026-09-17 on Jonas's instruction** (`out/ex1_exposure_split.md`, worklog entry of
+> that date). His idea: an exposure-driven "learned anticipation" component that would be off in
+> naturalistic data. Tested and not supported as anticipation: on the cut-in, pre-onset responding does
+> not change on a second showing (+0.001 [−0.011, +0.013]); post-onset it rises 2.7 points. On the left
+> turn, responding *falls* about 9 points over four showings, in every distance band, mostly across the
+> session boundary; the boundary distance shrinks from 87 to 77 m with no change in sharpness. Neither
+> effect is reliable per driver. So the left turn's long horizon (PC.1) is largest at first exposure,
+> not learned. **EX1.Q4 is Jonas's:** fit levels on first showings only? Also note the old +0.027 was
+> post-onset only.
 >
 > Work in interactive mode under the `performing-research` skill. **One uncommitted file is Jonas's
 > own:** `docs/handout_schumann_2026-09.docx` carries his Word edits. Do not stage, overwrite or rebuild
@@ -231,6 +236,8 @@ and in `handover_2026-09-13.md`):
 | HS1.Q3 (**answered 2026-09-16: go**) | Should card PC.1 (a scenario-agnostic projected-conflict gate) be the next card? Jonas: "go with 1, and then 2" | §4 items 0a, 0b-now |
 | GZ2.Q3 (minor, review) | The mechanism inside the belief update by which looser assumed lateral noise empties the imagined futures of collisions: record the filter's effective sample size and the reference plan's unsafe share (two 14-step runs) | nothing; only if the finding goes to Julian as more than "the lateral senses" |
 | **PC1.Q4** (judgment) | Card PC.1's result: which reading to carry forward — a scenario-specific anticipation horizon for the gate (generic machinery, scenario parameter, like the axis), or G.1's gate on the cut-in only, with no gate where the other road user counts from the outset (overtake, left turn)? | the wording of "the gate" in handbook chapter 13 and the concepts deck; whether PC1.Q5's signed clearance is worth adding |
+| **EX1.Q4** (judgment) | Card EX.1 found no learned anticipation, but a population-level criterion shift with exposure (cut-in +2.7 points post-onset on a second showing; left turn −9 points and a 12% shorter boundary distance over four showings). Fit the levels on first showings only, or keep pooling? | the stage-1 and TR.1 level fits; the naturalistic prediction setting |
+| EX1.Q1–Q3 (minor / judgment, review) | the 0.5 reliability convention; A4's threshold shift is uninterpretable because the axis weight was refitted per showing; the left-turn change is confounded with the session | nothing |
 | PC1.Q1–Q3, Q5, Q6 (judgment / minor) | the planned reading's use of the recorded future as "what the participant knew"; persistence; the engaged-cell margin; a signed clearance to restore G.1's graded gate; the 0.6 m residual between the two readings on the cut-in | nothing |
 | **GZ2.Q1** (judgment) | Wording of the sustained-following finding in the handout and private questions: confirm | printing the handout |
 | **GZ1.Q1** (judgment) | The released configuration does not hold sustained car following (it brakes after 3–5 s with nothing happening, some repeats to a stop, with gaze choice on or off and with the authors' own scripted lead). It is in the handout as a question for Julian: keep it? | the handout's glance question |
