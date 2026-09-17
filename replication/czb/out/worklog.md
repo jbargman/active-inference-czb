@@ -3523,3 +3523,68 @@ construction, so it would flatter Delta G). Both were computed after the run and
 cells, so the per-driver level there is barely identified and the +0.261 is not a measurement of
 the trait. If the trait on one scale is still wanted after JJ.2's DROP, it needs an axis with
 dynamic range on both scenarios — which is query JJ2.Q2's question again.
+
+## 2026-09-18 (overnight, same session) — card JJ.4: precision as spread. The truck IS sharper, and the gate's spread is not measurement noise
+
+`replication/czb/jj4_precision_spread.py` → `out/jj4_precision_spread.md`. This card does not depend
+on Delta G — it asks whether the level estimator's response spread is a measured stimulus precision —
+so it stands on its own after JJ.2's DROP. The three parts of design note §4 are copied verbatim into
+the script's docstring.
+
+**Medium (the video left turn against the test track).** The two fits reproduce card TT.1's numbers:
+sigma_resp 0.858 s on the video (on file 0.86) and 0.198 s on the track (0.20), PET_50 2.18 and 2.45 s.
+**Fitted ratio, video / track: 4.34 [2.38, 7.93]** (delta method on log sigma_resp, the two Laplace
+variances in quadrature). The design note calls the constrained one-spread-each model "trivially
+equivalent as a fit", and the report says plainly that the two fits therefore ARE that model. The
+ratio **predicted from perception** is reported as **not yet possible**, exactly as Jonas's ruling
+JJ1.Q3 fixed in advance: no source for the visual precision of distance and closing speed in a frozen
+monocular clip against a moving binocular view, and no constant was invented.
+
+**Apparent size (E.2): the two-spread model earns its place, and the truck is sharper.** Held out
+under LOPO over 15 drivers, **+60.6 log-likelihood units** against the pre-stated margin of 2.
+sigma_resp is **0.273 for the truck against 0.424 for the car** (ratio 0.64), on 3 417 Button cut-in
+trials over TTC 4 to 8, 43 drivers. The direction is the one the roadmap predicted: a larger apparent
+size gives a sharper criterion.
+
+The rule could not be applied to the stage-1 estimator and the report says so rather than working
+around it: in the Button design every cell's intervention share is 0.976 to 1.000, because that
+paradigm asks WHEN you would intervene and everyone presses, so a binary threshold model has no
+response variation to fit. The contrast runs instead on the Button paradigm's own response, the press
+time: the observed level is log theta_dot at the press, with one offset per stimulus cell (class x
+TTC, because the level drifts about one log unit from TTC4 to TTC8 and that drift is the stimulus's,
+not the driver's) and the spread indexed by class only. 21 of 3 438 trials are censored and dropped.
+
+**The gate's spread is not measurement noise.** Measured here on the 90 study-2 traces, the pre-onset
+lateral-rate jitter over card G.1's 0.3 s window is a median of **0.0021 m/s**, which over the 3 s
+horizon is **0.0064 m** against G.1's fitted s_l of **0.990 m** — a factor of 156. So the gate's
+spread is a *predictive* uncertainty about what the other vehicle is going to do, not the traces'
+resolution. Adding P0's growth constant reproduces 0.990 m to three decimals and lands at a ratio of
+1.00, inside the pre-stated factor of 1.5, **and the report states the circularity before the number**:
+sigma_v,lat = 0.33 m/s was itself motivated in design note §1.2 by reading 0.99 m over 3 s as a
+lateral-rate uncertainty, so it had to. The line becomes a test only when component C3 of the
+generative-model framework measures sigma_v,lat on highD.
+
+Queries:
+
+@JJ4.Q1(judgment, review): Design note §4's apparent-size contrast says "the stage-1 estimator", and
+the stage-1 estimator cannot be fitted on the Button design (intervention share 0.976 to 1.000 in
+every cell). The contrast was run instead on a Gaussian hierarchical model of the level at the press,
+which is that paradigm's own response, with the same LOPO rule and the same margin. Confirm that this
+is the contrast §4 meant, or name the Random-design construction that should replace it — the Random
+design has no truck cut-in, so E.2 would then have to be dropped rather than moved.
+
+@JJ4.Q2(minor, review): The apparent-size model carries one offset per stimulus cell (class x TTC)
+rather than one per class, because the observed level drifts about one log unit from TTC4 to TTC8.
+With one offset per class that drift sits inside sigma_resp and the comparison measures the design
+rather than the driver. Confirm the per-cell offsets.
+
+@JJ4.Q3(judgment, jonas): The truck's criterion is sharper than the car's by a wide margin (0.273
+against 0.424 log units, +60.6 held-out log-likelihood units). Two readings are open and this card
+cannot separate them: a larger apparent size really is perceived more precisely (the E.2 hypothesis),
+or the looming axis is mis-scaled for a 16.5 m body, so that what looks like precision is the axis
+fitting the truck better. The second can be tested by refitting the axis per class; it is not
+authorized here.
+
+@JJ4.Q4(minor, review): The gate-spread line of §4 is circular as written and the report says so.
+Worth restating in the design note as "a consistency check of the note's own arithmetic until C3
+measures sigma_v,lat", so that no later reader takes the 1.00 ratio for evidence.

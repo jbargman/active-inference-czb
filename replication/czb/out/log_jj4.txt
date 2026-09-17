@@ -1,0 +1,17 @@
+medium (two hierarchical fits)...
+  written at 27 s
+apparent size...
+  written at 29 s
+the gate's spread...
+| G.1's fitted gate spread s_l | 0.990 m | `out/cutin2_gate.md`, on file |
+| G.1's horizon t_enc | 3.0 s | ibid., fixed |
+| the traces' lateral-rate jitter, pre-onset, 0.3 s window | median 0.0021 m/s (max 0.0025) over 90 traces | measured here |
+| jitter x t_enc | 0.0064 m | computed |
+| sqrt(jitter^2 + sigma_v,lat^2) x t_enc | 0.990 m | computed (circular, see above) |
+
+**Reading.** The measured jitter alone gives 0.0064 m against the fitted 0.990 m, a factor of 156. The gate's spread is therefore **not** the traces' measurement noise: it is a predictive uncertainty about what the other vehicle is going to do, which is exactly what P0's growth constant is a placeholder for. Including that constant gives 0.990 m, a ratio of 1.00 to the fitted value, inside the pre-stated factor of 1.5 -- but only because the constant was read off the fitted value in the first place.
+
+What would make this a real test: sigma_v,lat measured on naturalistic lane-keeping (component C3), and then this same arithmetic run again. Until then the line is a consistency check of the design note's own arithmetic, not evidence.
+
+Run time 35 s.
+
