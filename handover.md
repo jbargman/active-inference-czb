@@ -31,13 +31,17 @@ the repository disagree, the repository wins, and you should say so in your repl
 > 6. **The six points (JJ) answered** (late evening): `docs/active_inference_program.md` (+ docx, pdf, eight
 >    figures). Proposes a policy-comparison quantity dG in nats as the axis, with rollouts of the ego's policies
 >    against a predictive fan; ten cards under prefix JJ. Jonas ruled on JJ.Q1–Q6 the same evening (§13 of that
->    document): **JJ.1 is authorized and written** (`docs/rollout_boundary_design_note.md`, stop for review before
->    coding); both preference variants run; the interpretability benchmark stays ours. He will add more of JJ's
->    input over several sessions: extend the program document, do not start a new one. **Never name the colleague
->    or the company in any document; the code is JJ.**
+>    document): **JJ.1 is authorized and written** (`docs/rollout_boundary_design_note.md`); on 2026-09-18 Jonas
+>    read it and said **"go", with the implementation by a less expensive model**: the implementer's brief is
+>    **`handover_jj1_implementation.md`** (start there if you are that model). Both preference variants run; no
+>    steering in the menus; the interpretability benchmark stays ours. He will add more of JJ's input over several
+>    sessions: extend the program document, do not start a new one. **Never name the colleague or the company in
+>    any document; the code is JJ.**
 > 7. **The generative-model framework** (`docs/generative_model_framework.md`; `src/generative/`, 28 checks;
->    card GM.0 done, `out/gm0/`): prepared on highD/inD, to run at VCC through the interface. **GM.Q1–Q4, JJ1.Q1–Q3
->    and ATTR.Q1 for Jonas.** The VCC track stays paused.
+>    card GM.0 done, `out/gm0/`): prepared on highD/inD, to run at VCC through the interface. GM.Q1 (yes), GM.Q2
+>    (Jonas applies for exiD) and GM.Q3 (stop at C1–C4 for now) are ruled; the schema revision is drafted in
+>    `transfer/schema_revision_proposal.md` and **not sent**. Open for Jonas: **JJ.Q5, JJ1.Q4, JJ1.Q5, GM.Q4,
+>    ATTR.Q1.** The VCC track stays paused.
 >
 > Quick wins if he asks: EX2.Q2 (refit TT.1 with the session term, ~15 min) turns the indicative "video
 > at first exposure sits within 0.03 s of the track" into a result with an interval. §1 below quotes the

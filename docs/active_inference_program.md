@@ -782,6 +782,14 @@ Two remarks Jonas relayed with the rulings, and a reading of each [opinion]:
   shortfall of its own policy over the horizon rather than surprise about the world: the former carries
   urgency, the latter does not. If JJ's alternative is something else, section 3.4 is where it belongs.
 
+**Rulings of 2026-09-18.** JJ.1 read and authorized ("go"), with the implementation delegated to a less
+expensive model under `handover_jj1_implementation.md`. JJ1.Q1: no steering in the policy menus to start
+with. JJ1.Q3: as proposed. GM.Q1: yes, extend the data request with exposure episodes and the partner's
+context. GM.Q2: Jonas applies for exiD. GM.Q3: stop at the structured components for now and keep the
+learned density open for when they are done. JJ.Q5 still open; its implications are stated in the
+worklog entry of 2026-09-18 (JJ.10 is exploratory and low-cost either way; without external access it
+runs on a local model or is dropped, and nothing else depends on it).
+
 On the data worry Jonas raised with JJ.Q3, the framework note's answer in one sentence: the generative
 model the rollouts need is structured, so data has to fix a handful of distributions, and highD's 5 600
 complete lane changes are enough for every one of them except a learned conditional density, which is

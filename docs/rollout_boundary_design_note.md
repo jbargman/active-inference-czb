@@ -19,6 +19,22 @@ the construction has failed at what it was for and the report says so.
 
 ## 1 The construction
 
+### 1.0 What the crowd-sourced video data are for in this card
+
+*Added 2026-09-18 on Jonas's question.* The two video studies are the test bed, not training data. A
+frozen clip supplies the **scene at the freeze** (positions, speeds, the other's lateral rate, read from
+the stimulus traces), from which the belief, the fan and the policy rollouts are computed with no
+response in the loop; the participants supply the **share who would intervene** in that cell. The card
+then asks one question per cell: does ΔG, computed from the scene alone, order the cells the way the
+shares do, held out across the design's starting-TTC levels, with the three-parameter threshold model
+every axis has been given? Nothing in the rollouts is fitted to the responses except the threshold
+model's three parameters (lapse, level, spread); the predictor's constants come from motivation now and
+from the generative-model framework later. The pre-onset cells (90 of 378) are the data that test the
+emergence claim: they are never fitted, only predicted. Study 1's four scenarios play the same role for
+the transfer (JJ.3), and its 43 drivers seen in every scenario give the per-driver levels for the trait
+on one scale. Later, on naturalistic data, the response becomes a revealed deceleration and the same
+ΔG is predicted from the recorded scene, which is card NC.3 of the naturalistic plan run on ΔG.
+
 ### 1.1 The freeze, and the belief about the present
 
 The freeze time t₀ is the end of the shown window: the response moment e_t of the second cut-in study
@@ -85,7 +101,7 @@ read from each study's instructions rather than chosen:
 
 | scenario | policies (the ego's) | notes |
 |---|---|---|
-| cut-in (studies 1 and 2) | continue (hold speed, hold lane); ease off (−1 m/s²); brake (−3 m/s²); brake hard (−6 m/s²) | 6 m/s² is the released model's assumed worst-case lead deceleration; steering away is added only if the study's road has a free lane on the far side, to be read from the study context files |
+| cut-in (studies 1 and 2) | continue (hold speed, hold lane); ease off (−1 m/s²); brake (−3 m/s²); brake hard (−6 m/s²) | 6 m/s² is the released model's assumed worst-case lead deceleration; **no steering policy** (Jonas, 2026-09-18, JJ1.Q1: the crowd-sourced stimuli and the naturalistic data both carry that constraint); steering may be added as a later variant, dated |
 | left turn | proceed (the ego's recorded turn, reading P of card PC.1); wait (stop before the crossing at −3 m/s²) | the "own planned path" that alone opened PC.1's gate |
 | cyclist overtake | continue the pass at the shown clearance; abort (fall back behind the cyclist at −2 m/s²) | the overtake's instructed choice |
 
@@ -264,18 +280,18 @@ the arrival); JJ.4 one day.
 - The passenger's alternatives in the video may not be the menu's; a scenario offset would then be
   absorbed into the level and is not separable within this design.
 
-## 7 Queries
+## 7 Queries, and Jonas's rulings of 2026-09-18
 
-@JJ1.Q1(judgment, jonas): The steer-away policy on the cut-in depends on whether the studies' road has a
-free lane on the far side; the context files will say. If it does not, the menu is four longitudinal
-policies. Confirm that a menu without a steering option is acceptable for the cut-in, or name the
-alternative.
-
-@JJ1.Q2(minor, review): σ_a = 0.5 m/s² for longitudinal growth is unverified and is the constant JJ.5
-component C3 replaces. Until then it is a placeholder with a sweep; flagged so no report quotes it as
-measured.
-
-@JJ1.Q3(judgment, jonas): JJ.4's medium contrast needs perceptual constants (angular noise for a frozen
-monocular frame against a moving view) that this project has not sourced. Accept that JJ.4 reports the
-fitted ratio and marks the predicted ratio "not yet possible" if no source is found, rather than
-inventing constants?
+- **JJ1.Q1, resolved:** no steering policy in the menus we start with; the crowd-sourced stimuli and
+  the naturalistic data both carry that constraint. Section 1.3 updated.
+- JJ1.Q2 (minor, review): σ_a = 0.5 m/s² for longitudinal growth is unverified and is the constant the
+  generative-model framework's component C3 replaces. Until then it is a placeholder with a sweep;
+  flagged so no report quotes it as measured.
+- **JJ1.Q3, resolved as proposed:** JJ.4 reports the fitted ratio of the video and track spreads, and
+  marks the ratio *predicted from perception* as not yet possible unless a source for the perceptual
+  constants is found. In plain words: we can measure that drivers are four times sharper in the car; to
+  *predict* that number from how much less precisely a frozen monocular clip conveys distance and
+  closing speed, we would need published values of that visual precision, and we do not have them.
+- **Authorization (2026-09-18): "go."** Implementation is delegated to a less expensive model; the
+  brief for it is `handover_jj1_implementation.md`, which carries every reference, signature and rule
+  the implementer needs without reading this note's argument.

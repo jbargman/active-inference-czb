@@ -3283,3 +3283,58 @@ like in the interface shape.
 `handover_2026-09-17.md` (part 2, §7, §10), `docs/naturalistic_data_plan.md` (§5 and §6, the sharing
 ruling NAT.Q3), and the two commit messages of this session before the instruction (rewritten, since
 nothing was pushed). Scrub those documents too, or leave them as the dated record they are?
+
+## 2026-09-18 — Jonas's rulings on JJ1.Q1, JJ1.Q3, GM.Q1–Q3; JJ.1 authorized and delegated; the implementer's handover
+
+RESOLVED JJ1.Q1: no steering in the policy menus we start with (the crowd-sourced stimuli and the
+naturalistic data both carry that constraint). Design note §1.3 updated: four longitudinal policies on
+the cut-in; proceed/wait on the left turn; continue/abort on the overtake.
+
+RESOLVED JJ1.Q3: as proposed. JJ.4 reports the fitted ratio of the video and track spreads and marks the
+ratio predicted from perception "not yet possible" unless a source for the perceptual constants is found.
+
+RESOLVED GM.Q1: yes, extend the data request. Drafted as `transfer/schema_revision_proposal.md` (schema
+version 2: the five NDS.1 corrections plus exposure windows, the partner's context columns, the
+lane-change onset band, the sampling rule, and an export-rule line for fitted coefficients). The schema
+file itself is unchanged; nothing is sent; the VCC track stays paused.
+
+RESOLVED GM.Q2: Jonas applies for exiD.
+
+RESOLVED GM.Q3: as proposed; stop at C1–C4 for now, keep the learned conditional density (C5) open for
+when they are done.
+
+JJ.Q5 still open. Implications if the answer is no: JJ.10 (an LLM as judge of the study-2 cells) is
+exploratory and nothing else depends on it; it would run on a local model (CPU only, so a small one, with
+correspondingly weak judgments) or be dropped. What would be sent if yes is the stimulus parameters of
+each cell (gap, speeds, TTC, lane-change duration, timepoint), not the video, not any participant's
+response; the question is whether describing unpublished stimuli to an external service counts as
+sharing the related project's data.
+
+JJ.1 read by Jonas: "go", with the implementation by a less expensive model and everything documented for
+it. Written: `handover_jj1_implementation.md`, the implementer's brief: the task, the order of steps with
+done criteria and stop conditions, the construction as code, every reused module and function with its
+signature and what it gives, the scripts' pre-registration pattern, eighteen property tests, the
+prohibitions, and the traps the designing session knows of. The design note gained §1.0 (what the
+crowd-sourced video data are for in this card: the scene at the freeze from the traces, the share who
+intervene from the participants, nothing in the rollouts fitted to the responses but the threshold
+model's three parameters) and the rulings in §7. The program document gained the rulings in §13.
+
+On Jonas's question about the type of generative model (answered in chat, recorded here): structured,
+not learned end to end. Bicycle kinematics for motion; a latent intention (keeping or changing lane) with
+a prior that the initiation hazard (C1) makes a function of the scene; the other's future as a fan whose
+width grows with the horizon at rates measured from data (C3); the norms as the content of that fan
+(what an ordinary lane change looks like, C2) and, in the released model's form, as the sampling bias of
+its tournament; the ego's own normal as the preference function with constants calibrated on free driving
+(C4). Data fix a handful of distributions; the structure is written in. A learned conditional density is
+the optional last rung.
+
+Queries:
+
+@JJ1.Q4(judgment, jonas): The implementer's brief asks for one new flag in `src/aidriver/preferences.py`
+(`safety_term_enabled`, default True = released behavior) so that variant B can switch the safety term
+off without touching any default. Standing rule 3 allows new behavior behind a flag defaulting off;
+confirm that this reading covers a flag defaulting to the released behavior.
+
+@JJ1.Q5(minor, review): The brief lets the implementer skip the released norm tournament (predictor P1)
+if wrapping `forward_tar_agent` open loop costs more than a day; P1 is a secondary in JJ.2. Confirm or
+require it.
