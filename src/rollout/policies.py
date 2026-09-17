@@ -105,9 +105,27 @@ def follow_path(path_x: np.ndarray, path_y: np.ndarray, path_s: np.ndarray, s_of
     return EgoPath(tau=tau, x=x, y=y, v=v, a=a, heading=heading, y_lane=y_lane, name=name)
 
 
+def ltap_wait_accel(v0: float, s_stop: float, a_nominal: float = LTAP_WAIT_A,
+                    a_max: float = 8.0) -> tuple[float, bool]:
+    """The deceleration "wait" actually needs, and whether the nominal -3 m/s^2 sufficed.
+
+    The design note fixes the left turn's "wait" as "stop before the crossing at -3 m/s^2". In
+    these stimuli the two halves of that sentence are not both satisfiable: at the decision
+    moment the ego is about 7.8 m/s with about 7 m of path left before the conflict band, which
+    needs about 4.2 m/s^2. What the policy IS -- the ego waits, it does not enter the
+    intersection -- is the part that cannot be given up without turning "wait" into a policy
+    that gets hit, so the deceleration is raised to whatever just stops the ego clear, capped at
+    the ego's achievable `a_max`, and the report gives the value per cell. Query JJ3.Q2.
+    """
+    need = v0 * v0 / (2.0 * max(s_stop, 1e-6))
+    if need <= abs(a_nominal):
+        return a_nominal, True
+    return -min(need, a_max), False
+
+
 def ltap_rollout(belief, policy: str, path_x: np.ndarray, path_y: np.ndarray,
                  s_recorded: np.ndarray, s_conf: float, horizon_s: float = HORIZON_S,
-                 dt: float = DT_S) -> EgoPath:
+                 dt: float = DT_S, a_wait: float = LTAP_WAIT_A) -> EgoPath:
     """The left turn's menu: "proceed" (the recorded turn) and "wait" (stop before x_conf).
 
     `path_x, path_y` are the recorded ego path in the freeze frame on the rollout's own tau
@@ -125,7 +143,7 @@ def ltap_rollout(belief, policy: str, path_x: np.ndarray, path_y: np.ndarray,
         v = np.gradient(s_of_tau, tau)
         a = np.gradient(v, tau)
     elif policy == "wait":
-        s_free, v, a = const_accel(float(belief.v_ego), LTAP_WAIT_A, tau)
+        s_free, v, a = const_accel(float(belief.v_ego), a_wait, tau)
         s_of_tau = np.minimum(s_free, s_conf)
         v = np.where(s_free <= s_conf + 1e-9, v, 0.0)
         a = np.where(s_free <= s_conf + 1e-9, a, 0.0)

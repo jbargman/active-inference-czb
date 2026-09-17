@@ -1,0 +1,28 @@
+left turn...
+overtake...
+main report written at 20 s
+the trait (two hierarchical fits, minutes each)...
+  cut-in exposure fit: mu +11.8775 [29 s]
+  left-turn exposure fit: mu +10.5805 [39 s]
+## 3 The trait on one scale (card TR.1 again, in nats)
+
+Per-driver levels on log Delta G at first exposure (card EX.2's exposure term, the session index), fitted on study 1's Random cut-in (3096 trials, 43 drivers) and on the 50 km/h left turn (1548 trials, 43 drivers); 43 drivers appear in both.
+
+| quantity | value |
+|---|---|
+| Spearman rho, the two levels on one scale | **+0.261** [-0.106, +0.575] |
+| card TR.1, in mixed units | +0.647 [+0.407, +0.798] |
+| drivers in both | 43 (TR.1: 43) |
+| cut-in population level (mu) | +11.8775 nats-log, sigma_pop 0.8849 |
+| left-turn population level (mu) | +10.5805 nats-log, sigma_pop 0.5000 |
+| distinct axis values, cut-in | 18 over 18 cells |
+| distinct axis values, left turn | 2 over 9 cells |
+
+**A caveat that limits the reading below, and it is stated before the reading rather than after it.** The left turn's axis is nearly degenerate: Delta G is zero in eight of the nine 50 km/h cells (section 1), because waiting costs more than proceeding everywhere but at PET 0, so after the zero rule the axis takes two distinct values over nine cells. A per-driver level fitted on a two-valued covariate is close to a per-driver response rate at PET 0, which is not what card TR.1 correlated. The correlation below is therefore evidence about THIS axis on THIS scenario and not a measurement of the trait. Query JJ3.Q6.
+
+Pre-stated reading: the correlation is below TR.1's interval, so this is **Delta G loses per-driver signal that the scenario-specific axes keep**.
+
+EL.Q4 is answered by this card only if the first or second reading obtains: it does not, so EL.Q4 stands and the design note's normalization by each scenario's between-driver spread remains the recommendation.
+
+This is read with card JJ.2's DROP in mind: a per-driver level can be consistent across scenarios on an axis that does not order the cells, because consistency is a statement about drivers and ordering is a statement about cells.
+

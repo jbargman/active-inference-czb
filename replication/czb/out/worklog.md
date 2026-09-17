@@ -3443,3 +3443,83 @@ policy with, or does the menu need its own effort calibration?
 @JJ2.Q4(minor, review): The design note's §5 names the scripts `je2/je3/je4_*`; the implementer's
 brief names them `jj2/jj3/jj4_*`, which matches the card prefix JJ and the query prefix. The
 brief's names were used. The design note's §5 should be corrected when it is next touched.
+
+## 2026-09-18 (overnight, same session) — card JJ.3: the same construction on the left turn, the overtake and the trait
+
+`replication/czb/jj3_rollout_transfer.py` → `out/jj3_rollout_transfer.md`, `out/jj3_rollout_cells.csv`,
+`out/jj3_driver_levels.csv`. The rules of design note §3 are copied verbatim into the script's
+docstring; nothing was reinterpreted. The report opens by saying that card JJ.2 dropped Delta G, so
+none of these numbers is a live candidate for the axis.
+
+**The left turn (18 cells).** Every rule fails. (a) 0.2632 held out against distance alone's 0.0558
++ 0.01; (b) the 70 km/h predicted share is below the 50 km/h one at 0 of 9 matched PETs; (c) at
+PET 4 s no sampled future collides under "proceed" within the released 6 s, so — as the rule says
+in advance — the report states that the emergence claim fails on the left turn at that PET, and the
+horizon was not extended. The mechanism is the same one card JJ.2 found: **Delta G is zero in 16 of
+the 18 cells**, because waiting costs more than proceeding everywhere but at PET 0. Waiting pays the
+speed term (an ego 7.8 m/s below its own desired speed, sigma_v = 0.5 m/s) and the braking effort,
+and neither depends on how critical the scene is.
+
+**The cyclist overtake (15 cells).** Rule (d) holds at C1 to C4 — the predicted share falls with
+clearance at every one — and fails at C5, where the 1.5 m cell is predicted above the 1 m cell.
+Held out, leave-one-timepoint-out: Delta G 0.1580 (A) and 0.1577 (B) against the clearance rule's
+0.2099 and chance 0.1626. This is the one place in the three cards where the rollout construction
+does something the released field could not (`out/overtake_field_check.md`: the field ranks these
+cells at +0.402 against the clearance label's -0.833), and it is a 15-cell result with a narrow
+dynamic range, so it is worth no more than that.
+
+**The trait on one scale.** Spearman +0.261 [-0.106, +0.575] between the per-driver levels on
+log Delta G on study 1's cut-in and on the 50 km/h left turn, at first exposure, over the same 43
+drivers, against card TR.1's +0.647 [+0.407, +0.798] in mixed units. The pre-stated reading for a
+correlation below TR.1's interval is "Delta G loses per-driver signal that the scenario-specific
+axes keep", and the report states it — **with a caveat placed before it**: the left turn's axis
+takes two distinct values over nine cells (Delta G is zero in eight of them), so the level fitted
+there is close to a per-driver response rate at PET 0 and is not what TR.1 correlated. EL.Q4 is
+therefore not answered by this card.
+
+**Two implementation decisions, both in the report and both queried.** The left turn's "wait" could
+not be both "-3 m/s^2" and "stop before the crossing": at the decision moment the ego is about
+7.8 m/s with about 7 m of path left before the conflict band, which needs about 4.2 m/s^2. With -3
+the ego stops ON the crossing and is hit there, which is not what the word "wait" names, so the
+deceleration is raised per cell to whatever just stops it clear (3.6 to 4.7 m/s^2, capped at
+a_max), and the value is in the report's table. And the ego's lane offset is held at zero for both
+left-turn policies, because the released lane-keeping term is a straight-road construct and would
+charge "proceed" the road-edge cost for turning.
+
+Queries:
+
+@JJ3.Q1(judgment, review): On the left turn the ego's lateral position is passed to the preference
+function as zero for both policies, so the released lane-keeping term never fires. The alternative
+is to pass the real lateral position, which charges "proceed" -15 000 per step (the road-edge cost)
+for leaving a straight lane it is turning out of by design, and would make the comparison
+meaningless. The right fix is a lane model that follows the intended path; does that belong in this
+project or is holding it at zero the standing convention for turning scenarios?
+
+@JJ3.Q2(judgment, jonas): The design note's left-turn "wait" is "stop before the crossing at
+-3 m/s^2", and in these stimuli that is not satisfiable: the ego needs about 4.2 m/s^2 at the
+decision moment. The implementation kept "stop clear of the conflict band" and raised the
+deceleration per cell (3.6 to 4.7 m/s^2, reported). The alternative reading — keep -3 and let the
+ego stop on the crossing — makes "wait" a policy that is struck by the oncoming car, which cannot
+be what the menu means. Confirm, or fix the menu with a decision moment far enough back that -3
+works.
+
+@JJ3.Q3(minor, review): The freeze for study 1's overtake and cut-in is the clip end by the
+project's own `czb_data._cov_end` convention, so C1 is read at onset - 0.15 s rather than at onset.
+The design note says "the clip end"; the convention exists because a C1 covariate must not depend
+on manoeuvre frames (`out/c1_covariate_defect.md`). Confirm that this is the freeze the design note
+meant.
+
+@JJ3.Q4(minor, review): Rule 3(d) asks for the held-out score "against the lateral-clearance rule
+of card B.1", and no such held-out score is on file — `out/overtake_field_check.md` reports rank
+correlations only. The comparator was therefore computed in this card's script (a threshold on the
+clearance the manoeuvre ends at, same folds, same fitter) and is labelled as computed here.
+
+@JJ3.Q5(minor, review): The design note fixes no fold for the overtake's 15 cells. Both schemes are
+reported; leave-one-timepoint-out is the primary, argued rather than scored (leave-one-clearance-out
+asks a clearance rule to extrapolate to a level it has never seen, which it cannot do by
+construction, so it would flatter Delta G). Both were computed after the run and the report says so.
+
+@JJ3.Q6(judgment, review): The trait table's left-turn axis takes two distinct values over nine
+cells, so the per-driver level there is barely identified and the +0.261 is not a measurement of
+the trait. If the trait on one scale is still wanted after JJ.2's DROP, it needs an axis with
+dynamic range on both scenarios — which is query JJ2.Q2's question again.
