@@ -3024,3 +3024,36 @@ TT.1 with the session term; a proper version would refit TT.1's comparison with 
 both SEs.
 @EX2.Q3(minor, review): the cut-in count (step 1) is not reliable on its own while the model's beta is;
 the model uses trial-level covariates and driver effects, so it has more power. Both are reported.
+
+## 2026-09-17 — Jonas requested access to highD and inD; a plan for both programs
+
+Jonas asked for a plan to use highD and inD for the comfort-zone work and to assess the published model.
+Written as `docs/naturalistic_data_plan.md` (+ docx, pdf); no data touched, no card authorized. Dataset
+facts come from the levelXdata pages (highD: about 110 500 vehicles, preceding/following ids, THW, TTC,
+lane-change annotation; inD: about 8 200 vehicles and 5 300 pedestrians and cyclists at four intersections,
+OpenDRIVE and Lanelet2 maps; both non-commercial, no redistribution, no driver identity across
+recordings). inD's frame rate and signalization are not on its page and are checks on download.
+
+The plan revisits `docs/data_requirements.md` §9's verdict on drone data ("distributional calibration
+only; no onsets"): the inD left turn needs no onset (gap accepted or rejected), the deliverable is a
+population percentile that needs no driver identity, and two open questions (EX.2's first-exposure
+setting; the released model's instability in steady following, GZ.1/GZ.2) are naturalistic by nature.
+Cards: NC.0 ingest, conventions and jitter floor; NC.0b a validated deceleration-onset detector with a
+stop rule; NC.0c census with per-card minimum counts. Comfort-zone program NC.1 (inD left-turn gap
+acceptance against video first exposure 2.42 s, pooled 2.18 s and track 2.45 s; recommended first),
+NC.2 (distance against time with natural speed variation), NC.3 (the video-fitted cut-in level predicting
+highD follower responses), NC.4 (anticipation horizon per scenario, for PC1.Q4), NC.5 (free following
+against the field's boundary), NC.6 (real cut-ins against the study-2 design space). Paper program NM.1
+(the released model on replayed highD following; recommended first, overnight compute), NM.2 (the
+calibrated following preference against real following, same computation as NC.5), NM.3 (response time
+against urgency on lead decelerations), NM.4 (priority-road behavior at inD intersections, feasibility
+first). The opposite-direction lateral incursion is not testable with either dataset.
+
+@NAT.Q1(judgment, jonas): mapping video "would intervene" to a highD deceleration onset beyond baseline and
+to an inD rejected gap.
+@NAT.Q2(judgment, jonas): route highD cut-ins through the split-site interface schema as a dry run of the
+paused VCC pipeline, sending nothing to Volvo Cars?
+@NAT.Q3(judgment, jonas): who sees results about the published model, and when (authors' reply of
+2026-09-11; the meeting with Julian Schumann).
+@NAT.Q4(judgment, jonas): priority if time is short; recommended NC.1 first for the comfort-zone work and
+NM.1 first for the paper.

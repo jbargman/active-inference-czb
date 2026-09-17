@@ -39,6 +39,13 @@ the repository disagree, the repository wins, and you should say so in your repl
 > Arithmetic only: the video-to-track offset on the left turn shrinks from −0.27 s to about −0.03 s.
 > **EX2.Q1 is Jonas's:** dated notes in the handbook and deck numbers; §1 below still quotes pooled values.
 >
+> **Naturalistic data, planned 2026-09-17, not started.** Jonas requested access to highD and inD. The plan is
+> `docs/naturalistic_data_plan.md`: a shared ingest step (NC.0, a validated onset detector, a census), a
+> comfort-zone program (NC.1, inD left-turn gap acceptance, recommended first) and a paper-assessment
+> program (NM.1, the released model on replayed highD following, recommended first). Nothing starts
+> before access and Jonas's word; his decisions are NAT.Q1–Q4. Raw data stays in `external/` (license:
+> non-commercial, no redistribution).
+>
 > Work in interactive mode under the `performing-research` skill. **One uncommitted file is Jonas's
 > own:** `docs/handout_schumann_2026-09.docx` carries his Word edits. Do not stage, overwrite or rebuild
 > onto it; ask him first whether his edits should be folded back into the `.md`. **Pushing:** the
