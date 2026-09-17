@@ -1169,7 +1169,7 @@ tracked output. The argument: the surprise family is an operator on a reference
 distribution, and with a free reference it reproduces any threshold model (residual
 information of exp(-s) is s), so scenario-agnosticism is a property of the reference.
 Two references are scenario-agnostic by construction: (A) a predictive model of what
-other road users do (the Waymo construction; the library's probabilistic/belief-mismatch
+other road users do (the construction of Dinparastdjadid et al. (2023); the library's probabilistic/belief-mismatch
 families), and (B) a population distribution of accepted states — under a Gaussian, residual
 information is half the squared Mahalanobis distance, so the CZB ellipse's joint percentile
 IS surprise with a population reference. (A) is zero by construction where the other agent
@@ -3071,15 +3071,15 @@ RESOLVED NAT.Q2: highD cut-ins may go through the split-site interface schema as
 data goes to Volvo Cars, code and results may. The transfer policy already never bundles `external/**`;
 per-track derived files from either dataset are written only under `external/highD_derived/` and
 `external/inD_derived/`, and reports in `replication/` carry no track ids.
-RESOLVED NAT.Q3: results are nominally internal; Jonas may share parts with Julian Schumann, Johan Engström
+RESOLVED NAT.Q3: results are nominally internal; Jonas may share parts with Julian Schumann, a colleague (JJ)
 and Arkady Zgonnikov (meetings 2026-09-17 and 09-18). Reports are written so a section stands on its own and
 marks what is ours and unpublished; nothing is sent by a session.
 RESOLVED NAT.Q4: the comfort-zone cards first (NC.1–NC.4); of the paper cards, NM.1, pre-registered as soon
 as NC.0 yields steady-following episodes and run overnight.
 
-## 2026-09-17 (evening) — Jonas and Johan Engström: other cognitive perspectives on what has been found
+## 2026-09-17 (evening) — Jonas and a colleague (JJ): other cognitive perspectives on what has been found
 
-Jonas, sitting with Johan: think about other cognitive paradigms that could frame the work so far, "very
+Jonas, sitting with JJ: think about other cognitive paradigms that could frame the work so far, "very
 generally". Given in chat, recorded here so it survives the model switch that followed. Marked opinion
 throughout; the references are from memory and UNVERIFIED (never cite without checking).
 
@@ -3119,3 +3119,167 @@ active-inference one. Eight framings, each with a reading of our results and a t
 Recommended first: 2 (decides transfer, data in hand), 5 (one mechanism for R.1 and the anticipation
 findings), 3 (a cognitive reading of the safety term with a highD transfer prediction). Not authorized;
 Jonas may turn any into a card or ask for a literature search.
+
+## 2026-09-17 (late evening, capable session) — the six points from a colleague (JJ): an analysis and a program, not a card
+
+Jonas, after a long discussion with a colleague (JJ): think deeply about JJ's comments, what it would
+take for our comfort-zone work to work and be better with all the components of active inference, and
+what we can do, test and develop to do what he proposes; analyse and plan only; document all, with
+outside sources, illustrations and plain prose. JJ's points as relayed: (1) work with active
+inference, find what is missing and add it; (2) predictions as the rollout of our own policy in the world
+of the others, choose the least-free-energy policy; (3) ideally one rollout of the whole world, in practice
+others first then match ours; (4) uncertainty as the core component; (5) the cut-in probability as a
+central part of the cut-in algorithm; (6) normative models at the core; (7) LLMs and data-driven methods,
+and understanding mechanisms by studying weights (JJ's group is putting an intern on it). Jonas has more to add
+over several sessions.
+
+Delivered: `docs/active_inference_program.md` (+ docx, pdf), eight schematic figures from
+`docs/make_ai_program_figures.py` (no fitted numbers in any figure). No analysis run; the suite was
+green before (31/33/40/96/62/20/28/27/16/30) and nothing in `src/` changed.
+
+The argument, in five lines. (a) The current model is an active-inference agent with everything but the
+preference threshold switched off; the falsifications on record were of slices (pointwise deficit with a
+worst-case counterfactual; a non-leaky accumulator of it; trust withdrawal as onset; a fixed-horizon
+projected conflict), never of an agent that predicts, rolls out and compares. (b) The one move that ties
+JJ's points together: replace the pointwise axis by a policy comparison, dG = G(continue) - min over a
+small menu of the ego's policies, in nats, with rollouts against a predictive fan of the other's futures;
+the comfort zone is where continuing is still the least-cost policy. (c) The gate then emerges from a
+prior and an inferred intention (G.1's pre-onset gate of 0.063-0.070 reads as a prior cut-in probability),
+the anticipation horizon emerges from where the rolled-out paths meet and how uncertain the arrival is
+(PC1.Q4), and one level in nats spans the scenarios (EL.Q4 dissolved by construction if it works).
+(d) Points 3, 4 and 5 are one object: the generative model of the other road user, estimated from data,
+with uncertainty growth and a latent intention; points 5 and 6 supply it from highD and inD. (e) Point 6
+also gives a known-mechanism interpretability benchmark: a small end-to-end network on study 2, probed for
+looming, where the answer is known.
+
+Outside sources checked this session and cited: Schumann, Engström, Wei, Liu, Kober & Zgonnikov (2026,
+arXiv:2604.19838, a joint two-agent active-inference interaction model, which is JJ's points 2 and 3
+in his own group's hands); Mohammad, Mooi & Zgonnikov (2026, arXiv:2604.09609, general-purpose LLMs as
+closed-loop driver agents in a merge, to appear at ITSC 2026); Tolstaya et al. (2021, conditional
+behavior prediction and the interactivity score); Seff et al. (2023, MotionLM); Hwang et al. (2024,
+EMMA); Friston et al. (2021, sophisticated inference); Wang et al. (2025, bounded-optimal crossing under
+noisy perception); Zgonnikov, Abbink & Markkula (2024); Markkula et al. (2023); Pekkanen et al. (2018);
+Shi et al. (2025, physics-informed lane-change intention on highD); Li et al. (2023) and Nanda et al.
+(2023) on emergent world representations; Bricken et al. (2023) and Templeton et al. (2024) on sparse
+autoencoders; Alain & Bengio (2016) on probes; Wei et al. (2023b, world-model learning, from the publisher's listing). Two cited by title only (ScienceDirect pages refused).
+
+The honest bar, stated in the document: study 2 is at the noise floor (looming 0.113, floor 0.118), so a
+rollout formulation can at best tie there; it earns its place by needing no gate for the pre-onset cells,
+by transferring to the left turn and the overtake with one level, and by predictions about uncertainty
+(truck against car, video against track). Ten cards proposed under prefix JJ, in three phases; none
+authorized. Phase 0 (data in hand): JJ.1 design note, JJ.2 rollouts on the cut-in, JJ.3 transfer in nats,
+JJ.4 precision as spread. Phase 1 (on highD/inD, after NC.0): JJ.5 norms from data, JJ.6 cut-in
+probability, JJ.7 learned predictor, JJ.8 interactivity. Phase 2 (now, in parallel): JJ.9 known-mechanism
+benchmark, JJ.10 LLM as judge. Recommendation (opinion): JJ.1 then JJ.2, and JJ.9 in parallel.
+
+Queries:
+
+@JJ.Q1(judgment, jonas): Authorize JJ.1, the design note for the rollout formulation of the comfort-zone
+boundary (`docs/active_inference_program.md` §3.2, §10), as the next card? Days of work, nothing off disk;
+its result decides whether JJ.2 to JJ.4 are built.
+
+@JJ.Q2(judgment, jonas): Which preference variant is primary in JJ.2: the released six terms including the
+safety counterfactual (faithful to the paper), or the expected collision outcome under the predictive fan
+without the counterfactual (the theory `docs/r2_pipeline_review.md` §3.2 points at)? Recommendation: the
+released form as primary, the other as the pre-stated alternative promoted only by JJ.2's rule (c).
+
+@JJ.Q3(judgment, jonas): May a predictor trained on highD, or its weights, be shared outside the project
+(JJ's group's intern, the paper's authors)? The license forbids redistributing the data; the status of derived
+models needs a ruling before JJ.7 is planned for sharing.
+
+@JJ.Q4(minor, jonas): Do study 2's cut-in stimuli contain contextual cues to intention beyond proximity (a
+vehicle ahead of the cut-in vehicle in its own lane, an indicator, its speed relative to its lane)? Decides
+whether JJ.6's contextual features can be tested on the video data or only on highD.
+
+@JJ.Q5(judgment, jonas): May text descriptions of the unpublished video studies' cells be sent to an
+external language-model API for JJ.10? If not, JJ.10 is dropped or run on a local model only.
+
+@JJ.Q6(judgment, jonas): Coordination with JJ: offer the known-mechanism benchmark (JJ.9) to his intern
+as a shared case, and ask which model the intern will probe, so that JJ.7's predictor can be built to be
+comparable?
+
+## 2026-09-17 (night, same session) — Jonas's rulings on JJ.Q1–Q6; card JJ.1 written; the generative-model framework; the attribution rule
+
+Jonas answered the six queries of the previous entry the same evening, and added: the colleague whose
+points the program document answers is to be referred to as **JJ** in every document, and neither the
+colleague nor the company is to be named "in the reports etc." The prefix JE became JJ throughout
+(program document, design note, figures, this log, the handover); the names were removed from the
+program document, this log's two entries of 2026-09-17 evening, and the handover banner. Other files
+that name the colleague predate the instruction and are listed as a query below.
+
+RESOLVED JJ.Q1: go as proposed. Card JJ.1 is authorized and written: `docs/rollout_boundary_design_note.md`
+(+ docx, pdf), the construction in full with every constant motivated and the pre-stated rules of JJ.2 to
+JJ.4; stop for review before coding.
+
+RESOLVED JJ.Q2: "maybe as you propose; what is the cost of testing both?" The cost is one flag on the
+safety term (defaulting to the released behavior) and one extra column in every table: both variants run
+in every card, the released form primary, the expected-outcome form promoted only by JJ.2's rule (c).
+Written into the design note §1.4 and §2.
+
+RESOLVED JJ.Q3: a real problem; work locally for now, then the same on VCC data if it can be had. Jonas
+asked for a framework to be run on VCC data, prepared on the drone data, and said the data scale is the
+project's largest issue. Answered by `docs/generative_model_framework.md` (+ docx, pdf) and
+`src/generative/` (components C1 hazard, C2 lane-change execution, C3 uncertainty growth, C4 the ego's
+normal; the export rule in code; the runner on the interface), `tests/test_generative.py` (28 checks;
+the suite is now eleven files), and card GM.0 (`replication/czb/gm0_generative_smoke.py` →
+`out/gm0/report.md`), which rehearses the runner on the synthetic fixture and passes its three pre-stated
+checks, the third being that the fixture's lateral growth slope equals the jitter floor (0.138 against
+0.141 m/s). The argument of the framework note: a structured generative model needs a handful of
+distributions, each estimable from highD-scale data (5 600 complete lane changes, Krajewski et al.
+2018); only a learned conditional density (C5) has a real appetite, and public motion datasets exist for
+it. Not sent anywhere; the VCC track stays paused.
+
+RESOLVED JJ.Q4: no such information in the stimuli that can be used today. Jonas adds that one of the
+paper's authors said the most important part of a cut-in model is likely the normative (generative)
+model of the probability that the cut-in vehicle initiates a lane change: that is component C1 of the
+framework and the prior p0 of the design note, made a function of the scene. Jonas also reports JJ's
+view that surprise lacks urgency but that urgency should not be patched on top; JJ's alternative Jonas
+will try to recall. Opinion recorded in the program document §13: in the rollout form urgency is
+already inside the quantity (a nearer conflict occupies more of the horizon's steps and collides at
+higher relative speed in more sampled futures), which is why the released model's own accumulated
+quantity is the pragmatic shortfall of the current policy over the horizon, not surprise about the
+world.
+
+RESOLVED JJ.Q5: not answered explicitly; JJ.10 (an LLM as judge) stays unauthorized until it is.
+
+RESOLVED JJ.Q6: the colleague's group deals with its intern itself. Agreed: JJ.9 stays our own
+methodological check, built for our question and not for comparability with an unknown model; if it
+yields a clean result it can be offered later as a worked case, in writing.
+
+Queries:
+
+@JJ1.Q1(judgment, jonas): The steer-away policy on the cut-in depends on whether the studies' road has a
+free lane on the far side (the context files will say). If not, the menu is four longitudinal policies.
+Confirm that a menu without a steering option is acceptable for the cut-in, or name the alternative.
+
+@JJ1.Q2(minor, review): sigma_a = 0.5 m/s^2 for longitudinal growth in the rollout predictor is an
+unverified placeholder that GM.1 (component C3 on highD) replaces; flagged so that no report quotes it as
+measured.
+
+@JJ1.Q3(judgment, jonas): JJ.4's medium contrast needs perceptual constants (angular noise for a frozen
+monocular frame against a moving view) that the project has not sourced. Accept that JJ.4 reports the
+fitted ratio and marks the predicted ratio "not yet possible" if no source is found, rather than inventing
+constants?
+
+@GM.Q1(judgment, jonas): Extend the split-site data request with exposure episodes (adjacent-lane
+vehicles that did not cut in) and the partner's own context columns (`docs/generative_model_framework.md`
+§4), to go to VCC as one schema revision with NDS.Q2–Q5 when the track resumes? Without it the initiation
+hazard (C1) cannot be fitted at VCC.
+
+@GM.Q2(judgment, jonas): Apply for exiD as well (same provider as highD and inD; highway ramps, dense with
+merges and lane changes)?
+
+@GM.Q3(judgment, jonas): Pursue C5, a learned conditional density, on the public motion-forecasting
+datasets for general motion with highD and VCC supplying local norms? Recommendation: not before JJ.2 has
+shown the structured predictor is worth improving.
+
+@GM.Q4(minor, review): The synthetic fixture's six `cut_in` events carry no lateral motion, so C2 finds no
+lane change and is rehearsed only through its property tests; a scripted lateral trajectory in
+`transfer/make_synthetic_fixture.py` would let GM.0 cover C2 and show VCC's adapter what a cut-in looks
+like in the interface shape.
+
+@ATTR.Q1(judgment, jonas): The attribution rule was applied to the new documents, this log's two
+2026-09-17 evening entries and the handover banner. Files written earlier that still name the colleague:
+`handover_2026-09-17.md` (part 2, §7, §10), `docs/naturalistic_data_plan.md` (§5 and §6, the sharing
+ruling NAT.Q3), and the two commit messages of this session before the instruction (rewritten, since
+nothing was pushed). Scrub those documents too, or leave them as the dated record they are?

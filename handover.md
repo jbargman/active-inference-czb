@@ -25,9 +25,19 @@ the repository disagree, the repository wins, and you should say so in your repl
 >    video PET_50 2.42 s against the track's 2.45 s). **EX2.Q1 for Jonas** (handbook and deck numbers).
 > 4. **highD and inD requested; plan written** (`docs/naturalistic_data_plan.md`), NAT.Q1–Q4 answered;
 >    starts only on access and his word. Comfort-zone cards first, then NM.1.
-> 5. **Perspectives for Johan Engström** (worklog, 2026-09-17 evening): eight cognitive framings with
+> 5. **Perspectives for a colleague (JJ)** (worklog, 2026-09-17 evening): eight cognitive framings with
 >    tests; recommended range-frequency theory, a starting-point diffusion model, affordance boundaries.
 >    References unverified. May become cards or a literature search.
+> 6. **The six points (JJ) answered** (late evening): `docs/active_inference_program.md` (+ docx, pdf, eight
+>    figures). Proposes a policy-comparison quantity dG in nats as the axis, with rollouts of the ego's policies
+>    against a predictive fan; ten cards under prefix JJ. Jonas ruled on JJ.Q1–Q6 the same evening (§13 of that
+>    document): **JJ.1 is authorized and written** (`docs/rollout_boundary_design_note.md`, stop for review before
+>    coding); both preference variants run; the interpretability benchmark stays ours. He will add more of JJ's
+>    input over several sessions: extend the program document, do not start a new one. **Never name the colleague
+>    or the company in any document; the code is JJ.**
+> 7. **The generative-model framework** (`docs/generative_model_framework.md`; `src/generative/`, 28 checks;
+>    card GM.0 done, `out/gm0/`): prepared on highD/inD, to run at VCC through the interface. **GM.Q1–Q4, JJ1.Q1–Q3
+>    and ATTR.Q1 for Jonas.** The VCC track stays paused.
 >
 > Quick wins if he asks: EX2.Q2 (refit TT.1 with the session term, ~15 min) turns the indicative "video
 > at first exposure sits within 0.03 s of the track" into a result with an interval. §1 below quotes the
@@ -47,7 +57,7 @@ the repository disagree, the repository wins, and you should say so in your repl
 1. Read this file in full. Then read `docs/czb_work_orders.md` §2 (the standing rules)
    and the card or note named for the task at hand. Do not read the papers or the handbook
    unless the card says to; do not open `OthersWork/` (§5).
-2. Run the test suite exactly like this, and confirm 31, 33, 40, 96, 62, 20, 28, 27, 16 and 30 passed:
+2. Run the test suite exactly like this, and confirm 31, 33, 40, 96, 62, 20, 28, 27, 16, 30 and 28 passed:
    ```bash
    python tests/test_surprise.py
    python tests/test_comfortzone.py
@@ -59,9 +69,11 @@ the repository disagree, the repository wins, and you should say so in your repl
    python tests/test_situational.py
    python tests/test_norms.py
    python tests/test_conflict.py
+   python tests/test_generative.py
    ```
    (`pytest` reports fewer and is *not* the suite; the files are scripts that count checks. The
-   tenth file, `test_conflict.py`, was added with card PC.1 on 2026-09-16.)
+   tenth file, `test_conflict.py`, was added with card PC.1 on 2026-09-16; the eleventh,
+   `test_generative.py`, with the generative-model framework on 2026-09-17.)
 3. Run `git status` and `git log --oneline -5`. The tree should be clean. If it is not,
    stop and report what is uncommitted before doing anything.
 4. If Jonas said "load handover.md" and nothing else: reply with a short statement of
