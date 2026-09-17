@@ -316,6 +316,98 @@ Then extend `handover.md` §0 step 2 with `python tests/test_rollout.py` and its
 
 ## 9 What the implementer found
 
-*To be appended by the implementing session when the steps are done: the verdicts in the design note's
-words, the numbers a reader must not re-derive (with their output files), the queries raised, and what
-the session may have got wrong.*
+*Appended 2026-09-18 (overnight) by the session that executed this brief. All four steps are done and
+committed; the suite is green at 31/33/40/96/62/20/28/27/16/30/28/27 (twelve files) before and after.
+The dated record is the worklog's four entries of 2026-09-18.*
+
+### The verdicts, in the design note's own words
+
+- **JJ.2: DROP.** "Drop if (a) fails." Rule (a) fails at both variants — post-onset held-out **0.3202**
+  (released) and **0.2976** (no p_safe) against the gated looming rule's 0.1027 + 0.01. 0.3202 *is*
+  chance (0.320 on file): the threshold model collapses to the training mean because log ΔG is
+  anti-ordered with the response. Rule (b) 0.5381, rule (c) 0 of 24 rows (variant B 3 of 24), rule (e)
+  passes. Rule (d)'s sweep moves nothing.
+- **JJ.3, left turn: every rule fails.** (a) 0.2632 against 0.0558 + 0.01; (b) the 70 km/h predicted
+  share is below the 50 km/h one at **0 of 9** matched PETs; (c) no sampled future collides under
+  "proceed" at PET 4 s within the released 6 s, so — as rule (c) says in advance — "the emergence claim
+  fails on the left turn at that PET rather than extending the horizon". The horizon was not extended.
+- **JJ.3, overtake: rule (d) holds at C1–C4 and fails at C5.** ΔG held out (leave-one-timepoint-out)
+  0.1580 against the clearance rule's 0.2099 and chance 0.1626.
+- **JJ.3, the trait: "ΔG loses per-driver signal that the scenario-specific axes keep"** (+0.261
+  [−0.106, +0.575] against TR.1's +0.647 [+0.407, +0.798]) — **with the caveat stated before the
+  reading** that the left turn's ΔG axis takes two distinct values over nine cells. EL.Q4 is not
+  answered by this card.
+- **JJ.4: the two-spread model earns its place** (+60.6 held-out log-likelihood units under LOPO
+  against the margin of 2) and **the truck is sharper** (0.273 against 0.424). The video/track ratio is
+  **4.34 [2.38, 7.93]**; the ratio predicted from perception is **not yet possible**, per ruling JJ1.Q3.
+  The gate's spread is **not** measurement noise: the traces' own lateral-rate jitter is 156 times too
+  small.
+
+### The numbers a reader must not re-derive
+
+| number | what it is | file |
+|---|---|---|
+| 0.3202 / 0.2976 | ΔG post-onset held out, variants A / B, second cut-in study | `replication/czb/out/jj2_rollout_cutin.md` |
+| 0.5381 / 0.2495 | the same fits' pre-onset out-of-sample | ibid. |
+| 0 of 24 / 3 of 24 | matched-TTC rows ΔG orders like the data, A / B | ibid. |
+| 0.0052 against 0.0574 | rule (e): median per-cell SE of log ΔG against 5% of its spread | ibid. |
+| −0.648 / +0.848 | Spearman of ΔG with the share / with the gap, post-onset | ibid. §1b |
+| +0.927 | Spearman of G(continue) with dv — the speed ordering, inside the rollouts | ibid. §1b |
+| 20 308 nats | the fixed control-effort cost of −3 m/s² over the horizon | ibid. §1b |
+| 0.2632 | ΔG held out on the left turn, leave-one-PET-out | `out/jj3_rollout_transfer.md` |
+| 16 of 18 | left-turn cells with ΔG = 0 | ibid. |
+| 0.1580 / 0.2099 / 0.1626 | overtake: ΔG / the clearance rule / chance, leave-one-timepoint-out | ibid. |
+| +0.261 [−0.106, +0.575] | the trait on one scale, 43 drivers, first exposure | ibid., `out/jj3_driver_levels.csv` |
+| 0.858 s / 0.198 s | σ_resp video / track (card TT.1's 0.86 and 0.20, reproduced) | `out/jj4_precision_spread.md` |
+| 4.34 [2.38, 7.93] | the fitted video/track spread ratio | ibid. |
+| 0.4239 / 0.2732, +60.6 | σ_resp car / truck and the LOPO gain | ibid. |
+| 0.0021 m/s, 0.0064 m, ×156 | the traces' lateral-rate jitter against G.1's s_l = 0.990 m | ibid. |
+
+Per-cell data, no participant ids: `out/jj2_rollout_cutin_cells.csv`, `out/jj3_rollout_cells.csv`,
+`out/jj3_driver_levels.csv`. Run logs: `out/log_jj2.txt`, `log_jj3.txt`, `log_jj4.txt`.
+
+### The one mechanism behind three of the four failures
+
+ΔG is a **value-of-action** quantity. It is large where an alternative would avert something that
+continuing would cause, and it must be small both where nothing is going to happen and where nothing in
+the menu helps any more. It therefore cannot be monotone in criticality, and on the cut-in it is
+*anti*-ordered with the gap. The menu's own price is the other half: at the released σ_a = 0.1 m/s² a
+−3 m/s² alternative costs a fixed 20 308 nats over the horizon whatever the scene is doing, so the
+minimum over the menu is floored, and on the left turn waiting costs more than proceeding in 16 of 18
+cells. Separately and independently, the released magnitude still grades by **speed** rather than by
+**gap** inside the rollouts — G(continue) alone correlates +0.927 with Δv and scores 0.3202 too — which
+is the R.2 pipeline review's finding reappearing. The policy comparison and the preference function
+are therefore not to be blamed for one another, and JJ2.Q2 puts the choice to Jonas.
+
+### Queries raised
+
+`JJ1.Q6` (the one-sided intention update, for Jonas — property test (1) cannot pass otherwise);
+`JJ2.Q1`–`JJ2.Q4`; `JJ3.Q1`–`JJ3.Q6`; `JJ4.Q1`–`JJ4.Q4`. Fourteen in all, in
+`replication/czb/out/worklog.md` and compiled into `out/query_register.md`. The three that decide what
+happens next are **JJ2.Q2** (is there a repair of ΔG worth designing, or does the preference
+magnitude have to be fixed first?), **JJ2.Q3** (should an evasive policy be priced with the released
+free-driving σ_a?) and **JJ3.Q2** (the left turn's "wait" cannot be both −3 m/s² and clear of the
+crossing). `JJ1.Q4` and `JJ1.Q5` from the designing session are still open; the brief directed the
+flag JJ1.Q4 asks about, so it was added, and P1 (the released norm tournament, JJ1.Q5) was not built —
+JJ.2's verdict makes a secondary predictor moot until the primary is settled.
+
+### What this session may have got wrong
+
+1. **The one-sided intention update** (JJ1.Q6) is a construction choice, not a transcription. With the
+   plain likelihood ratio the pre-onset cells would carry P(changing) ≈ 1e-40 rather than 0.07. It
+   changes the pre-onset cells' ΔG and therefore rule (b); it does not touch rule (a), which is what
+   decides the verdict.
+2. **The left turn's "wait" deceleration** was raised per cell (3.6 to 4.7 m/s²) so that the policy
+   stops clear of the conflict band. With the design note's literal −3 m/s² the ego stops *on* the
+   crossing and is struck there, and ΔG would be larger in every cell for a reason that has nothing to
+   do with comfort. Both readings are in JJ3.Q2; the report carries the per-cell value.
+3. **The ego's lane offset is zero on the left turn** for both policies (JJ3.Q1), so the released
+   lane-keeping term never fires there. Passing the real offset charges "proceed" −15 000 per step for
+   turning out of a straight lane by design.
+4. **The overtake's fold scheme** was not fixed by the design note; both are reported and the choice is
+   argued rather than scored, but both were computed after the run (JJ3.Q5).
+5. **The apparent-size contrast is not the stage-1 estimator** (JJ4.Q1), because that estimator cannot
+   be fitted where the intervention share is 0.976 to 1.000.
+6. **P1, the released norm tournament**, was skipped (JJ1.Q5 allows it); §3.2 calls it a secondary.
+7. The scripts are named `jj2/jj3/jj4_*` after this brief, not `je2/je3/je4_*` as design note §5 has
+   them (JJ2.Q4).

@@ -3588,3 +3588,57 @@ authorized here.
 @JJ4.Q4(minor, review): The gate-spread line of §4 is circular as written and the report says so.
 Worth restating in the design note as "a consistency check of the note's own arithmetic until C3
 measures sigma_v,lat", so that no later reader takes the 1.00 ratio for evidence.
+
+## 2026-09-18 (overnight, same session) — card JJ.1 closed: the four steps, the three verdicts, and what is now open
+
+All four steps of `handover_jj1_implementation.md` are done and committed, and §9 of that file is
+written: the verdicts, the numbers a reader must not re-derive with their files, the queries, and
+what this session may have got wrong. The suite is green at 31/33/40/96/62/20/28/27/16/30/28/27
+(twelve files) before and after; `handover.md` §0 step 2 carries the twelfth file and its count, and
+nothing else in `handover.md` was touched — §1 and §4 are for the reviewing session, as the brief
+says. Nothing was pushed. `docs/handout_schumann_2026-09.docx` was never staged.
+
+**The verdicts, in the design note's own words.**
+
+- **JJ.2 — DROP.** "Drop if (a) fails." Post-onset held out 0.3202 (variant A) and 0.2976 (variant B)
+  against 0.1027 + 0.01. 0.3202 is chance.
+- **JJ.3, left turn — every rule fails**, including rule (c) in the form the rule itself prescribes:
+  "the emergence claim fails on the left turn at that PET rather than extending the horizon".
+- **JJ.3, overtake — rule (d) holds at C1 to C4 and fails at C5**; held out 0.1580 against the
+  clearance rule's 0.2099 and chance 0.1626. The one thing in these three cards that the released
+  field could not do.
+- **JJ.3, the trait — "Delta G loses per-driver signal that the scenario-specific axes keep"**, with
+  the caveat stated before the reading that the left turn's axis takes two values over nine cells.
+  EL.Q4 is not answered.
+- **JJ.4 — the two-spread model earns its place** (+60.6 LOPO units) and **the truck is sharper**
+  (0.273 against 0.424); the video/track ratio is 4.34 [2.38, 7.93]; the perceptual prediction is not
+  yet possible; the gate's spread is not measurement noise (the traces' jitter is 156 times too
+  small).
+
+**One mechanism is behind three of the four failures, and it is worth stating on its own.** Delta G is
+a value-of-action quantity: large where an alternative averts what continuing would cause, and small
+both where nothing is going to happen and where nothing in the menu helps any more. It therefore
+cannot be monotone in criticality, and on the cut-in it is anti-ordered with the gap (-0.648 with the
+share, +0.848 with the gap). The menu's own price is the other half: at the released sigma_a =
+0.1 m/s^2 a -3 m/s^2 alternative costs a fixed 20 308 nats over the horizon whatever the scene is
+doing, which floors the minimum, and on the left turn waiting costs more than proceeding in 16 of 18
+cells. Independently of both, the released magnitude still grades by speed rather than by gap inside
+the rollouts: G(continue) alone correlates +0.927 with dv and scores 0.3202 as well. So the policy
+comparison and the preference function are not to be blamed for one another — which is the point of
+reporting G(continue) beside Delta G — and the R.2 pipeline review's finding has reappeared one level
+up, inside the imagined futures.
+
+**What this does and does not say about the JJ program.** It says that step 1 of the program as
+designed does not produce an axis, and it says why, in a way that is a property of the *quantity*
+rather than of any constant: no sweep of p0, sigma_v,lat, sigma_a or H moves the cut-in score off
+chance. It does not say that rollouts are the wrong idea, and JJ.4 — which needs no Delta G at all —
+produced the session's one clean positive result. The queries that decide what happens next are
+**JJ2.Q2** (repair Delta G, or fix the preference magnitude first?), **JJ2.Q3** (should an evasive
+policy be priced with the released free-driving sigma_a?) and **JJ3.Q2** (the left turn's "wait" cannot
+be both -3 m/s^2 and clear of the crossing). Fourteen queries in all were raised across the four
+entries of today: JJ1.Q6, JJ2.Q1-Q4, JJ3.Q1-Q6, JJ4.Q1-Q4.
+
+**Not done, and deliberately.** P1, the released norm tournament as a secondary predictor (JJ1.Q5
+allows skipping it, and JJ.2's verdict makes a secondary moot until the primary is settled); any
+change to `docs/rollout_boundary_design_note.md` or `docs/active_inference_program.md`, which are the
+designing session's documents; any update to `handover.md` beyond the suite list.
