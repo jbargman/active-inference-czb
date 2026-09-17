@@ -168,6 +168,17 @@ class PreferenceParams:
     # (the inward/outward clamps, the overlap-to-weight mapping, `lane_entry_shape_k`) is
     # untouched. None = the existing closure-time projection, bit-identical.
     lane_entry_horizon_s: float | None = None
+    # `safety_term_enabled` switches the braking-margin term p_safe off (2026-09-18, card
+    # JJ.1, variant B of docs/rollout_boundary_design_note.md section 1.4). The released
+    # p_safe is a WORST-CASE COUNTERFACTUAL: it costs the driver whenever a lead braking at
+    # a_OV,min could not be avoided, whether or not anything in the imagined future actually
+    # goes wrong. Inside a rollout over sampled futures that counterfactual is scored on top
+    # of the collisions the futures themselves contain, which is the double counting
+    # docs/r2_pipeline_review.md section 5 pointed at. With this False the five other terms
+    # are untouched and collisions are scored where they happen, by p_coll with its severity
+    # factor. **Default True = released behavior**, so every published number and every
+    # existing test is bit-identical; only card JJ.1's variant B sets it.
+    safety_term_enabled: bool = True
     # --- vehicle -------------------------------------------------------------------
     vehicle: BicycleParams = field(default_factory=BicycleParams)
 
@@ -586,7 +597,10 @@ def log_preference_terms(obs: dict, p: PreferenceParams) -> dict:
         "steer": log_steer_pref(np.asarray(obs.get("omega", 0.0), dtype=float), p),
         "lateral": log_lateral_pref(np.asarray(obs.get("y", p.lane_centre), dtype=float), p),
         "collision": log_collision_pref(obs, p),
-        "safety": log_safety_pref(obs, p),
+        # `safety_term_enabled` defaults True: the released six-term form. False is card
+        # JJ.1's variant B and zeroes this term only (see the flag's comment).
+        "safety": (log_safety_pref(obs, p) if p.safety_term_enabled
+                   else np.zeros_like(np.asarray(obs["dx"], dtype=float))),
     }
     shape = np.broadcast_shapes(*[np.shape(v) for v in terms.values()])
     return {k: np.broadcast_to(v, shape).astype(float) for k, v in terms.items()}
