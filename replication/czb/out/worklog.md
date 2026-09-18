@@ -4331,3 +4331,37 @@ it?
 @S12.Q3(minor, review): `external/interactive_inference` carries no LICENSE file, so default
 copyright applies. It is gitignored and nothing is redistributed, but no code may be copied from it
 into this repository. Record that in `external/README.md` alongside the aica entry.
+
+## 2026-09-18 (same session) — the strand-1 build note (S11.Q3)
+
+`docs/strand1_build_note.md` (+ pdf, docx). Not a card and nothing authorized: the specification,
+what we already have, the differences that are the argument, what the comfort zone becomes, a
+five-card ladder with pre-stated rules, and what would falsify it.
+
+The part worth reading first is §3, the comparison table. Strand 1's σ_v is 1.0 against the Nature
+model's 0.5, its σ_a is 0.5 against 0.1, its conflict term is a **categorical absolute preference**
+rather than a graded −10 000 cost scaled by impact speed, and **it has no braking-margin term at
+all** — the term `preferences.py` itself calls "the comfort-zone term" and which card RE.2 measured
+at ρ −0.861 against the share who intervene. `docs/active_inference_reformulation.md` §4 item 3
+argued for exactly those two changes from our own data; strand 1 has them in the authors' published
+table.
+
+§4 answers the obstacle `docs/waymo_program_revisit.md` §2 raised. Our stimuli pin four of the six
+released factors at zero because the ego never acts — but an equilibrium is **simulated**, not
+evaluated on a frozen scene, and a simulated agent does act, so those factors come alive. The frozen
+clip then plays its proper role: a participant saying "I would intervene here" is a datum about
+where their operating point is, not a regression target for a field.
+
+The ladder: **S1.3** reproduce the paper's occlusion scenario (the reconstruction has to earn the
+paper's own two qualitative claims); **S1.4** free following, the cheap killer — card GZ.1 found the
+released configuration cannot hold a following distance at all, and a comfort-zone model that cannot
+sit still behind a lead has no comfort zone; **S1.5** the boundary as an equilibrium, swept over the
+driver's own constants; **S1.6** the cut-in on the project's own cells and metric; **S1.7**
+per-driver, with Wei et al.'s identifiability treatment adopted rather than rediscovered.
+
+Queries S13.Q1 (build order — my opinion is S1.3 first, because a result from an unvalidated
+reconstruction of somebody else's model is worth very little), S13.Q2 (the strand-1 defaults were
+set by hand for a demonstration, so treating them as a reference would repeat the mistake we just
+diagnosed), S13.Q3 (norms are absent from strand 1 — leave them out as the paper does, or is the
+norm where Jonas's "expecting and accepting" belongs?), S13.Q4 (the KDE epistemic term is where a
+reconstruction can differ silently).
