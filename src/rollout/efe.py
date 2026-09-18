@@ -132,16 +132,30 @@ def log_terms(belief: Belief, ego: EgoPath, fut: Futures, p: PreferenceParams,
 
 
 def expected_free_energy(belief: Belief, ego: EgoPath, fut: Futures, p: PreferenceParams,
-                         collision_mode: str = "released") -> float:
-    """G(pi) in nats, >= 0 by construction."""
+                         collision_mode: str = "released",
+                         weights: np.ndarray | None = None) -> float:
+    """G(pi) in nats, >= 0 by construction.
+
+    `weights` [n] gives the fan a non-uniform weight over samples; None (the default) averages
+    uniformly, which is what P0's own fan wants because its samples are drawn from the belief.
+    It exists so that the released model's PARTICLE fan, which carries importance weights, can
+    be scored by exactly this function -- card RE.1's part 0 uses it to show that this quantity
+    IS `aidriver.agent.ActiveInferenceDriver.policy_surprise`, the model's Eq. 13 signal.
+    """
     terms = log_terms(belief, ego, fut, p, collision_mode)
     logp = sum(terms.values())                       # [n, T]
-    residual = p.max_log_preference() - logp.mean(axis=0)
+    if weights is None:
+        mean = logp.mean(axis=0)
+    else:
+        w = np.asarray(weights, float)
+        mean = np.einsum("nt,n->t", logp, w / w.sum())
+    residual = p.max_log_preference() - mean
     return float(np.sum(np.maximum(residual, 0.0)))
 
 
 def g_by_policy(belief: Belief, fut: Futures, paths: dict[str, EgoPath], p: PreferenceParams,
-                collision_mode: str = "released") -> dict[str, float]:
+                collision_mode: str = "released",
+                weights: np.ndarray | None = None) -> dict[str, float]:
     """G for every policy on the SAME fan (common random numbers)."""
-    return {name: expected_free_energy(belief, path, fut, p, collision_mode)
+    return {name: expected_free_energy(belief, path, fut, p, collision_mode, weights)
             for name, path in paths.items()}

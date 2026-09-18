@@ -38,7 +38,7 @@ from rollout.boundary import axis, delta_g, mc_standard_error  # noqa: E402
 from rollout.efe import expected_free_energy, g_by_policy, log_terms  # noqa: E402
 from rollout.policies import (CUTIN_MENU, LTAP_CONTINUE, EgoPath, ego_rollout,  # noqa: E402
                               ltap_rollout)
-from rollout.predictor import (DT_S, HORIZON_S, SD_VLAT, analytic_lateral_mean,  # noqa: E402
+from rollout.predictor import (DT_S, HORIZON_S, SD_VLAT, Futures, analytic_lateral_mean,  # noqa: E402
                                horizon_steps, sample_futures)
 
 PASS, FAIL = [], []
@@ -272,6 +272,24 @@ def main():
           "released six terms on cutin_obs of one study-1 trace",
           pp.safety_term_enabled and bitwise,
           f"default {pp.safety_term_enabled}, bitwise {bitwise}")
+
+    # (19) the weighted fan (card RE.1: the released model's particle fan carries weights)
+    n19 = fut.n
+    g_flat = expected_free_energy(b, paths["continue"], fut, p)
+    g_unif = expected_free_energy(b, paths["continue"], fut, p, weights=np.ones(n19))
+    g_skew = expected_free_energy(b, paths["continue"], fut, p,
+                                  weights=np.arange(1.0, n19 + 1.0))
+    # not bit-exact: np.mean and the einsum sum in a different order, which on ~10^4 nats
+    # leaves a few units in the last place.
+    check("(19) uniform weights reproduce the unweighted fan, and a non-uniform one does not",
+          abs(g_flat - g_unif) < 1e-6 and abs(g_skew - g_flat) > 1.0,
+          f"{g_flat:.9f} / {g_unif:.9f} / {g_skew:.9f}")
+    w_one = np.zeros(n19); w_one[3] = 1.0
+    one_fut = Futures(tau=fut.tau, x=fut.x[3:4], y=fut.y[3:4], v=fut.v[3:4], vx=fut.vx[3:4],
+                      vy=fut.vy[3:4], heading=fut.heading[3:4], changing=fut.changing[3:4])
+    check("(19b) a weight of 1 on one sample equals scoring that sample alone",
+          abs(expected_free_energy(b, paths["continue"], fut, p, weights=w_one)
+              - expected_free_energy(b, paths["continue"], one_fut, p)) < 1e-9)
 
     # --- boundary ----------------------------------------------------------------------
     # (17)

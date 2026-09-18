@@ -3642,3 +3642,103 @@ entries of today: JJ1.Q6, JJ2.Q1-Q4, JJ3.Q1-Q6, JJ4.Q1-Q4.
 allows skipping it, and JJ.2's verdict makes a secondary moot until the primary is settled); any
 change to `docs/rollout_boundary_design_note.md` or `docs/active_inference_program.md`, which are the
 designing session's documents; any update to `handover.md` beyond the suite list.
+
+## 2026-09-18 (overnight, same session) — card RE.1: back to the paper's rear-end scenario. Why it does not work
+
+Jonas, after reading JJ.2's DROP: *"What does this mean? What if you go back to the basics of the
+rear-end in the Nature paper and validate that you are thinking about this in the right way? It
+seems that it really should work. Why does it not?"* The right question, and it has an answer.
+
+`replication/causation/re1_rear_end_criticality.py` → `re1/re1_rear_end_criticality.md`,
+`re1/re1_cells.csv`, `re1/log_re1.txt`. Everything — the question, the four parts, every setting
+and every reading — was pre-stated in the script's docstring before the run.
+
+**1. The identity, checked rather than assumed (part 0).** The released model's own criticality
+signal is Eq. 13's `policy_surprise` — the residual information of the pragmatic value under the
+CURRENT plan — and `rollout.efe.expected_free_energy` computes the same object: they agree to
+**7e-16** on the same scene, the same particle fan and the same policy, once the fan is given the
+particle weights (a new optional `weights` argument, default None = the old behavior; two new
+property tests, the suite is now 29 on `test_rollout.py`). **So G(continue) IS the model's signal,
+and Delta G — what the design note and cards JJ.2 and JJ.3 put on the axis — is a quantity the
+model never forms.** Its planner uses only the ARGMIN of G. JJ.2 tested an invention, while the
+model's own signal sat in the same report as a diagnostic, scoring 0.3202.
+
+**2. Part A does not reproduce the deposit, and that bounds what may be claimed.** At the 28
+conditions of `replication/osf/review/benign_eps.csv` our mirror's eps RISES with the gap
+(Spearman -0.61 against the deposit's ordering, median ratio 1.61), because the share of predicted
+futures that collide rises with the gap — 0.000 at 9 m to 0.79 at 34 m — as the looming likelihood
+stops constraining the lead's acceleration at distance and the particle spread fills its clip
+range. The deposit falls with the gap instead. **Nothing in this card is therefore claimed about
+the deposit's particle filter.** What is claimed is about the preference function, which is shared
+code verified against the SI and the released source, and part B isolates it by removing the
+belief's noise entirely.
+
+[Setting corrected after the first run, per standing rule 4, with both numbers recorded. The
+first run settled the belief over 5 steps of constant motion, a number this session chose; it
+gave eps from 26 to 1 833 229 over the 28 conditions and Spearman +0.55 against the deposit. The
+setting is now the deposit's OWN protocol — the median over steps 0 to 3, which is what
+`docs/method_review.md` §4.2 measured — giving the numbers above. The change is in the script's
+docstring with its date and reason.]
+
+**3. The preference function has no gradient where the paper's scenario lives.** On a certain
+constant-speed prediction, **eps is 23 nats at every time gap from 0.5 s to 3.5 s at 110 km/h —
+the same value as an empty road**, and that value is the coasting policy's own control-effort and
+speed cost. The released safety term is an indicator that fires only when a_req < -a_max, and it
+credits the lead with its own stopping distance, so a same-speed lead never fires it at any of
+these gaps. **The smooth grade the deposit shows in benign following (98 800 at 0.5 s to 6 200 at
+3.5 s) is therefore produced by the assumed acceleration spread of the belief, not by the scene.**
+On our released-belief column the same seven scenes give 3 532 to 29 541 with seed ranges spanning
+259 to 3 468 590 — four orders of magnitude at one cell — so at the single-scene level that signal
+is not a measurement at all.
+
+**4. And it is ordered backwards where the studies live.** At matched TTC — the second cut-in
+study's own design, gap = dv x TTC — eps orders the cells **backwards in 6 of 6 rows on both
+beliefs**, Spearman +0.83 to +1.00 against the humans' -0.86. The collision term carries 78% of
+eps at rho +0.80 and the safety term 14% at rho +0.92, and both are linear in closing speed by
+construction.
+
+**5. The planner steers.** On the same grid the released CEM planner's chosen escape is a lane
+change in **36 of 36 cells** (median max |omega| 0.24 rad/s) with a slightly POSITIVE first
+acceleration; it never brakes. Card JJ.1's menu is four longitudinal policies with no steering
+(ruling JJ1.Q1), so Delta G in JJ.2 and JJ.3 compared the model against alternatives the model
+itself would not choose. Delta G on this grid also spans five orders of magnitude within a single
+TTC row and is ordered the human way in 2 of 6 rows, which is noise rather than an ordering.
+
+**What this means, in one paragraph.** The released preference function was calibrated and
+validated as a CONTROLLER on a one-dimensional family — the lead brakes from a matched speed — and
+on that family its criticality signal is flat until the braking starts. It has never been asked to
+ORDER situations by how close to a comfort-zone boundary they are, and when it is asked across gap
+and closing speed together it orders them by speed, because that is what the collision severity and
+the braking-margin magnitude are linear in. Gate R.2 found this pointwise, card JJ.2 found it
+inside rollouts, and card RE.1 finds it in the paper's own scenario with the paper's own machinery.
+**It is one fact, not three**, and it is not a fact about rollouts, about Delta G, or about this
+project's staging.
+
+Queries:
+
+@RE1.Q1(judgment, jonas): This card says the released preference function cannot serve as a
+criticality scale across closing speed, on the paper's own scenario. That is a stronger and more
+publishable statement than "our axis did not fit", and it is the kind of thing Julian Schumann
+would want to see before we say it. Three options: (i) add it to the handout for the September
+meeting as a question; (ii) hold it until the matched-TTC inversion has been checked against the
+authors' own deposit rather than our mirror (part A does not reproduce, so today it rests on the
+preference code alone); (iii) make it a card of its own with the deposit's runs. Which?
+
+@RE1.Q2(judgment, jonas): The released planner steers in 36 of 36 cells of the study's design and
+never brakes. Ruling JJ1.Q1 removed steering from the menus because the crowd-sourced stimuli and
+the naturalistic data carry that constraint — which is right for the DATA, but it means any
+policy-comparison quantity we compute is not the comparison the model makes. Either the menu
+should include a steering policy for the model-side quantity and the constraint applied only to
+the data-side response, or policy comparison should be dropped. This is the substance of JJ2.Q2.
+
+@RE1.Q3(judgment, review): The safety term's counterfactual credits the lead vehicle with its own
+stopping distance (`required_deceleration`), which is why following at 0.5 s at 110 km/h costs
+nothing. A comfort-zone model presumably wants the opposite convention — the lead may stop dead,
+or may brake harder than a_OV,min. The convention is the released one and is not ours to change,
+but the project should record which convention its own boundary assumes, because the two give
+completely different comfort zones at short headways.
+
+@RE1.Q4(minor, review): Our mirror's benign eps rises with the gap while the deposit's falls,
+because the looming likelihood stops constraining the lead's acceleration at distance. That is a
+concrete, findable difference between Track B's particle filter and the authors'. Worth a card if
+anything is ever to be claimed from our closed loop; not needed for anything currently open.
