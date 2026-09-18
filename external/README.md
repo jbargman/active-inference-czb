@@ -22,3 +22,20 @@ Two things live here; both are restored rather than versioned:
   `HowComfortable`, `HowRisky` (1..15) the self-reports after a Go; `IfTurn...` and
   `...After` after a No-Go; `Remove` = 1 flags repeated runs. The remaining columns are
   undocumented and unused. Analysis: `replication/czb/ltapod_testtrack.py`.
+
+## interactive_inference (added 2026-09-18)
+
+`github.com/ran-weii/interactive_inference`, commit `fd62aa5` of 2023-01-04, cloned shallow on
+2026-09-18 while searching for a code release of the strand-1 model. **Not that model**: it is Wei
+et al. (2023), *Learning an active inference model of driver perception and control* (arXiv
+2303.15201), the learned inverse-RL branch, and it needs the INTERACTION dataset, which we do not
+have.
+
+**It carries no LICENSE file, so default copyright applies.** It may be read; no code may be copied
+from it into this repository without the author's permission. `external/` is gitignored, so nothing
+here is redistributed. Re-clone with
+`git clone --depth 1 https://github.com/ran-weii/interactive_inference.git`.
+
+**Strand 1 itself has no code release.** Engström et al. (2024), Front. Neurorobot. 18:1341750,
+states that the contributions are in the article and supplementary material and directs further
+inquiries to the corresponding author. Query S12.Q1 asks whether to request it.

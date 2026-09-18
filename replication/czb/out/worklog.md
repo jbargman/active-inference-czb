@@ -4234,3 +4234,100 @@ epistemic term carrying the uncertainty. That is a design note and a card ladder
 because `required_deceleration` diverges on the closest cells when the reaction-time term eats the
 gap. Those rows are blank in the sweep table rather than dropped silently. Worth bounding the
 quantity, or is a divergence at a gap the driver could not survive the honest answer?
+
+## 2026-09-18 (same session) — Jonas's rulings on S11.Q1–Q3; the strand-1 code search; card S1.2 inconclusive, and why that is the important part
+
+RESOLVED S11.Q2: a_other_min = **-6 m/s^2**, the released value, is the primary, with -10 reported
+as the sensitivity. Fixed before card S1.2 was run, which is what makes S1.2 confirmatory.
+
+RESOLVED S11.Q1: the transfer test first, as recommended, and prepare the per-driver fit as the
+next step.
+
+RESOLVED S11.Q3: yes, build the strand-1 model properly.
+
+**The code search, which Jonas asked for.** Two findings:
+
+1. **Strand 1 has no code release.** Engström et al. (2024), *Resolving uncertainty on the fly*,
+   Front. Neurorobot. 18:1341750, Data availability statement: *"The original contributions
+   presented in the study are included in the article/supplementary material, further inquiries can
+   be directed to the corresponding author."* No repository, no DOI for code. The corresponding
+   author is Engström, whom Jonas has already spoken to (prompt log, 2026-08-22), so **asking him
+   is the cheapest route and should happen before anything is built**.
+2. **Wei et al. (2023) does have code and it is now cloned**:
+   `https://github.com/ran-weii/interactive_inference` → `external/interactive_inference`, commit
+   `fd62aa5` of 2023-01-04, "work in progress". `external/` is gitignored, so nothing is
+   redistributed. **It carries NO LICENSE file**, so default copyright applies: we may read it, and
+   we may not copy code from it into this repository without permission. It also needs the
+   INTERACTION dataset, which we do not have. It is the *learned* (inverse-RL) branch, not the
+   strand-1 agent — useful for the identifiability treatment (`docs/waymo_program_revisit.md` §4),
+   not as a starting point.
+
+**What we can build from instead, and it is enough.** The Frontiers paper gives the model
+specification in the text: an SIR particle filter with systematic resampling at N_eff < N/2, EFE by
+propagating particles, the posterior predictive entropy by KDE, CEM planning, a 200 ms step. All of
+that already exists in `src/aidriver/`. And Table 2 gives the preference priors and their defaults
+outright:
+
+| preference prior | specification | default |
+|---|---|---|
+| speed keeping | Gaussian at the speed limit | mu = 10 m/s, **sigma = 1 m/s** |
+| lane keeping | triangular, bounded at the lane boundaries | — |
+| acceleration | Gaussian at zero, x and y | mu = 0, **sigma = 0.5 m/s^2** |
+| conflict | **categorical, an absolute preference over "no conflict"** | — |
+
+**Read against the released Nature preference, this is the whole argument of
+`docs/active_inference_reformulation.md` §4 item 3, in the authors' own table.** sigma_v is 1.0
+against the Nature model's 0.5; sigma_a is **0.5 against 0.1, five times more tolerant**; and the
+conflict term is a **categorical absolute preference** — an admissibility constraint — where the
+Nature model has a graded catastrophe cost of -10 000 scaled by impact speed. **Strand 1 has no
+braking-margin term at all**: the term card RE.2 measured at rho -0.861 with the share does not
+exist in it. Its role is played by the conflict constraint plus the acceleration comfort prior,
+which together are exactly "can I stop without harsh braking". The paper also states that the
+defaults "were set by hand and no systematic model optimization was performed".
+
+**Card S1.2** (`replication/czb/s12_comfort_margin_transfer.py` → `out/s12_comfort_margin_transfer.md`).
+The transfer test for card S1.1's comfort margin, on study 1's Random cut-in, both constants fixed
+in advance by the ruling above. **The verdict is INCONCLUSIVE and the rule was deliberately not
+applied**, because the degeneracy check written into the card before the verdict found that the
+comfort margin and the gap are **rank-identical on these cells**: Spearman **+1.0000**, and all four
+axes tried correlate -1.000 with the gap and +0.761 with the share. The pre-stated sign test would
+have declared "does not transfer" on a difference of 0.0026 between two identical orderings, which
+would have been a false negative.
+
+| axis | held out (leave-one-timepoint-out) | rho(share) | rho(gap) |
+|---|---|---|---|
+| the comfort margin, a_OV -6 (primary) | 0.2278 | +0.761 | -1.000 |
+| the comfort margin at a_OV -10 | 0.2267 | +0.761 | -1.000 |
+| the gap at the freeze | 0.2252 | +0.761 | -1.000 |
+| log theta_dot | 0.2253 | +0.761 | -1.000 |
+| chance | 0.2872 | | |
+
+**And the reason is the finding.** Study 1's Random cut-in has three traces at essentially one
+closing speed and six timepoints that only advance the gap, so the design is **one-dimensional**:
+gap determines TTC, looming and the required deceleration alike. An axis whose claim is that it
+COMBINES gap and speed cannot be tested there.
+
+**Which leaves a real problem for the whole line, and it is bigger than this card.** The second
+cut-in study is the **only** design in this project that varies gap and closing speed
+independently — the left turn holds one oncoming speed per cell (card B.3.v2), the cyclist overtake
+varies lateral clearance, the Button cut-in varies TTC alone. So the comfort margin's advantage over
+the gap can be tested on exactly one design, and on that design it was found by an exploratory
+sweep. Confirming it needs naturalistic data or a stimulus set built to vary the two dimensions
+independently. That is query WP.Q2, which now has a second and stronger reason behind it.
+
+Queries:
+
+@S12.Q1(judgment, jonas): ask Engström for the strand-1 code before building it? The paper has no
+release and he is the corresponding author and a colleague you have already talked to. If he has it,
+the build becomes a port instead of a reconstruction, and the reconstruction's fidelity stops being
+a thing we have to defend.
+
+@S12.Q2(judgment, jonas): the second cut-in study is the only two-dimensional design we have, and
+card S1.1's result was found on it by an exploratory sweep. Until there is a second two-dimensional
+design, no confirmatory test of the comfort margin is possible on existing data. Does that make a
+new stimulus set (WP.Q2) a priority now rather than later, or does the naturalistic request cover
+it?
+
+@S12.Q3(minor, review): `external/interactive_inference` carries no LICENSE file, so default
+copyright applies. It is gitignored and nothing is redistributed, but no code may be copied from it
+into this repository. Record that in `external/README.md` alongside the aica entry.
