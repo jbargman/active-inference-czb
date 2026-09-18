@@ -291,6 +291,47 @@ def main():
           abs(expected_free_energy(b, paths["continue"], fut, p, weights=w_one)
               - expected_free_energy(b, paths["continue"], one_fut, p)) < 1e-9)
 
+    # (20-23) the steering policies (card JJ.2b)
+    from rollout.policies import (LANE_CHANGE_D, STEER_MENU, SWERVE_T, cutin_menu_paths,
+                                  steer_rollout)
+    from rollout.efe import observations
+    sp = steer_rollout(b, "steer")
+    sw_ = steer_rollout(b, "swerve")
+    check("(20) a steering policy moves AWAY from the intruder and reaches one lane width",
+          np.sign(sp.y[-1]) == -np.sign(b.y_rel)
+          and abs(abs(sp.y[-1]) - LANE_CHANGE_D) < 1e-9,
+          f"y_end {sp.y[-1]:+.3f} against y_rel {b.y_rel:+.2f}")
+    b_mirror = cutin_belief(y_rel=-b.y_rel)
+    sp_m = steer_rollout(b_mirror, "steer")
+    check("(21) mirroring the scene's lateral sign mirrors the escape",
+          np.allclose(sp_m.y, -sp.y, atol=0) and np.allclose(sp_m.omega, -sp.omega, atol=0))
+    peak = LANE_CHANGE_D / 2 * (np.pi / SWERVE_T) ** 2
+    # the grid samples tau at 0.2 s, so the discrete maximum is the sample nearest the analytic
+    # peak (here tau = 1.4 s, |cos| = 0.978), not the peak itself
+    check("(22) the swerve's peak lateral acceleration is D/2 (pi/T)^2 to the grid's resolution, "
+          "and its yaw rate is near the 0.24 rad/s the released planner chooses on this design "
+          "(card RE.1 part C)",
+          abs(np.abs(sw_.a_lat).max() - peak) / peak < 0.05
+          and 0.15 <= np.abs(sw_.omega).max() <= 0.30,
+          f"a_lat {np.abs(sw_.a_lat).max():.2f} against {peak:.2f}, "
+          f"|omega| {np.abs(sw_.omega).max():.3f}")
+    obs_st = observations(b, sw_, fut)
+    obs_br = observations(b, paths["brake"], fut)
+    check("(23) the steering channels reach the preference function, and a non-steering policy "
+          "still passes exact zeros",
+          np.abs(obs_st["omega"]).max() > 0.1 and np.abs(obs_st["a_lat"]).max() > 1.0
+          and np.all(obs_br["omega"] == 0.0) and np.all(obs_br["a_lat"] == 0.0))
+    t_st = log_terms(b, sw_, fut, p)
+    t_br = log_terms(b, paths["brake"], fut, p)
+    check("(23b) and the released steering term charges for the manoeuvre",
+          t_st["steer"].mean() < t_br["steer"].mean(),
+          f"{t_st['steer'].mean():.1f} against {t_br['steer'].mean():.1f}")
+    m_no = cutin_menu_paths(b, steering=False)
+    m_st = cutin_menu_paths(b, steering=True)
+    check("(23c) cutin_menu_paths without steering is the ruling JJ1.Q1 menu unchanged",
+          set(m_no) == set(CUTIN_MENU) and set(m_st) == set(CUTIN_MENU) | set(STEER_MENU)
+          and np.array_equal(m_no["continue"].x, m_st["continue"].x))
+
     # --- boundary ----------------------------------------------------------------------
     # (17)
     a_no = axis(np.array([1.0, 2.0, 4.0]))

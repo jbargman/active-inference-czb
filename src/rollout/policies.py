@@ -33,6 +33,29 @@ from .predictor import DT_S, HORIZON_S, horizon_steps
 # --- the menus (design note section 1.3) -------------------------------------------------
 # 6 m/s^2 is the released model's assumed worst-case lead deceleration (a_OV,min).
 CUTIN_MENU = {"continue": 0.0, "ease_off": -1.0, "brake": -3.0, "brake_hard": -6.0}
+
+# --- steering (added 2026-09-18, card JJ.2b; NOT part of the JJ.1 menus) -------------------
+# Ruling JJ1.Q1 kept steering out of the menus because the crowd-sourced stimuli and the
+# naturalistic data both carry that constraint. Card RE.1 then showed that on this very design
+# the released CEM planner's chosen escape is a STEER in 36 of 36 cells and never a brake
+# (`replication/causation/re1/re1_rear_end_criticality.md` part C), so a menu without steering
+# is not the comparison the model itself makes. These two policies exist for the model side of
+# that comparison only; the response data still carry the no-steering constraint.
+#
+# Neither magnitude is invented. The lateral profile is the minimum-jerk-like sinusoid
+#     y(tau) = -s * D/2 * (1 - cos(pi tau / T)),  held at -s * D after T,
+# away from the intruder (s is the intruder's side), whose peak lateral acceleration is
+# D/2 * (pi/T)^2.
+#   LANE_CHANGE_D     one lane, the studies' own 3.5 m (`comfortzone.cutin.LANE_WIDTH_STUDY`)
+#   STEER_T           3.0 s, inside the studies' own lane-change durations (LCD 2, 3, 4 s)
+#   SWERVE_T          1.5 s, the duration whose peak lateral acceleration, 7.3 m/s^2 at the
+#                     study's 30.5 m/s, is the one the released planner itself chooses on this
+#                     design (RE.1 part C: median max |omega| 0.24 rad/s, and a_lat = v omega)
+LANE_CHANGE_D = 3.5
+STEER_T = 3.0
+SWERVE_T = 1.5
+STEER_MENU = {"steer": STEER_T, "swerve": SWERVE_T}
+CUTIN_MENU_STEER = dict(CUTIN_MENU)     # the JJ.1 menu plus the two steering policies
 LTAP_WAIT_A = -3.0            # m/s^2, the left turn's "wait"
 OVERTAKE_ABORT_A = -2.0       # m/s^2, the overtake's "abort"
 ABORT_RETURN_S = 2.0          # s, the lateral return to the lane centre on "abort"
@@ -51,6 +74,18 @@ class EgoPath:
     heading: np.ndarray    # rad in the freeze frame
     y_lane: np.ndarray     # lateral position relative to the EGO'S LANE CENTRE [m]
     name: str = ""
+    # The two steering channels the released preference reads. Both default to zero, which is
+    # every policy written before 2026-09-18 and the ruling JJ1.Q1 menus; a steering policy
+    # fills them, and then the released steering term (sigma_omega = 0.02) and the total-accel
+    # form of the control-effort term both charge for the manoeuvre, as they should.
+    omega: np.ndarray | None = None       # yaw rate [1/s]
+    a_lat: np.ndarray | None = None       # lateral acceleration [m/s^2]
+
+    def __post_init__(self):
+        if self.omega is None:
+            self.omega = np.zeros_like(self.tau)
+        if self.a_lat is None:
+            self.a_lat = np.zeros_like(self.tau)
 
 
 def const_accel(v0: float, a: float, tau: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -79,6 +114,44 @@ def ego_rollout(belief, policy: str, horizon_s: float = HORIZON_S, dt: float = D
     zero = np.zeros_like(tau)
     return EgoPath(tau=tau, x=s, y=zero, v=v, a=a, heading=zero.copy(),
                    y_lane=np.full_like(tau, y_lane_offset), name=policy)
+
+
+def steer_rollout(belief, policy: str, horizon_s: float = HORIZON_S, dt: float = DT_S,
+                  y_lane_offset: float = 0.0, d: float = LANE_CHANGE_D) -> EgoPath:
+    """A lane change AWAY from the other road user, holding speed (card JJ.2b).
+
+    The side is read from the scene, never assumed: the intruder sits at `belief.y_rel`, so the
+    escape is toward -sign(y_rel). Speed is held, because the released planner's own escape on
+    this design holds or slightly raises speed (RE.1 part C, median first acceleration +0.35 to
+    +0.91 m/s^2); a policy that brakes AND steers is a different thing and is not in this menu.
+    """
+    if policy not in STEER_MENU:
+        raise KeyError(f"policy {policy!r} not in the steering menu {sorted(STEER_MENU)}")
+    T = STEER_MENU[policy]
+    tau = horizon_steps(horizon_s, dt)
+    s = -belief.toward_sign          # away from the intruder
+    u = np.clip(tau / T, 0.0, 1.0)
+    y = s * 0.5 * d * (1.0 - np.cos(np.pi * u))
+    ydot = np.where(tau < T, s * 0.5 * d * (np.pi / T) * np.sin(np.pi * u), 0.0)
+    yddot = np.where(tau < T, s * 0.5 * d * (np.pi / T) ** 2 * np.cos(np.pi * u), 0.0)
+    v0 = float(belief.v_ego)
+    heading = np.arctan2(ydot, v0)
+    omega = np.gradient(heading, tau)
+    return EgoPath(tau=tau, x=v0 * tau, y=y, v=np.full_like(tau, v0), a=np.zeros_like(tau),
+                   heading=heading, y_lane=y_lane_offset + y, name=policy,
+                   omega=omega, a_lat=yddot)
+
+
+def cutin_menu_paths(belief, horizon_s: float = HORIZON_S, dt: float = DT_S,
+                     steering: bool = False, y_lane_offset: float = 0.0) -> dict[str, EgoPath]:
+    """The cut-in menu as a dict of rollouts: the four longitudinal policies of ruling JJ1.Q1,
+    and with `steering=True` the two of card JJ.2b as well."""
+    paths = {k: ego_rollout(belief, k, horizon_s, dt, y_lane_offset=y_lane_offset)
+             for k in CUTIN_MENU}
+    if steering:
+        paths.update({k: steer_rollout(belief, k, horizon_s, dt, y_lane_offset=y_lane_offset)
+                      for k in STEER_MENU})
+    return paths
 
 
 # ---------------------------------------------------------------------------------------

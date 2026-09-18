@@ -80,8 +80,12 @@ def observations(belief: Belief, ego: EgoPath, fut: Futures) -> dict:
     return {
         "v": ones * ego.v[None, :],
         "a": ones * ego.a[None, :],
-        "omega": np.zeros((n, T)),              # no steering policy (ruling JJ1.Q1)
-        "a_lat": np.zeros((n, T)),
+        # Zero for every menu of ruling JJ1.Q1 (`EgoPath` defaults them), and the real yaw rate
+        # and lateral acceleration for card JJ.2b's steering policies, so that the released
+        # steering term and the total-accel form of the control-effort term both charge for a
+        # manoeuvre that steers.
+        "omega": ones * ego.omega[None, :],
+        "a_lat": ones * ego.a_lat[None, :],
         "y": ones * ego.y_lane[None, :],
         "dx": dx,
         "dy": dy,

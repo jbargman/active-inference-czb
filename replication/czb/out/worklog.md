@@ -3742,3 +3742,124 @@ completely different comfort zones at short headways.
 because the looming likelihood stops constraining the lead's acceleration at distance. That is a
 concrete, findable difference between Track B's particle filter and the authors'. Worth a card if
 anything is ever to be claimed from our closed loop; not needed for anything currently open.
+
+## 2026-09-18 (same session) — cards JJ.2b and RE.2, and the reformulation note. The direction is repairable; the magnitude is not, at any parameter vector
+
+Jonas: *"Add steering to the menu and rerun JJ.2, but only for the reproduction. But, also, think
+more about how the problem we have possibly could be reformulated to fit in the active inference
+framework. What would we have to do differently for this to work. Again, I feel that with the right
+formulation and the right framing, it should work."*
+
+Three things were done: the reproduction he asked for (JJ.2b), the experiment that decides whether
+the reformulation can be built on the released preference at all (RE.2), and the note
+(`docs/active_inference_reformulation.md`). The suite is green at
+31/33/40/96/62/20/28/27/16/30/28/**35**; `test_rollout.py` grew by six checks for the steering
+policies and the weighted fan. Card JJ.2's verdict stands as registered — neither new card
+re-decides anything, and both say so in their first lines.
+
+**Steering, and where its magnitudes come from.** `rollout.policies.steer_rollout` adds two
+policies that are not invented: a one-lane (3.5 m, the studies' own width) change over 3.0 s,
+inside the studies' own lane-change durations of 2, 3 and 4 s; and over 1.5 s, the duration whose
+peak lateral acceleration is the one the released CEM planner itself chooses on this design (card
+RE.1 part C, median max |omega| 0.24 rad/s at 30.5 m/s; ours comes out at 0.204). `EgoPath` gained
+`omega` and `a_lat`, both defaulting to zero so every earlier menu is bit-identical, and
+`efe.observations` now passes them, so the released steering term and the total-accel control-effort
+term both charge for the manoeuvre.
+
+**Card JJ.2b** (`replication/czb/jj2b_steer_menu.py` → `out/jj2b_steer_menu.md`, `_cells.csv`).
+Three constructions on card JJ.2's own cells, folds and metric, plus eps as a fourth row:
+
+| construction | post-onset held out | matched-TTC rows | rho(axis, share) | rho(axis, gap) |
+|---|---|---|---|---|
+| Delta G, the JJ.1 menu (reproduces JJ.2) | 0.3202 | 0 of 24 | -0.648 | +0.848 |
+| Delta G, menu + steering | 0.3202 | 0 of 24 | -0.330 | +0.635 |
+| **Delta G, the released planner, no menu** | 0.3161 | **19 of 24** | +0.169 | **-0.308** |
+| eps = G(continue), the model's own signal | 0.3209 | 3 of 24 | -0.195 | +0.332 |
+
+**The two halves of the pre-stated reading came apart and both are reported.** The SCORE does not
+move: every construction sits at chance (0.320) and none comes near the gated looming rule's
+0.1027. The DIRECTION moves a long way: 0 of 24 matched-TTC rows to **19 of 24**, and rho(gap) from
++0.848 to -0.308 — from the wrong sign to the right one. That is the largest movement any card has
+produced on this design, and it came from changing the framing rather than a constant. The released
+planner steers in **378 of 378** cells and brakes in 0, reproducing RE.1 part C on the study's real
+traces; with steering in the menu, the menu's own best alternative is a steer in 309 of 378, so the
+two constructions agree about what the model would do.
+
+**Card RE.2** (`replication/czb/re2_preference_family.py` → `out/re2_preference_family.md`,
+`.csv`). The question before any new construction: does the released FUNCTIONAL FORM admit any
+parameter vector that orders these cells the way humans do, or is the inversion a property of the
+form? 648 vectors over a_other_min, response_time, a_max, tau_inv_mu, the p_safe magnitude's form,
+and collision_ref_speed (which at 1e6 switches off the severity's growth with closing speed).
+
+- **The sign is reachable, the ordering is not.** 306 of 648 give rho(gap) < 0, best **-0.267**
+  against the participants' own -0.862; **0 of 648** order more than half the 24 matched-TTC rows
+  (best 7 of 24); the best held-out score is **0.2705** against 0.1027 + 0.01 and chance 0.320.
+- **What the sign responds to is the severity's linearity in closing speed**, which is a property
+  of the form and not a constant a driver could differ in: flattening it moves the median rho(gap)
+  from **+0.296 to -0.249**, and every top vector has a flat severity and the shortest preferred
+  TTC in the grid (tau_inv_mu 0.40, TTC 2.5 s).
+- **The constructive half, and the most important table in either card.** On these stimuli the
+  speed, acceleration, steering and lane factors contribute **identically zero** under "continue"
+  (measured -1.2e-14 at every one of the 378 cells), so eps IS the collision factor plus the safety
+  factor — the deposit's own benign-following result (`method_review.md` §4.2, share 1.000). Taken
+  alone: the **collision factor** correlates **+0.358** with the share, the right sign, held out
+  0.3079; the **safety factor** correlates **-0.861**, inverted, held out 0.3202. **A sum of one
+  factor that orders weakly and one that orders backwards cannot be a comfort-zone scalar at any
+  parameter vector**, which is why the sweep fails.
+
+[Setting changed before the run, per standing rule 4: `sigma_v` was in the pre-registered grid and
+was removed, because the measurement above shows the speed factor is identically zero under
+"continue" and sweeping it could not move anything. `counterfactual_residual_severity` took the
+freed dimension. Both are recorded in the script's docstring.]
+
+**The note** (`docs/active_inference_reformulation.md`). Its argument, in one line: the framework
+is not what failed; one identification is, and it is stated in `preferences.py`'s own docstring —
+"that boundary, a_ego,req = -a_max, is the model's own operationalisation of a comfort-zone
+boundary, and `comfortzone` builds on it". RE.2 now measures that identification at rho(share)
+= -0.861. The braking margin is a good **dread**-zone boundary and an inverted **comfort**-zone
+boundary, and the project has been fitting comfort levels on it since gate R.1. The note proposes:
+measure the driver's preferences rather than the scene's criticality (P(intervene) = P(argmin over
+the model's own policies is not "continue")); put the comfort factor on the variable the data name
+(the inverse-tau preference already inside p_coll, or a looming preference on theta_dot, card
+EL.1b's own axis with card EX.2's population); give the catastrophe factors their proper role as
+admissibility rather than as a cost 10 000 times the comfort factor; make sigma_resp the observation
+model that card JJ.4 already measured (4.34x video against track); and keep steering on the model
+side. Four cards RE.3 to RE.6 with pre-stated rules, in an order where each can kill the next, and
+RE.3 is a day.
+
+**Two independent lines now say the same thing**: changing the framing (JJ.2b, the model's own
+policy space) or the form (RE.2, a severity that does not grow with speed) repairs the DIRECTION
+and leaves the MAGNITUDE at chance. That is what makes the note's item 1 a requirement rather than
+a suggestion.
+
+Queries:
+
+@REF.Q1(judgment, jonas): the central proposal is to stop treating the braking margin as the
+comfort-zone boundary — the identification this project has been built on since gate R.1, stated
+as such in `preferences.py` and in the handbook. RE.2 measures it at rho(share) = -0.861. Adopt the
+separation (braking margin = dread boundary; an approach-rate factor = comfort boundary), or is
+there a reading in which the braking margin should still be the comfort boundary and the video
+paradigm is what is wrong?
+
+@REF.Q2(judgment, jonas): authorize RE.3 alone, the ladder RE.3 to RE.6, or none? RE.3 is a day and
+would close the line honestly if it fails.
+
+@REF.Q3(judgment, review): the note argues the honest claim is two comfort factors, longitudinal
+and lateral, not one, which changes the deliverable to a joint percentile on two — the elliptical
+fallback already on file. Confirm that this is a permissible outcome rather than a failure of the
+project's premise.
+
+@REF.Q4(minor, review): a theta_dot preference factor would be a genuine addition to the released
+p(o), not a re-parameterisation. Behind a flag defaulting to the released behavior (standing rule
+3), and never called the authors' model in any document.
+
+@REF.Q5(judgment, jonas): if RE.3 succeeds, the result is that the published model contains a
+usable comfort-zone factor that its own magnitudes bury — a constructive finding about the paper
+and a natural thing to put to Julian in September. It interacts with RE1.Q1; answer them together.
+
+@JJ2B.Q1(minor, review): both JJ.2b and RE.2 gained a `--reuse` path that regenerates the report
+from the run's own tracked per-cell output without repeating the expensive part (378 CEM calls;
+648 sweep evaluations). It was added because the first reports' auto-generated readings were
+written as fixed conditionals and one of them was factually wrong once the numbers came in. Worth
+adopting as a pattern for every long card, or is regenerating a report from a CSV a loosening of
+the "reports are generated by their script" rule?

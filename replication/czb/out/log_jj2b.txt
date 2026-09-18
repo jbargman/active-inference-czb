@@ -1,0 +1,21 @@
+menu passes...
+C:\Users\bargman\OneDrive - Chalmers\1_Work\1_Code\WaymoActiveInference\replication\czb\cutin2_field_vs_gap.py:235: RuntimeWarning: overflow encountered in exp
+  b = 1.0 / (1.0 + np.exp(-b))                 # lapse in (0, 1) via logit
+planner pass (378 CEM calls, minutes)...
+  planner 50/378 [199 s]
+  planner 100/378 [353 s]
+  planner 150/378 [463 s]
+  planner 200/378 [586 s]
+  planner 250/378 [724 s]
+  planner 300/378 [890 s]
+  planner 350/378 [1026 s]
+C:\Users\bargman\OneDrive - Chalmers\1_Work\1_Code\WaymoActiveInference\replication\czb\cutin2_field_vs_gap.py:236: RuntimeWarning: divide by zero encountered in divide
+  z = sign * (x - c) / np.exp(log_sig)
+With steering available the menu's own best alternative is a steer in **309 of 378** cells, so the two constructions agree about what the model would do.
+
+## 3 The reading, as pre-stated and with no verdict attached
+
+Adding the policies the model would actually choose moves the post-onset held-out score from 0.3202 to 0.3202 with the menu and 0.3161 with the planner, which is not toward the gated looming rule. The pre-stated reading: **the menu was NOT the binding defect.** The defect is the one card RE.1 located, the preference function's magnitude grading by closing speed, and no menu repairs it: every construction above still correlates POSITIVELY with the gap, where the response correlates -0.862.
+
+Run time 1301 s.
+

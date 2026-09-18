@@ -61,7 +61,7 @@ the repository disagree, the repository wins, and you should say so in your repl
 1. Read this file in full. Then read `docs/czb_work_orders.md` §2 (the standing rules)
    and the card or note named for the task at hand. Do not read the papers or the handbook
    unless the card says to; do not open `OthersWork/` (§5).
-2. Run the test suite exactly like this, and confirm 31, 33, 40, 96, 62, 20, 28, 27, 16, 30, 28 and 29 passed:
+2. Run the test suite exactly like this, and confirm 31, 33, 40, 96, 62, 20, 28, 27, 16, 30, 28 and 35 passed:
    ```bash
    python tests/test_surprise.py
    python tests/test_comfortzone.py

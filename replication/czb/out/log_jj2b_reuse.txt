@@ -1,0 +1,15 @@
+regenerated from out/jj2b_steer_menu_cells.csv
+C:\Users\bargman\OneDrive - Chalmers\1_Work\1_Code\WaymoActiveInference\replication\czb\cutin2_field_vs_gap.py:235: RuntimeWarning: overflow encountered in exp
+  b = 1.0 / (1.0 + np.exp(-b))                 # lapse in (0, 1) via logit
+C:\Users\bargman\OneDrive - Chalmers\1_Work\1_Code\WaymoActiveInference\replication\czb\cutin2_field_vs_gap.py:236: RuntimeWarning: divide by zero encountered in divide
+  z = sign * (x - c) / np.exp(log_sig)
+
+**The DIRECTION does move, and a long way.** The matched-TTC rows ordered the way the participants order them go from **0 of 24** with the JJ.1 menu to **19 of 24** with the released planner, and rho(axis, gap) turns from +0.848 to -0.308 -- from the wrong sign to the right one. Menu + steering sits between the two (+0.635, 0 of 24). So giving the model its own policy space does repair the inversion that gate R.2, card JJ.2 and card JJ.3 all failed on; what it does not do is turn the repaired ordering into a usable axis, because rho(axis, share) only reaches +0.169.
+
+Two readings follow, and both are readings rather than decisions.
+
+1. **The no-steering menu was a real defect and card RE.1 found it correctly.** A policy comparison that excludes the model's own chosen action inverts the ordering; with steering restored, 19 of 24 matched-TTC rows come out the human way. That is the largest movement on this design any card has produced, and it is evidence that the framing matters, not only the constants.
+2. **And it is still not an axis.** The ordering is right-signed and weak, so the three-parameter threshold model recovers nothing beyond the training mean. What limits the magnitude is what card RE.2 measures directly: on these stimuli eps is the collision factor plus the safety factor and nothing else, and the safety factor is anti-correlated with the response at rho -0.861.
+
+Run time 37 s.
+

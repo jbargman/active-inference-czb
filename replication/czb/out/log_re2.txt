@@ -1,0 +1,19 @@
+378 cells built [10 s]
+  100/648 [219 s]
+  200/648 [573 s]
+  300/648 [709 s]
+  400/648 [842 s]
+  500/648 [1100 s]
+  600/648 [1258 s]
+C:\Users\bargman\OneDrive - Chalmers\1_Work\1_Code\WaymoActiveInference\replication\czb\cutin2_field_vs_gap.py:235: RuntimeWarning: overflow encountered in exp
+  b = 1.0 / (1.0 + np.exp(-b))                 # lapse in (0, 1) via logit
+C:\Users\bargman\OneDrive - Chalmers\1_Work\1_Code\WaymoActiveInference\replication\czb\cutin2_field_vs_gap.py:236: RuntimeWarning: overflow encountered in exp
+  z = sign * (x - c) / np.exp(log_sig)
+For reference, all six together (the released defaults): rho(gap) +0.653, 0 of 24 rows.
+
+## 5 The verdict on the decision rule
+
+**(ii) Some vector orders these cells the way the participants do.** The released functional form is not the obstacle; using the authors' calibration as a measuring instrument was. The best vector's held-out score is 0.2705 against the gated looming rule's 0.1027 + 0.01.
+
+Run time 2203 s.
+
