@@ -105,6 +105,44 @@ def fit_growth(horizons_s, sd) -> tuple[float, float]:
     return (float(np.sqrt(max(a, 0.0))), float(np.sqrt(max(b, 0.0))))
 
 
+def fit_growth_accel(horizons_s, sd) -> tuple[float, float]:
+    """Least-squares fit of sd(h)^2 = s0^2 + (0.5 sigma_a h^2)^2; returns (s0, sigma_a), each >= 0.
+
+    The sibling of `fit_growth` for the LONGITUDINAL axis, added 2026-09-18 for card GM.1a. The
+    rollout fan's two axes do not grow the same way (`docs/rollout_boundary_design_note.md`
+    section 1.2): the lateral position sd grows linearly in the horizon, because the perturbation
+    is a constant lateral VELOCITY, while the longitudinal one grows quadratically, because the
+    perturbation is a constant ACCELERATION. `fit_growth` fits the first form and so cannot return
+    the fan's sigma_a at all; this fits the second and does.
+
+    Fitting both and comparing the residuals is a test of the fan's FORM, not only of its
+    constants: if a set of tracks is better described by the linear form, the constant-acceleration
+    perturbation is the wrong model for them however its constant is chosen.
+    """
+    h = np.asarray(horizons_s, float)
+    s = np.asarray(sd, float)
+    ok = np.isfinite(h) & np.isfinite(s)
+    if ok.sum() < 2:
+        return (np.nan, np.nan)
+    A = np.column_stack([np.ones(ok.sum()), h[ok] ** 4])
+    coef, *_ = np.linalg.lstsq(A, s[ok] ** 2, rcond=None)
+    a, b = coef
+    return (float(np.sqrt(max(a, 0.0))), float(2.0 * np.sqrt(max(b, 0.0))))
+
+
+def growth_residual(horizons_s, sd, s0: float, slope: float, quadratic: bool) -> float:
+    """Root-mean-square residual of a fitted growth curve, in metres, for comparing the two forms
+    on the same horizons. `slope` is s1 for the linear form and sigma_a for the quadratic one."""
+    h = np.asarray(horizons_s, float)
+    s = np.asarray(sd, float)
+    ok = np.isfinite(h) & np.isfinite(s)
+    if not ok.any() or not np.isfinite(s0) or not np.isfinite(slope):
+        return float("nan")
+    grow = (0.5 * slope * h[ok] ** 2) if quadratic else (slope * h[ok])
+    pred = np.sqrt(s0 ** 2 + grow ** 2)
+    return float(np.sqrt(np.mean((pred - s[ok]) ** 2)))
+
+
 def jitter_growth_floor(sigma_m: float, window_s: float) -> float:
     """The slope s1 [m/s] that pure white position jitter of `sigma_m` produces through the
     backward-difference velocity: sqrt(2) * sigma / window. Compare a measured s1 with this

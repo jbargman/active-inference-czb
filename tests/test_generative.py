@@ -41,7 +41,8 @@ from generative.lanechange import (  # noqa: E402
 )
 from generative.population import binned_summary, gaussian_reference, mahalanobis2  # noqa: E402
 from generative.uncertainty import (  # noqa: E402
-    backward_velocity, cv_prediction_errors, fit_growth, growth_table, jitter_growth_floor,
+    backward_velocity, cv_prediction_errors, fit_growth, fit_growth_accel, growth_residual,
+    growth_table, jitter_growth_floor,
     pool_errors,
 )
 
@@ -196,6 +197,25 @@ def main():
         check("fixture: the lateral growth slope is the jitter floor, not behavior (within 30%)",
               np.isfinite(s1) and abs(s1 - jitter_growth_floor(0.03, 0.3)) / jitter_growth_floor(0.03, 0.3) < 0.30,
               f"s1 = {s1:.4f} m/s against floor {jitter_growth_floor(0.03, 0.3):.4f}")
+
+    # --- C3, the acceleration growth form (card GM.1a, 2026-09-18) ---------------------
+    hh = np.array([0.5, 1.0, 2.0, 3.0, 4.0])
+    sd_a = np.sqrt(0.2 ** 2 + (0.5 * 0.8 * hh ** 2) ** 2)
+    s0a, sig_a = fit_growth_accel(hh, sd_a)
+    check("fit_growth_accel recovers a planted (s0, sigma_a) from a quadratic growth curve",
+          abs(s0a - 0.2) < 0.02 and abs(sig_a - 0.8) < 0.02, f"({s0a:.3f}, {sig_a:.3f})")
+    sd_v = np.sqrt(0.1 ** 2 + (0.4 * hh) ** 2)
+    r_lin = growth_residual(hh, sd_v, *fit_growth(hh, sd_v), quadratic=False)
+    r_qua = growth_residual(hh, sd_v, *fit_growth_accel(hh, sd_v), quadratic=True)
+    check("on linear (velocity) growth the linear form fits better than the quadratic one",
+          r_lin < r_qua, f"{r_lin:.4f} against {r_qua:.4f}")
+    r_lin2 = growth_residual(hh, sd_a, *fit_growth(hh, sd_a), quadratic=False)
+    r_qua2 = growth_residual(hh, sd_a, *fit_growth_accel(hh, sd_a), quadratic=True)
+    check("and on quadratic (acceleration) growth the quadratic form fits better",
+          r_qua2 < r_lin2, f"{r_qua2:.4f} against {r_lin2:.4f}")
+    check("growth_residual is zero on the curve it was fitted to", r_qua2 < 1e-9, f"{r_qua2:.2e}")
+    check("both growth fits return nan with fewer than two finite horizons",
+          all(np.isnan(v) for v in fit_growth_accel([1.0], [0.3])))
 
     print(f"\n{len(PASS)} passed, {len(FAIL)} failed")
     if FAIL:

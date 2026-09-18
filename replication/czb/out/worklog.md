@@ -4015,3 +4015,83 @@ contradicted by the deposit. The designing session owns that document; flag or c
 @WP.Q4(judgment, review): is the learned-predictor reference of Dinparastdjadid et al. (2023)
 buildable on highD/exiD when they arrive, or does it need Waymo-scale data to be worth anything? The
 answer decides whether that route is a route or a citation.
+
+## 2026-09-18 (same session) — card GM.1a: sigma_a measured. The fan is five times too wide, the released belief thirty times, and the form is wrong
+
+Authorized by Jonas as "card 1" of the two to do while the naturalistic data are unavailable.
+`replication/czb/gm1a_lead_acceleration.py` → `out/gm1a_lead_acceleration.md`, `.csv`,
+`out/log_gm1a.txt`. Everything pre-stated in the script's docstring before the run. No response data
+enter this card and nothing is fitted to any human judgment. Suite green at
+31/33/40/96/62/20/28/27/16/30/**33**/35 — `test_generative.py` grew by five checks for the new
+growth form.
+
+**Why this constant.** Card RE.1 showed the released model's criticality signal is FLAT on a
+certain constant-speed prediction (23 nats at every time gap from 0.5 s to 3.5 s at 110 km/h, and
+the same on an empty road), so the whole gradient the deposit shows in benign following comes from
+the share of predicted futures that collide — and that share is set by the assumed spread of the
+lead's acceleration, not by the scene. **The constant IS the gradient.** It was a placeholder marked
+unverified in design note §1.2 and flagged as JJ1.Q2.
+
+**The data and its limitation, stated before the numbers.** QUADRIS
+(`external/quadris/Synthetic_crash_scenarios.csv`, 5 000 scenarios, ~5 s at 20 Hz, exposure weights)
+is a **conflict distribution, not ordinary driving** — every scenario is the run-up to a crash or
+near-crash. So every number here is an **upper bound** on ordinary driving. That asymmetry is what
+makes the result usable: an upper bound far BELOW the assumed value settles the question, an upper
+bound above it would not.
+
+**The numbers, benign phase (before braking onset at -0.5 m/s^2, 2 979 scenarios), weighted:**
+
+| quantity | measured | for comparison |
+|---|---|---|
+| **sigma_a (the fan's own form)** | **0.098 m/s^2** | the fan's placeholder **0.5** — five times wider |
+| s1 (the linear form) | 0.152 m/s | — |
+| the lead's acceleration sd, model-free | 0.282 m/s^2 | — |
+| the released belief's process noise | — | `sigma_a_belief` **3.0 m/s^2** per step, particles clipped to [-4, +8] |
+
+**Three readings.**
+
+1. **The fan is five times too wide, and the released belief about thirty times** — against an
+   upper bound from crash-selected data. This is the quantitative form of card RE.1's finding: the
+   released model's benign-following gradient is produced by an acceleration prior far wider than
+   even conflict data support, and it is that width, not the scene, that generates the gradient.
+2. **The fan's FORM is wrong, not just its constant.** RMS residual **0.0156 m for the linear
+   (constant-velocity-perturbation) form against 0.0572 m for the quadratic
+   (constant-acceleration-perturbation) form** the design note specifies. The lead's motion drifts
+   from a constant-velocity prediction the way a velocity perturbation does, not the way an
+   acceleration perturbation does. Design note §1.2 says the lateral axis grows linearly and the
+   longitudinal quadratically; on this data both grow linearly. That is a change to the note, not
+   to a constant.
+3. **One sigma_a cannot serve both regimes.** Event phase: sigma_a 1.272 m/s^2, s1 1.952 m/s,
+   direct acceleration sd 1.651 — an order of magnitude above benign. The sensitivity over onset
+   thresholds {-0.3, -0.5, -1.0} moves benign sigma_a over 0.066 / 0.098 / 0.199 and leaves the
+   event phase at 1.292 / 1.272 / 1.264, so the split is robust and the gap between regimes is not
+   a threshold artefact.
+
+**New code.** `generative.uncertainty.fit_growth_accel` (the quadratic sibling of `fit_growth`,
+which fits only the linear form and therefore cannot return sigma_a at all) and `growth_residual`,
+with five property tests: recovery of a planted (s0, sigma_a); the linear form winning on linear
+growth and the quadratic on quadratic growth; a zero residual on the curve fitted; and nan below two
+horizons. `cv_prediction_errors`, `pool_errors` and `growth_table` are the framework's own and were
+imported unchanged.
+
+Queries:
+
+@GM1A.Q1(judgment, jonas): the measured benign sigma_a is 0.098 m/s^2 against the fan's 0.5, from an
+upper-bounding dataset. Adopt 0.098 as the fan's value now, keep 0.5 until ordinary-driving data
+confirm it, or run the rollout cards at both? My recommendation is to adopt it and re-run nothing
+yet: JJ.2's verdict was DROP on a rule that a narrower fan cannot rescue (the inversion is in the
+preference magnitude, RE.2), so re-running the JJ line would cost days and change no verdict.
+
+@GM1A.Q2(judgment, review): the longitudinal growth is better described by a constant VELOCITY
+perturbation than by the constant ACCELERATION perturbation design note §1.2 specifies. Correct the
+note's form for both axes, or is the acceleration form wanted on principle for the longitudinal axis
+and this data too benign to show it? Note the event phase does not change the answer — the linear
+form wins there too.
+
+@GM1A.Q3(minor, review): QUADRIS's `weight` column is used as an exposure weight, and the weighted
+and unweighted numbers differ (benign direct acceleration sd 0.282 weighted against 0.259
+unweighted). Confirm the column is exposure and not something else; the QUADRIS README does not say.
+
+@GM1A.Q4(judgment, jonas): this is an upper bound. The measurement that would settle it is the same
+one on ordinary following in highD/exiD, which is a few hours' work once the data exist. Add it to
+the naturalistic data request as a named deliverable?

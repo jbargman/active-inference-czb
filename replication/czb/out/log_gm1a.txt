@@ -1,0 +1,22 @@
+
+## 3 The readings, as pre-stated
+
+**(a) The constant.** The fan's placeholder is 0.5 m/s^2 (query JJ1.Q2). The measured benign upper bound is **0.098 m/s^2**. That is BELOW the placeholder, so the fan has been carrying more predicted-collision mass than even a conflict-selected dataset supports, and the released belief's assumptions are wider still.
+
+**(b) The form.** RMS residual 0.0156 m for the linear form against 0.0572 m for the quadratic one, so the **linear (velocity) form describes the lead's motion better**. The fan's longitudinal perturbation should then be a velocity rather than an acceleration, which is a change to design note section 1.2 and not to a constant.
+
+**(c) The released belief, for scale, with no decision attached.** `sigma_a_belief` = 3.0 m/s^2 of process noise per step, the particle acceleration clipped to [-4, 8] m/s^2, and `sigma_a_init` = 0.5 m/s^2 at reset. Those are the authors' constants and this card does not re-decide them.
+
+## 4 Sensitivity to the braking-onset threshold
+
+| onset threshold [m/s^2] | phase | scenarios | sigma_a [m/s^2] | s1 [m/s] | direct accel sd [m/s^2] |
+|---|---|---|---|---|---|
+| -0.3 | benign | 2725 | 0.066 | 0.106 | 0.259 |
+| -0.3 | event | 3240 | 1.292 | 1.983 | 1.663 |
+| -0.5 **(primary)** | benign | 2979 | 0.098 | 0.152 | 0.282 |
+| -0.5 **(primary)** | event | 3200 | 1.272 | 1.952 | 1.651 |
+| -1 | benign | 3460 | 0.199 | 0.305 | 0.352 |
+| -1 | event | 3064 | 1.264 | 1.940 | 1.645 |
+
+Run time 59 s.
+
