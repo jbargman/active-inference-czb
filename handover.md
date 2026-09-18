@@ -281,6 +281,25 @@ adopt the two-scalar wording, with the standing genericity ruling in §1 as the 
 
 ## 4 The queue, in order, with what "done" means
 
+> **PARKED BY JONAS 2026-09-18, and he asked to be reminded of these two.** He chose the first two
+> of four options offered while the naturalistic data are unavailable, and said to keep the other
+> two and remind him. **Remind him of both at the start of any session where he asks what is next.**
+>
+> - **The lateral factor.** Card JJ.3's rule (d) held at C1 to C4 on the cyclist overtake
+>   (`out/jj3_rollout_transfer.md` §2) — the one place in the whole JJ arc where the construction
+>   did something the released field could not (`out/overtake_field_check.md`: the field ranks those
+>   cells at +0.402 against the clearance label's −0.833). Needs no reference distribution, so it is
+>   not blocked by anything. 15 cells, narrow dynamic range.
+> - **Extending card JJ.4, the arc's one clean positive result.** The observation-model line: drivers
+>   are 4.34× [2.38, 7.93] sharper in the car than in front of a frozen clip, and the truck's
+>   criterion is sharper than the car's (σ 0.273 against 0.424, +60.6 held-out log-likelihood units).
+>   The cheapest piece is **EX2.Q2**, already in §3: refit TT.1 with the session term, about 15
+>   minutes, which turns "the video at first exposure sits within 0.03 s of the track" into a result
+>   with an interval.
+>
+> Done from that list: **card GM.1a** (σ_a measured on QUADRIS, `out/gm1a_lead_acceleration.md`) and,
+> next, the reference-distribution specification for the naturalistic request.
+
 0a. ~~**GZ2.Q2: which state channel suppresses the spontaneous re-plan.**~~ **Done 2026-09-16**: parts C, D
    and E in the same script; the lateral and heading channels (`y_sd`, `theta_sd`, `delta_sd`, `w_sd`)
    carry it, through the belief update and not the planner's sampled observations (D3); the in-path
