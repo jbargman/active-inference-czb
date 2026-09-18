@@ -1,0 +1,16 @@
+Implied width exponent **a = 1.42** [1.24, 1.63].
+
+## 3 The verdict on the pre-stated rule
+
+**NEITHER** (rule N)
+
+The offset is on the far side of the perceptual prediction from the configurational one: the truck's boundary sits LOWER on log theta_dot than a pure looming threshold would put it, so the criterion weights apparent size MORE heavily than optical expansion alone (a = 1.42 against 1). Read plainly: a driver treats a wide vehicle as closer to their boundary than its expansion rate says, and treats the configuration as mattering less than its optics.
+
+## 4 What this does not settle
+
+A truck differs from a car in more than width: it is 16.5 m long against about 5 m, it may be braked and driven differently, and the two classes' lane-change kinematics in this study are not identical. The gap is bumper-to-bumper throughout (`cutin_predictors`), which removes the length from the gap but not from everything else. So this contrast bounds how much of the criterion is optical; it does not prove that what remains is width specifically.
+
+It also does not speak to the SECOND study, where the normative and perceptual accounts are observationally identical. For that one the discriminating number is registered and not yet testable: card EL.1's full-sample w = 0.497 puts the comfort boundary's slope in the (log gap, log dv) plane at **1.988**, against 2 for constant looming and 1 for constant TTC. **When naturalistic cut-in data arrive, the prediction is that the iso-density contours of p(gap, dv | a lane change into my lane) have that slope.** If they do, the two accounts coincide on that scenario; if they do not, the gap between the slopes is the size of the normative contribution.
+
+Run time 3 s.
+

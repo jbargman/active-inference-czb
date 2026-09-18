@@ -233,12 +233,29 @@ object — a point in a two-dimensional preference space — for the percentile.
 
 Nothing below is authorized. Each is small, and each can kill the next.
 
-**RE.3 — is the comfort factor a comfort-zone boundary?** Fit the three-parameter threshold model
-on the τ⁻¹ factor's contribution and on a θ̇ preference's contribution, on card JJ.2's own 378
-cells, folds and metric. Rule: **the comfort factor earns the reformulation if it reaches within
-0.01 of the gated looming rule's 0.1027 post-onset**, with the catastrophe factors excluded
-entirely. RE.2 already gives the τ⁻¹-inside-collision figure as 0.308, so this is a real test and
-it may well fail at the first step — the factor may have the right sign and the wrong shape.
+**RE.3 — is the boundary perceptual or configurational? DONE, 2026-09-18.** *[The RE.3 first
+written here was to fit the threshold model on a θ̇ preference factor. That was a re-labelling, not
+a test: a preference on θ̇ reproduces card EL.1b's own 0.1137 by construction. Jonas's question
+about the normative model replaced it with a real one.]*
+
+  On the second cut-in study the normative and the perceptual accounts are **observationally
+  identical** — both give a curve in the (gap, closing speed) plane — so that study cannot separate
+  them. One design here can, and the data are in hand: the truck and car cut-ins of study 1 at
+  matched TTC. Writing the criterion as a constant value of `W^a Δv / gap²`, the class offset on
+  log θ̇ is exactly (1 − a)·log(W_truck/W_car): **0** if the boundary is perceptual, **+0.304** if
+  it is a width-blind configuration norm.
+
+  **Measured: −0.1285 [−0.1922, −0.0721], implied a = 1.42 [1.24, 1.63]** — the interval excludes
+  both, so the verdict is *neither* (`replication/czb/out/re3_apparent_size.md`). The criterion
+  weights apparent size **more** heavily than optical expansion alone. The width-blind
+  configuration norm is what this rules out most firmly, four standard errors in the wrong
+  direction.
+
+  **And the part that needs data, now registered with a number.** Card EL.1's full-sample w = 0.497
+  puts the comfort boundary's slope in the (log gap, log Δv) plane at **1.988**, against 2 for
+  constant looming and 1 for constant TTC. The pre-registered prediction is that the iso-density
+  contours of p(gap, Δv | a lane change into my lane) in naturalistic data have that slope. That
+  turns the naturalistic request into a test rather than an exploration.
 
 **RE.4 — does the switch reproduce the gate?** With the catastrophe factors as admissibility and
 the comfort factor as the objective, compute P(argmin ≠ continue) on the 90 pre-onset cells with
