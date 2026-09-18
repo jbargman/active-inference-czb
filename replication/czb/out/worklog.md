@@ -4095,3 +4095,64 @@ unweighted). Confirm the column is exposure and not something else; the QUADRIS 
 @GM1A.Q4(judgment, jonas): this is an upper bound. The measurement that would settle it is the same
 one on ordinary following in highD/exiD, which is a few hours' work once the data exist. Add it to
 the naturalistic data request as a named deliverable?
+
+## 2026-09-18 (same session) — card RE.4: five functionals of the released expected free energy, all at chance. The obstacle is the preference, not the reading
+
+Jonas: *"What can we reformulate then to make it fit/work? It should be possible, I still feel..."*
+The most natural repair for card JJ.2's failure is a different FUNCTIONAL of the same expected free
+energy, and the obvious candidate is **min over policies of G** — how far short you fall even doing
+the best available thing — which is monotone in criticality by construction where Delta G is not.
+This card tests that and every other defensible functional at once.
+`replication/czb/re4_efe_functionals.py` → `out/re4_efe_functionals.md`, `.csv`, `out/log_re4.txt`.
+Pre-stated in the script's docstring. It supersedes the RE.4 sketched in
+`docs/active_inference_reformulation.md` §6, whose question is downstream of this one.
+
+**Reproduction check first**: the eps computed here reproduces card JJ.2b's to **5.8e-11**, which is
+what makes the duplicated belief construction safe to compare against that card's planner output.
+
+| functional | post-onset held out | pre-onset | matched-TTC rows | rho(share) | rho(gap) |
+|---|---|---|---|---|---|
+| eps = G(continue), the model's Eq. 13 signal | 0.3209 | 0.5355 | 3 of 24 | -0.195 | +0.332 |
+| **min over policies of G** | 0.3203 | 0.5366 | 2 of 24 | -0.216 | +0.381 |
+| Delta G (card JJ.2's axis) | 0.3161 | 0.5538 | 19 of 24 | +0.169 | -0.308 |
+| **epistemic value of continuing** (never tested before) | 0.3202 | 0.5381 | 5 of 24 | **-0.502** | **+0.543** |
+| the full G at alpha = 1 | 0.3209 | 0.5355 | 3 of 24 | -0.170 | +0.311 |
+
+Chance is 0.320 and the gated looming rule is 0.1027. **All five sit at chance**, in a range of
+0.005. The pre-stated verdict is (ii): **no functional of this expected free energy orders these
+cells, so the obstacle is the preference structure and not the reading of it.** That is card RE.2's
+conclusion arrived at from the other direction — RE.2 swept the constants and found none that works,
+RE.4 sweeps the functionals and finds none that works.
+
+**min G is worse than Delta G, not better.** It was the best idea available for repairing JJ.2 and it
+fails, because the best policy still pays the collision and safety costs that grade by closing
+speed. Only Delta G has the human sign on the gap, and it is the weakest-ordering of the five.
+
+**The epistemic term, measured for the first time in this project.** rho with the share **-0.502**,
+rho with the gap **+0.543** — the wrong sign, and the strongest |rho| of the five. So the approach
+incentive that `HANDOFF.md` §4 and design note §1.4 both warn about is real and large, and it points
+the wrong way for comfort: the closer the gap, the more attractive the model finds it. Running at
+alpha = 1 (the released baseline, contra design note §1.4's claim — see
+`docs/waymo_program_revisit.md` §5) makes the full G slightly WORSE than the pragmatic part alone.
+
+**Not done**: min G and Delta G are card JJ.2b's planner output at alpha = 0; re-running the planner
+at alpha = 1 is 22 minutes and was the obvious follow-up if anything had been close. Nothing was.
+
+**What this settles for the project.** Three independent lines now say the same thing — RE.2 (no
+constants work), RE.4 (no functionals work), and `docs/waymo_program_revisit.md` §1 (the model is a
+collision-avoidance model being asked a comfort-zone question). **This is the case for going to the
+program's strand 1 rather than for another reading of strand 2**, and Jonas has asked to go there.
+
+Queries:
+
+@RE4.Q1(minor, review): min G and Delta G are at alpha = 0 while the three single-policy functionals
+are at alpha = 1. The comparison is therefore not perfectly like for like, though eps is
+alpha-independent so the two constructions share their anchor. Re-run the planner at alpha = 1 for
+completeness, or let the negative stand as it is?
+
+@RE4.Q2(judgment, jonas): the epistemic term is the strongest-|rho| functional of the five and it
+points the wrong way (closer is more attractive). In strand 1 that same term is what makes the agent
+slow down and look — the opposite behaviour. Worth understanding why the sign flips between the two
+models before building anything on strand 1, or is it simply that the released looming observation
+model makes precision improve with proximity while strand 1's occlusion model makes it improve with
+distance from the obstruction?

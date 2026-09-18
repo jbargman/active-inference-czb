@@ -1,0 +1,28 @@
+computing the pragmatic and epistemic terms...
+  100/378 [3 s]
+  200/378 [5 s]
+  300/378 [8 s]
+C:\Users\bargman\OneDrive - Chalmers\1_Work\1_Code\WaymoActiveInference\replication\czb\cutin2_field_vs_gap.py:236: RuntimeWarning: divide by zero encountered in divide
+  z = sign * (x - c) / np.exp(log_sig)
+C:\Users\bargman\OneDrive - Chalmers\1_Work\1_Code\WaymoActiveInference\replication\czb\cutin2_field_vs_gap.py:235: RuntimeWarning: overflow encountered in exp
+  b = 1.0 / (1.0 + np.exp(-b))                 # lapse in (0, 1) via logit
+C:\Users\bargman\OneDrive - Chalmers\1_Work\1_Code\WaymoActiveInference\replication\czb\cutin2_field_vs_gap.py:236: RuntimeWarning: overflow encountered in exp
+  z = sign * (x - c) / np.exp(log_sig)
+C:\Users\bargman\OneDrive - Chalmers\1_Work\1_Code\WaymoActiveInference\replication\czb\cutin2_field_vs_gap.py:235: RuntimeWarning: overflow encountered in exp
+  b = 1.0 / (1.0 + np.exp(-b))                 # lapse in (0, 1) via logit
+## 2 The verdict on the pre-stated rule
+
+**(ii) No functional reaches the comparator.** The best of the five is `dg_planner` at **0.3161**, against the gated looming rule's 0.1027 + 0.01 and chance 0.320. Every functional sits at chance.
+
+So the obstacle is not which functional of the expected free energy is read. It is the preference structure the expected free energy is built from -- which is what card RE.2 found by sweeping its constants, and what `docs/waymo_program_revisit.md` §1 argues is a property of a COLLISION-AVOIDANCE model being asked a comfort-zone question. **This is the case for going to the program's strand 1 rather than for another functional of strand 2.**
+
+**(iii) The epistemic term, measured here for the first time.** rho with the share -0.502, rho with the gap +0.543, held out 0.3202. Its sign is NOT the human one on this data, so the approach incentive the design note and HANDOFF.md §4 both warn about does not show up as a usable ordering here.
+
+Functionals with the human sign on the gap: `dg_planner`.
+
+## 3 What was not done
+
+min G and Delta G are card JJ.2b's planner output and were computed at **alpha = 0**; only the single-policy functionals here are at alpha = 1. Re-running the planner at alpha = 1 over 378 cells is about 22 minutes and is the obvious follow-up if any functional above had been close. None was, so it was not run.
+
+Run time 144 s.
+
