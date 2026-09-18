@@ -3942,3 +3942,76 @@ cut-in data that the project does not have. When the data arrive, is the right c
 iso-density contour of p(gap, dv) for lane changes into the ego's lane, or the iso-density contour
 conditioned on the ego's own speed? The second is closer to what a driver's norm would be and is a
 different number.
+
+## 2026-09-18 (same session) — revisiting the rest of the Waymo program: we have been using the collision-avoidance model to measure comfort
+
+Jonas: *"revisit the other Waymo relevant papers and consider if there is something we missed in our
+way of thinking so that what we want fits into what they have done in the Waymo papers."* The answer
+is yes, in four places, and one of them is a sentence that has been in `notes/01_paper_summaries.md`
+since 2026-08-17. Written up as `docs/waymo_program_revisit.md`; not a card, nothing authorized.
+
+**1. The wrong strand.** The IWAI 2024 Engström poster lays the program out in three strands:
+managing uncertainty; responding to urgent conflicts; social interaction. This project took strand
+2's model (Schumann et al., collision avoidance) and used it to measure the comfort zone, which the
+program puts in strand 1 (Engström et al. 2024, *Resolving uncertainty on the fly*). Our own notes
+say it: *"Both are non-critical scenarios — the comfort-zone regime, not the collision-avoidance
+regime."* Card RE.2's finding that eps is collision-plus-safety and nothing else is then not a defect
+but the model working in the regime it was built for.
+
+**2. Our stimuli structurally pin four of the six preference factors at zero — and this is the
+actionable one.** In both video studies the ego holds a constant speed in its own lane and never
+acts, so under "continue" it is exactly at its desired speed, zero acceleration, zero steering, lane
+centre. The four factors that carry the progress-versus-caution trade-off are zero to machine
+precision (RE.2 measured -1.2e-14 at all 378 cells). A participant watching a clip has no speed to
+lose, no effort to spend and no lane to leave, so the half of the comfort zone that is about what the
+driver gives up cannot be expressed by this stimulus set at all. A future study should let the ego
+trade something.
+
+**3. The reference distribution we said does not exist, exists — in their 2023 companion paper.**
+Dinparastdjadid, Supeene & Engström, *Measuring surprise in the wild* (arXiv 2305.07733), builds the
+belief as a LEARNED trajectory predictor (MultiPath-style, Wayformer encoder) emitting a Gaussian
+mixture over each agent's future position, and measures **residual information** against it — which
+is exactly the quantity `policy_surprise` and our `G(continue)` compute (card RE.1 §0, identity to
+7e-16). **So the measure was never the problem; the distribution it is computed against was.** In the
+2026 model that distribution is a hand-written per-scenario norm; in the 2023 paper it is learned
+from data.
+
+And their first named application is traffic-conflict definition conditioned on **surprise AND
+spatiotemporal proximity**, because *an intentional small-TTC overtake is not a conflict*. That is
+Jonas's own hypothesis — people expect and accept a closing speed as long as it is far away — already
+published by the same group, with the ISO/TR 21974-1 "not premeditated" requirement behind it. The
+two-factor structure is theirs, not a new proposal of ours.
+
+**4. Fitting a driver's preferences from data is solved too, including the trap the reformulation
+note walked past.** Wei et al. (2023) estimate internal model and preferences jointly from
+demonstrations, name the non-identifiability problem (many (reward, internal model) pairs rationalize
+the same data) and resolve it with a structural prior. Their failure mode — inaccurate in extreme
+scenarios because naturalistic data contain no collisions — is the mirror of ours and is the argument
+for why the video studies' critical cells are worth having.
+
+**5. One configuration error of ours.** Design note §1.4 fixes alpha = 0 and calls it "the authors'
+validated configuration". The deposit contradicts that: the epistemic component is **+1745 to +1941
+per step** in benign following against -0.003 for the velocity preference and -2 for control effort
+(`replication/osf/review/benign_eps.csv`; `docs/method_review.md` §6.4). eps is alpha-independent, so
+cards JJ.2, JJ.3, RE.2 and RE.3 are unaffected; RE.1 part C and JJ.2b's planner pass both ran alpha =
+0 and are. And the direction matters: under looming perception a closer approach sharpens the
+observation, so the epistemic term **rewards proximity** — the one term that would pull a driver
+toward the boundary has been off throughout.
+
+Queries:
+
+@WP.Q1(judgment, jonas): should the project re-point at the strand-1 model (Engström et al. 2024,
+*Resolving uncertainty on the fly*) as the comfort-zone instrument, keeping Schumann et al. for the
+critical regime? Larger than anything proposed so far; it would supersede parts of
+`docs/active_inference_reformulation.md`.
+
+@WP.Q2(judgment, jonas): our stimuli pin four of the six preference factors at zero. Worth specifying
+a stimulus set in which the ego trades something — a speed choice, a lane choice, a gap acceptance —
+now, while the naturalistic data request is being written?
+
+@WP.Q3(minor, review): design note §1.4's "alpha = 0, the authors' validated configuration" is
+contradicted by the deposit. The designing session owns that document; flag or correct?
+
+@WP.Q4(judgment, review): is the learned-predictor reference of Dinparastdjadid et al. (2023)
+buildable on highD/exiD when they arrive, or does it need Waymo-scale data to be worth anything? The
+answer decides whether that route is a route or a citation.
