@@ -4365,3 +4365,72 @@ set by hand for a demonstration, so treating them as a reference would repeat th
 diagnosed), S13.Q3 (norms are absent from strand 1 — leave them out as the paper does, or is the
 norm where Jonas's "expecting and accepting" belongs?), S13.Q4 (the KDE epistemic term is where a
 reconstruction can differ silently).
+
+## 2026-09-18 (same session) — Jonas's car-following objection, and card S1.4 rebuilt around it: p_safe IS the inversion, confirmed by deletion
+
+Jonas: *"if we include a car-following model, we will just get the ego vehicle acting on that for
+the cut in, rather than the CZB the way we define it. Can we just not see it as the driver driving
+at steady state and wanting to stay there, but when someone encroaches the driver will act. Do we
+really need the car following?"*
+
+**He is right and the build note's S1.4 is withdrawn.** The objection separates two questions the
+note had run together: **(A)** where a driver CHOOSES to sit — an equilibrium question that needs a
+car-following model and whose answer would be a property of that model — and **(B)** when an
+encroachment makes sitting there untenable, which is the comfort-zone boundary as this project has
+always defined it. The project measures (B), and (B) does not require solving (A), **because the
+stimulus supplies the steady state**: the clip's ego holds a fixed speed in a fixed lane and that is
+the operating point the participant judges a departure from. Importing IDM, or a required-decel
+controller, or the strand-1 agent as a follower, would mean measuring that model instead.
+
+So **card S1.4 is rebuilt** (`replication/czb/s14_strand1_preference.py` →
+`out/s14_strand1_preference.md`): keep the steady state as given, change only the preference
+structure, four arms so that each of strand 1's four differences from the released model is
+separable. Arm 1 reproduces card JJ.2's 0.3202 exactly.
+
+| arm | post-onset | pre-onset | rows | rho(dG, share) | rho(dG, gap) | cheapest braking policy |
+|---|---|---|---|---|---|---|
+| 1 released (JJ.2's staging) | 0.3202 | 0.5381 | 0/24 | -0.648 | +0.848 | 20 308 |
+| 2 + strand 1's tolerances | 0.3202 | 0.5381 | 0/24 | -0.456 | +0.726 | 2 242 |
+| 3 + **no braking-margin term** | 0.2959 | **0.2995** | 3/24 | **+0.347** | **-0.063** | 2 242 |
+| 4 + a flat conflict cost (primary) | 0.3221 | 0.2790 | 3/24 | +0.192 | +0.061 | 2 242 |
+
+**NOT CREDITED** on the pre-stated rule — nothing reaches the gap threshold's 0.1522. But the
+arm-by-arm attribution is the result:
+
+1. **The effort floor was never what inverted the axis.** Strand 1's tolerances drop the cheapest
+   braking policy from 20 308 to 2 242 nats, a factor of 9.1, and rho with the gap moves only
+   +0.848 → +0.726. Card JJ.2's own §1b had guessed the floor might be the mechanism; it is not.
+2. **Removing p_safe is the change that removes the inversion.** rho with the gap +0.726 → **-0.063**,
+   rho with the share -0.456 → **+0.347**, and the pre-onset score 0.5381 → **0.2995**. That is card
+   RE.2's rho of -0.861 for that term, now confirmed by DELETION in a construction that otherwise
+   did not change — a much stronger form of the same finding.
+3. **An absolute preference has to be absolute.** The flat conflict cost at -1 000 is slightly worse
+   than arm 3; at -3 000 it gives 0.2864 and a negative rho with the gap. Which is an argument for
+   implementing strand 1's "absolute preference over no-conflict" as **admissibility** rather than
+   as any finite constant.
+
+And what none of the four does is make Delta G an axis. So the conclusion of RE.2 and RE.4 survives
+a change of preference as well as a change of constants and of functional.
+
+**On Johan's account of the mechanism, checked against the source.** He described a threshold on the
+deceleration required if the lead brakes at about 6 m/s^2, with a stop safety margin, implemented by
+Julian in the Nature paper. That is exactly `log_safety_pref` and `required_deceleration` (SI
+Eqs. 49/50/51): `a_other_min` = **-6.0 m/s^2** released; the margin is the **1 s reaction time**
+plus a standoff of **1.15 vehicle lengths**; and the threshold is `a_req < -a_max` with a_max = 8.
+One nuance worth raising with him: the counterfactual credits the LEAD with its own stopping
+distance (`x_nu - v_nu^2 / 2 a_test`), so the ego only has to stop short of where the lead will END
+UP, which is why card RE.1 found following at a 0.5 s headway at 110 km/h costs the model nothing.
+
+Queries:
+
+@S14.Q1(judgment, jonas): arm 3 — strand 1's tolerances with the braking-margin term deleted and
+the released graded collision cost kept — is the best of the four on every measure except that its
+held-out score is still chance. It is also not a model anyone proposed: strand 1 has a flat conflict
+preference, not a graded one. Is arm 3 worth pursuing as a construction in its own right, or is it
+an artefact of deleting one term from a model that needs it?
+
+@S14.Q2(judgment, review): strand 1's conflict preference is absolute and this card implements it as
+a large finite constant, which the sweep shows is consequential (-300, -1 000, -3 000 give 0.3244,
+0.3221, 0.2864). Implementing it properly means excluding colliding policies from the menu rather
+than costing them, which changes Delta G's definition (the minimum is then over admissible policies
+only). Worth doing before anything else in the strand-1 line?

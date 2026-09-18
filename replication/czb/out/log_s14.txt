@@ -1,0 +1,18 @@
+  released: 0.3202 [16 s]
+  tolerances: 0.3202 [25 s]
+  no_psafe: 0.2959 [33 s]
+  strand1: 0.3221 [39 s]
+## 3 The verdict on the pre-stated rule
+
+**NOT CREDITED.** The strand-1 preference scores 0.3221 against the gap threshold's 0.1522, so changing the preference structure does not by itself make Delta G an axis on this design.
+
+**And the arm-by-arm table is the result whichever way that goes**, because it says which of the four differences matters:
+
+* **The tolerances change the price of acting and nothing else.** The cheapest braking policy falls from 20,308 to 2,242 nats, a factor of 9.1. (Not the 25 that sigma_a alone would give: the control-effort deficit scales as 1/sigma_a^2, but the speed term in the same policy scales as 1/sigma_v^2 and the collision term does not move, so the total falls by less.) The ordering barely changes -- rho with the gap +0.848 to +0.726 -- so **the effort floor was never what inverted the axis**, which card JJ.2's own section 1b had guessed it might be.
+* **Removing the braking-margin term is the change that removes the inversion.** rho with the gap goes +0.726 to -0.063 and rho with the share -0.456 to +0.347, and the pre-onset score falls from 0.5381 to 0.2995. That is card RE.2's rho of -0.861 for that term, confirmed by deletion in a construction that otherwise did not change.
+* **The flat conflict cost helps only when it is large enough to dominate.** At the primary -1 000 it is slightly worse than arm 3 (0.3221 against 0.2959); the sweep in section 2 shows -3 000 giving 0.2864 and a negative rho with the gap. So the absolute preference has to be absolute enough to outweigh the effort term, which is what "absolute" means and is an argument for implementing it as admissibility rather than as any finite constant.
+
+**What none of the four does is make Delta G an axis.** The best arm is still at chance, so the preference structure is not the only thing wrong, and the conclusion of cards RE.2 and RE.4 -- that no quantity of this shape orders these cells -- survives a change of preference as well as a change of constants and of functional.
+
+Run time 54 s.
+
