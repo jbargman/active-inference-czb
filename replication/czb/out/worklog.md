@@ -4156,3 +4156,81 @@ slow down and look — the opposite behaviour. Worth understanding why the sign 
 models before building anything on strand 1, or is it simply that the released looming observation
 model makes precision improve with proximity while strand 1's occlusion model makes it improve with
 distance from the obstruction?
+
+## 2026-09-18 (same session) — strand 1, first card S1.1: the comfort margin beats the gap. The material was in the released preference all along
+
+Jonas: *"What can we reformulate then to make it fit/work? It should be possible, I still feel...
+Then, I think we should really try out strand 1 formulation, as a separate part of the project.
+Please go there."*
+
+**An honesty note first, because it changes how this entry should be read.** Card S1.1 was partly
+EXPLORATORY. The sweep was run before any rule was fixed and the primary constant was chosen after
+seeing the scores, which is the opposite of how every other card here was run. The report says so in
+its own heading and in section 2, the whole sweep is printed, and section 5 pre-states the three
+things that would turn it into a result and were NOT run. Nothing below is a verdict.
+
+**The route in.** Strand 1 states the comfort-zone trade-off in one sentence (Engström et al. 2024):
+the driver must *adapt their speed to be able to stop well ahead of the hazard without harsh
+braking*. So the strand-1 comfort quantity is **the deceleration the situation would demand** — not
+a collision cost. The released preference already computes it, as `required_deceleration` (SI
+Eq. 51), and then destroys it: it thresholds it at the ego's PHYSICAL maximum, 8 m/s^2, which is the
+DREAD boundary, and multiplies the indicator by a severity that grows with closing speed. Card RE.2
+measured that term's contribution at rho **-0.861** with the share who intervene.
+
+Nobody had scored the underlying quantity. The registered R.2 script has an axis called "a_req", but
+that is the kinematic approximation dv / (2 TTC), not the model's own function with the lead's
+assumed braking and the reaction time in it.
+
+**The numbers** (`replication/czb/s11_comfort_margin.py` → `out/s11_comfort_margin.md`, `.csv`), on
+card JJ.2's own 378 cells, folds and metric:
+
+| axis | post-onset held out | pre-onset | matched-TTC rows | rho(share) | rho(gap) |
+|---|---|---|---|---|---|
+| **the comfort margin, a_OV -10, t_react 1.0** | **0.1409** | 0.4745 | 19 of 24 | +0.869 | -0.780 |
+| the same at the RELEASED a_OV -6 | 0.2230 | 0.4924 | 9 of 24 | +0.633 | -0.413 |
+| the gap threshold, for reference | 0.1522 | 0.5149 | 24 of 24 | +0.862 | -1.000 |
+
+**0.1409 beats the gap threshold's 0.1522** — the first quantity derived from the released
+preference function to beat the best design scalar on this study. Against the ungated looming rule's
+0.1137 and the gated 0.1027 it is still short. And it is not a relabelled gap: rho with the gap is
+-0.780, not -1, so it is combining the gap with the speeds.
+
+**Three things this does not do, all in the report.** It does not reach the pre-onset cells (0.4745
+against card G.1's 0.0319), so it is an axis and not a gate and the emergence problem is untouched.
+It does not run the strand-1 model — there is no public code release for Engström et al. (2024), so
+this card takes strand 1's STATEMENT of the trade-off and tests the quantity the released code
+already computes for it. And its primary constant, a_other_min = -10 m/s^2, won a sweep; its
+independent motivation (about 1 g, what a passenger car on dry asphalt can actually achieve, against
+the released -6 which the authors chose to make their own simulations follow stably,
+`docs/method_review.md` §6.2) is offered for Jonas to judge, not asserted.
+
+**What it adds to the arc.** Card RE.2 found no constant of the assembled preference works; card
+RE.4 found no functional of it works; this card says **the material was there and the assembly is
+what fails**. That is a more precise and more constructive statement than "the model is the wrong
+one", and it is the first time in the JJ/RE line that something went the right way by a margin.
+
+Queries:
+
+@S11.Q1(judgment, jonas): a_other_min and response_time are the two constants here, and they are
+exactly what `docs/active_inference_reformulation.md` §4 proposed fitting PER DRIVER. This card is
+the first evidence that a quantity built from them orders anything. Authorize the per-driver fit
+(the note's item 2, card ladder step 2 in S1.1 §5), or the transfer test on study 1's cut-in first?
+My recommendation is transfer first: it is hours, it needs no new estimator, and a failure there
+would stop the line cheaply.
+
+@S11.Q2(judgment, review): the primary a_other_min = -10 m/s^2 was chosen after seeing the sweep.
+The confirmatory test in S1.1 §5 must therefore fix it in advance. Fix it at -10 on the 1 g
+motivation, or at the released -6 and report -10 as the sensitivity? The two give 0.1409 and 0.2230,
+so the choice is consequential and should not be mine.
+
+@S11.Q3(judgment, jonas): should the project build the strand-1 agent itself (Engström et al. 2024)
+rather than borrowing its statement of the trade-off? There is no public release, but `src/aidriver/`
+already has the particle filter, the CEM planner, the bicycle model and the preference terms, and
+the strand-1 model is closer to a restriction of what we have than to a new build: three preference
+terms (preferred speed, comfortable acceleration, conflict avoidance) instead of six, with the
+epistemic term carrying the uncertainty. That is a design note and a card ladder, not an afternoon.
+
+@S11.Q4(minor, review): the fit fails to converge at hard assumed braking with long reaction times,
+because `required_deceleration` diverges on the closest cells when the reaction-time term eats the
+gap. Those rows are blank in the sweep table rather than dropped silently. Worth bounding the
+quantity, or is a divergence at a gap the driver could not survive the honest answer?
