@@ -4434,3 +4434,43 @@ a large finite constant, which the sweep shows is consequential (-300, -1 000, -
 0.3221, 0.2864). Implementing it properly means excluding colliding policies from the menu rather
 than costing them, which changes Delta G's definition (the minimum is then over admissible policies
 only). Worth doing before anything else in the strand-1 line?
+
+## 2026-09-22 — handover for a model switch; Jonas's ruling on the committed docx; S14.Q2 authorized
+
+Jonas is moving to a more capable model and asked for a handover before anything else is done. The
+dated record is **`handover_2026-09-22.md`** and it carries his closing prompt verbatim, as he asked.
+`handover.md`'s RESUME banner now points at it; the 2026-09-17 banner is kept below it and marked
+superseded except where it records rulings.
+
+RESOLVED S14.Q2: *"I think we should try S14.Q2 as you seem to propose."* Strand 1's absolute
+conflict preference is to be implemented as **admissibility** — colliding policies excluded from the
+menu rather than costed — which changes Delta G's definition, since the minimum is then over
+admissible policies only. Authorized, not started; it is card S1.6 in the handover's §6.
+
+RESOLVED (the docx): commit `02ed704` used `git add -A docs` and committed
+`docs/handout_schumann_2026-09.docx`, which the standing rules say never to stage. Told about it,
+Jonas answered **"OK, keep as is (committed)"**. The rest of the rule is unchanged: never rebuild
+that file from the `.md`, and never stage it again — use explicit path lists, not `git add -A docs`.
+That was my error and it is recorded rather than quietly left.
+
+**One piece of arithmetic that belongs on the record because the next card rests on it.** Jonas
+asked whether the braking-margin term could be a comfort-zone boundary "if it was fitted with a
+different maximum decel and a position a bit further out". It can, and card RE.1's "flat at 23 nats"
+result does not contradict it. At zero relative speed with the released constants,
+`required_deceleration` is **not** flat: it runs -7.55, -6.05, -5.05, -4.33, -3.79, -3.37, -3.04
+m/s^2 across headways of 0.5 to 3.5 s at 110 km/h. eps was flat only because the *indicator* at
+a_max = 8 never fires anywhere in that range. So thresholding the same quantity at a comfortable
+deceleration puts a graded boundary inside the range drivers actually use, and a standoff margin
+shifts the whole curve — two parameters, both of which the reformulation note already proposed
+fitting per driver. That is card **S1.5** and it is the most promising thing in the arc. *(These
+seven numbers are arithmetic from the released formula, evaluated in-session; S1.5 is what puts them
+on file from a committed script, and nothing should quote them until it does.)*
+
+Also clarified for the record, since Jonas said he did not follow S14.Q1: card S1.4's **arm 3** is
+strand 1's wide tolerances **plus** the braking-margin term deleted **but** the released *graded*
+collision cost kept. It is the best of the four arms on every measure, and it is **not a model
+anyone has proposed** — strand 1 has a flat conflict preference, the Nature model has p_safe — so it
+is a chimera made by deleting one term from one model and keeping a term from the other. The
+question is whether that combination is worth developing in its own right or whether its advantage
+is an artefact of deleting a term the rest of the model was calibrated around. It needs judgment,
+not computation.

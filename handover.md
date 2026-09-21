@@ -8,13 +8,34 @@ rests on, what the rules are, what is waiting on Jonas, what to do in what order
 and ask. It does not repeat the science; the documents it points to do that. Where this file and
 the repository disagree, the repository wins, and you should say so in your reply.*
 
-> ## RESUME HERE — model switch, 2026-09-17 evening, nothing authorized
+> ## RESUME HERE — model switch, 2026-09-22, nothing authorized except S14.Q2
 >
-> Jonas is moving to a more capable model. State: tree clean apart from his own
-> `docs/handout_schumann_2026-09.docx` (Word edits; never stage or rebuild onto it); suite green at
-> 31/33/40/96/62/20/28/27/16/30 (ten files, §0 step 2); nothing pushed since commit `ff0507a` (push only
-> when he asks, with `git -c credential.helper= -c credential.helper='!gh auth git-credential' push origin main`).
-> The dated record of the day is **`handover_2026-09-17.md`**, parts 1 and 2. What the day settled:
+> **Read `handover_2026-09-22.md` first.** It is the record of the 2026-09-18 → 09-22 arc: card
+> JJ.1 built and run (JJ.2 to JJ.4), then eight cards that between them close off the released
+> model as a comfort-zone instrument, then strand 1. State: **tree clean**, suite green at
+> **31/33/40/96/62/20/28/27/16/30/33/35** (twelve files, §0 step 2), nothing pushed since `ff0507a`
+> (push only when he asks, with
+> `git -c credential.helper= -c credential.helper='!gh auth git-credential' push origin main`);
+> last commit `fbb9020`. `docs/handout_schumann_2026-09.docx` was committed by accident in
+> `02ed704` and Jonas ruled **"keep as is (committed)"** — but never rebuild it from the `.md`, and
+> never stage it again (use explicit paths, not `git add -A docs`).
+>
+> **The arc in four lines.** ΔG was dropped on every scenario (JJ.2, JJ.3); the released model's own
+> criticality signal is flat where the paper's scenario lives and inverted where the studies live
+> (RE.1); no parameter vector (RE.2, 648 swept), no functional (RE.4, five tried) and no change of
+> preference structure (S1.4) repairs it; and the term responsible is the **braking margin**, at
+> ρ = −0.861 against the share who intervene, confirmed by deletion. **Two things went the right
+> way**: the comfort margin — the same model's `required_deceleration` read without its threshold
+> and severity — beats the best design scalar (S1.1, 0.1409 against 0.1522), and card JJ.4's
+> observation-model result stands untouched.
+>
+> **What is next**, in `handover_2026-09-22.md` §6: card **S1.5**, Jonas's own proposal to threshold
+> that quantity at a *comfortable* deceleration with a standoff margin, which is the most promising
+> thing in the arc; then **S1.6**, the admissibility form he authorized (S14.Q2); and asking
+> Engström for the strand-1 code before building it (S12.Q1, verbatim wording in §7).
+>
+> *The banner below is the 2026-09-17 one and is superseded except where it records rulings.*
+> The dated record of that day is **`handover_2026-09-17.md`**, parts 1 and 2. What that day settled:
 >
 > 1. **GZ2.Q2, done.** The released model's spontaneous re-plan in steady following is suppressed by the
 >    assumed noise on the lateral and heading channels, through the belief update (GZ2.Q3 open, minor).
