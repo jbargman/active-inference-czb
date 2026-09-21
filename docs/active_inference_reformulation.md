@@ -1,5 +1,15 @@
 # Reformulating the comfort-zone measurement inside active inference, a design note
 
+> **[2026-09-22, review] Read `docs/review_2026-09-22.md` before relying on this note.** Four things
+> it says do not stand: (1) "the braking-margin term is an inverted comfort-zone boundary
+> (rho -0.861)": that number is a horizon-sum accounting effect under the project's ramp form of the
+> term, and pointwise the required deceleration is ordered the human way (+0.633); (2) the identity
+> "to 7e-16": the tracked report gives 2.5e-07 and its own criterion failed; (3) the "released
+> planner" results of cards RE.1 part C and JJ.2b (never brakes; 19 of 24 rows): the test read only
+> the first, clamped, step of each plan, and in JJ.2b the ego was off the road; (4) 0.2705 is not
+> chance (chance is 0.320) and is the best of 20 vectors, not of 648. The note's card numbering
+> (RE.3 to RE.6) also no longer matches the cards that were run. This PDF has not been rebuilt.
+
 *2026-09-18, written after cards JJ.2, JJ.3, JJ.2b, RE.1 and RE.2, on Jonas's question: "think
 more about how the problem we have possibly could be reformulated to fit in the active inference
 framework. What would we have to do differently for this to work. Again, I feel that with the

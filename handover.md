@@ -8,7 +8,29 @@ rests on, what the rules are, what is waiting on Jonas, what to do in what order
 and ask. It does not repeat the science; the documents it points to do that. Where this file and
 the repository disagree, the repository wins, and you should say so in your reply.*
 
-> ## RESUME HERE — model switch, 2026-09-22, nothing authorized except S14.Q2
+> ## RESUME HERE — after the review of 2026-09-22 (night): read `docs/review_2026-09-22.md` first
+>
+> Overnight on 2026-09-22 a Fable-class session ran cards **S1.5**, **S1.6** and **RE.4b** (all
+> pre-stated in their own commits, all **not credited**) and then reviewed the whole arc of 09-18 to
+> 09-22. **The review changes how that arc is read: its numbers mostly reproduce, several of its
+> conclusions do not follow from them.** In one line each: "the braking-margin term is inverted
+> (rho -0.861)" is a horizon-sum accounting effect under the project's own ramp form, and pointwise
+> the required deceleration is ordered the human way (+0.633); card RE.4 and the planner rows of
+> JJ.2b had the ego off the road; RE.1's "never brakes" examined only the first, clamped, plan
+> step; JJ.3's overtake numbers quoted the secondary fold scheme; GM.1a's "linear beats quadratic"
+> is a pooling artefact and its 0.098 conditions on the lead not braking; RE.3's interval treats the
+> five clip pairs as fixed; S1.1's "beats the gap" holds only at the sweep's winner (at the ruled
+> -6 it is 0.2230). **What stands: JJ.2's DROP, the matched-TTC result, JJ.4's direction.** The
+> three argument documents carry dated banners; their PDFs are not rebuilt. The banner below is
+> kept as the record of what that arc believed. **Nothing from the arc should go to the authors as
+> it stands** (query REV22.Q1, a blocker). Suite green at **31/33/40/96/62/20/28/27/16/30/33/35/24/19**
+> (fourteen files: `test_margin.py` and `test_admissible.py` added). Twelve new queries, blockers
+> first, in the worklog entry of 2026-09-22 (night). **Nothing pushed.**
+>
+> *The banner below is the 2026-09-22 (morning) one, written before the review; where the two
+> disagree, the review and the worklog entry above are current.*
+>
+> ## Model switch, 2026-09-22, nothing authorized except S14.Q2
 >
 > **Read `handover_2026-09-22.md` first.** It is the record of the 2026-09-18 → 09-22 arc: card
 > JJ.1 built and run (JJ.2 to JJ.4), then eight cards that between them close off the released
@@ -82,7 +104,7 @@ the repository disagree, the repository wins, and you should say so in your repl
 1. Read this file in full. Then read `docs/czb_work_orders.md` §2 (the standing rules)
    and the card or note named for the task at hand. Do not read the papers or the handbook
    unless the card says to; do not open `OthersWork/` (§5).
-2. Run the test suite exactly like this, and confirm 31, 33, 40, 96, 62, 20, 28, 27, 16, 30, 33 and 35 passed:
+2. Run the test suite exactly like this, and confirm 31, 33, 40, 96, 62, 20, 28, 27, 16, 30, 33, 35, 24 and 19 passed:
    ```bash
    python tests/test_surprise.py
    python tests/test_comfortzone.py
@@ -96,11 +118,14 @@ the repository disagree, the repository wins, and you should say so in your repl
    python tests/test_conflict.py
    python tests/test_generative.py
    python tests/test_rollout.py
+   python tests/test_margin.py
+   python tests/test_admissible.py
    ```
    (`pytest` reports fewer and is *not* the suite; the files are scripts that count checks. The
    tenth file, `test_conflict.py`, was added with card PC.1 on 2026-09-16; the eleventh,
    `test_generative.py`, with the generative-model framework on 2026-09-17; the twelfth,
-   `test_rollout.py`, with card JJ.1's package on 2026-09-18.)
+   `test_rollout.py`, with card JJ.1's package on 2026-09-18; the thirteenth and fourteenth,
+   `test_margin.py` and `test_admissible.py`, with cards S1.5 and S1.6 on 2026-09-22.)
 3. Run `git status` and `git log --oneline -5`. The tree should be clean. If it is not,
    stop and report what is uncommitted before doing anything.
 4. If Jonas said "load handover.md" and nothing else: reply with a short statement of
@@ -306,7 +331,10 @@ adopt the two-scalar wording, with the standing genericity ruling in §1 as the 
 > of four options offered while the naturalistic data are unavailable, and said to keep the other
 > two and remind him. **Remind him of both at the start of any session where he asks what is next.**
 >
-> - **The lateral factor.** Card JJ.3's rule (d) held at C1 to C4 on the cyclist overtake
+> - **The lateral factor.** *[2026-09-22 review: the numbers quoted here are card JJ.3's SECONDARY
+>   fold scheme; on the primary folds Delta G loses to the clearance rule and to chance, and the
+>   grading comes from a car-sized collision box applied to a cyclist. Query REV22.Q2 asks whether to
+>   drop or rebuild this item.]* Card JJ.3's rule (d) held at C1 to C4 on the cyclist overtake
 >   (`out/jj3_rollout_transfer.md` §2) — the one place in the whole JJ arc where the construction
 >   did something the released field could not (`out/overtake_field_check.md`: the field ranks those
 >   cells at +0.402 against the clearance label's −0.833). Needs no reference distribution, so it is

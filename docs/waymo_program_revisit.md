@@ -1,5 +1,14 @@
 # What the rest of the Waymo active-inference program already solved, and what we missed
 
+> **[2026-09-22, review] Read `docs/review_2026-09-22.md` before relying on this note.** The
+> literature claims here were checked against the papers and hold. Two things need care: (1) "the
+> program itself locates the comfort zone in strand 1" is THIS PROJECT'S reading; "comfort zone"
+> occurs in neither paper, the poster speaks of "three main aspects", and the only source for the
+> attribution is our own `notes/01_paper_summaries.md`; (2) section 6 item 3 lists three corrections
+> to the reformulation note that were never made. Section 5's "rewards proximity" is marked as
+> speculation in its source (`docs/method_review.md`) and is stated as fact here. This PDF has not
+> been rebuilt.
+
 *2026-09-18, on Jonas's instruction: "revisit the other Waymo relevant papers and consider if there
 is something we missed in our way of thinking so that what we want fits into what they have done."*
 

@@ -1,5 +1,14 @@
 # Building the strand-1 agent, a design note
 
+> **[2026-09-22, review] Read `docs/review_2026-09-22.md` before relying on this note.** (1) Its
+> card ladder is superseded: section 5's S1.4 (free following) was withdrawn on Jonas's objection,
+> its S1.5 (equilibrium) falls to the same objection, and the cards actually run as S1.4, S1.5 and
+> S1.6 are different cards (`out/s14_strand1_preference.md`, `out/s15_comfort_threshold.md`,
+> `out/s16_admissibility.md`). (2) "The comfort margin beats the gap" holds only at a_OV = -10; at
+> the ruled primary of -6 it scores 0.2230 and does not. (3) Omitted here and useful: strand 1
+> defines conflict as the longitudinal distance falling below "a safe distance (2 m)" (p. 7), which
+> is a standoff. This PDF has not been rebuilt.
+
 *2026-09-18, on Jonas's ruling S11.Q3: "Yes, absolutely build it properly." Strand 1 is Engström,
 Wei, McDonald, Garcia, O'Kelly & Johnson (2024), *Resolving uncertainty on the fly: modeling
 adaptive driving behavior as active inference*, Front. Neurorobot. 18:1341750 — the model

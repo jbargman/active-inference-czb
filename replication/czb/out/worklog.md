@@ -4412,7 +4412,7 @@ arm-by-arm attribution is the result:
 And what none of the four does is make Delta G an axis. So the conclusion of RE.2 and RE.4 survives
 a change of preference as well as a change of constants and of functional.
 
-**On Johan's account of the mechanism, checked against the source.** He described a threshold on the
+**On JJ's account of the mechanism, checked against the source.** *[2026-09-22, review: the name was written out here against Jonas's instruction of 2026-09-17; replaced by the code JJ.]* JJ described a threshold on the
 deceleration required if the lead brakes at about 6 m/s^2, with a stop safety margin, implemented by
 Julian in the Nature paper. That is exactly `log_safety_pref` and `required_deceleration` (SI
 Eqs. 49/50/51): `a_other_min` = **-6.0 m/s^2** released; the margin is the **1 s reaction time**
@@ -4474,3 +4474,125 @@ is a chimera made by deleting one term from one model and keeping a term from th
 question is whether that combination is worth developing in its own right or whether its advantage
 is an artefact of deleting a term the rest of the model was calibrated around. It needs judgment,
 not computation.
+
+## 2026-09-22 (night) — cards S1.5, S1.6 and RE.4b, and the review of the 09-18 to 09-22 arc
+
+Batch session on a Fable-class model. Jonas's prompt: load the handover; S14.Q1 "do what you think
+is best"; what are the implications of "the minimum is over admissible policies only"; run S1.5 and
+S1.6; then a deep review of everything since a Fable-class model last reviewed (the prompt log puts
+that at 2026-09-18 00:05, the JJ.1 design note; all of JJ.2 to S1.4 was one session on a less
+capable model). Suite green before starting at 31/33/40/96/62/20/28/27/16/30/33/35. Every card
+below was committed PRE-STATED in its own commit before it was run (438c675, 78af442, and the
+RE.4b commit), which the arc under review had stopped doing.
+
+**Card S1.5, the comfort threshold** (`s15_comfort_threshold.py` -> `out/s15_comfort_threshold.md`;
+new module `src/comfortzone/margin.py`, 24 checks in `tests/test_margin.py`). Writing the card down
+showed three things before any score. (1) Jonas's "different maximum decel" is the fitted LEVEL of
+the threshold model, exp(c) in m/s^2: card S1.1 had already fitted it and never reported it. (2)
+The lead's speed is 24.99 m/s in every cell of the second cut-in study, so in the released formula
+the assumed lead braking and a standoff are the same parameter: a_OV = -10 is -6 with the ego
+stopping 20.8 m further out (rule 0: 0.1408 both ways, rank correlation of the two demands
++0.999996). Card S1.1's sweep over a_OV was a sweep over the standoff, and its headline 0.1409 is
+the -10 row; at the ruled primary of -6 (S11.Q2) the margin scores 0.2230 and does NOT beat the
+gap's 0.1522. (3) The level reads as a comfortable deceleration only under a counterfactual a
+driver would hold, so two were scored: the released "lead stops" and "lead holds its speed".
+Results on the pre-stated rules: P1 (stops, -6, 1 s, 2 m) 0.2147, median level 11.8 m/s^2, NOT
+CREDITED, as predicted (about 0.22, about 12). P2 (holds) 0.2550, level 9.1, NOT CREDITED. Fitted
+and nested: stops 0.1132, AXIS ONLY, choosing (0.5 s, 40 m) in every fold, the grid's edge, with a
+level of 31.5 m/s^2; with card G.1's gate frozen it scores 0.1020 / 0.0317 against the gated
+looming rule's 0.1027 / 0.0319. Holds 0.1539, NOT CREDITED, with plausible levels (3.4 to 6 m/s^2
+at a 10 m standoff) and scores of 0.146 to 0.162. **No arm is a comfort-zone candidate: where the
+quantity orders the cells its level is a deceleration nobody could produce, and where its level is
+comfortable it does not order them.** Reading (judgment): a 40 m standoff cancels the lead's
+stopping credit almost exactly (52.0 - 40 - 4.8 m), so the data choose "stop where the lead is NOW,
+half a second from now", a proximity rule written in deceleration units. The answer to Jonas's
+question is therefore "not on this study"; the steady-following numbers he asked about are now on
+file from a committed script (report section 0: 7.54 ... 3.04 m/s^2; and zero at every headway
+under "holds", which is the substantive point: without the insurance counterfactual steady
+following has no braking boundary at all). Rule 3: no arm contains the gate, as predicted.
+
+**Card S1.6, admissibility** (S14.Q2; `s16_admissibility.py` -> `out/s16_admissibility.md`; new
+module `src/rollout/admissible.py`, 19 checks in `tests/test_admissible.py`). The answer to "what
+are the implications" is the report's section 0: Delta G stops being a difference and becomes the
+comfort PRICE of the mildest admissible deceleration, so the strand-1 line and the comfort-margin
+line are one line; it contains a gate, a tolerance alpha on P(conflict); it has a ceiling (nothing
+admissible); and it reads the fan's tails. **The property tests found a flaw in card JJ.1's fan**:
+under "keeping" the other's CENTRE is clipped at the ego's lane edge (1.75 m), inside the released
+collision box (1.98 m), so a vehicle certain to keep its lane collides with a passing ego in 19.5%
+of futures (median over the pre-onset cells; 7.5% on the corrected fan, where the intention prior
+is 7.0%). `sample_futures` gained `keep_body_in_lane` (default False = JJ.1's fan bit for bit);
+the primary arm used the corrected fan, a choice made on geometry before any score. Result: NOT
+CREDITED, 0.3107 (prediction 1 said 0.22 to 0.29: wrong, it is worse), 2 of 24 rows, rule (d)
+holds (range 0.0068). Prediction 2 held in structure: at alpha 0.10 and 0.20 `continue` is
+admissible in 90 of 90 pre-onset cells and in 0 to 2 of 288 post-onset ones, with no gate term; the
+pre-onset score (0.1669; 0.0954 with a 1 s delay) does not reach 0.05 because the axis above the
+gate is at chance, so its fitted floor is high. Section 4: on the corrected fan card JJ.2's arm
+does not move at all (0.3202 / 0.5381) and S1.4's strand-1 arm moves 0.2790 -> 0.1884 pre-onset, so
+by the pre-stated rule the clip was load-bearing for S1.4's arm 4 and not for JJ.2; DROP stands.
+
+**Card RE.4b** (`re4b_lane_centre.py` -> `out/re4b_lane_centre.md`). The review found card RE.4 ran
+with the ego off the road in every cell. With the lane centre at the ego's recorded position (two
+wrapped functions, RE.4 itself unedited) epsilon runs 1,452 to 388,477 nats instead of 450,018 to
+660,185. NOT CREDITED: 0.3202 / 0.3215 / 0.3202 at sign +1 (a constant prediction), 0.3007 /
+0.2756 / 0.3019 with the sign reversed; rho with the share -0.214 (epsilon) and -0.462
+(epistemic). RE.4's conclusion now rests on a valid construction for these three functionals; its
+two planner-side ones remain untested.
+
+**The review** is `docs/review_2026-09-22.md`; its numbers come from
+`review_2026_09_22_checks.py` -> `out/review_2026_09_22_checks.md`; the four reviewers' scratch
+scripts are kept as run in `replication/review_2026-09-22/scratch/`. In one paragraph: the arc's
+numbers mostly reproduce and several conclusions do not follow from them. "The braking-margin term
+is inverted (rho -0.861)" is a horizon-sum accounting effect under the project's ramp form (the sum
+correlates +0.920 with the TTC; pointwise the required deceleration correlates +0.633 with the
+share, +0.74 to +0.94 within every closing speed); the -0.861 is also a string typed into the RE.2
+script. Card RE.4 and the planner rows of JJ.2b had the ego off the road. RE.1's "never brakes"
+reads only the first, clamped, plan step, and its "identity to 7e-16" is a typed literal where the
+tracked report says 2.5e-07 and "agree to 1e-09: NO". JJ.2's 0.3202 is the score of a constant
+(sign fixed at +1 on an anti-ordered axis; 0.2515 with the sign free; DROP stands). JJ.3's overtake
+numbers in this worklog (the entry of 2026-09-18) quote the SECONDARY fold scheme as the primary: on
+the primary folds Delta G scores 0.1865 and loses to the clearance rule's 0.1465 and to chance
+0.1585. GM.1a's "linear beats quadratic" is a pooling artefact (fixed origins: quadratic wins at
+every threshold) and its 0.098 conditions on the lead not braking. RE.3's interval treats five clip
+pairs as fixed; with pairs resampled it is [-0.327, +0.063]. JJ.4's numbers reproduce (a reviewer's
+scratch gives +125.9 over all 43 drivers) and its magnitudes are confounded. S1.2's "inconclusive
+by design" was decided after the score was seen. What stands: JJ.2's DROP and the matched-TTC
+result. *[These corrections are recorded here and as dated banners on the three argument documents
+and the two handovers; the earlier worklog entries are left as written, as the record.]*
+
+RESOLVED S14.Q1: by Jonas's delegation ("do what you think is best"): **arm 3 is not pursued.** (a)
+It is at chance (0.2959); its "advantage" is a move of rho(gap) from +0.726 to -0.063, to nothing
+rather than to an ordering. (b) It is not new: card JJ.2's variant B had already deleted the same
+term with the same result (-0.028, 0.2976). (c) Under card S1.6's admissibility the collision cost
+leaves the objective, so the graded-versus-flat distinction that defines arm 3 disappears. (d) The
+review shows the deletion cannot tell "the term is inverted" from "the horizon sum counts steps
+before contact", so the premise of arm 3 is itself in doubt.
+
+Also done: the colleague's name, written out in this worklog (2026-09-18 entry) and in
+`handover_2026-09-22.md` §7a against Jonas's instruction of 2026-09-17, is replaced by the code with
+a dated note. It remains in the unpushed commits `fbb9020` and `4fead53` (REV22.Q3).
+
+Queries, blockers first:
+
+@REV22.Q1(blocker, jonas): has anything from the 09-18 to 09-22 arc already been said to the authors or to JJ, in particular "the braking-margin term is inverted", "the released planner never brakes / always steers", or the 0.5 s headway point without its a_OV caveat? If so a correction is owed, and I have not drafted one because sending is yours. The three argument documents carry dated banners; their PDFs and docx files are NOT rebuilt and still say the old things. Should the documents be properly revised (the through-line rewritten), or left with banners as a record of the arc?
+
+@REV22.Q4(judgment, jonas): every rollout card of the arc ran with the project's own flags (`counterfactual_residual_severity`, `lane_entry_continuous`) and called the result "released". Checks section 1 shows the released STEP form orders the cells the human way within every closing speed (+0.76 to +0.94) where the ramp form does not. Recommend one cheap card (JJ.2c, about a minute): card JJ.2 with the truly released flags and the fit's sign free, so that statements about "the released model" are about the released model. A reviewer's approximate recomputation suggests DROP survives (0 of 24 rows), but it is not on file.
+
+@RE4B.Q1(judgment, jonas): card JJ.2b's planner pass has both defects (ego off the road; only the first, clamped, plan step examined), so "min G", "Delta G from the planner" and "19 of 24" are untested. Rerun it corrected (slow: the CEM planner over 378 cells, with more than one seed), or retire the released-planner comparison?
+
+@REV22.Q2(judgment, jonas): the parked item "the lateral factor" (handover.md §4 banner) rests on card JJ.3's overtake result, whose quoted numbers are the secondary fold scheme and whose grading comes from a car-sized collision box applied to a 0.58 m cyclist. Drop the item, or rebuild it with a cyclist-sized box first? I have marked it in the banner and not removed it.
+
+@S16.Q1(judgment, jonas): the flaw in card JJ.1's fan (lane-keeping futures collide with a passing ego in about a fifth of samples) is fixed behind a flag that defaults off. Should `keep_body_in_lane=True` become the standing setting for any future rollout card? It changes no verdict so far.
+
+@S16.Q2(judgment, jonas): the gate emerged from admissibility as a tolerance on P(conflict): 90 of 90 pre-onset against 0 to 2 of 288 post-onset at alpha 0.10 to 0.20. On these cells that is close to a tautology, because the intention posterior is effectively binary (0.07 or 1.00). A real test needs cells with intermediate lateral evidence (study 1's jittered traces, or naturalistic data). Worth a card under the JJ program's "cut-in probability" point?
+
+@S15.Q4(judgment, jonas): the fitted "stops" arm ties the looming rule with and without card G.1's gate, at the grid's edge, and reads as "stop where the lead is now, half a second from now". Is a second proximity rule beside looming worth a card (on this design I doubt the two can be separated), or is it enough to have it on file?
+
+@S15.Q1(judgment, jonas): rule 2's comfort band, 1.0 to 4.0 m/s^2, rests on AASHTO's 3.4 and ITE's 3.0 m/s^2 quoted from memory and unverified in this repository. You are the domain expert: what band would you use? The verdict does not turn on it (every credited arm's level is above 24 m/s^2).
+
+@S15.Q3(minor, jonas): SI Eq. 51 compares final stopping positions, which is sufficient only while the ego brakes no harder than the lead; in all 288 post-onset cells the demanded deceleration exceeds the assumed 6 m/s^2, where the smallest gap occurs before the lead stops. Recorded in the S1.5 report, not corrected. It is a checkable kinematic point and could be raised with the authors.
+
+@REV22.Q3(minor, jonas): the colleague's name is in the unpushed commits `fbb9020` and `4fead53`. Rewriting history before the next push would remove it; I have not done so because it is destructive and yours to decide.
+
+@REV22.Q5(minor, jonas): propose adding to the standing rules (work orders §2 rule 4): "the pre-stated script is committed in its own commit before it is run", as cards EX.1, EX.2 and PC.1 did and the reviewed arc did not. Without it "written before the run" cannot be verified.
+
+@S15.Q2(minor, jonas): the 2 m standoff was motivated by the intelligent driver model's standstill gap; the review then found that strand 1 itself defines conflict as the distance falling below "a safe distance (2 m)" (Engström et al., 2024, p. 7), which is the better citation.
