@@ -73,8 +73,20 @@ def horizon_steps(horizon_s: float = HORIZON_S, dt: float = DT_S) -> np.ndarray:
 
 def sample_futures(belief: Belief, horizon_s: float = HORIZON_S, dt: float = DT_S,
                    n: int = N_SAMPLES, sd_vlat: float = SD_VLAT, sd_a: float = SD_A,
-                   seed: int = 0, v_lc: float = V_LC_MPS) -> Futures:
-    """The fan. One `numpy.random.default_rng(seed)`; the same object goes to every policy."""
+                   seed: int = 0, v_lc: float = V_LC_MPS,
+                   keep_body_in_lane: bool = False) -> Futures:
+    """The fan. One `numpy.random.default_rng(seed)`; the same object goes to every policy.
+
+    `keep_body_in_lane` (added 2026-09-22, card S1.6; default False = card JJ.1's fan, bit for
+    bit). Under "keeping", JJ.1 clips the other's CENTRE at the ego's lane edge (1.75 m from the
+    ego's lane centre), which leaves half its body inside the ego's lane and, more to the point,
+    inside the released collision box (|dy| <= 1.15 x 1.72 = 1.98 m): with the lateral
+    perturbation of 0.33 m/s over a 6 s horizon, a vehicle that is CERTAIN to keep its lane
+    collides with a passing ego in about a fifth of the sampled futures (property-tested in
+    `tests/test_admissible.py`). True clips the centre at the lane edge plus half the other's
+    width instead, so that it is the other's BODY that keeps its lane. The draws are identical
+    either way; only the clip moves.
+    """
     rng = np.random.default_rng(seed)
     tau = horizon_steps(horizon_s, dt)
     T = len(tau)
@@ -101,7 +113,8 @@ def sample_futures(belief: Belief, horizon_s: float = HORIZON_S, dt: float = DT_
     u0 = sign * belief.y_rel + sign * dy0                          # positive on the other's side
     keep_rate = sign * (belief.vy_oth + eps_vlat)
     u_keep = u0[:, None] + keep_rate[:, None] * tau[None, :]
-    bound = np.minimum(sign * belief.y_rel, LANE_EDGE_M)           # never further in than now
+    edge = LANE_EDGE_M + (0.5 * belief.oth_wid if keep_body_in_lane else 0.0)
+    bound = np.minimum(sign * belief.y_rel, edge)                  # never further in than now
     u_keep = np.maximum(u_keep, bound)
     u_chg = np.maximum(u0[:, None] - v_lc * tau[None, :], 0.0)
     u = np.where(changing[:, None], u_chg, u_keep)
