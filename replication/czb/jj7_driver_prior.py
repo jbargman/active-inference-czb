@@ -35,6 +35,13 @@ PREDICTIONS. (0) exact. (1) above +0.98. (2) within 0.03 of +0.647. The hyperpar
 less than 0.05 in mu (the gate with m = 0 is slightly lower everywhere, so the level shifts down
 a little) and less than 0.02 in the two spreads.
 
+CHANGED AFTER THE FIRST RUN (2026-09-22, dated per standing rule 4). The first run reported rule 2
+as FAILING at -0.640 [-0.795, -0.395]. That was the RAW Spearman; card TR.1's +0.647 [+0.407,
++0.798] is the ORIENTED one (its report, section 3: a low looming level and a long PET level both
+mean "acts early", so the raw correlation of a consistent driver is negative and TR.1 flips the
+sign; its raw value is -0.647). Rule 2 was always meant against TR.1's oriented number; the script
+now orients the same way and reports both. The first run's numbers are in the worklog.
+
 Output: replication/czb/out/jj7_driver_prior.md, out/jj7_driver_prior.csv
 Run:    python replication/czb/jj7_driver_prior.py    (background; 5 to 35 minutes per fit)
 """
@@ -93,8 +100,10 @@ def main() -> None:
     both = d.merge(tr1[["driver", "level_cutin_log", "level_ltap_pet_s"]], on="driver", how="inner")
     both.to_csv(OUT / "jj7_driver_prior.csv", index=False)
     rho1 = float(spearmanr(both.prior_log, both.level_cutin_log).statistic)
-    rho2 = float(spearmanr(both.prior_log, both.level_ltap_pet_s).statistic)
-    lo, hi = TR1.boot_spearman(both.prior_log.to_numpy(float), both.level_ltap_pet_s.to_numpy(float))
+    rho2_raw = float(spearmanr(both.prior_log, both.level_ltap_pet_s).statistic)
+    lo_raw, hi_raw = TR1.boot_spearman(both.prior_log.to_numpy(float),
+                                       both.level_ltap_pet_s.to_numpy(float))
+    rho2, lo, hi = -rho2_raw, -hi_raw, -lo_raw          # oriented as card TR.1 reports it
     rule1 = rho1 > 0.95
     rule2 = TR1_TRAIT[1] <= rho2 <= TR1_TRAIT[2]
     verdict = "RESTATED" if rule0 and rule1 and rule2 else "NOT RESTATED"
@@ -118,8 +127,9 @@ def main() -> None:
           "## 1 The per-driver priors", "",
           f"{len(both)} drivers in both scenarios. Spearman of the derived-gate priors with TR.1's"
           f" cut-in levels: **{rho1:+.3f}** (rule 1: above +0.95, {'holds' if rule1 else 'fails'})."
-          f" With TR.1's left-turn levels (the trait): **{rho2:+.3f}** [{lo:+.3f}, {hi:+.3f}]"
-          f" against TR.1's +0.647 [+0.407, +0.798] (rule 2: {'holds' if rule2 else 'fails'}).", "",
+          f" With TR.1's left-turn levels (the trait), oriented as TR.1 orients it (raw"
+          f" {rho2_raw:+.3f}): **{rho2:+.3f}** [{lo:+.3f}, {hi:+.3f}] against TR.1's +0.647"
+          f" [+0.407, +0.798] (rule 2: {'holds' if rule2 else 'fails'}).", "",
           f"| percentile of drivers | prior over looming [rad/s] |", "|---|---|"]
     for q in (10, 25, 50, 75, 90):
         L.append(f"| {q} | {np.percentile(both.prior_rad_s, q):.4f} |")

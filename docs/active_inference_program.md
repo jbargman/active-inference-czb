@@ -795,6 +795,41 @@ model the rollouts need is structured, so data has to fix a handful of distribut
 complete lane changes are enough for every one of them except a learned conditional density, which is
 optional and for which public motion datasets exist.
 
+## 14 What the cards found, 2026-09-18 to 2026-09-22
+
+Added 2026-09-22 (Jonas's decision 3). Card numbers below reuse this document's JJ prefix but are
+the cards actually run, which do not correspond one to one to the ten cards of §11; the review
+`docs/review_2026-09-22.md` explains why the first arc's readings were withdrawn, and
+`docs/looming_as_free_energy.md` where the line went afterwards. Every score is the post-onset
+held-out weighted RMSE on the second cut-in study (gated looming rule 0.1027, gap 0.1522, chance
+0.320) and the pre-onset out-of-sample score (G.1's gate 0.0319, criterion 0.05).
+
+| card | what was asked | result |
+|---|---|---|
+| JJ.2, JJ.2c, JJ.2d | does ΔG order the cut-in cells (the project's staging; the released flags; the single-Gaussian fan) | **DROP** three times (0.32, 0.32, 0.32; 0 to 3 of 24 matched-TTC rows) |
+| JJ.3 | the same on the left turn and overtake | fails; the overtake numbers quoted in the arc were the secondary fold scheme |
+| JJ.4 | precision as spread | direction stands (every driver fold positive); magnitudes confounded (review) |
+| RE.1, RE.2, RE.4, RE.4b | the released criticality signal, its parameter family, its functionals | the "inversion" (ρ −0.861) is a horizon-sum accounting effect; RE.4 invalid as run (ego off the road), RE.4b corrected: not credited |
+| S1.1, S1.2, S1.4, S1.5, S1.6 | strand 1's comfort margin; its preference; a comfort threshold with a standoff; admissibility | none credited; on this study the assumed lead braking is the standoff; admissibility turns ΔG into the comfort price of the mildest admissible deceleration and contains a gate as a tolerance on P(conflict) |
+| JJ.5, JJ.5b | the released model's own looming preference (τ⁻¹) as the pragmatic value, and four functionals over the horizon | not credited; the horizon sum inverts every rollout quantity; τ⁻¹ is a TTC quantity (0.1679 on this design) |
+| JJ.6, JJ.6b, JJ.6c, JJ.6d | the intention belief as the gate | reproduces G.1's gate where closed (pre-onset 0.0354, nothing fitted); at no keeping spread does an intention filter reproduce its grading |
+| **JJ.6e** | the gate as predictive lateral uncertainty, no intention variable | **DERIVED**: G.1's gate is Φ((m − l₀ − l̇T)/(σT)) to 1e-16, s_l = σT; with m = 0, 0.1028 / 0.0462; circular through σ (from G.1's s_l; card JJ.9 measures it on highD) |
+| JJ.8 | the link and the scale of the looming threshold | additive noise rejected (+0.023): the spread is a spread of levels; the one-step EFE decision is indistinguishable from the reflex reading but degenerate |
+| JJ.10 | the continuous gate as a free-energy component | F = P(lead) × excess; the gate on the probability (the mixture, the measurement model) against the gate on the quantity: indistinguishable (+0.003) |
+| JJ.7 | the boundary as a driver's prior over looming, gated by predictive uncertainty | run 2026-09-22 (background); result in `out/jj7_driver_prior.md` |
+| P.1 | the released planner, corrected | run 2026-09-22 (background, hours); result in `out/p1_planner_corrected.md` |
+
+**Where this leaves the program's six points (opinion).** Rollouts of the ego's policies with
+least-free-energy choice (point 1) do not measure the comfort-zone boundary on these video studies,
+for a structural reason: a one-sided preference summed over a planning horizon counts the steps
+before contact. Uncertainty as the core component (point 3) is exactly what the gate turned out to
+be: the generative model's predictive uncertainty about the other's lateral motion, at the
+anticipation horizon. The cut-in probability (point 4) as a latent intention is not needed for
+that gate on this design and, as built, prevented it from grading; its content, the initiation
+hazard, remains the naturalistic question. The boundary itself is a driver's prior over the
+looming of a lead (reading B of the note), which is the measurement model in the framework's
+words, with the restatement tested rather than assumed.
+
 ## References
 
 Alain, G., & Bengio, Y. (2016). *Understanding intermediate layers using linear classifier probes*

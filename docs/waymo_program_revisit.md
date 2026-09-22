@@ -1,13 +1,17 @@
 # What the rest of the Waymo active-inference program already solved, and what we missed
 
-> **[2026-09-22, review] Read `docs/review_2026-09-22.md` before relying on this note.** The
-> literature claims here were checked against the papers and hold. Two things need care: (1) "the
-> program itself locates the comfort zone in strand 1" is THIS PROJECT'S reading; "comfort zone"
-> occurs in neither paper, the poster speaks of "three main aspects", and the only source for the
-> attribution is our own `notes/01_paper_summaries.md`; (2) section 6 item 3 lists three corrections
-> to the reformulation note that were never made. Section 5's "rewards proximity" is marked as
-> speculation in its source (`docs/method_review.md`) and is stated as fact here. This PDF has not
-> been rebuilt.
+> ## Revised reading, 2026-09-22 (Jonas's decision 3: update the documents)
+>
+> The literature claims in this note were checked against the papers in `papers/` on 2026-09-22
+> and hold (Table 2's tolerances, "set by hand", the data- and code-availability statements, the
+> poster's three aspects). Two readings are the project's own and are marked as such below: that
+> "the program itself locates the comfort zone in strand 1" (§1; "comfort zone" occurs in neither
+> paper, and the only source is `notes/01_paper_summaries.md`), and §5's "rewards proximity",
+> which its source (`docs/method_review.md`) marks as speculation. §6 item 3's corrections to the
+> reformulation note are now made there (its revised reading of the same date). One thing this note
+> should have said and now does: strand 1 defines conflict as the longitudinal distance falling
+> below "a safe distance (2 m)" (Engström et al., 2024, p. 7), a standoff, which is the better
+> citation for card S1.5's 2 m.
 
 *2026-09-18, on Jonas's instruction: "revisit the other Waymo relevant papers and consider if there
 is something we missed in our way of thinking so that what we want fits into what they have done."*
@@ -85,7 +89,7 @@ Two things in that paper bear directly on where this project now stands.
 **(a) The measure we have been computing is theirs, and it is the right one.** Their *residual
 information*, log(max_x' P(x')) − log P(x), is what the Nature model accumulates as evidence and is
 exactly what `policy_surprise` and our `G(continue)` compute (card RE.1 §0 checked the identity to
-7e-16). So the measure was never the problem. **The distribution it is computed against was.** In
+7e-16). *[2026-09-22: 2.5e-07 in the tracked report; the identity holds in practice]* So the measure was never the problem. **The distribution it is computed against was.** In
 the 2026 model that distribution is a hand-written, per-scenario norm weight (`reward.py` /
 SI Eqs. 23–27); in the 2023 paper it is learned from data.
 

@@ -1,14 +1,23 @@
 # Reformulating the comfort-zone measurement inside active inference, a design note
 
-> **[2026-09-22, review] Read `docs/review_2026-09-22.md` before relying on this note.** Four things
-> it says do not stand: (1) "the braking-margin term is an inverted comfort-zone boundary
-> (rho -0.861)": that number is a horizon-sum accounting effect under the project's ramp form of the
-> term, and pointwise the required deceleration is ordered the human way (+0.633); (2) the identity
-> "to 7e-16": the tracked report gives 2.5e-07 and its own criterion failed; (3) the "released
-> planner" results of cards RE.1 part C and JJ.2b (never brakes; 19 of 24 rows): the test read only
-> the first, clamped, step of each plan, and in JJ.2b the ego was off the road; (4) 0.2705 is not
-> chance (chance is 0.320) and is the best of 20 vectors, not of 648. The note's card numbering
-> (RE.3 to RE.6) also no longer matches the cards that were run. This PDF has not been rebuilt.
+> ## Revised reading, 2026-09-22 (Jonas's decision 3: update the documents)
+>
+> This note was written on 2026-09-18 inside the arc that `docs/review_2026-09-22.md` reviewed.
+> Its evidence table (§2) and its through-line are corrected below in place, with dated notes at
+> each claim; the sections are otherwise left as written, as the record of the reasoning. **What
+> stands from it:** card JJ.2's DROP (ΔG does not order the cut-in cells; restated on the released
+> staging by JJ.2c and on the single-Gaussian fan by JJ.2d), the matched-TTC result (0 of 24 rows,
+> because the quantity's severity grows with closing speed while participants respond to
+> proximity), and §4's instinct that the preference is the thing to reformulate. **What does not:**
+> the "inverted comfort-zone boundary" (ρ −0.861 is a horizon-sum accounting effect under the
+> project's own ramp form; pointwise the required deceleration is ordered the human way, +0.633),
+> the "released planner never brakes" and "19 of 24" results (the ego was off the road and only
+> the first, clamped, plan step was examined; card P.1 is the corrected rerun), the "identity to
+> 7e-16" (the tracked report says 2.5e-07), and "0.2705, chance" (chance is 0.320). **Where the
+> reformulation went instead**, after this note: `docs/looming_as_free_energy.md`, and cards JJ.5
+> to JJ.10, which derive the gate as the generative model's predictive lateral uncertainty and
+> read the boundary as a driver's prior over the looming of a lead. The card ladder in §7 is
+> superseded by `handover.md` §4.
 
 *2026-09-18, written after cards JJ.2, JJ.3, JJ.2b, RE.1 and RE.2, on Jonas's question: "think
 more about how the problem we have possibly could be reformulated to fit in the active inference
@@ -26,7 +35,7 @@ Opinions are marked as opinions. Every number quoted carries its file.
 **The framework is not what failed, and there is now direct evidence for that rather than an
 argument.** Card JJ.2b gave the model its own policy space — the released planner instead of a
 hand-made longitudinal menu — and the matched-TTC ordering, the thing gate R.2, card JJ.2 and
-card JJ.3 all failed on, went from **0 of 24 rows** in the human direction to **19 of 24**, with
+card JJ.3 all failed on, went from **0 of 24 rows** in the human direction to **19 of 24**, with *[2026-09-22: untested; the planner ran with the ego off the road and its first step clamped (review §2); card P.1 reruns it]*
 ρ(axis, gap) turning from +0.848 to −0.308. That is the largest movement any card has produced on
 this design, and it came from changing the *framing*, not a constant. What it did not do is make
 the axis usable: the ordering is right-signed and weak, the held-out score stays at chance, and
@@ -40,7 +49,7 @@ ordering even half the matched-TTC rows. So this is not a calibration problem. I
 `src/aidriver/preferences.py` says so in its own docstring — "that boundary, a_ego,req = −a_max,
 is the model's own operationalisation of a comfort-zone boundary, and `comfortzone` builds on
 it" — and every card since has measured a level set of it. Card RE.2 now measures what that term
-does on the human data: its contribution to the model's criticality signal correlates **−0.861**
+does on the human data: its contribution to the model's criticality signal correlates **−0.861** *[2026-09-22: a horizon-sum accounting effect under the ramp form, not a property of the term; pointwise +0.633 (review checks §1)]*
 with the share of participants who would intervene. It is not weakly related to comfort; it is
 **inverted**. Meanwhile the one factor in the released preference that has the shape of a comfort
 boundary, the inverse-tau preference buried inside the collision factor, correlates **+0.358** —
@@ -55,15 +64,15 @@ instead of assuming the authors'.
 
 | finding | number | file |
 |---|---|---|
-| The released criticality signal is Eq. 13's ε under the current plan, and our `G(continue)` is that same object | agree to 7e-16 | `replication/causation/re1/re1_rear_end_criticality.md` §0 |
+| The released criticality signal is Eq. 13's ε under the current plan, and our `G(continue)` is that same object | agree to 7e-16 | *[2026-09-22: the tracked report gives 2.5e-07 and "agree to 1e-09: NO"; the identity holds in practice, the criterion failed]* `replication/causation/re1/re1_rear_end_criticality.md` §0 |
 | ΔG — best alternative minus continue — is a quantity the model never forms | the planner uses only the argmin | ibid. |
 | On a certain constant-speed prediction, ε is the same at a 0.5 s headway at 110 km/h, at 3.5 s, and on an empty road | 23 nats, all three | ibid. §D |
 | At matched TTC, ε is ordered backwards | ρ(ε, gap) +0.83 to +1.00 against the humans' −0.862 | ibid. §B2 |
-| The released planner's escape on this design is a steer, never a brake | 36 of 36 cells, and 378 of 378 on the study's real traces | ibid. §C; `out/jj2b_steer_menu.md` §2 |
+| The released planner's escape on this design is a steer, never a brake | 36 of 36 cells, and 378 of 378 on the study's real traces | *[2026-09-22: untested as run; card P.1]* ibid. §C; `out/jj2b_steer_menu.md` §2 |
 | **Giving the model its own policy space repairs the DIRECTION of the ordering** | matched-TTC rows ordered the human way go from **0 of 24** to **19 of 24**; ρ(axis, gap) from +0.848 to **−0.308** | `out/jj2b_steer_menu.md` §3 |
 | ...but not the magnitude: the repaired ordering is still weak | ρ(axis, share) +0.169, held out 0.3161, still chance | ibid. |
 | On the study's stimuli the speed, acceleration, steering and lane factors contribute **exactly zero** under "continue"; ε is collision + safety and nothing else | −1.2e-14 at every one of 378 cells | `replication/czb/out/re2_preference_family.md` §4 |
-| The **safety factor alone** is inverted against the response | ρ(share) **−0.861**, ρ(gap) +0.810 | ibid. |
+| The **safety factor alone** is inverted against the response | ρ(share) **−0.861**, ρ(gap) +0.810 | *[2026-09-22: see the note on §1 above; not inverted]* ibid. |
 | The **collision factor alone** has the right sign but a weak ordering | ρ(share) **+0.358**, held out 0.308 | ibid. |
 | No parameter vector in the released family orders the cells: 648 swept, the sign is reachable, the ordering is not | 306 of 648 give ρ(gap) < 0, best −0.267; **0 of 648** order more than half the 24 matched-TTC rows; best held out 0.2705 | ibid. §1, §5 |
 | Most of what the sign responds to is the severity's linearity in closing speed | flattening it moves the median ρ(gap) from +0.296 to −0.249 | ibid. §2 |
@@ -98,7 +107,7 @@ boundary is then derived from the fitted parameters, per driver, per scenario, b
 changes item 3 of §4 from a suggestion into a requirement.* Sweeping 648 vectors over the five
 parameters a driver could plausibly differ in, the *sign* of the ordering is reachable — 306 of
 648 give ρ(gap) < 0 — but **no vector orders even half of the 24 matched-TTC rows** and the best
-held-out score is 0.2705, chance. So fitting θ instead of assuming the authors' is necessary and
+held-out score is 0.2705, chance. *[2026-09-22: 0.2705 is not chance (0.320) and is the best of 20 vectors chosen by ρ(gap), not of 648]* So fitting θ instead of assuming the authors' is necessary and
 **not sufficient**: within this functional form there is no driver whose comfort zone orders these
 cells. The factor the sign responds to is the collision severity's proportionality to impact
 speed, which is a property of the form, not a constant a driver could differ in.
@@ -149,7 +158,7 @@ asks whether the ego could still avoid a lead braking at a_OV,min after a reacti
 project's own vocabulary already separates the two: the handbook's *comfort zone* and *dread
 zone*, and query TT.Q2 parks "the dread boundary" as a separate object. RE.2 measures the cost of
 having conflated them: ρ(share) = −0.861. **The braking margin is a good dread-zone boundary and
-an inverted comfort-zone boundary**, and the project has been fitting comfort levels on it since
+an inverted comfort-zone boundary**, and the project has been fitting comfort levels on it since *[2026-09-22: the "inverted" half of this sentence does not stand; the dread-zone half does]*
 gate R.1.
 
 **2. Put the comfort factor on the variable the data name.** The released preference already
@@ -197,7 +206,7 @@ result of the whole JJ arc and it slots straight in.**
 **6. Include steering on the model side — this one is already demonstrated.** Ruling JJ1.Q1
 removed steering because the stimuli and the naturalistic data carry that constraint, which is
 right for the **response** and wrong for the **model**: the released planner escapes by steering
-in 378 of 378 of the study's own cells and never brakes. Card JJ.2b ran the correction and it
+in 378 of 378 of the study's own cells and never brakes. *[2026-09-22: untested as run; card P.1]* Card JJ.2b ran the correction and it
 moved the matched-TTC ordering from 0 of 24 to **19 of 24** rows in the human direction. A policy
 comparison that excludes the model's own chosen action is not a comparison, and the size of that
 movement is the best evidence in the whole arc that the framing — not the framework — is what has

@@ -4723,7 +4723,7 @@ this design and, as built (deterministic changers at 1.2 m/s, keepers clipped at
 is what prevented the belief from grading. The axis, level and spread are the subject of
 `docs/looming_as_free_energy.md` and cards JJ.7 and JJ.8.
 
-RESOLVED S16.Q2 (in part, by cards JJ.6 to JJ.6e): the gate does not need a graded intention
+RESOLVED S16.Q2: (in part, by cards JJ.6 to JJ.6e) the gate does not need a graded intention
 belief; it is the predictive lateral uncertainty. A graded intention remains untested and is not
 needed for the cut-in gate.
 
@@ -4760,7 +4760,7 @@ decision reading's parameters carry no meaning here; only reading B gives a leve
 with an interpretation (the prior over looming and its precision). Prediction miss: I said C
 would be within 0.005 or slightly worse; it was rejected.
 
-RESOLVED REV22.Q1 (first half, Jonas 2026-09-22): nothing from the 09-18 to 09-22 arc has been
+RESOLVED REV22.Q1: (first half, Jonas 2026-09-22) nothing from the 09-18 to 09-22 arc has been
 sent to the authors or to JJ; only the authors' edition of the handbook has gone out. No
 correction is owed. The second half (revise the three argument documents, or leave the banners)
 is still open and is decision 3 of the list given to Jonas the same day.
@@ -4768,3 +4768,86 @@ is still open and is decision 3 of the list given to Jonas the same day.
 @JJ8.Q1(judgment, review): C-log's indistinguishability is a statement about SHAPE on a design
 whose response curve has no upper shoulder (shares reach 1.0); a design with cells beyond the
 level would separate a quadratic-logistic from a probit. Not a card for these data.
+
+## 2026-09-22 (day) — Jonas's ten decisions, and the cards they set off: JJ.10, JJ.2d, JJ.7, P.1, D.1
+
+Jonas answered the ten decisions of the morning (his message is in the prompt log): 1 do what
+was proposed and frame the continuous gate as a free-energy component; 2 wait to communicate
+with JJ, keep it open, a page is good; 3 update the three documents; 4 σ from naturalistic data
+when it comes; 5 the single Gaussian, or at least try it; 6 yes to JJ.7; 7 rerun the planner;
+8 asked the implications of dropping the lateral factor; 9 keep the name in the commits, push;
+10 asked what rule 7 means. Pushed `04aad05..2179a43` first.
+
+**Card JJ.10, the continuous gate as a free-energy component** (`jj10_gate_as_free_energy.py`
+-> `out/jj10_gate_as_free_energy.md`; `src/rollout/comfort_fe.py`, 9 checks in
+`tests/test_comfort_fe.py`). The framing: a driver's one-sided prior over the looming of a LEAD;
+whether the object is a lead is predicted by the generative model (JJ.6e's gate); the free
+energy of the present observation is the expectation of the looming prediction error over that
+predictive distribution, F = P(lead) x excess. The gate is the predictive probability that the
+prior applies. Two response forms follow: the gate on the PROBABILITY (a mixture: resolve "is it
+a lead", then judge; this IS the gated looming rule, identity in the tests) and the gate on the
+QUANTITY (a threshold on the expected looming of a lead). Result: **INDISTINGUISHABLE**, 0.1028
+against 0.1060 (+0.0032; pre-onset 0.0462 against 0.0616). The mixture stays as the measurement
+model; F = P(lead) x excess is its reading. Prediction miss: I expected the expected form to do
+better pre-onset; it did worse.
+
+**Card JJ.2d** (`jj2d_gaussian_fan.py`): card JJ.2 on the single-Gaussian fan (no intention
+mixture, no keeper clip). **DROP** again: 0.3244 (+1) / 0.3223 (-1), pre-onset 0.4294, 3 of 24,
+rho(gap) +0.264 (the inversion weakens but nothing orders the cells); released staging 0.3254.
+The fan changes which futures collide, not the horizon sum. The single-Gaussian fan is now the
+one the derived gate lives on; it is NOT made the package default (rule 3), it is a flag.
+
+**Card JJ.7** (`jj7_driver_prior.py` -> `out/jj7_driver_prior.md`, `.csv`): TR.1's hierarchical
+fit of study 1's cut-in trials with the derived gate (JJ.6e, m = 0). Rule 0 passes (TR.1's gate
+reproduces -3.4520 / 0.8677 / 0.5742 exactly); with the derived gate mu -3.4632, sigma_pop
+0.8650, sigma_resp 0.5695: the population's median prior over the looming of a lead is 0.0313
+rad/s. Per-driver priors agree with TR.1's cut-in levels at +0.999; the trait against TR.1's
+left-turn levels **+0.640 [+0.395, +0.795]** (oriented as TR.1 orients it; raw -0.640) against
+TR.1's +0.647 [+0.407, +0.798]. **RESTATED.** The first run reported rule 2 as failing at -0.640
+because the script compared the RAW Spearman with TR.1's ORIENTED interval; corrected, dated in
+the docstring (standing rule 4), rerun; both numbers here.
+
+**Card P.1, the released planner corrected** (`p1_planner_corrected.py`): JJ.2b's planner pass
+with the lane centre at the ego's recorded position, `a_applied` = the coasting value, and the
+brake test over the whole plan; three seeds; the report rewrites itself after each seed
+(`out/p1_planner_corrected.md`). Launched 2026-09-22 in the background, about 25 minutes a seed.
+Its result, when the next session reads it, replaces the untested claims "steers in 378 of 378,
+never brakes" and "19 of 24".
+
+**Card D.1, the documents.** The three argument documents now carry a "Revised reading,
+2026-09-22" section in place of the review banner and dated bracketed notes at each corrected
+claim (the -0.861, the 7e-16, the 36 of 36 / 378 of 378 / 19 of 24, the 0.2705, "beats the
+gap"); `docs/active_inference_program.md` gained §14, a table of every card run in the arc and
+after it, with a paragraph on where the program's six points stand; all four rebuilt as docx and
+PDF. The page for JJ (decision 2) is `docs/note_for_jj_horizon_sum.md` (+ PDF, docx): one page,
+names no one, NOT sent; Jonas decides when.
+
+**Decision 8, the implications of dropping the lateral factor (answered to Jonas).** It was the
+only place a rollout quantity did something the released field could not, on 15 overtake cells;
+the review found its numbers were the secondary fold scheme and its grading came from a car-sized
+collision box on a cyclist. Dropping it means the cyclist overtake keeps card B.1's clearance
+rule as its only construction and the JJ line has no result on that scenario; nothing else
+depends on it. Rebuilding it with a cyclist-sized box is a small card if wanted.
+
+**Decision 10, rule 7 (answered to Jonas):** a card's script, with its rule and predictions in
+the docstring, is committed in its own commit BEFORE the run, so that "pre-stated" is verifiable
+from git; and no result string is typed into a report generator.
+
+RESOLVED REV22.Q3: (Jonas) keep the commits as they are; pushed.
+RESOLVED REV22.Q2: (Jonas asked for implications; answered above) the item stays parked, dropped in effect.
+RESOLVED RE4B.Q1: (Jonas) rerun; card P.1.
+RESOLVED JJ6E.Q2: (Jonas) try the single Gaussian; card JJ.2d ran on it; kept as a flag.
+RESOLVED JJ6E.Q1: (Jonas) σ from naturalistic data when it comes; card JJ.9 in the handover.
+
+Queries:
+
+@JJ10.Q1(judgment, review): with the gate on the quantity indistinguishable from the gate on the
+probability, the free-energy reading can be written either way; the mixture is kept because it
+is the fitted model and its parameters are the deliverable's. A design with cells where the gate
+is half open AND the looming is near the level would separate the two; the second cut-in study
+has few such cells (CP2 of the slow lane changes).
+
+@JJ7.Q1(minor, review): the derived gate lowers mu by 0.011 log units (the gate with no margin is
+slightly lower everywhere); the per-driver priors' 10th to 90th percentiles are 0.011 to 0.087
+rad/s. These are the numbers that would replace `out/stage1_looming.md`'s in handbook chapter 13
+if the active-inference wording is adopted there; not done, that is a handbook rewrite.

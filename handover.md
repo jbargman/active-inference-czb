@@ -15,7 +15,7 @@ and the repository disagree, the repository wins, and you say so in your reply.*
    named for the task (§4). Do not read the papers, the handbook or `OthersWork/` unless the card
    says to.
 2. Run the suite exactly like this and confirm 31, 33, 40, 96, 62, 20, 28, 27, 16, 30, 33, 35, 24,
-   19 and 24 passed (fifteen files; `pytest` is *not* the suite):
+   19, 24 and 9 passed (sixteen files; `pytest` is *not* the suite):
    ```bash
    python tests/test_surprise.py
    python tests/test_comfortzone.py
@@ -32,6 +32,7 @@ and the repository disagree, the repository wins, and you say so in your reply.*
    python tests/test_margin.py
    python tests/test_admissible.py
    python tests/test_looming_pref.py
+   python tests/test_comfort_fe.py
    ```
 3. `git status` and `git log --oneline -5`. The tree should be clean (four untracked `.log` files
    under `replication/czb/out/` are normal). If anything else is uncommitted, stop and report it.
@@ -42,84 +43,85 @@ and the repository disagree, the repository wins, and you say so in your reply.*
    order, batch mode (`performing-research` skill §2): never block, raise queries, report card by
    card.
 
-## 1 Where the project stands, in plain terms
+## 1 Where the project stands: the free-energy account of the comfort-zone boundary
 
-**The aim.** Measure drivers' comfort-zone boundaries (CZB) with an active-inference driver model.
-The first attempt, one scalar from the published model's preference field, failed two
-pre-registered tests (gates R.1, R.2). The measurement model that came out of that work and still
-stands is
+*Written 2026-09-22 (day) at Jonas's request: "summarize where we are at with respect to a free
+energy / active inference account of CZB". Every number is from a committed script with a tracked
+output; the cards are named. Opinions are marked.*
 
-> share who intervene = lapse + (1 − lapse) × **GATE** × Φ((**AXIS** − **LEVEL**) / spread)
+**The aim.** Measure drivers' comfort-zone boundaries (CZB) with an active-inference driver
+model, and, if a plain looming threshold fits the data better, explain that threshold in terms of
+free energy rather than assume the framework fits. The first attempt, one scalar from the
+published model's preference field, failed two pre-registered tests (gates R.1, R.2). The
+measurement model that fits the second cut-in study, the project's only two-dimensional design, is
 
-with, on the cut-in, the axis the optical expansion rate (looming), the gate the probability that
-the other vehicle's lateral clearance projected 3 s ahead falls below a minimum (card G.1), and the
-level a per-driver quantity whose population percentile is the deliverable. Held-out scores on the
-second cut-in study, the only two-dimensional design the project has: gated looming rule
-**0.1027**, ungated **0.1137**, gap threshold 0.1522, chance 0.320, noise floor 0.118; pre-onset
-(the gate's test) **0.0319** gated. Every card since has been scored against these. The per-driver
-level is the same person across scenarios (Spearman +0.647 between the cut-in and the left turn,
-card TR.1). The full account is `handover_2026-09-22_standing_superseded.md` §1.
+> share who intervene = lapse + (1 − lapse) × GATE × Φ((log θ̇ − log θ̇₀) / σ)
 
-**The JJ program (2026-09-17).** A senior colleague from the model's author group, code **JJ**
-(never name the colleague or the company in any document or commit), urged using the full
-active-inference stack: rollouts of the ego's policies against a predictive fan, uncertainty as the
-core, the cut-in probability as central. `docs/active_inference_program.md` answers it; card JJ.1
-(`src/rollout/`) built the construction; the arc of 09-18 to 09-22 ran it (cards JJ.2 to S1.4).
+with θ̇ the optical expansion rate of the cut-in vehicle (card EL.1b), the gate the probability
+that its lateral clearance projected 3 s ahead falls below a minimum (card G.1), and θ̇₀, σ a level
+and a spread. Held out: gated 0.1027, ungated 0.1137, gap 0.1522, chance 0.320; pre-onset (the
+gate's test) 0.0319. The per-driver level is the same person across scenarios (Spearman +0.647,
+card TR.1).
 
-**The review of that arc (2026-09-22, `docs/review_2026-09-22.md`).** Its numbers mostly reproduce;
-several conclusions do not follow from them. The arc's through-line, "the released braking-margin
-term is inverted against the response (ρ −0.861)", is a horizon-sum accounting effect: summing a
-pre-contact cost over the horizon of a `continue` policy that drives through the lead counts the
-steps before contact. Read pointwise the same quantity is ordered the human way (+0.633). Three
-cards were invalid as run (RE.4 and JJ.2b: ego off the road; RE.1: only the first, clamped, plan
-step examined); others were overstated (JJ.3's overtake, GM.1a, RE.3, S1.1's "beats the gap").
-**What stands:** card JJ.2's DROP (ΔG does not order the cut-in cells, and card JJ.2c shows this
-for the released staging too), the matched-TTC result (0 of 24 rows), and card JJ.4's direction.
+**The account, as it stands on 2026-09-22.** Each part of that model now has a reading in
+free-energy terms, and each reading was tested rather than assumed:
 
-**What the night's six cards then established (all pre-stated, all not credited):**
+1. **The boundary is a driver's prior over the looming of a lead**, one-sided and on the log
+   scale: −log C(θ̇ | lead) = ½((log θ̇ − log θ̇₀)/σ_c)²₊. The level is the prior's median, the
+   spread its precision. Tested: additive sensory noise (a spread in θ̇ rather than log θ̇) is
+   rejected, +0.023 held out (JJ.8), so the spread is a spread of *levels*; the population of
+   those priors across drivers is the comfort-zone deliverable (its percentile), and each
+   driver's prior is the same person's across two scenarios (JJ.7: +0.640 [+0.395, +0.795]).
+   The population median prior on the cut-in is 0.0313 rad/s (JJ.7).
+2. **The gate is the generative model's predictive uncertainty about the other's lateral
+   motion, at the anticipation horizon.** G.1's fitted gate is, to 1e-16, a Gaussian-rate
+   predictor's P(the other's body reaches mine within 3 s) = Φ((−l₀ − l̇T)/(σT)), with s_l = σT;
+   with no margin it scores 0.1028 / 0.0462 with nothing fitted but the response model (JJ.6e).
+   Pre-onset the gate is the tail of that uncertainty, 0.05, with no intention prior. A latent
+   lane-change *intention* is not needed for the gate on this design: an intention belief
+   reproduces the gate where it is closed (JJ.6, pre-onset 0.0354) but at no keeping spread does
+   an intention filter reproduce its post-onset grading (JJ.6b to JJ.6d), because the human gate
+   grades on how soon the body arrives, not on whether it intends to.
+3. **The two combine as a free energy of the present observation**: F = E_pred[1[lead] × excess]
+   = P(lead) × excess (JJ.10). Whether the driver first resolves "is it a lead" and then judges
+   (the gate on the probability, the measurement model) or judges the expected free energy (the
+   gate on the quantity) cannot be told on this design (+0.003); the mixture is kept because its
+   parameters are the deliverable's.
+4. **The reflex reading and the decision reading cannot be told apart either** (JJ.8: the
+   one-step expected-free-energy decision with a softmax policy posterior, on a log-scaled
+   preference, is indistinguishable from the probit, −0.0002), but the decision reading's
+   parameters are degenerate here (its level fits to 0), so only the reflex reading delivers a
+   level with a meaning.
+5. **What the framework does NOT do on these data, and why**: any quantity that sums a
+   one-sided preference over a planning horizon of a policy that drives through the lead (ΔG
+   with the released preference, with the released flags, on the single-Gaussian fan; the
+   released criticality signal; admissibility; the released τ⁻¹ term; four functionals of it) is
+   ordered against the participants, because the sum counts the steps before contact (JJ.2,
+   JJ.2c, JJ.2d, RE.4b, S1.6, JJ.5, JJ.5b; the review's checks §1). Removing the sum removes the
+   inversion but gives no axis, because the released terms are braking and TTC quantities and
+   participants respond to optical expansion. This is the thing to say to JJ
+   (`docs/note_for_jj_horizon_sum.md`, one page, not sent).
 
-| card | quantity | result | what it teaches |
-|---|---|---|---|
-| S1.5 | the braking margin thresholded at a comfortable deceleration, with a standoff | on this study the assumed lead braking *is* the standoff (one lead speed); where the quantity orders the cells its level is 31 m/s² | S1.1's 0.1409 is "−6 with a 20.8 m standoff"; at the ruled −6 it is 0.2230 |
-| S1.6 | admissibility: colliding policies excluded, not costed | 0.3107; the gate emerges as a tolerance on P(conflict) (90/90 pre-onset admissible at α ≥ 0.10, 0–2/288 post-onset) | ΔG becomes the comfort price of the mildest admissible deceleration; a flaw in JJ.1's fan found and fixed behind a flag |
-| RE.4b | RE.4 with the ego on the road | 0.32 / 0.32 / 0.32 | RE.4's conclusion now rests on a valid construction for its agent-side functionals |
-| JJ.2c | JJ.2 with the released flags | DROP, 0.3197 | JJ.2's verdict is about the released model too |
-| JJ.5 | the model's own looming preference (τ⁻¹) read alone over the fan | 0.3156, ρ(gap) +0.662 | the intention belief supplies a gate in structure (8.5% → 100% of futures in the path); the horizon sum inverts the term |
-| JJ.5b | the same profile per step, at its maximum, at the first step | 0.30–0.32 | removing the sum removes the inversion, not the failure: τ⁻¹ is a TTC quantity, and a TTC threshold scores 0.1679 here |
+**The one circularity.** σ = 0.33 m/s in the gate was itself set from G.1's fitted spread, so
+point 2 is a restatement with a meaning, not yet a prediction. Card JJ.9 measures σ on
+lane-keeping vehicles in highD when the data arrive (Jonas's decision 4); if the measured value
+still passes, the gate becomes a prediction of the generative model.
 
-**Later the same night, Jonas kept active inference in play** ("we have to probe the different
-ways to think about it"), and the gate half was settled by five more pre-stated cards
-(`docs/looming_as_free_energy.md`; worklog "2026-09-22 (night, continued)"): card JJ.1's
-intention belief reproduces G.1's gate where it is *closed* (JJ.6: pre-onset 0.0354, nothing
-fitted) but at no keeping spread does an intention filter reproduce its post-onset grading (JJ.6b
-to JJ.6d), because G.1's gate grades on how soon the other's body reaches mine, not on whether it
-intends to. **JJ.6e: G.1's gate is, to 1e-16, a Gaussian-rate predictor's P(clearance < m within
-3 s) with s_l = σT; with m = 0 it scores 0.1028 / 0.0462: DERIVED**, with the circularity declared
-(σ = SD_VLAT was itself set from G.1's s_l). So the gate is the predictive uncertainty of the
-generative model about the other's lateral motion at the anticipation horizon; the latent
-intention variable is not needed for it. **JJ.8 (the link and the scale of the axis):** additive
-sensory noise is rejected (+0.023: the spread is a spread of *levels*), the one-step
-expected-free-energy decision on a log-scaled preference is indistinguishable from the reflex
-reading but its parameters are degenerate (its level fits to 0), so only the reflex reading
-(`docs/looming_as_free_energy.md` reading B: the free energy of the present looming observation
-under a driver's prior) delivers a comfort-zone level with a meaning. That reading is the
-measurement model restated, and the restatement is now backed by three tests rather than assumed.
+**In one sentence (opinion):** the comfort-zone boundary is a prior over the looming of a lead,
+gated by the generative model's uncertainty about whether the object is one; the active-inference
+machinery supplies the gate and the words, the looming threshold supplies the fit, and the
+horizon-summed expected free energy, which is what the released model computes, is a
+collision-avoidance quantity and not a comfort-zone one.
 
-**The reading that sets §4 (opinion, mine).** Every quantity built from a braking requirement or
-from TTC is ordered against the participants within matched TTC, because at the same TTC a
-smaller gap is a slower closing speed, and participants respond to proximity and looming
-(θ̇ ∝ Δv/gap², card EL.1b). Active inference does not fix the preference; it is ours to choose.
-The released agent already *observes* looming (`src/aidriver/agent.py`, `use_looming`). So the
-construction that stays inside the framework is: **a prior preference over the looming
-observation, with the gate supplied by the intention belief over the fan, read over a short
-anticipation horizon** — the gated looming rule derived from the model's own machinery instead of
-designed. Card JJ.6 tests the gate half, JJ.7 the preference half per driver.
+**Earlier context, still valid:** the JJ program (`docs/active_inference_program.md`, §14 has the
+card table); the review of the 09-18 to 09-22 arc (`docs/review_2026-09-22.md`); the full account
+of the measurement model, the test-track anchor and the decks in
+`handover_2026-09-22_standing_superseded.md` §1. **Parked, Jonas asked to be reminded:** extending
+card JJ.4 (EX2.Q2, 15 min); the lateral factor (dropped in effect; REV22.Q2 answered). **Paused:**
+the VCC track. **Waiting on data:** highD and inD.
 
-**Parked, and Jonas asked to be reminded:** extending card JJ.4 (EX2.Q2 first, 15 min); the
-"lateral factor" (now doubtful, REV22.Q2); the reference-distribution specification for the
-naturalistic request. **Paused by Jonas:** the VCC track (2026-09-11). **Waiting on data:** highD
-and inD (requested 2026-09-17).
-
+**Running when this was written:** card P.1 (the released planner, corrected; three seeds, about
+25 minutes each; `out/p1_planner_corrected.md` rewrites itself after each seed). Read it first.
 ## 2 The rules that bind every session (long form: `docs/czb_work_orders.md` §2)
 
 1. **Every number you quote comes from a committed script with a tracked output.** No result
@@ -229,7 +231,9 @@ rate. If (b) fails, the reason is the binary posterior (`update_intention` in `b
 
 *Budget.* Half a day. Numbers to quote come only from the report.
 
-### Card JJ.7 — the preference over the looming observation, per driver (after: nothing; JJ.6e supplies the gate in closed form, `norm.cdf((0 - l0 - ldot*3)/(0.33*3))` on `cutin2_gate.lateral_states`)
+### ~~Card JJ.7~~ — done 2026-09-22, RESTATED (`out/jj7_driver_prior.md`). Original brief kept below; do not rerun.
+
+### Card JJ.7 (original brief)
 
 *Question.* Written as an active-inference preference prior over the looming observation
 channel, with the gate from JJ.6, does the per-driver level reproduce card TR.1's trait?
@@ -257,7 +261,9 @@ Rule, pre-stated: if the measured σ, put into JJ.6e's closed form with m = 0, s
 and (b), the gate is a *prediction* of the generative model and no longer a restatement. Report
 the gate's pre-onset value it implies (0.05 at 0.33) beside G.1's 0.067.
 
-### Card D.1 — the documents (after REV22.Q1)
+### ~~Card D.1~~ — done 2026-09-22 (Jonas: update them). The four documents carry revised readings and are rebuilt. Remaining housekeeping, still to do: add S13.Q1–Q4 to the worklog as `@S13.Qn(...)` lines copied from `handover_2026-09-22.md` §5 and §8, so the register has them.
+
+### Card D.1 (original brief)
 
 If Jonas says "revise": rewrite the through-line of `docs/active_inference_reformulation.md`,
 `docs/waymo_program_revisit.md` §1 and §6, and `docs/strand1_build_note.md` §5 to say what
@@ -276,7 +282,9 @@ Refit card TT.1 (`replication/czb/ltapod_testtrack.py`) with card EX.2's session
 "the video at first exposure sits within 0.03 s of the track" gets an interval. Follow
 `replication/czb/ex2_first_exposure_levels.py`; report the offset with its SE. Commit.
 
-### Card P.1 — the planner, corrected (after RE4B.Q1 = rerun)
+### ~~Card P.1~~ — running 2026-09-22 (Jonas: rerun). When its report shows three seeds: write its worklog paragraph (counts of steers / brakes, the ΔG scores, rule (e)), commit its outputs, and correct `docs/active_inference_program.md` §14's P.1 row. Original brief kept below.
+
+### Card P.1 (original brief)
 
 Card JJ.2b's planner pass with (i) `lane_centre` set to the ego's recorded lateral position (as
 `re4b_lane_centre.py` does by wrapping `belief_at` and `staging`), (ii) `agent.a_applied` set to
@@ -284,6 +292,10 @@ the coasting value the ego holds, and (iii) the brake test reading the whole pla
 below −1 m/s²), not step 0; three planner seeds; rule (e) on the seed spread. Then RE.4's two
 planner-side functionals rescored. Slow (the CEM planner over 378 cells × 3 seeds; hours);
 background with a log.
+
+### Card JJ.11 — the gate's second parameter, the horizon (after: nothing; small)
+
+JJ.6e fixed T = 3 s from card G.1. Sweep T in {1, 2, 3, 4, 6} s in the closed form with σT held at 0.99 m (so s_l is unchanged and only the projection horizon moves) and, separately, with σ held at 0.33 (so s_l moves with T); report both curves, choose nothing; the card's product is whether the horizon is identifiable from these data at all. Half a day.
 
 ### Not for this model without a new instruction
 
@@ -319,7 +331,7 @@ stimulus** (SetPET is the stimulus).
 | the measurement model in plain words | handbook `docs/handbook/13_glossary.md`; the concepts deck; `handover_2026-09-22_standing_superseded.md` §1 |
 | the software in blocks | `docs/software_overview.md` (2026-09-16; does not yet cover `src/rollout/`) |
 | the cut-in's axis, gate and level | `replication/czb/out/cutin2_looming.md`, `out/cutin2_gate.md`, `out/stage1_looming.md`, `out/driver_levels.md` |
-| the rollout construction | `docs/rollout_boundary_design_note.md`, `handover_jj1_implementation.md`, `src/rollout/` (`belief`, `predictor`, `policies`, `efe`, `boundary`, **`admissible`**, **`looming_pref`**), `src/comfortzone/margin.py` |
+| the rollout construction | `docs/rollout_boundary_design_note.md`, `handover_jj1_implementation.md`, `src/rollout/` (`belief`, `predictor`, `policies`, `efe`, `boundary`, **`admissible`**, **`looming_pref`**, **`comfort_fe`**), `src/comfortzone/margin.py` |
 | the JJ program and the arc's argument documents (read with their banners) | `docs/active_inference_program.md`, `docs/active_inference_reformulation.md`, `docs/waymo_program_revisit.md`, `docs/strand1_build_note.md` |
 | the night's cards | `out/s15_comfort_threshold.md`, `out/s16_admissibility.md`, `out/re4b_lane_centre.md`, `out/jj2c_released_flags.md`, `out/jj5_looming_preference.md`, `out/jj5b_horizon_functional.md` |
 | the decisive negative results and their scope | `docs/r2_gate_decisions.md`, `docs/r2_pipeline_review.md`, `out/cutin2_field_vs_gap.md`; and now the review |

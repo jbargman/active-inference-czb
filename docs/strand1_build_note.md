@@ -1,13 +1,21 @@
 # Building the strand-1 agent, a design note
 
-> **[2026-09-22, review] Read `docs/review_2026-09-22.md` before relying on this note.** (1) Its
-> card ladder is superseded: section 5's S1.4 (free following) was withdrawn on Jonas's objection,
-> its S1.5 (equilibrium) falls to the same objection, and the cards actually run as S1.4, S1.5 and
-> S1.6 are different cards (`out/s14_strand1_preference.md`, `out/s15_comfort_threshold.md`,
-> `out/s16_admissibility.md`). (2) "The comfort margin beats the gap" holds only at a_OV = -10; at
-> the ruled primary of -6 it scores 0.2230 and does not. (3) Omitted here and useful: strand 1
-> defines conflict as the longitudinal distance falling below "a safe distance (2 m)" (p. 7), which
-> is a standoff. This PDF has not been rebuilt.
+> ## Revised reading, 2026-09-22 (Jonas's decision 3: update the documents)
+>
+> This note's specification of strand 1 (§1 to §4) was checked against Engström et al. (2024) and
+> holds. Its card ladder (§5) is superseded: its S1.4 (free following) was withdrawn on Jonas's
+> objection that a car-following model would be what got measured; its S1.5 (equilibrium) falls to
+> the same objection; the cards actually run under these numbers are different cards
+> (`out/s14_strand1_preference.md`, `out/s15_comfort_threshold.md`, `out/s16_admissibility.md`), all
+> not credited. Two of its claims are corrected in place below: "the comfort margin beats the gap"
+> holds only at a_OV = −10, the winner of an exploratory sweep, and card S1.5 showed that on this
+> study the assumed lead braking *is* the standoff (one lead speed), so that setting is the released
+> −6 with the ego stopping 20.8 m further out; at the ruled −6 the margin scores 0.2230. And "ρ =
+> −0.861" is a horizon-sum accounting effect, not an inversion of the term. What stands: the
+> difference between strand 1's absolute conflict preference and the released graded one, and the
+> observation that a strand-1 agent needs no braking-margin term. What came of the strand-1 line:
+> card S1.6 (admissibility turns ΔG into the comfort price of the mildest admissible deceleration,
+> and contains a gate as a tolerance on P(conflict)), then the gate's derivation in JJ.6e.
 
 *2026-09-18, on Jonas's ruling S11.Q3: "Yes, absolutely build it properly." Strand 1 is Engström,
 Wei, McDonald, Garcia, O'Kelly & Johnson (2024), *Resolving uncertainty on the fly: modeling
@@ -121,7 +129,7 @@ authors' own table.** `docs/active_inference_reformulation.md` §4 item 3 argued
 factors belong in the *admissibility of a policy* rather than as a cost ten thousand times the
 comfort terms, and that the comfort terms need tolerances wide enough to do work. Strand 1 does
 exactly both. And **strand 1 has no braking-margin term at all** — the term card RE.2 measured at
-ρ = −0.861 against the share who intervene, and which `preferences.py` calls "the comfort-zone
+ρ = −0.861 against the share who intervene, and which `preferences.py` calls "the comfort-zone *[2026-09-22: a horizon-sum accounting effect, not a property of the term (review checks §1)]*
 term", does not exist in the model the program puts in the comfort-zone regime. Its role is played
 by the conflict constraint together with the acceleration prior, which is precisely "can I avoid
 this without harsh braking", which is card S1.1's comfort margin.
