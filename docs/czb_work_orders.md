@@ -41,6 +41,11 @@ carries the judgment. The split I would use:
 5. **Environment**: Python 3.14, torch CPU-only, no LaTeX/GPU/gh. Long jobs
    checkpointed and restartable; background runners never piped through `tail`.
 6. **Provenance discipline**: cite only verified references; mark anything unverified.
+7. **[2026-09-22] Pre-state, commit, then run.** The card's script, with its rule and the
+   session's predictions in the docstring, is committed in its own commit *before* it is run,
+   so that "written before the run" can be verified from git. No result string is ever typed
+   into a report generator; the review of 2026-09-22 found three that were, two of them wrong.
+   "Released" means `PreferenceParams(v_desired=v_ego)` and nothing else; say which flags you ran.
 
 ## 3 Task cards
 

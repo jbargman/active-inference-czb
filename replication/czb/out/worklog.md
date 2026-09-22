@@ -4596,3 +4596,68 @@ Queries, blockers first:
 @REV22.Q5(minor, jonas): propose adding to the standing rules (work orders §2 rule 4): "the pre-stated script is committed in its own commit before it is run", as cards EX.1, EX.2 and PC.1 did and the reviewed arc did not. Without it "written before the run" cannot be verified.
 
 @S15.Q2(minor, jonas): the 2 m standoff was motivated by the intelligent driver model's standstill gap; the review then found that strand 1 itself defines conflict as the distance falling below "a safe distance (2 m)" (Engström et al., 2024, p. 7), which is the better citation.
+
+
+## 2026-09-22 (later) — Jonas keeps active inference in play: cards JJ.2c, JJ.5, JJ.5b
+
+Jonas, after reading the review: *"You proposed that I give up active inference as CZB. I am not
+willing to do that yet."* Restated: the review removed the arc's argument that the released
+preference is hostile to the data (pointwise the required deceleration orders the cells the human
+way); what fails is the assembly. The preference prior is ours to choose, and the released
+preference already contains a looming term, the one-sided tau^-1 Gaussian, never scored on its
+own. He said "continue as proposed", then documentation and a new handover with a plan for a less
+expensive model. All three cards pre-stated in their own commits before the run.
+
+**Card JJ.2c** (`jj2c_released_flags.py` -> `out/jj2c_released_flags.md`): card JJ.2 with the truly
+released flags (no ramp braking margin, no continuous lane entry) and both fit signs. Reproduction
+0.3202. Released staging: **0.3197 at +1, 0.3302 at -1, pre-onset 0.9510, 0 of 24 rows, rho(share)
+-0.153, rho(gap) +0.482: DROP**, as predicted. So JJ.2's DROP is a statement about the released
+model too, which it was not before. (The pre-onset 0.95 under the released flags is the released
+tau^-1 term charging the adjacent-lane vehicle with no lateral gate.)
+
+**Card JJ.5** (`jj5_looming_preference.py` -> `out/jj5_looming_preference.md`; new module
+`src/rollout/looming_pref.py`, 11 checks in `tests/test_looming_pref.py`): the released looming
+preference read alone, before contact, where the other is in the ego's path (the collision box's
+lateral extent), averaged over the corrected fan and summed over the `continue` horizon. The
+hypothesis was that E_fan[eps_tau] = P(in path) x looming excess has the structure of card G.1's
+gated looming rule. Pre-onset the fan puts the other in the path in 8.5% of futures (posterior
+0.070) and post-onset in 100%, so the gate half is there in structure. Result: **NOT CREDITED**,
+0.3156 (+1) / 0.3070 (-1), pre-onset 0.5327, 1 of 24 rows, rho(gap) **+0.662**; rule (e) holds
+(range 0.004). Prediction 1 (0.11 to 0.14) was wrong. The price form 0.2952. JJ.1's fan gives the
+same numbers (the flaw does not touch this reading). While writing the module I found that
+without a before-contact mask the `continue` policy drives through the lead and tau^-1 goes to
+1/(1 mm); the mask is in the module and documented.
+
+**Card JJ.5b** (`jj5b_horizon_functional.py` -> `out/jj5b_horizon_functional.md`): the same
+per-step profile read four ways. `sum` 0.3156 (reproduces), `rate` per pre-contact step 0.3064,
+`max` over the horizon 0.3151, `first` step 0.3014; pre-onset 0.48 to 0.53; **none credited.**
+rho(gap) goes +0.662 (sum) -> +0.182 (rate) -> +0.366 (max) -> -0.228 (first), so the horizon sum
+IS what inverts the quantity, as the review said of RE.2, but removing it does not produce an
+axis either. Two things the cells file shows (judgment): `first` is exactly zero in 205 of 288
+post-onset cells and all 90 pre-onset, because the in-path criterion (the collision box, 1.98 m
+centre to centre) is a CONTACT criterion and the other is still straddling the line at the freeze,
+so "in my path" needs a lane-overlap criterion instead; and `max` is a monotone function of the
+closing speed alone (medians 46 -> 1230 nats across dv 7 -> 42 km/h), because tau^-1 near contact
+scales with dv, which is the same fact that sinks every braking quantity at matched TTC.
+
+**What this leaves (opinion, for the handover).** The released model's looming term is a
+TTC-based quantity (tau^-1 = dv / gap); the registered R.2 script scored a TTC threshold at
+0.1679 against looming's 0.1137 and the gap's 0.1522, so even a perfect reading of that term lands
+near 0.17. The data prefer theta-dot ~ dv / gap^2 (card EL.1b). The released agent OBSERVES
+looming (`agent.py`: `use_looming`, `sigma_phidot`), so a preference prior over that observation
+channel is inside the framework. The next construction is therefore not another functional but a
+different preference: a prior over the looming observation, with the gate from the intention
+belief through a lane-overlap criterion, read over a short anticipation horizon. That is card
+JJ.6 in the new handover's plan; its post-onset half is EL.1b by construction and its test is
+whether the intention belief supplies the gate.
+
+Queries:
+
+@JJ5.Q1(judgment, jonas): the in-path criterion in `looming_pref.py` is the released collision
+box's lateral extent (a contact criterion). A "body overlaps the ego's lane" criterion is the
+natural reading of "a vehicle is a lead when it is in my path" and is what card JJ.6 should use;
+confirm, or name another.
+
+@JJ5.Q2(minor, review): `first` is zero in 205 of 288 post-onset cells; the report's rule (b)
+score for it (0.4816) therefore says nothing about a step gate, contrary to the docstring's
+expectation that (b) might hold by construction. Recorded so the prediction's failure is on file.
