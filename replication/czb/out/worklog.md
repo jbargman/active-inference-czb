@@ -4760,6 +4760,11 @@ decision reading's parameters carry no meaning here; only reading B gives a leve
 with an interpretation (the prior over looming and its precision). Prediction miss: I said C
 would be within 0.005 or slightly worse; it was rejected.
 
+RESOLVED REV22.Q1 (first half, Jonas 2026-09-22): nothing from the 09-18 to 09-22 arc has been
+sent to the authors or to JJ; only the authors' edition of the handbook has gone out. No
+correction is owed. The second half (revise the three argument documents, or leave the banners)
+is still open and is decision 3 of the list given to Jonas the same day.
+
 @JJ8.Q1(judgment, review): C-log's indistinguishability is a statement about SHAPE on a design
 whose response curve has no upper shoulder (shares reach 1.0); a design with cells beyond the
 level would separate a quadratic-logistic from a probit. Not a card for these data.
