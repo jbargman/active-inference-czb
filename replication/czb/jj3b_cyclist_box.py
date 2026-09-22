@@ -33,6 +33,13 @@ clearance; rule (d) fails at more timepoints than before, and the held-out score
 chance (0.15 to 0.17). RETIRED. If instead Delta G improves to below 0.1365, the artefact was
 hiding a real ordering and the item is reinstated on its own terms.
 
+CHANGED AFTER THE FIRST RUN (2026-09-22, dated per standing rule 4). The first run gave numbers
+IDENTICAL to the released box, because `rollout.efe.log_terms`' "polygon" mode is a UNION: it
+overlays polygon hits on the released box and can never shrink it (the left turn, where it was
+used, has no box hits to shrink). A mode "polygon_only" was added to `efe.py`, behind the mode
+name (defaults untouched), in which the oriented-polygon test REPLACES the box; this card runs
+that. The rules and predictions above are unchanged.
+
 Output: replication/czb/out/jj3b_cyclist_box.md, out/jj3b_cyclist_box_cells.csv
 Run:    python replication/czb/jj3b_cyclist_box.py
 """
@@ -80,7 +87,7 @@ def scores(df: pd.DataFrame) -> dict:
         ax = axis(df[f"dg_{var}"].to_numpy(float))
         r_tp, pred = J3.held_out_1d(df, ax.values, folds_tp)
         r_cl, _ = J3.held_out_1d(df, ax.values, folds_cl)
-        _, pred_full = J3.full_predict(df, ax.values)
+        pred_full, _ = J3.full_predict(df, ax.values)
         graded = []
         for tp in sorted(df.timepoint.unique()):
             s = df[df.timepoint == tp].sort_values("clearance_m")
@@ -98,7 +105,7 @@ def main() -> None:
     warnings.filterwarnings("ignore")
     t0 = time.time()
     box = run("released")
-    poly = run("polygon")
+    poly = run("polygon_only")
     sb, sp = scores(box), scores(poly)
     rule0 = abs(sb["A"]["tp"] - JJ3_A_PRIMARY) <= 0.0005
     box.assign(test="released box").pipe(lambda d: pd.concat([d, poly.assign(test="polygon")])) \

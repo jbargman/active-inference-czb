@@ -117,7 +117,7 @@ collision-avoidance quantity and not a comfort-zone one.
 card table); the review of the 09-18 to 09-22 arc (`docs/review_2026-09-22.md`); the full account
 of the measurement model, the test-track anchor and the decks in
 `handover_2026-09-22_standing_superseded.md` §1. **Parked, Jonas asked to be reminded:** extending
-card JJ.4 (EX2.Q2, 15 min); the lateral factor (dropped in effect; REV22.Q2 answered). **Paused:**
+card JJ.4 (EX2.Q2, 15 min). **Retired:** the lateral factor (card JJ.3b, 2026-09-22: with a cyclist-sized collision test Delta G scores 0.29 against the clearance rule's 0.15; its grading was the car-sized box). **Paused:**
 the VCC track. **Waiting on data:** highD and inD.
 
 **Running when this was written:** card P.1 (the released planner, corrected; three seeds, about

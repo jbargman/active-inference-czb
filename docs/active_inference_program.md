@@ -807,7 +807,7 @@ held-out weighted RMSE on the second cut-in study (gated looming rule 0.1027, ga
 | card | what was asked | result |
 |---|---|---|
 | JJ.2, JJ.2c, JJ.2d | does ΔG order the cut-in cells (the project's staging; the released flags; the single-Gaussian fan) | **DROP** three times (0.32, 0.32, 0.32; 0 to 3 of 24 matched-TTC rows) |
-| JJ.3 | the same on the left turn and overtake | fails; the overtake numbers quoted in the arc were the secondary fold scheme |
+| JJ.3, JJ.3b | the same on the left turn and overtake; the overtake with a cyclist-sized collision test | fails; the overtake numbers quoted in the arc were the secondary fold scheme, and with a cyclist-sized test ΔG scores 0.29 against the clearance rule's 0.15 (the lateral factor is retired) |
 | JJ.4 | precision as spread | direction stands (every driver fold positive); magnitudes confounded (review) |
 | RE.1, RE.2, RE.4, RE.4b | the released criticality signal, its parameter family, its functionals | the "inversion" (ρ −0.861) is a horizon-sum accounting effect; RE.4 invalid as run (ego off the road), RE.4b corrected: not credited |
 | S1.1, S1.2, S1.4, S1.5, S1.6 | strand 1's comfort margin; its preference; a comfort threshold with a standoff; admissibility | none credited; on this study the assumed lead braking is the standoff; admissibility turns ΔG into the comfort price of the mildest admissible deceleration and contains a gate as a tolerance on P(conflict) |

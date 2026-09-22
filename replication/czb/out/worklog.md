@@ -4847,6 +4847,25 @@ is the fitted model and its parameters are the deliverable's. A design with cell
 is half open AND the looming is near the level would separate the two; the second cut-in study
 has few such cells (CP2 of the slow lane changes).
 
+**Card JJ.3b, the cyclist-sized collision test** (`jj3b_cyclist_box.py` ->
+`out/jj3b_cyclist_box.md`; Jonas: "run the cyclist sized box version"). The first run gave
+numbers identical to the released box, because `efe.log_terms`' "polygon" mode is a UNION (it
+overlays polygon hits on the box and cannot shrink it); a mode "polygon_only" was added behind
+the mode name, dated in the docstring, and the card rerun. Rule 0 passes (0.1865). With the
+oriented-polygon test replacing the box: G(continue) at 0.5 m clearance 122,456 -> 35,764 nats,
+Delta G by clearance 97,934 / 75,241 / 13,495 -> 21,345 / 18,945 / 12,626; held out on the
+primary folds **0.2936** (variant A; B 0.3076) against the clearance rule's 0.1465 and chance
+0.1585; rule (d) holds at 1 of 5 timepoints. **RETIRED**, as predicted: the grading the arc
+credited to the rollout construction was the car-sized box on a 0.58 m cyclist. The cyclist
+overtake keeps card B.1's clearance rule as its only construction.
+
+RESOLVED REV22.Q2: (final) the lateral factor is retired by card JJ.3b; nothing depends on it.
+
+@JJ3B.Q1(minor, review): the package's "polygon" collision mode is a union with the released box
+and has been since card JJ.1; on the left turn (the only place it was used) the box never fires,
+so no earlier result changes. "polygon_only" is the mode to use where a body is narrower than a
+car. Recorded so the two are not confused.
+
 @JJ7.Q1(minor, review): the derived gate lowers mu by 0.011 log units (the gate with no margin is
 slightly lower everywhere); the per-driver priors' 10th to 90th percentiles are 0.011 to 0.087
 rad/s. These are the numbers that would replace `out/stage1_looming.md`'s in handbook chapter 13

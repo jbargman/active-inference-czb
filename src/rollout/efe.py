@@ -39,7 +39,8 @@ from __future__ import annotations
 
 import numpy as np
 
-from aidriver.preferences import (PreferenceParams, apply_running_min, log_preference_terms,
+from aidriver.preferences import (PreferenceParams, apply_running_min, inverse_tau,
+                                  log_collision_pref, log_preference_terms,
                                   _severity)
 from comfortzone.conflict import body_polygon, polygon_distance
 
@@ -128,8 +129,23 @@ def log_terms(belief: Belief, ego: EgoPath, fut: Futures, p: PreferenceParams,
         if hit.any():
             sev = _severity(obs["v"], obs["v_other"], obs["theta"], obs["theta_other"], p)
             coll = np.where(hit, p.g_collision * sev, coll)
+    elif collision_mode == "polygon_only":
+        # Added 2026-09-22, card JJ.3b: the polygon test REPLACES the released box instead of
+        # being added on top of it ("polygon" above is a union, so it can never shrink the box).
+        # The non-collision part of the term is taken from the released function with the box
+        # forced off (dy pushed far out), then the oriented-polygon hits are overlaid.
+        far = dict(obs)
+        far["dy"] = np.full_like(np.asarray(obs["dy"], float), 1e6)
+        if "tau_inv" not in far:
+            far["tau_inv"] = inverse_tau(far["dx"], far["v"], far.get("v_other", 0.0), p)
+        coll = log_collision_pref(far, p)
+        hit = polygon_overlap(belief, ego, fut)
+        if hit.any():
+            sev = _severity(obs["v"], obs["v_other"], obs["theta"], obs["theta_other"], p)
+            coll = np.where(hit, p.g_collision * sev, coll)
     elif collision_mode != "released":
-        raise ValueError(f"collision_mode must be 'released' or 'polygon', not {collision_mode!r}")
+        raise ValueError(f"collision_mode must be 'released', 'polygon' or 'polygon_only', not"
+                         f" {collision_mode!r}")
     terms = dict(terms)
     terms["collision"] = apply_running_min(coll, axis=-1)
     return terms
