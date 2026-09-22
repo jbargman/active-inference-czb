@@ -816,8 +816,8 @@ held-out weighted RMSE on the second cut-in study (gated looming rule 0.1027, ga
 | **JJ.6e** | the gate as predictive lateral uncertainty, no intention variable | **DERIVED**: G.1's gate is Φ((m − l₀ − l̇T)/(σT)) to 1e-16, s_l = σT; with m = 0, 0.1028 / 0.0462; circular through σ (from G.1's s_l; card JJ.9 measures it on highD) |
 | JJ.8 | the link and the scale of the looming threshold | additive noise rejected (+0.023): the spread is a spread of levels; the one-step EFE decision is indistinguishable from the reflex reading but degenerate |
 | JJ.10 | the continuous gate as a free-energy component | F = P(lead) × excess; the gate on the probability (the mixture, the measurement model) against the gate on the quantity: indistinguishable (+0.003) |
-| JJ.7 | the boundary as a driver's prior over looming, gated by predictive uncertainty | run 2026-09-22 (background); result in `out/jj7_driver_prior.md` |
-| P.1 | the released planner, corrected | run 2026-09-22 (background, hours); result in `out/p1_planner_corrected.md` |
+| JJ.7 | the boundary as a driver's prior over looming, gated by predictive uncertainty | **RESTATED**: hyperparameters within 0.011 of TR.1's, per-driver priors +0.999 with TR.1's levels, the trait +0.640 [+0.395, +0.795]; the population median prior 0.0313 rad/s |
+| P.1 | the released planner, corrected (ego on the road, coasting pedal state, whole plan examined) | **DROP**, stable over three seeds (0.320 to 0.323; 5 to 12 of 24 rows): JJ.2b's "19 of 24" was the off-road ego. The corrected planner brakes AND steers from the first step in nearly every cell, pre-onset included (median minimum acceleration −4 to −6 m/s²): "never brakes" was the pedal clamp |
 
 **Where this leaves the program's six points (opinion).** Rollouts of the ego's policies with
 least-free-energy choice (point 1) do not measure the comfort-zone boundary on these video studies,

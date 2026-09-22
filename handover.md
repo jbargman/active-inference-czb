@@ -125,8 +125,7 @@ of the measurement model, the test-track anchor and the decks in
 card JJ.4 (EX2.Q2, 15 min). **Retired:** the lateral factor (card JJ.3b, 2026-09-22: with a cyclist-sized collision test Delta G scores 0.29 against the clearance rule's 0.15; its grading was the car-sized box). **Paused:**
 the VCC track. **Waiting on data:** highD and inD.
 
-**Running when this was written:** card P.1 (the released planner, corrected; three seeds, about
-25 minutes each; `out/p1_planner_corrected.md` rewrites itself after each seed). Read it first.
+**Card P.1 closed 2026-09-23:** the corrected released planner gives DROP, stable over three seeds; it brakes and steers from the first step in nearly every cell, pre-onset included. Nothing is running.
 ## 2 The rules that bind every session (long form: `docs/czb_work_orders.md` §2)
 
 1. **Every number you quote comes from a committed script with a tracked output.** No result
@@ -287,7 +286,7 @@ Refit card TT.1 (`replication/czb/ltapod_testtrack.py`) with card EX.2's session
 "the video at first exposure sits within 0.03 s of the track" gets an interval. Follow
 `replication/czb/ex2_first_exposure_levels.py`; report the offset with its SE. Commit.
 
-### ~~Card P.1~~ — running 2026-09-22 (Jonas: rerun). When its report shows three seeds: write its worklog paragraph (counts of steers / brakes, the ΔG scores, rule (e)), commit its outputs, and correct `docs/active_inference_program.md` §14's P.1 row. Original brief kept below.
+### ~~Card P.1~~ — done 2026-09-23, DROP over three seeds (`out/p1_planner_corrected.md`). Original brief kept below; do not rerun.
 
 ### Card P.1 (original brief)
 
@@ -297,6 +296,20 @@ the coasting value the ego holds, and (iii) the brake test reading the whole pla
 below −1 m/s²), not step 0; three planner seeds; rule (e) on the seed spread. Then RE.4's two
 planner-side functionals rescored. Slow (the CEM planner over 378 cells × 3 seeds; hours);
 background with a log.
+
+### Card JJ.13 — the free energy with a memory: F accumulated over the past (after: JJ12.Q1)
+
+Card JJ.12 showed a Farewell-style accumulator of looming over the past goes the human way (24
+of 24 rows) and, started at the lane-change onset, carries a step gate for free, but scores 0.128
+against the instantaneous rule's 0.113 / 0.103. The graded version: accumulate card JJ.10's
+F = P(lead) × excess over the past from the clip start, with P(lead) from JJ.6e's closed form at
+each step (so the gate is graded and anticipatory, not a step) and the level θ̇₀ fitted as the
+response model's level. Needs the per-cell looming and lateral-state time series from the traces
+(`hs1_situational_surprise.study2_scenes`, `cutin2_gate.lateral_states`' method per step), not
+the closed forms. Rule: JJ.2's (a) and (b). Prediction: within 0.01 of the gated rule and
+pre-onset below 0.05, i.e. indistinguishable from the instantaneous model on this design, because
+closing is constant; the card's value is that the account then has a memory that naturalistic
+data can test. Half a day.
 
 ### Card JJ.11 — the gate's second parameter, the horizon (after: nothing; small)
 

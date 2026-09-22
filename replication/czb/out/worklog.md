@@ -4904,6 +4904,17 @@ instantaneous one scores better by 0.02; the accumulator's one advantage is that
 onset, it carries a gate for free, and that gate is a step. Predictions held except one: I said
 P1 would be within 0.11 to 0.14 (it was, 0.1332) and P2 0.13 to 0.18 (it was better, 0.1283).
 
+**Card P.1, closed (three seeds).** Delta G from the corrected planner: 0.3202 / 0.3225 / 0.3214
+post-onset (range 0.0023, rule (e) holds), pre-onset 0.537 to 0.538, matched-TTC rows 5 / 12 / 9
+of 24, rho(gap) +0.070 / -0.044 / +0.019: **DROP, stable across seeds; the "19 of 24 / -0.308"
+of card JJ.2b was the off-road ego.** The corrected planner brakes within its horizon in 378 /
+378 / 287 of 288 cells and steers in every cell, from the first step, with median minimum
+accelerations of -4.1 to -5.6 m/s^2, pre-onset included. So the released planner on this design
+does not "steer and never brake"; it brakes hard and steers at once in nearly every cell, whether
+or not anything is happening, which is the released configuration's spontaneous braking of cards
+GZ.1 / GZ.2 on the study's own traces. The released-planner comparison is now on file and
+closed; `docs/active_inference_program.md` §14's P.1 row updated.
+
 @JJ12.Q1(judgment, jonas): the Farewell-style accumulator (P2) is 0.016 above the bar with a
 step gate for free; a graded version would accumulate P(lead) x looming excess, i.e. card JJ.10's
 F integrated over the past, which combines the derived gate with the accumulator. It is the one
