@@ -69,11 +69,22 @@ def log_tau_term(obs: dict, p: PreferenceParams, gate: str = "in_path") -> np.nd
     return np.where(ahead & before_contact, weight * log_tau, 0.0)
 
 
-def eps_tau(belief, ego, fut, p: PreferenceParams, gate: str = "in_path") -> float:
-    """The residual information of the looming term over the horizon, in nats (>= 0)."""
+def eps_tau_profile(belief, ego, fut, p: PreferenceParams, gate: str = "in_path"):
+    """Per step: the expected excess of the looming term [T] (>= 0), and the number of steps at
+    which at least half the futures are still before contact (card JJ.5b)."""
     obs = observations(belief, ego, fut)
     lt = log_tau_term(obs, p, gate)
-    return float(np.sum(np.maximum(0.0 - lt.mean(axis=0), 0.0)))
+    veh = p.vehicle
+    dx, dy = np.asarray(obs["dx"], float), np.asarray(obs["dy"], float)
+    contact = (np.abs(dx) <= 1.15 * veh.length) & (np.abs(dy) <= 1.15 * veh.width)
+    before = ~np.logical_or.accumulate(contact, axis=-1)
+    n_pre = int(np.sum(before.mean(axis=0) >= 0.5))
+    return np.maximum(0.0 - lt.mean(axis=0), 0.0), n_pre
+
+
+def eps_tau(belief, ego, fut, p: PreferenceParams, gate: str = "in_path") -> float:
+    """The residual information of the looming term summed over the horizon, in nats (>= 0)."""
+    return float(np.sum(eps_tau_profile(belief, ego, fut, p, gate)[0]))
 
 
 def share_in_path(belief, ego, fut, p: PreferenceParams) -> float:
