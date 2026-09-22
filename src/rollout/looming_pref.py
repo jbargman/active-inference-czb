@@ -25,6 +25,11 @@ reading, only in futures where the other is IN THE EGO'S PATH:
   `gate="none"`      the released term as written: any vehicle ahead, in any lane, is charged.
   `gate="continuous"` the project's lane-entry weight (`lane_entry_continuous`, k = 12), card
                      JJ.2's staging, for comparison.
+  `gate="lane_overlap"` (card JJ.6) the other's BODY overlaps the ego's lane: |dy| < half the
+                     studies' 3.5 m lane plus half the other's width (strict: a body whose edge
+                     touches the line, which is where the corrected fan clips a keeper, is not in). The collision box is a
+                     contact criterion; this is the "in my lane" criterion, and it is what
+                     `p_in_lane` uses for the gate.
 
 The term is read BEFORE CONTACT only. In the released assembly the collision term replaces it
 from the first step at which the released box is entered (|dx| <= 1.15 length and |dy| <= 1.15
@@ -44,6 +49,7 @@ from aidriver.preferences import (LOG_2PI, PreferenceParams, _log_gauss, inverse
                                   lane_entry_weight)
 
 from .efe import observations
+from .predictor import LANE_EDGE_M
 
 
 def log_tau_term(obs: dict, p: PreferenceParams, gate: str = "in_path") -> np.ndarray:
@@ -64,8 +70,12 @@ def log_tau_term(obs: dict, p: PreferenceParams, gate: str = "in_path") -> np.nd
         weight = 1.0
     elif gate == "continuous":
         weight = lane_entry_weight(obs, p)
+    elif gate == "lane_overlap":
+        w_o = np.asarray(obs.get("w_other", veh.width), float)
+        weight = (np.abs(dy) < LANE_EDGE_M + 0.5 * w_o).astype(float)   # strict: touching is not in
     else:
-        raise ValueError(f"gate must be 'in_path', 'none' or 'continuous', not {gate!r}")
+        raise ValueError(f"gate must be 'in_path', 'none', 'continuous' or 'lane_overlap',"
+                         f" not {gate!r}")
     return np.where(ahead & before_contact, weight * log_tau, 0.0)
 
 
@@ -94,3 +104,15 @@ def share_in_path(belief, ego, fut, p: PreferenceParams) -> float:
     hit = (np.asarray(obs["dx"], float) > veh.length) & (np.abs(np.asarray(obs["dy"], float))
                                                           <= 1.15 * veh.width)
     return float(hit.any(axis=1).mean())
+
+
+def p_in_lane(belief, ego, fut, horizon_s: float) -> float:
+    """Card JJ.6: the share of futures in which the other's body overlaps the ego's lane at some
+    step within `horizon_s` of the freeze, ahead of the ego (dx > 0). The intention belief read
+    as a gate; nothing fitted."""
+    obs = observations(belief, ego, fut)
+    dx, dy = np.asarray(obs["dx"], float), np.asarray(obs["dy"], float)
+    within = fut.tau[None, :] <= horizon_s + 1e-9
+    hit = within & (dx > 0) & (np.abs(dy) < LANE_EDGE_M + 0.5 * belief.oth_wid)
+    return float(hit.any(axis=1).mean())
+

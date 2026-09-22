@@ -22,7 +22,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from aidriver.preferences import LOG_2PI, PreferenceParams, _log_gauss  # noqa: E402
 from rollout.belief import FLOORS_STUDY2, P_CHANGE_PRIOR, Belief  # noqa: E402
-from rollout.looming_pref import eps_tau, log_tau_term, share_in_path  # noqa: E402
+from rollout.looming_pref import eps_tau, log_tau_term, p_in_lane, share_in_path  # noqa: E402
 from rollout.policies import ego_rollout  # noqa: E402
 from rollout.predictor import sample_futures  # noqa: E402
 
@@ -108,6 +108,25 @@ def main():
     check("the continuous reading agrees with in_path to within a third on a certain change (they"
           " differ only while the body straddles the line)", abs(e_c - e_in) < 0.34 * e_in,
           f"{e_in:.1f} against {e_c:.1f}")
+
+    # --- 3 the lane-overlap gate (card JJ.6) -------------------------------------------------
+    fk6 = sample_futures(keep, seed=0, keep_body_in_lane=True)
+    check("a certain keeper is never in the ego's lane",
+          p_in_lane(keep, ego_rollout(keep, "continue"), fk6, 3.0) == 0.0)
+    fc6 = sample_futures(chg, seed=0, keep_body_in_lane=True)
+    check("a certain changer is in the lane within 3 s in every future, and in none within 0.2 s",
+          p_in_lane(chg, ego_rollout(chg, "continue"), fc6, 3.0) == 1.0
+          and p_in_lane(chg, ego_rollout(chg, "continue"), fc6, 0.2) == 0.0)
+    pm = p_in_lane(mixed, ego_rollout(mixed, "continue"), fm, 6.0)
+    check("at the prior the gate is about the prior", abs(pm - P_CHANGE_PRIOR) < 0.04, f"{pm:.3f}")
+    check("the gate never falls as the horizon grows",
+          all(p_in_lane(chg, ego_rollout(chg, "continue"), fc6, h1)
+              <= p_in_lane(chg, ego_rollout(chg, "continue"), fc6, h2)
+              for h1, h2 in ((0.5, 1.0), (1.0, 2.0), (2.0, 4.0))))
+    obs4 = dict(obs, dy=np.full((n, T), 2.5), w_other=np.full((n, T), 1.88))
+    check("lane_overlap charges a body straddling the line that the collision box does not",
+          np.all(log_tau_term(obs4, p, "in_path") == 0.0)
+          and np.allclose(log_tau_term(obs4, p, "lane_overlap"), expect))
 
     try:
         log_tau_term(obs, p, "other")
