@@ -4744,3 +4744,22 @@ rerun to be restated on the new fan.
 (the ego's LANE against the ego's BODY plus m_lat); the gate that matches G.1 is the body one.
 The lane one is the right criterion for the looming PREFERENCE's "is it a lead" (JJ.5's
 in_path), the body one for the gate. Recorded so the two are not confused.
+
+**Card JJ.8, the link and the scale** (`jj8_link_and_scale.py` -> `out/jj8_link_and_scale.md`;
+1415 s, the multi-start fits): four response models on EL.1b's looming axis with G.1's gate
+frozen. B-log (the measurement model; the reflex reading B of the note) 0.1023. **B-lin (additive
+sensory noise) REJECTED, +0.0230**: the spread is multiplicative, a spread of levels or Weber-like
+noise, not the released agent's absolute `sigma_phidot`. **C (the one-step expected-free-energy
+decision on a linear looming preference) REJECTED, +0.0213**, with a degenerate fit (theta_0 =
+-11.5 rad/s). **C-log (the same decision on a log-scaled preference) INDISTINGUISHABLE, -0.0002**,
+but its fit is degenerate too: level 0.0000 rad/s, offset e = 21, i.e. a logistic in a quadratic
+of log theta_dot imitating the probit, so its "level" is unidentified and it delivers no
+comfort-zone level. Reading: on this design the data cannot tell the reflex reading from the
+decision reading (as predicted), CAN tell multiplicative from additive (as predicted), and the
+decision reading's parameters carry no meaning here; only reading B gives a level and a spread
+with an interpretation (the prior over looming and its precision). Prediction miss: I said C
+would be within 0.005 or slightly worse; it was rejected.
+
+@JJ8.Q1(judgment, review): C-log's indistinguishability is a statement about SHAPE on a design
+whose response curve has no upper shoulder (shares reach 1.0); a design with cells beyond the
+level would separate a quadratic-logistic from a probit. Not a card for these data.

@@ -15,7 +15,7 @@ and the repository disagree, the repository wins, and you say so in your reply.*
    named for the task (§4). Do not read the papers, the handbook or `OthersWork/` unless the card
    says to.
 2. Run the suite exactly like this and confirm 31, 33, 40, 96, 62, 20, 28, 27, 16, 30, 33, 35, 24,
-   19 and 11 passed (fifteen files; `pytest` is *not* the suite):
+   19 and 24 passed (fifteen files; `pytest` is *not* the suite):
    ```bash
    python tests/test_surprise.py
    python tests/test_comfortzone.py
@@ -86,6 +86,24 @@ for the released staging too), the matched-TTC result (0 of 24 rows), and card J
 | JJ.2c | JJ.2 with the released flags | DROP, 0.3197 | JJ.2's verdict is about the released model too |
 | JJ.5 | the model's own looming preference (τ⁻¹) read alone over the fan | 0.3156, ρ(gap) +0.662 | the intention belief supplies a gate in structure (8.5% → 100% of futures in the path); the horizon sum inverts the term |
 | JJ.5b | the same profile per step, at its maximum, at the first step | 0.30–0.32 | removing the sum removes the inversion, not the failure: τ⁻¹ is a TTC quantity, and a TTC threshold scores 0.1679 here |
+
+**Later the same night, Jonas kept active inference in play** ("we have to probe the different
+ways to think about it"), and the gate half was settled by five more pre-stated cards
+(`docs/looming_as_free_energy.md`; worklog "2026-09-22 (night, continued)"): card JJ.1's
+intention belief reproduces G.1's gate where it is *closed* (JJ.6: pre-onset 0.0354, nothing
+fitted) but at no keeping spread does an intention filter reproduce its post-onset grading (JJ.6b
+to JJ.6d), because G.1's gate grades on how soon the other's body reaches mine, not on whether it
+intends to. **JJ.6e: G.1's gate is, to 1e-16, a Gaussian-rate predictor's P(clearance < m within
+3 s) with s_l = σT; with m = 0 it scores 0.1028 / 0.0462: DERIVED**, with the circularity declared
+(σ = SD_VLAT was itself set from G.1's s_l). So the gate is the predictive uncertainty of the
+generative model about the other's lateral motion at the anticipation horizon; the latent
+intention variable is not needed for it. **JJ.8 (the link and the scale of the axis):** additive
+sensory noise is rejected (+0.023: the spread is a spread of *levels*), the one-step
+expected-free-energy decision on a log-scaled preference is indistinguishable from the reflex
+reading but its parameters are degenerate (its level fits to 0), so only the reflex reading
+(`docs/looming_as_free_energy.md` reading B: the free energy of the present looming observation
+under a driver's prior) delivers a comfort-zone level with a meaning. That reading is the
+measurement model restated, and the restatement is now backed by three tests rather than assumed.
 
 **The reading that sets §4 (opinion, mine).** Every quantity built from a braking requirement or
 from TTC is ordered against the participants within matched TTC, because at the same TTC a
@@ -173,7 +191,9 @@ leave-one-starting-TTC-out, weighted RMSE), unless the card says otherwise. Scor
 the comparators in §1. **Budget** is a guide; if a card runs past twice its budget, stop, record
 where it stands, and move on.
 
-### Card JJ.6 — the intention belief as the gate (after: nothing; JJ5.Q1's recommendation applies)
+### ~~Card JJ.6~~ — done 2026-09-22 (JJ.6 to JJ.6e; the gate DERIVED in JJ.6e). The text below is the original brief, kept for the record; do not rerun.
+
+### Card JJ.6 (original brief) — the intention belief as the gate
 
 *Question.* Does card JJ.1's fan, read as "the probability that the other's body is in the ego's
 lane within the next T seconds", reproduce card G.1's fitted gate, so that the gated looming rule
@@ -209,7 +229,7 @@ rate. If (b) fails, the reason is the binary posterior (`update_intention` in `b
 
 *Budget.* Half a day. Numbers to quote come only from the report.
 
-### Card JJ.7 — the preference over the looming observation, per driver (after JJ.6)
+### Card JJ.7 — the preference over the looming observation, per driver (after: nothing; JJ.6e supplies the gate in closed form, `norm.cdf((0 - l0 - ldot*3)/(0.33*3))` on `cutin2_gate.lateral_states`)
 
 *Question.* Written as an active-inference preference prior over the looming observation
 channel, with the gate from JJ.6, does the per-driver level reproduce card TR.1's trait?
@@ -227,6 +247,15 @@ value is the restatement: it is the comfort-zone boundary as a preference prior,
 the JJ program asked for, with the intention belief as the gate.
 
 *Budget.* Half a day plus the fits (5–35 min each, background, log).
+
+### Card JJ.9 — the gate's σ from lane-keeping data (after: highD access; JJ6E.Q1)
+
+The one circular constant in JJ.6e is σ = 0.33 m/s, set from G.1's fitted s_l. Measure it: the
+standard deviation of the lateral rate of vehicles holding their lane over a 0.3 s window, on
+highD (`src/generative/` has the loaders; `gm1a_lead_acceleration.py` the windowing pattern).
+Rule, pre-stated: if the measured σ, put into JJ.6e's closed form with m = 0, still passes (a)
+and (b), the gate is a *prediction* of the generative model and no longer a restatement. Report
+the gate's pre-onset value it implies (0.05 at 0.33) beside G.1's 0.067.
 
 ### Card D.1 — the documents (after REV22.Q1)
 

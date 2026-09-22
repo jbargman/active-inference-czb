@@ -138,3 +138,13 @@ should read: **the gate is the predictive uncertainty of the generative model ab
 lateral motion, at the anticipation horizon; the intention variable is not needed.** Reading D's
 "epistemic value is the gate" is therefore wrong on this design: the gate is not information
 gain about a latent intention but the tail of a predictive distribution. Reading B is untouched.
+
+**2026-09-22, the link and the scale (card JJ.8, `out/jj8_link_and_scale.md`).** Additive sensory
+noise (a probit in θ̇ rather than log θ̇) is **rejected**, +0.023 held out: the spread is
+multiplicative, a spread of levels or Weber-like noise, not the released agent's absolute
+`sigma_phidot`. The decision reading C on a linear preference is **rejected** (+0.021, and its fit
+degenerates). C on a log-scaled preference is **indistinguishable** from the reflex reading B
+(−0.0002), but its fit is degenerate too (level 0.0000 rad/s, offset 21: a logistic in a quadratic
+of log θ̇ imitating the probit), so it delivers no comfort-zone level. §3's first two rows are
+answered: the data cannot separate B from C in shape, can separate multiplicative from additive,
+and only B's parameters mean anything on this design. §4's mapping stands as the reading to carry.
