@@ -125,3 +125,16 @@ generative model adds nothing to the preference.
 ## 6 Outcomes, as they arrive
 
 *(appended by the cards; do not edit the sections above to match)*
+
+**2026-09-22, the gate (cards JJ.6 to JJ.6e, worklog entry of the same night).** Section 1 said
+"the gate is the belief" on the strength of card JJ.6; the four cards that followed sharpen it.
+The intention belief supplies the gate's *closed* state (pre-onset 0.0354, nothing fitted) but
+not its grading: at no keeping spread does a changepoint filter over the intention open as early
+as participants do (JJ.6b to JJ.6d), because G.1's gate grades on how soon the body reaches mine,
+not on whether it intends to. And that has an exact form: G.1's gate **is** a Gaussian-rate
+predictor's P(clearance < m within T), with s_l = σT (identity to 1e-16), and with m = 0 it scores
+0.1028 / 0.0462 (JJ.6e, DERIVED, the circularity through σ = SD_VLAT declared). So §1's sentence
+should read: **the gate is the predictive uncertainty of the generative model about the other's
+lateral motion, at the anticipation horizon; the intention variable is not needed.** Reading D's
+"epistemic value is the gate" is therefore wrong on this design: the gate is not information
+gain about a latent intention but the tail of a predictive distribution. Reading B is untouched.

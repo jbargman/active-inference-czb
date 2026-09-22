@@ -149,6 +149,25 @@ def main():
           all(0 <= filter_intention(np.random.default_rng(1).normal(0, 2, 40), 0.33, h) <= 1
               for _ in range(3)) and prospective_change(0.5, h, 3.0, 0.3) >= 0.5)
 
+    # --- 5 the unclipped single-hypothesis predictor (card JJ.6e) ---------------------------
+    from scipy.stats import norm
+    from rollout.predictor import SD_VLAT
+    from rollout.efe import observations
+    kb = belief(p_change=0.0, y_rel=3.0, vy_oth=-0.5)
+    ff = sample_futures(kb, seed=0, n=4000, keeper_bound=False)
+    obs5 = observations(kb, ego_rollout(kb, "continue"), ff)
+    half = 0.5 * (kb.ego_wid + kb.oth_wid)
+    hit = (ff.tau[None, :] <= 3.0 + 1e-9) & (np.abs(np.asarray(obs5["dy"])) <= half)
+    mc = float(hit.any(axis=1).mean())
+    l0 = 3.0 - half
+    analytic = float(norm.cdf((0.0 - l0 - (-0.5) * 3.0) / (SD_VLAT * 3.0)))
+    check("without the keeper clip, the fan's P(in my path within 3 s) is the closed-form"
+          " Gaussian-rate gate", abs(mc - analytic) < 0.03, f"MC {mc:.3f} vs {analytic:.3f}")
+    fb = sample_futures(kb, seed=0, n=4000, keeper_bound=True, keep_body_in_lane=True)
+    obs5b = observations(kb, ego_rollout(kb, "continue"), fb)
+    check("with the clip the same fan never reaches the ego's body",
+          not ((np.abs(np.asarray(obs5b["dy"])) <= half).any()))
+
     try:
         log_tau_term(obs, p, "other")
         ok = False

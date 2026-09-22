@@ -49,6 +49,15 @@ within Monte Carlo error of (2) at 200 futures (about 0.03 in the gate); scores 
 If (2) fails (b), the 0.149 m margin is doing real work pre-onset and the reading needs the ego's
 body width as a constant, which it may take from the vehicle dimensions rather than from a fit.
 
+ADDED AFTER THE FIRST RUN (2026-09-22, dated per standing rule 4; the first run's numbers are in
+the worklog). Reading (3) failed -- post-onset gate mean 0.083, score 0.3124 -- because BOTH
+versions of the fan's keeper clip (JJ.1's at the lane edge, S1.6's at the body's edge) forbid a
+keeping vehicle from ever reaching the ego's body: the clip is a hard prior that removes exactly
+the tail the gate lives on, which is why card JJ.1 needed an intention mixture. Reading (3b): the
+same fan with `keeper_bound=False` (a new flag, default True = every earlier card), i.e. the plain
+Gaussian-rate projection with no lane edge, which should reproduce reading (2) up to Monte Carlo
+error at 200 futures. Rule and verdict unchanged (they concern reading (2)).
+
 Output: replication/czb/out/jj6e_predictive_gate.md, out/jj6e_predictive_gate_cells.csv
 Run:    python replication/czb/jj6e_predictive_gate.py
 """
@@ -104,24 +113,29 @@ def main() -> None:
           f" {SD_VLAT * T}", flush=True)
 
     bel = J6.J5.beliefs(cells)
-    g_mc = []
+    g_mc, g_free = [], []
     for v, (b, cp) in bel.items():
         b.p_change = 0.0
+        ego = ego_rollout(b, "continue", HORIZON_S, DT_S)
         fut = sample_futures(b, horizon_s=HORIZON_S, dt=DT_S, n=N_SAMPLES, sd_vlat=SD_VLAT,
                              sd_a=SD_A, seed=0, keep_body_in_lane=True)
-        g_mc.append(p_in_path_mc(b, ego_rollout(b, "continue", HORIZON_S, DT_S), fut, T))
-    g_mc = np.asarray(g_mc)
+        g_mc.append(p_in_path_mc(b, ego, fut, T))
+        fut2 = sample_futures(b, horizon_s=HORIZON_S, dt=DT_S, n=N_SAMPLES, sd_vlat=SD_VLAT,
+                              sd_a=SD_A, seed=0, keeper_bound=False)
+        g_free.append(p_in_path_mc(b, ego, fut2, T))
+    g_mc, g_free = np.asarray(g_mc), np.asarray(g_free)
 
     d = cells[["video", "cp", "p", "n", "ttc_start", "ttc_true", "distance", "lcd"]].copy()
     d["l0"], d["ldot"] = l0, ldot
     d["gate_g1"], d["gate_ident"], d["gate_m0"], d["gate_fan"] = g1, g_ident, g_zero, g_mc
+    d["gate_fan_free"] = g_free
     d["x_looming"] = x
     d.to_csv(OUT / "jj6e_predictive_gate_cells.csv", index=False)
     is_cp1 = (d.cp == "CP1").to_numpy()
 
     res = {k: J6.score_gated(d, x, d[c].to_numpy(float))
            for k, c in (("G.1", "gate_g1"), ("identity", "gate_ident"), ("m = 0", "gate_m0"),
-                        ("fan", "gate_fan"))}
+                        ("fan", "gate_fan"), ("fan free", "gate_fan_free"))}
     rule0 = ident_ok and abs(res["identity"]["post"] - 0.1023) <= 0.0005 \
         and abs(res["identity"]["cp1"] - 0.0318) <= 0.0005
     a = res["m = 0"]["post"] <= J6.G1_GATED + J6.MARGIN_A
@@ -146,12 +160,15 @@ def main() -> None:
          "## 1 The readings", "",
          "| gate | pre-onset mean | post-onset mean | rho with G.1's gate (post-onset) | post-onset"
          " held out | pre-onset, out of sample | median level [rad/s] |", "|---|---|---|---|---|---|---|"]
-    for k, c in (("G.1", "gate_g1"), ("identity", "gate_ident"), ("m = 0", "gate_m0"), ("fan", "gate_fan")):
+    for k, c in (("G.1", "gate_g1"), ("identity", "gate_ident"), ("m = 0", "gate_m0"), ("fan", "gate_fan"),
+                 ("fan free", "gate_fan_free")):
         v = d[c].to_numpy(float)
         rho = spearmanr(v[~is_cp1], g1[~is_cp1]).statistic if np.std(v[~is_cp1]) > 0 else float("nan")
         lab = {"G.1": "card G.1's fitted gate", "identity": "(1) the predictor, m = G.1's 0.149 m",
                "m = 0": "**(2) the predictor, m = 0: nothing from G.1 but sigma**",
-               "fan": "(3) through the fan, p_change = 0, Monte Carlo"}[k]
+               "fan": "(3) through the fan, p_change = 0, keeper clipped at its body's edge",
+               "fan free": "(3b) through the fan, p_change = 0, no keeper clip (added after the"
+                           " first run)"}[k]
         L.append(f"| {lab} | {v[is_cp1].mean():.3f} | {v[~is_cp1].mean():.3f} | {rho:+.3f} |"
                  f" {res[k]['post']:.4f} | {res[k]['cp1']:.4f} | {res[k]['level']:.4f} |")
     L += ["", "## 2 The verdict on the pre-stated rules, reading (2)", "",

@@ -4661,3 +4661,86 @@ confirm, or name another.
 @JJ5.Q2(minor, review): `first` is zero in 205 of 288 post-onset cells; the report's rule (b)
 score for it (0.4816) therefore says nothing about a step gate, contrary to the docstring's
 expectation that (b) might hold by construction. Recorded so the prediction's failure is on file.
+
+## 2026-09-22 (night, continued) — the gate derived: cards JJ.6, JJ.6b, JJ.6c, JJ.6d, JJ.6e, and the note on looming as free energy
+
+Jonas: *"Instead of shifting model, I think you should continue to implement the next steps.
+Continue pursuing the possibility of using active inference for CZBs. It may be that a looming
+threshold fits the data better, but if we can explain it in terms of fundamental free energy it
+is more anchored in fundamental science, but we should not just assume it works: we have to probe
+the different ways to think about it."* Five cards on the gate half, each pre-stated in its own
+commit; `docs/looming_as_free_energy.md` on the readings of the axis, the level and the spread.
+
+**JJ.6** (`jj6_belief_gate.py`; `looming_pref.p_in_lane`, lane-overlap gate, 5 checks): card JJ.1's
+fan read as "P(the other's body is in my lane within T)" on card EL.1b's looming axis, only
+(lapse, level, spread) fitted. **NOT DERIVED by 0.0003**: rule (b) HOLDS (pre-onset 0.0354 against
+G.1's 0.0318, nothing fitted: the emergence half of the gate follows from the intention belief),
+rule (a) fails at 0.1130 = the ungated score, because the belief gate is binary (0.085 pre-onset,
+1.000 post-onset at every T) while G.1's grades post-onset (0.55 to 1.0), worth 0.0103. JJ.1's fan
+as built degrades the pre-onset score with T (0.15 at 6 s): the clip flaw of S1.6 again.
+
+**JJ.6b** (`jj6b_consistent_belief.py`): the intention update's keeping likelihood given the
+predictor's own drift (0.33 m/s) instead of the jitter floor. Grades in the right order (rho +0.882
+with G.1's gate) but too slowly: the 4 s lane changes are gated 0.30 where G.1 says 0.94; the lapse
+absorbs their responses; 0.1779 / 0.3232. NOT DERIVED, as predicted in direction.
+
+**JJ.6c** (`jj6c_filtered_belief.py`; `belief.filter_intention`, `hazard_for`,
+`prospective_change`, `lateral_rate_track`, 6 checks): a two-state changepoint filter over the
+whole lateral-rate track, two-sided likelihood ratio, hazard fixed by p0 within 3 s (no new
+constant), gate = P(changing now or within T). Pre-onset gate = 0.0701 by construction; ordering
+now rho +0.969 with G.1's gate; but slower still (0.09 at CP2 of the 4 s changes, G.1 0.76):
+0.1908 / 0.3473. NOT DERIVED. The filter's prior for "changing now" is the hazard (0.007), ten
+times below the one-window prior JJ.6b used.
+
+**JJ.6d** (`jj6d_keeping_spread.py`), a sweep over the keeping spread {0.004 ... 0.33}: NO value
+passes both rules; below 0.1 m/s the belief is binary (0.1130 / 0.0315), above it too slow. **An
+intention filter of this generative model cannot reproduce G.1's post-onset grading at any
+spread.** Reason, read off the deciding cells: at CP2 of a 4 s lane change the intention is
+certain and G.1's gate is still 0.76, because the vehicle is far out and slow; G.1's gate grades
+on how soon the body reaches mine, not on whether it intends to.
+
+**JJ.6e** (`jj6e_predictive_gate.py`; `predictor.keeper_bound` flag, 2 checks): **the gate
+DERIVED.** Identity: G.1's gate Phi((m_lat - (l0 + ldot 3 s)) / s_l) IS a Gaussian-rate
+predictor's P(clearance < m within T), Phi((m - l0 - ldot T)/(sigma T)), with s_l = sigma T:
+max |difference| 1.1e-16 over the 378 cells at sigma = SD_VLAT = 0.33 m/s, T = 3 s. With m = 0
+(nothing from G.1 but sigma): **0.1028 / 0.0462, rules (a) and (b) both hold.** Pre-onset the
+gate is the tail of the rate uncertainty over the horizon (0.050 against G.1's 0.067), with no
+intention prior. **Declared circularity:** SD_VLAT was set from G.1's s_l in the JJ.1 design
+note, so this is not a derivation from independent constants; it is the statement that G.1's two
+fitted parameters ARE the rate uncertainty of a Gaussian predictive model of the other's lateral
+motion times the anticipation horizon, and a body margin. Through the fan: with either keeper
+clip the fan cannot reach the ego's body at all (0.3124; the clip is a hard prior that removes
+the tail the gate lives on, which is why JJ.1 needed an intention mixture); with the clip removed
+(`keeper_bound=False`, added after the first run and dated in the docstring) 0.1093 / 0.0870,
+rho +0.918 with G.1's gate: the fan is a noisier version of the closed form (positional jitter,
+200 futures), not within the 0.003 I predicted; recorded as a failed prediction.
+
+**What this settles (judgment, review).** The gate of the measurement model has an
+active-inference reading with nothing fitted but the response model: it is the predictive
+uncertainty of the generative model about the other's lateral motion, read at a 3 s horizon
+against the ego's body. The latent intention variable of card JJ.1 is NOT needed for the gate on
+this design and, as built (deterministic changers at 1.2 m/s, keepers clipped at a lane edge),
+is what prevented the belief from grading. The axis, level and spread are the subject of
+`docs/looming_as_free_energy.md` and cards JJ.7 and JJ.8.
+
+RESOLVED S16.Q2 (in part, by cards JJ.6 to JJ.6e): the gate does not need a graded intention
+belief; it is the predictive lateral uncertainty. A graded intention remains untested and is not
+needed for the cut-in gate.
+
+Queries:
+
+@JJ6E.Q1(judgment, jonas): the derivation is circular through SD_VLAT (set from G.1's s_l).
+An independent value would come from naturalistic lane-keeping data (the lateral-rate sd of a
+vehicle holding its lane over a 0.3 s window, from highD when it arrives) and would make the
+gate a prediction rather than a restatement. Worth a line in the naturalistic plan?
+
+@JJ6E.Q2(judgment, review): the fan reproduces the closed-form gate only without its keeper clip
+(rho +0.918, 0.1093 / 0.0870). Should the rollout package's default become the single Gaussian
+hypothesis with no clip and no intention mixture for the cut-in? It changes the construction
+every JJ card ran on; those cards are all not credited anyway, and JJ.2's DROP would need a
+rerun to be restated on the new fan.
+
+@JJ6.Q1(minor, review): `p_in_lane` and JJ.6e's `p_in_path_mc` use different lateral criteria
+(the ego's LANE against the ego's BODY plus m_lat); the gate that matches G.1 is the body one.
+The lane one is the right criterion for the looming PREFERENCE's "is it a lead" (JJ.5's
+in_path), the body one for the gate. Recorded so the two are not confused.

@@ -74,7 +74,7 @@ def horizon_steps(horizon_s: float = HORIZON_S, dt: float = DT_S) -> np.ndarray:
 def sample_futures(belief: Belief, horizon_s: float = HORIZON_S, dt: float = DT_S,
                    n: int = N_SAMPLES, sd_vlat: float = SD_VLAT, sd_a: float = SD_A,
                    seed: int = 0, v_lc: float = V_LC_MPS,
-                   keep_body_in_lane: bool = False) -> Futures:
+                   keep_body_in_lane: bool = False, keeper_bound: bool = True) -> Futures:
     """The fan. One `numpy.random.default_rng(seed)`; the same object goes to every policy.
 
     `keep_body_in_lane` (added 2026-09-22, card S1.6; default False = card JJ.1's fan, bit for
@@ -86,6 +86,11 @@ def sample_futures(belief: Belief, horizon_s: float = HORIZON_S, dt: float = DT_
     `tests/test_admissible.py`). True clips the centre at the lane edge plus half the other's
     width instead, so that it is the other's BODY that keeps its lane. The draws are identical
     either way; only the clip moves.
+
+    `keeper_bound` (added 2026-09-22, card JJ.6e; default True = every earlier card). False
+    removes the keeping clip altogether, so a keeping vehicle's lateral motion is the plain
+    Gaussian-rate projection u0 + (vy0 + eps) tau with no lane edge: the single-hypothesis
+    predictor whose P(in my path within T) is card G.1's gate in closed form.
     """
     rng = np.random.default_rng(seed)
     tau = horizon_steps(horizon_s, dt)
@@ -115,7 +120,8 @@ def sample_futures(belief: Belief, horizon_s: float = HORIZON_S, dt: float = DT_
     u_keep = u0[:, None] + keep_rate[:, None] * tau[None, :]
     edge = LANE_EDGE_M + (0.5 * belief.oth_wid if keep_body_in_lane else 0.0)
     bound = np.minimum(sign * belief.y_rel, edge)                  # never further in than now
-    u_keep = np.maximum(u_keep, bound)
+    if keeper_bound:
+        u_keep = np.maximum(u_keep, bound)
     u_chg = np.maximum(u0[:, None] - v_lc * tau[None, :], 0.0)
     u = np.where(changing[:, None], u_chg, u_keep)
     y = sign * u
