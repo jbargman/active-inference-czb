@@ -100,7 +100,12 @@ free-energy terms, and each reading was tested rather than assumed:
    JJ.2c, JJ.2d, RE.4b, S1.6, JJ.5, JJ.5b; the review's checks §1). Removing the sum removes the
    inversion but gives no axis, because the released terms are braking and TTC quantities and
    participants respond to optical expansion. This is the thing to say to JJ
-   (`docs/note_for_jj_horizon_sum.md`, one page, not sent).
+   (`docs/note_for_jj_horizon_sum.md`, one page, not sent). **Card JJ.12 (2026-09-23) put the
+   arithmetic on file:** in closed form the sums to contact of τ⁻¹, (τ⁻¹)², θ̇ and θ̇² are all
+   ordered against the participants (0 of 24 rows), the sum of τ⁻¹ correlating −0.861 with the
+   share, which is RE.2's "inversion" exactly; a Farewell-style accumulator over the *past* goes
+   the human way (24 of 24) but scores 0.128 to 0.133 against the instantaneous rule's 0.113;
+   its graded version, F integrated over the past, is the one construction still open (JJ12.Q1).
 
 **The one circularity.** σ = 0.33 m/s in the gate was itself set from G.1's fitted spread, so
 point 2 is a restatement with a meaning, not yet a prediction. Card JJ.9 measures σ on

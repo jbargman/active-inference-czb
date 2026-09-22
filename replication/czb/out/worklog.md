@@ -4871,6 +4871,46 @@ happening, is the released configuration's spontaneous braking that cards GZ.1 a
 steady following, seen again on the study's own traces (judgment, review). Seeds 1 and 2 and
 rule (e) follow; the next session commits the final outputs and writes the closing paragraph.
 
+## 2026-09-23 — card JJ.12: sums over the future and over the past (Jonas's inverse-tau question)
+
+Jonas: *"why not use inv tau (or inv TTC) here, should that not flip it so that we get more the
+closer, in the way that e.g. the farewell-to-reaction-time paper does? As we are talking
+exponential, the shorter clip reduction will be dwarfed by the exponential increase of inv tau,
+or?"* Card JJ.12 (`jj12_sums_future_past.py` -> `out/jj12_sums_future_past.md`), pre-stated with
+the closed forms in its docstring, computes on the 288 post-onset cells (constant closing, W from
+each trace) the sums to contact of tau^-1, (tau^-1)^2, theta_dot and theta_dot^2, and the looming
+accumulated over the PAST (over the 10 s shown clip, P1; since the lane-change onset, P2).
+
+**The future sums, all four: 0 of 24 matched-TTC rows, rho(gap) +0.84 to +1.00, rho(share) -0.56
+to -0.86, held out 0.3202 (a constant fit) at sign +1.** The sum of tau^-1 to contact correlates
+**-0.861** with the share, which is card RE.2's number to three decimals: the "inverted
+braking-margin term" of the reviewed arc was this accounting, seen again in closed form. The
+steeper costs (squared) are proportional to the closing speed dv, and within a matched-TTC row
+the nearer car closes slower, so they are backwards too, as the arithmetic said. Inverse tau
+itself is 1/TTC, one number per row.
+
+**The past accumulators go the human way: 24 of 24 rows.** P1 (over the shown clip) rho(share)
++0.887, held out **0.1332** against the instantaneous looming rate's 0.1130 and the gated 0.1027:
+NOT CREDITED as an axis (rule (a) fails by 0.03, rule (b) fails at 0.5064, no gate). P2 (since
+the onset) **0.1283** post-onset and **0.0271** pre-onset, the latter by construction (zero before
+the onset: a step gate, said in advance). P3 (the level subtracted, a sensitivity) 0.2894 with 261
+zero cells: the fitted instantaneous level is far above what a 10 s accumulation clears.
+Reading (judgment, review): Jonas's intuition is right for the PAST -- accumulated looming grows
+with proximity within a row, because 1/gap_now = 1/(dv TTC) is larger for the nearer car -- and
+wrong for the FUTURE, where the blow-up near contact scales with dv. On this design the
+accumulator and the instantaneous looming threshold cannot be separated (closing is constant, so
+the accumulated looming is a fixed function of the current looming and the gap), and the
+instantaneous one scores better by 0.02; the accumulator's one advantage is that, started at the
+onset, it carries a gate for free, and that gate is a step. Predictions held except one: I said
+P1 would be within 0.11 to 0.14 (it was, 0.1332) and P2 0.13 to 0.18 (it was better, 0.1283).
+
+@JJ12.Q1(judgment, jonas): the Farewell-style accumulator (P2) is 0.016 above the bar with a
+step gate for free; a graded version would accumulate P(lead) x looming excess, i.e. card JJ.10's
+F integrated over the past, which combines the derived gate with the accumulator. It is the one
+construction left that could beat the instantaneous rule on this design, and it would be the
+free-energy account with a memory. Worth a card (JJ.13)? Half a day; it needs the per-cell
+looming time series from the traces rather than the closed forms.
+
 @JJ3B.Q1(minor, review): the package's "polygon" collision mode is a union with the released box
 and has been since card JJ.1; on the left turn (the only place it was used) the box never fires,
 so no earlier result changes. "polygon_only" is the mode to use where a body is narrower than a

@@ -148,3 +148,16 @@ degenerates). C on a log-scaled preference is **indistinguishable** from the ref
 of log θ̇ imitating the probit), so it delivers no comfort-zone level. §3's first two rows are
 answered: the data cannot separate B from C in shape, can separate multiplicative from additive,
 and only B's parameters mean anything on this design. §4's mapping stands as the reading to carry.
+
+**2026-09-23, the future and the past (card JJ.12, `out/jj12_sums_future_past.md`).** Jonas asked
+whether inverse tau, with its blow-up near contact, would flip the horizon sum. In closed form and
+on the cells: no. The sum to contact of τ⁻¹, of its square, of θ̇ and of θ̇² are all ordered
+against the participants (0 of 24 matched-TTC rows; ρ(gap) +0.84 to +1.00), and the sum of τ⁻¹
+correlates −0.861 with the share, which is card RE.2's "inversion" to three decimals. Steeper
+costs make the sum proportional to the closing speed, which within a row is backwards. A sum over
+the **past** (the Farewell accumulator) is a different object and goes the human way, 24 of 24
+rows: over the shown clip 0.1332, since the onset 0.1283 with a free step gate (pre-onset 0.0271),
+against the instantaneous looming rate's 0.1130. So reading A stays rejected for the future sum,
+and an accumulator reading, F integrated over the past, is the one construction left that could
+beat the instantaneous threshold on this design (query JJ12.Q1).
+
