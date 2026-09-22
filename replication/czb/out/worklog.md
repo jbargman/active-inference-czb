@@ -4861,6 +4861,16 @@ overtake keeps card B.1's clearance rule as its only construction.
 
 RESOLVED REV22.Q2: (final) the lateral factor is retired by card JJ.3b; nothing depends on it.
 
+**Card P.1, seed 0 of 3 (the run continues in the background; the report rewrites itself per
+seed).** Delta G from the corrected planner: **0.3202 / 0.5381, 5 of 24 rows, rho(share) -0.028,
+rho(gap) +0.070: DROP**; card JJ.2b's "19 of 24" is gone with the corrections. The counts: the
+corrected planner **brakes in 378 of 378 cells** (median minimum acceleration -5.6 m/s^2
+post-onset, -4.7 pre-onset, first brake at the first step) and steers in 378 of 378. "Never
+brakes" was the pedal clamp. That it brakes hard even in the 90 pre-onset cells, where nothing is
+happening, is the released configuration's spontaneous braking that cards GZ.1 and GZ.2 found in
+steady following, seen again on the study's own traces (judgment, review). Seeds 1 and 2 and
+rule (e) follow; the next session commits the final outputs and writes the closing paragraph.
+
 @JJ3B.Q1(minor, review): the package's "polygon" collision mode is a union with the released box
 and has been since card JJ.1; on the left turn (the only place it was used) the box never fires,
 so no earlier result changes. "polygon_only" is the mode to use where a body is narrower than a
