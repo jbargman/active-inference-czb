@@ -1,6 +1,7 @@
 """
 Property tests for the released looming preference read alone (src/rollout/looming_pref.py,
-card JJ.5).
+card JJ.5), the lane-overlap gate (card JJ.6) and the changepoint filter over the intention
+(`rollout.belief`, card JJ.6c).
 
 Claims: the term is the released one-sided tau^-1 Gaussian, max-normalised to zero, so it is zero
 whenever the closing rate is below 1/5 s and equals the released code's value above it; under the
@@ -21,7 +22,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from aidriver.preferences import LOG_2PI, PreferenceParams, _log_gauss  # noqa: E402
-from rollout.belief import FLOORS_STUDY2, P_CHANGE_PRIOR, Belief  # noqa: E402
+from rollout.belief import (FLOORS_STUDY2, P_CHANGE_PRIOR, Belief, filter_intention,  # noqa: E402
+                            hazard_for, prospective_change)
 from rollout.looming_pref import eps_tau, log_tau_term, p_in_lane, share_in_path  # noqa: E402
 from rollout.policies import ego_rollout  # noqa: E402
 from rollout.predictor import sample_futures  # noqa: E402
@@ -127,6 +129,25 @@ def main():
     check("lane_overlap charges a body straddling the line that the collision box does not",
           np.all(log_tau_term(obs4, p, "in_path") == 0.0)
           and np.allclose(log_tau_term(obs4, p, "lane_overlap"), expect))
+
+    # --- 4 the changepoint filter (card JJ.6c) --------------------------------------------
+    h = hazard_for(P_CHANGE_PRIOR, 3.0, 0.3)
+    check("the hazard reproduces the prospective prior over the horizon exactly",
+          abs(prospective_change(0.0, h, 3.0, 0.3) - P_CHANGE_PRIOR) < 1e-12, f"h = {h:.5f}")
+    quiet = filter_intention([0.0] * 30, 0.33, h)
+    check("a long quiet track leaves P(changing now) near zero and the prospective gate at the"
+          " prior", quiet < 1e-3 and abs(prospective_change(quiet, h, 3.0, 0.3) - P_CHANGE_PRIOR) < 2e-3)
+    p1 = filter_intention([0.0] * 20 + [-0.77], 0.33, h)
+    p3 = filter_intention([0.0] * 20 + [-0.77] * 3, 0.33, h)
+    check("evidence accumulates: three windows of a slow lane change convince where one does not",
+          p1 < 0.1 and p3 > 0.7, f"{p1:.3f} -> {p3:.3f}")
+    check("a fast lane change convinces in one window",
+          filter_intention([0.0] * 20 + [-1.5], 0.33, h) > 0.99)
+    check("the sign convention: motion away from the ego is evidence for keeping",
+          filter_intention([0.0] * 20 + [+0.77] * 3, 0.33, h) < 1e-3)
+    check("the filter never leaves [0, 1] and the prospective gate never falls below P(now)",
+          all(0 <= filter_intention(np.random.default_rng(1).normal(0, 2, 40), 0.33, h) <= 1
+              for _ in range(3)) and prospective_change(0.5, h, 3.0, 0.3) >= 0.5)
 
     try:
         log_tau_term(obs, p, "other")

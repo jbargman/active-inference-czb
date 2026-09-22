@@ -262,3 +262,59 @@ def update_intention(p0: float, vy_obs: float, sd_vy: float, v_lc: float = V_LC_
         lr = max(lr, 0.0)
     logit = np.log(p0 / (1.0 - p0)) + lr
     return float(1.0 / (1.0 + np.exp(-np.clip(logit, -700.0, 700.0))))
+
+
+# ---------------------------------------------------------------------------------------
+# card JJ.6c (2026-09-22): the intention as a filtered changepoint, not one window's update
+# ---------------------------------------------------------------------------------------
+def hazard_for(p_prospective: float, horizon_s: float, window_s: float) -> float:
+    """The per-window hazard h at which a keeping vehicle, with no lateral evidence, changes
+    lanes within `horizon_s` with probability `p_prospective`: 1 - (1 - h)^(horizon / window)
+    = p. So the design note's p0 (0.07 within card G.1's 3 s) fixes h; no new constant."""
+    n = horizon_s / window_s
+    return float(1.0 - (1.0 - p_prospective) ** (1.0 / n))
+
+
+def filter_intention(vy_windows, sd_keep: float, hazard: float, sign: float = 1.0,
+                     v_lc: float = V_LC_MPS, sd_lc: float = SD_LC_MPS,
+                     p_start: float | None = None) -> float:
+    """P(changing NOW) after filtering the lateral-rate track, oldest window first.
+
+    A two-state changepoint model: at each window a keeping vehicle starts a change with
+    probability `hazard` (change is absorbing within a clip); the likelihoods are the design
+    note's, N(vy | 0, sd_keep) for keeping and N(vy | -v_lc sign, sd_lc) for changing, with the
+    TWO-SIDED ratio (the one-sided clip of `update_intention` is a single-window device that a
+    filter does not need: evidence for keeping is allowed to lower the belief, and the hazard
+    keeps it from vanishing). `p_start` defaults to the hazard.
+    """
+    p = float(hazard if p_start is None else p_start)
+    for vy in np.asarray(vy_windows, float):
+        p = p + (1.0 - p) * hazard                                    # predict
+        lc = np.exp(_log_gauss(vy, -v_lc * sign, sd_lc))
+        lk = np.exp(_log_gauss(vy, 0.0, sd_keep))
+        num = p * lc
+        p = float(num / (num + (1.0 - p) * lk)) if num + (1.0 - p) * lk > 0 else p
+    return float(np.clip(p, 0.0, 1.0))
+
+
+def prospective_change(p_now: float, hazard: float, horizon_s: float, window_s: float) -> float:
+    """P(changing now, or starting to within the horizon)."""
+    n = horizon_s / window_s
+    return float(p_now + (1.0 - p_now) * (1.0 - (1.0 - hazard) ** n))
+
+
+def lateral_rate_track(scene: Scene, t0: float, floors: Floors) -> tuple[np.ndarray, float]:
+    """The other's lateral rate in the freeze frame over non-overlapping windows ending at t0,
+    oldest first, and the sign convention `update_intention` expects (from y_rel at t0)."""
+    b = belief_at(scene, t0, floors, with_intention=False)
+    t = np.asarray(scene.t, float)
+    ox, oy = b.frame.to_frame(scene.oth_x, scene.oth_y)
+    ends = np.arange(t0, t[0] + floors.window_s - 1e-9, -floors.window_s)[::-1]
+    rates = []
+    for te in ends:
+        i, j = _index_at(t, te), _index_at(t, te - floors.window_s)
+        span = float(t[i] - t[j])
+        if span >= 0.5 * floors.window_s:
+            rates.append(float((oy[i] - oy[j]) / span))
+    return np.asarray(rates), float(np.sign(b.y_rel)) or 1.0
+
