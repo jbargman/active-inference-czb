@@ -79,6 +79,7 @@ def main() -> None:
     r = r[r.braking_expectation.isin([0, 1, 2]) & (r.v_rel > 0)].copy()
     r["ttc"] = r.gap_m / r.v_rel
     r["hard"] = (r.braking_expectation == 2).astype(float)
+    r.attrs = {}
     b = J.presses()
     both = sorted(set(r.participant) & set(b.participant))
     r, b = r[r.participant.isin(both)], b[b.participant.isin(both)]
