@@ -5047,3 +5047,14 @@ judgment: is the video's button press the right operationalisation of the comfor
 (then looming, and real braking is a different response), or is real braking the ground truth
 (then tau^-1, and the video design, one lead speed per clip, is what made looming win)? The note
 for JJ has been marked accordingly and NOT sent.
+
+**Card NC.5-tau, the highD half** (`nc5_tau_highd.py` -> `out/nc5_tau_highd.md`). The released
+model's own tau^-1 preference, read pointwise at the cut-in: **BLIND BY ITS FLOOR**, as predicted.
+It costs nothing at TTC >= 5 s, and 99.5% of real closing cut-ins and 250 of 257 responses sit
+there; its AUC is 0.513 against inverse TTC's 0.739. Real followers respond in a graded way far
+beyond the released floor: 40% at TTC 5 to 10 s, 13% at 10 to 20 s, 7% at 20 to 40 s, 5% beyond.
+Reading (judgment, jonas): the released preference's SHAPE is a collision-avoidance shape (a
+threshold at 5 s TTC); the comfort zone in real traffic extends to TTC of 20 s and more. If the
+account is to use the released term, its mean is a driver parameter to fit, not a constant, which
+is exactly the comfort-zone level; fitted on highD it would be the naturalistic level on the TTC
+axis. That is the next card (the video half of NC.5-tau, and a highD fit of mu).

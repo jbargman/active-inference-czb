@@ -68,9 +68,12 @@ and the repository disagree, the repository wins, and you say so in your reply.*
 >    is answered, §1's "the boundary is a prior over *looming*" is a claim about the video data
 >    only, and `docs/note_for_jj_horizon_sum.md` carries a marker saying so (still not sent).
 >
-> The next card is written in §4 as **NC.5-tau**: the released model's own τ⁻¹ preference, read
-> pointwise (not summed), with JJ.9's gate, scored on highD and on the video cells. It is the
-> one construction that could make the released model's term the axis in real traffic.
+> 4. **NC.5-tau (highD half): the released τ⁻¹ preference is blind by its floor.** It costs
+>    nothing at TTC ≥ 5 s, where 99.5% of real closing cut-ins and 250 of 257 responses sit (AUC
+>    0.513). Real followers respond far beyond it: 40% at TTC 5–10 s, 13% at 10–20 s, 5% beyond
+>    40 s. The released shape is a collision-avoidance shape; the comfort zone reaches TTC 20 s
+>    and more. Next: fit its mean per population on highD (the naturalistic level on the TTC axis)
+>    and run the video half of NC.5-tau (§4).
 
 ## 1 Where the project stands: the free-energy account of the comfort-zone boundary
 
