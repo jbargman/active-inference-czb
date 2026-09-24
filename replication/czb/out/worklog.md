@@ -5058,3 +5058,53 @@ threshold at 5 s TTC); the comfort zone in real traffic extends to TTC of 20 s a
 account is to use the released term, its mean is a driver parameter to fit, not a constant, which
 is exactly the comfort-zone level; fitted on highD it would be the naturalistic level on the TTC
 axis. That is the next card (the video half of NC.5-tau, and a highD fit of mu).
+
+## 2026-09-24 (later) — hard braking only: cards NC.3d, NC.3e, NC.3f, NC.3g
+
+Jonas: *"the video braking is hard braking, not only braking, so we should still define what is
+hard braking in the braking parts, and ignore all low braking, as that may be just satisficing"*;
+then *"use an even harder braking. A colleague just reported that the 99th percentile of braking
+(instances; ... 1 hour per hundred hours ...) is 2.5 m/s^2. I think we at least should use that."*
+NC.5-tau's statement that real followers respond out to TTC 20 s is SUSPENDED: it counted mild
+decelerations of 0.5 m/s^2.
+
+**NC.3d** (`nc3d_hard_braking.py`, descriptive, on NC.3's cache): as the threshold rises the
+responses at TTC >= 5 s fall from 250 of 257 (0.5 m/s^2) to 11 of 15 (2.0); response rates at TTC
+10-20 s from 13% to 0.4%. **NC.3e** (`nc3e_hard_2p5.py`, pre-stated, re-extracted at 2.5 and 3.0
+m/s^2; threshold motivated by the colleague's 99th percentile, personal communication, not
+verified, not named): **4 hard responses in 2,771 closing cut-ins (0.14%), none at 3.0**;
+DESCRIPTIVE ONLY by rule 0 (fewer than 30). highD's own deceleration percentiles over all car
+frames above 5 m/s: 99th **1.07 m/s^2**, 99.9th 2.12 -- motorway driving brakes far less than the
+colleague's sample. False positives on steady following: 0 at both thresholds.
+**NC.3f** (`nc3f_expected_hard.py`): the video population curve (JJ.10's mixture, nothing refitted)
+expects 128 interventions among the 2,771 without the lapse (226 with it), 112 inside the video's
+looming range, 18 at TTC below 5 s; observed hard 4, 3, 2. P(so few) 1e-57, 1e-51, 9e-9.
+**NC.3g** (`nc3g_gentle_or_hard.py`): the first study's button design asked every participant who
+pressed during a cut-in whether they would brake gently or hard. 2,384 presses, 43 participants:
+**41% hard, 59% gentle**, and strongly graded by the clip: 88% hard at the TTC 2 s clip, 78% at 3,
+54% at 4, 31% at 5, 18% at 6, 12% at 7, 7% at 8 (the code direction confirmed by this monotone
+fall, Spearman -1.000; a second check on press time was confounded across clips and says nothing).
+
+**Reading (judgment, jonas).** (1) The video's "would intervene" is NOT uniformly hard braking: it
+is mostly gentle, and hard only at short TTC. Participants themselves switch from mostly-hard to
+mostly-gentle between the 4 s and 5 s clips -- where the released tau^-1 preference puts its floor
+(5 s). So the released term's shape may be the HARD-braking boundary, and the comfort zone (gentle
+intervention) extends beyond it, as the video's own answers say. (2) Real motorway followers
+almost never brake hard after a cut-in (0.14%), even at TTC below 5 s (2 of 48, where the video
+curve expects 18 interventions and participants say about 80% of those would be hard). So even the
+hard component is over-predicted by the video, by roughly an order of magnitude on the few events
+that can test it. (3) At 0.5 to 1.0 m/s^2 the video curve transferred (NC.3, NC.3b); combined with
+(1), the data say the video's intervention corresponds in real traffic to a MILD response. Whether
+mild braking is satisficing (Jonas's worry) or the comfort-zone response itself is exactly
+NC3C.Q1, now sharper.
+
+@NC3G.Q1(blocker, jonas): given 59% of video interventions are "gentle" by the participants' own
+account, should the comfort-zone boundary be modelled as TWO boundaries -- a gentle one (the
+comfort zone, compared with mild real braking, where the video curve transferred) and a hard one
+(near the released 5 s floor, compared with >= 2.5 m/s^2, where highD has only 4 events)? Both are
+fittable on the button design's gentle/hard split. highD cannot test the hard one (too few
+events); a dataset with closer calls (exiD, rounD, or naturalistic data with lower TTCs) would be
+needed.
+
+@NC3E.Q1(minor, jonas): the colleague's 99th percentile (2.5 m/s^2) is ~2.3x highD's (1.07); a
+reference for it, when available, belongs in the card's docstring.
