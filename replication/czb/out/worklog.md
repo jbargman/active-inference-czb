@@ -5389,3 +5389,15 @@ the closing vehicle regardless of its lateral state, at a low rate (2.3% within 
 testable on highD: the adjacent lane's own traffic (the cutter closing on ITS leader, i.e. a reason
 to change lanes), turn signals (not in highD), lane-end geometry. The first is a cheap card: the
 cutter's own TTC to its leader at k as the gate.
+
+**Card NC.1, real left turns across oncoming traffic** (`nc1_ind_left_turns.py`, inD). Gap
+decisions read with the turner 10 m before the conflict point and the oncoming vehicle not yet past
+it: **93 decisions, 7 accepted, 86 rejected** (74 turning vehicles; locations 1/2/4: 52/24/17).
+**DESCRIPTIVE ONLY** by rule 0 (100 decisions and 20 of each outcome needed). The extraction is
+biased against accepted gaps: at the decision moment the oncoming vehicle is often not yet in the
+field of view, so turners who went before it appeared are not counted as decisions at all. The
+LTAP/OD transfer of one driver's prior to another scenario is therefore NOT tested on real data.
+
+@NC1.Q1(judgment, jonas): a better design anchors the decision on the oncoming vehicle's appearance
+or on the turner's stop line, and pools rounD/exiD if the licence arrives; worth a card only if
+LTAP/OD transfer stays on the paper's critical path.
