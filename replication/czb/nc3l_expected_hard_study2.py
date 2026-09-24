@@ -59,7 +59,7 @@ def held_out(x, y, w, folds, sign=+1.0):
 def main() -> None:
     tr = pd.read_csv(R.TRIALS, low_memory=False)
     tr = tr[~tr.video.str.contains("dummy") & tr.TTC_true.notna()]
-    g = tr.groupby("video").agg(n=("CZB_2", "size"), hard=("CZB_2", lambda v: float(np.mean(v == 2))),
+    g = tr.groupby("video").agg(n2=("CZB_2", "size"), hard=("CZB_2", lambda v: float(np.mean(v == 2))),
                                 gentle=("CZB_2", lambda v: float(np.mean(v == 1))),
                                 n_int=("CZB_1", "sum")).reset_index()
     hint = tr[tr.CZB_1 == 1].groupby("video").CZB_2.apply(lambda v: float(np.mean(v == 2))).rename("hard_given_int")
@@ -67,7 +67,7 @@ def main() -> None:
     d = cells.merge(g, on="video").merge(hint, on="video", how="left")
     d["x_loom"] = J6.looming_axis(d)
     post = d[d.cp != "CP1"].reset_index(drop=True)
-    y, w, f = post.hard.to_numpy(float), post.n.to_numpy(float), post.ttc_start.to_numpy(float)
+    y, w, f = post.hard.to_numpy(float), post.n2.to_numpy(float), post.ttc_start.to_numpy(float)
     axes = {"-log TTC": -np.log(post.ttc_true.to_numpy(float)), "log looming": post.x_loom.to_numpy(float),
             "-log gap": -np.log(post.distance.to_numpy(float))}
     res = {k: held_out(x, y, w, f) for k, x in axes.items()}
@@ -75,7 +75,7 @@ def main() -> None:
     th = R.fit(axes["-log TTC"], y, w, +1.0)
     t50 = float(np.exp(-th[1]))
     by_ttc = post.groupby("ttc_true").apply(lambda s: pd.Series({
-        "n": s.n.sum(), "hard": np.average(s.hard, weights=s.n),
+        "n": s.n2.sum(), "hard": np.average(s.hard, weights=s.n2),
         "hard_given_int": np.nanmean(s.hard_given_int)})).reset_index()
     best = min(res, key=res.get)
     diff = res["-log TTC"] - res["log looming"]
@@ -88,7 +88,7 @@ def main() -> None:
          " -- a judgment of what the situation demands of the automation, NOT the participant's own"
          " action (the first study's button design, card NC.3j, asked that).", "",
          f"Post-onset cells: {len(post)}; share expecting hard braking, weighted mean"
-         f" {np.average(y, weights=w):.3f}; pre-onset cells {np.average(d[d.cp == 'CP1'].hard, weights=d[d.cp == 'CP1'].n):.3f}.", "",
+         f" {np.average(y, weights=w):.3f}; pre-onset cells {np.average(d[d.cp == 'CP1'].hard, weights=d[d.cp == 'CP1'].n2):.3f}.", "",
          "## 1 Which axis does the 'expect hard' judgment follow?", "",
          "| axis | held out (registered folds) |", "|---|---|"]
     for k, v in res.items():

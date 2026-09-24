@@ -5214,3 +5214,25 @@ stated choice, not a measured deceleration.
 about 1 s TTC" (which study; unconditional or among pressers; TTC nominal, at the press, or
 bumper-to-bumper). If it holds, the hard boundary is out of highD's reach and its real-traffic
 test needs closer calls than any highD cut-in provides.
+
+**Card NC.3l, the hard boundary in the second study** (`nc3l_expected_hard_study2.py` ->
+`out/nc3l_expected_hard_study2.md`; Jonas: "what would happen if you use study 2?"). Study 2's
+third question is the EXPECTED VEHICLE ACTION ("What would you expect your vehicle to do, assuming
+you do not intervene?"), not the participant's own. Share expecting hard braking: 0.89 at TTC
+0.8 s, 0.75 at 1.1, 0.60 at 1.4, 0.44 at 1.7, 0.26 at 2.4, 0.13 at 3.4, near zero beyond 5.
+**Half the participants expect hard braking at TTC 1.64 s** (spread 0.63 log units); 80% at about
+1 s, which is very likely the "80th percentile of hard braking at about 1 s TTC" of Jonas's other
+analysis (NC3K.Q1: answered in all likelihood; the construct is the expected automation action).
+The own-action boundary of the first study (NC.3j, 3.3 s at the press) is twice as far out:
+people say they themselves would brake hard earlier than they judge the car MUST brake hard.
+Prediction (2 to 2.5 s) too high. **Axis: LOOMING PREFERRED for the "expect hard" judgment**,
+0.1040 against TTC 0.1679 and gap 0.1775 (chance 0.3031) -- the same ordering as the intervention
+itself on this design, against the prediction of INDISTINGUISHABLE.
+
+Consequence for the matching (NC.3k): with the hard boundary at 1.6 s the model expects about one
+hard intervention in all 2,713 highD closing cut-ins; highD cannot test it. The 2.23 m/s^2
+matching of NC.3j belongs to the OWN-action boundary (3.3 s) only.
+
+RESOLVED NC3K.Q1: (by card NC.3l, pending Jonas's confirmation of his analysis's definition) the
+1 s figure is the expected-vehicle-action question of the second study; the 3.3 s is the own-action
+question of the first study at the press. Two constructs, both reported.
