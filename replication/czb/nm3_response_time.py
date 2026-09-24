@@ -41,6 +41,15 @@ than 100 responses, and the moderate stratum decides. Response shares within 5 s
 so the SHAPE HOLDS. Real median RT at THW0 1 to 2 s about 1.5 to 2.5 s against the deposit's
 about 1.0 to 1.2 s.
 
+CHANGED BEFORE ANY RESULT, 2026-09-25 (dated per standing rule 4): a smoke test on recording 1
+found ZERO events, because highD's accelerations are smooth: the frames just before the leader
+crosses -1 m/s^2 are always already below -0.5, so "1 s of |a| < 0.5 before the crossing" can never
+hold. The lead onset is now the START of the deceleration, as in the deposit (its lead_onset_t is
+the first nonzero deceleration): from the frame where the leader crosses -1.0 m/s^2 for at least
+0.3 s, back to the first frame after the last one with a > -0.2 m/s^2; that onset must be preceded
+by 1 s of |a| < 0.5 m/s^2 and reached within 3 s of the crossing (a second smoke test found the median ramp from -0.2 to -1 m/s^2 takes about 2 s, and over half of highD's lead decelerations are already under way when the vehicle enters the field of view; those are lost by construction). RT is measured from that onset.
+Nothing else changes.
+
 Output: replication/czb/out/nm3_response_time.md (aggregates only)
 Run:    python replication/czb/nm3_response_time.py   (after card NC.0b-lat)
 """
@@ -84,8 +93,11 @@ def extract(rec: int):
     for i, L in arr.items():
         a = L["a"]
         on = N.runs_start(a < -1.0, 8)
-        for m in np.flatnonzero(on):
-            if m < PRE or np.any(np.abs(a[m - PRE:m]) >= 0.5):
+        for mc in np.flatnonzero(on):
+            m = mc
+            while m > 0 and a[m - 1] <= -0.2 and mc - m < 75:
+                m -= 1
+            if mc - m >= 75 or m < PRE or np.any(np.abs(a[m - PRE:m]) >= 0.5):
                 continue
             f = L["frame"][m]
             j = follower_of.get((i, f))
