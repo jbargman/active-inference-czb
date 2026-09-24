@@ -5187,3 +5187,30 @@ by assumption.
 responses are worth in real braking on German motorways at ~115-125 km/h. If Malin Svärd's 99th
 percentile at 110-130 km/h is near 1.1 m/s^2, the gentle boundary IS "the 1% tail of everyday
 braking"; if near 2.2, the hard boundary is. Either way her number now has a place in the model.
+
+**Card NC.3k, sensitivity of the matching decelerations** (`nc3k_matching_sensitivity.py`), on
+Jonas's questions: exposure, and "TTC 3.3 s seems way too high; in another analysis the 80th
+percentile of hard braking was around 1 s TTC in the button data". Exposure: the second study
+showed every clip twice and JJ.10's curve pools both; applying EX.2's first-exposure ratio (+7.6%)
+moves the gentle matching deceleration from 1.08 to **1.13 m/s^2** -- negligible. (The situation
+mix is already controlled: the curve is evaluated at each real event's own looming.) The hard
+boundary: with its median at 2.5 / 2.0 / 1.5 / 1.0 s instead of 3.29, the model expects 5.1 / 2.5 /
+0.9 / 0.1 hard interventions among highD's 2,713 closing cut-ins, and the matching deceleration
+runs 2.45 / 2.68 / 2.86 / 2.89 m/s^2 -- saturating at the last few observed events (16 at 2.0,
+4 at 2.5, 0 at 3.0). **If the hard boundary is near 1 to 1.5 s, highD cannot test it at all**:
+the model predicts fewer than one hard intervention in the whole dataset.
+
+On "3.3 s too high" (judgment, jonas): NC.3j's 3.3 s is the clip-level 50% point of P(hard | the
+participant pressed), with TTC measured at the moment of pressing. From the same table, 80% of
+pressers say "hard" at about TTC 2.3 s at the press (between the TTC 3 clip, 78% at 2.37 s, and
+the TTC 2 clip, 88% at 1.68 s), and the 80th percentile across drivers of the boundary is
+3.29 x exp(-0.84 x 0.48) = 2.2 s. Neither is 1 s. Candidate reasons for the difference, not
+checked: the other analysis's quantity (unconditional on pressing? the TTC of the hard press
+itself?), its TTC definition (nominal label, or bumper-to-bumper; the designs differ by about
+0.47 s, DATA_DICTIONARY gotcha 5), and its data (which study). The stated "hard" is also a
+stated choice, not a measured deceleration.
+
+@NC3K.Q1(judgment, jonas): please send the definition behind "80th percentile of hard braking at
+about 1 s TTC" (which study; unconditional or among pressers; TTC nominal, at the press, or
+bumper-to-bumper). If it holds, the hard boundary is out of highD's reach and its real-traffic
+test needs closer calls than any highD cut-in provides.
