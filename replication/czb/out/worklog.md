@@ -5277,3 +5277,48 @@ kind, not a direct test of this contrast.
 questions (NC.3m) but differs BETWEEN studies even on looming (NC.3n), while the gentle boundary
 replicates. Report it that way; the between-study difference needs a candidate explanation tested
 (population or stimulus design) before any hard-boundary number is quoted as general.
+
+## 2026-09-25 (later) — how far to trust the first study (card AC.1), and two levels on one observation (card NC.3o)
+
+Jonas: *"We cannot trust study one. There is too much autocorrelation. I think we have said that
+before, or?"* The record: decision 8 (2026-08-26, `docs/czb_study1_data_plan.md` §2(b), handbook
+appendix 15) excluded the first study's SEQUENCE paradigm for autocorrelation, kept its RANDOM
+paradigm as the primary source and its BUTTON paradigm as validation only (satisficing,
+anticipation). Cards NC.3j, NC.3m and NC.3n used the Button paradigm as a primary source for the
+hard boundary, against decision 8: my error, recorded.
+
+**Card AC.1** (`ac1_serial_dependence.py` -> `out/ac1_serial_dependence.md`): lag-1 correlation of
+consecutive residuals (response minus cell mean minus the participant-session's mean). Sequence
+**+0.395** [+0.363, +0.425] (MATERIAL; the positive control passes); Random +0.032 [-0.001,
++0.076] (NOT DETECTED), but **+0.118** [+0.066, +0.168] between consecutive trials of the SAME
+scenario; Button -0.001 overall but **+0.324** [+0.252, +0.393] within scenario; study 2 **+0.047**
+[+0.029, +0.070] (PRESENT BUT SMALL). Changed after the first run, dated in the docstring: a NaN
+bug, and the first statistic did not remove the participant's own mean, which inflated every design
+(study 2 read +0.244); both versions are in the report. Reading (judgment, jonas): the Button data
+should not be a primary source (anticipation, satisficing, and now within-scenario dependence);
+the Random data are usable with care (same-scenario dependence about 2.5 times study 2's); study 2
+is the cleanest. Everything built on the Button paradigm is downgraded: NC.3j's hard boundary at
+3.3 s, NC.3m's within-person comparison, NC.3n's rows A and B, JJ.4 (press levels).
+
+**For later, at Jonas's request (keep):** *"the hard-braking judgment does not depend on whether
+participants judge their own action or the vehicle's; the gentle (intervention) boundary replicates
+across studies, the hard boundary does not."* CAVEAT attached now: its first half rests on NC.3m,
+which uses the Button paradigm; it needs the same comparison on data without that dependence
+before it is written anywhere.
+
+**Card NC.3o** (`nc3o_two_levels_one_observation.py`; second study only, expected vehicle action):
+an ordered model with two levels and ONE spread on log looming predicts both shares ("at least
+gently", "hard") held out at **0.1126**, against two independent boundaries' 0.1145 (one parameter
+more) and the ordered model on TTC's 0.1619 (chance 0.2685): **SUPPORTED.** Levels: expect gentle
+braking from **0.0117 rad/s**, hard from **0.124** (ratio 10.6), spread 1.36 log units; the
+intervention level 0.032 lies between (2.7 times the gentle level). Predictions: SUPPORTED right;
+the gentle level lower than predicted (0.03 to 0.05); looming over TTC right. Reading (judgment,
+review): the first prediction of the "several levels on one observation" structure that the
+separate threshold curves could not make, confirmed on the cleanest data; a structural success,
+not an improvement on the intervention model itself.
+
+@AC1.Q1(blocker, jonas): confirm the scope of "we cannot trust study one": the Button paradigm
+(agreed, now measured), the Random paradigm too (it carries TR.1's trait, stage-1 levels, EX.2 and
+the left-turn video levels), or both? The Random paradigm's dependence is small overall and 0.12
+within scenario; my recommendation is to keep it with that caveat and to refit its levels with a
+previous-trial term as a sensitivity before anything from it is quoted as final.
