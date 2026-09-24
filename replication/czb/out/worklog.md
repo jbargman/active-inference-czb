@@ -5322,3 +5322,45 @@ not an improvement on the intervention model itself.
 the left-turn video levels), or both? The Random paradigm's dependence is small overall and 0.12
 within scenario; my recommendation is to keep it with that caveat and to refit its levels with a
 previous-trial term as a sensitivity before anything from it is quoted as final.
+
+## 2026-09-25 (night) — the bedtime batch: NM.2, NC.0b-lat, NM.3, NC.4, NC.1, NM.1
+
+Jonas: *"I am going to bed now. You can start your batch."* Order as in `handover.md` banner item 8.
+Every card pre-stated in its own commit; batch mode (queries, no stops).
+
+**Card NM.2** (`nm2_following_preference.py` -> `out/nm2_following_preference.md`): the RELEASED
+preference on 981,899 real highD car-following samples (337,972 steady). The braking margin fires
+in **1.7%** of steady following (1.1 to 4.6% by speed band), the tau^-1 term in 0.05%; the
+margin's boundary headway at equal speeds (0.70 / 0.55 / 0.43 / 0.32 / 0.05 s from 40-70 to
+>130 km/h) lies at or below the real 5th percentile (0.67 / 0.58 / 0.54 / 0.55 / 0.59 s) and far
+below the real medians (1.3 to 1.7 s). Verdict **MIXED** by the letter of the rule (in the
+40-70 km/h band the boundary, 0.70, is just above the 5th percentile, 0.67); in substance the
+calibrated preference is silent over about 98% of real following and does not say where drivers
+choose to follow. Mean 26 nats a step in steady following, all from the rare samples where the
+margin fires (it is an indicator times a large constant). Prediction TOLERANT: right in 4 of 5
+bands.
+
+**Card NC.0b-lat** (`nc0b_latency.py`): real 4 s steady-following acceleration windows as noise,
+synthetic braking of known onset. **TIMING-VALID at a_th 1.0 m/s^2 and above** (false positives
+1.1% at 1.0, median latency 0.24 s, hit rate 0.995); **not at 0.5** (false positives 8% on 4 s
+windows; NC.3's 2.6% was counted on 3 s windows excluding episodes under way at the start). NC.3's
+primary (0.5 / 0.3) made no timing claims, so nothing is withdrawn; any timing claim uses >= 1.0.
+
+**Card NM.3** (`nm3_response_time.py`): lead-deceleration events on highD against the deposit's
+brake-response-time relation. The event definition was fixed twice BEFORE any result (dated in
+the docstring): highD's smooth accelerations made the pre-stated "quiet 1 s before the -1 m/s^2
+crossing" impossible, so the onset is the start of the lead's deceleration, as in the deposit, with
+the ramp within 3 s. 1,033 events; over half of highD's lead decelerations are already under way
+when the vehicle enters the field of view and are lost by construction. Detector 1.0 m/s^2 /
+0.12 s (the deposit's own definition, timing-valid). **DESCRIPTIVE ONLY** by the rule (moderate
+stratum 85 responses, hard 30; 100 needed). Slope of log RT on log THW0: mild +0.227 [+0.081,
++0.337], moderate **+0.395 [+0.258, +0.501]**, hard +0.451 [-0.005, +0.969]; the deposit **+0.594**.
+Median RT at THW0 1-2 s: 3.12 / 2.36 / 2.16 s against the deposit's 0.80 s. Reading (judgment,
+review): the relation's DIRECTION holds on real motorway data and steepens with the lead's
+severity toward the model's; the model's level is an emergency level, three times faster than
+real responses to real decelerations. Prediction: slope positive right, shape "holds" untested by
+rule, level right in direction.
+
+@NM3.Q1(judgment, jonas): NM.3 is descriptive for want of hard lead decelerations on the motorway
+(32 events of >= 3 m/s^2). exiD (applied for) or rounD would add some; the paper's relation is an
+emergency relation and highD rarely contains emergencies.
