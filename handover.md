@@ -73,7 +73,15 @@ and the repository disagree, the repository wins, and you say so in your reply.*
 >    0.513). Real followers respond far beyond it: 40% at TTC 5–10 s, 13% at 10–20 s, 5% beyond
 >    40 s. The released shape is a collision-avoidance shape; the comfort zone reaches TTC 20 s
 >    and more. Next: fit its mean per population on highD (the naturalistic level on the TTC axis)
->    and run the video half of NC.5-tau (§4).
+>    and run the video half of NC.5-tau (§4). *[SUSPENDED by item 5: those responses were mostly
+>    mild braking.]*
+> 5. **Hard braking only (NC.3d to NC.3g; Jonas: count only hard braking, at least 2.5 m/s²).**
+>    4 hard responses in 2,771 real closing cut-ins (0.14%); highD's own 99th percentile of
+>    deceleration is 1.07 m/s². The video curve expects about 112 interventions inside its looming
+>    range; 3 hard ones occurred. But the participants themselves answered "gently" for 59% of
+>    their interventions: "hard" for 88% at the TTC 2 s clip, falling to 7% at 8 s, switching near
+>    the released τ⁻¹ floor of 5 s. **Open, blocker for Jonas: NC3G.Q1, model a gentle boundary and
+>    a hard boundary separately?**
 
 ## 1 Where the project stands: the free-energy account of the comfort-zone boundary
 
