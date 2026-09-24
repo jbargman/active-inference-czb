@@ -5161,3 +5161,29 @@ different tails. highD at 110-130 km/h: 99th 0.87, 99.9th 1.77 m/s^2, to compare
 @NC3I.Q1(judgment, review): the hard boundary is not identified per press on either axis; the
 clip-level grading is strong. A per-driver hard boundary would need the button design's
 per-participant responses across clips (5 clips per participant): feasible, not yet done.
+
+**Card NC.3j, the hard boundary at the clip level** (`nc3j_hard_by_clip.py` ->
+`out/nc3j_hard_by_clip.md`). Seven car clips of the button design (TTC 2 to 8 s), 2,384 presses:
+share hard 0.88, 0.78, 0.54, 0.31, 0.18, 0.12, 0.07 at median TTC-at-press 1.7, 2.4, 3.4, 4.4, 5.1,
+5.7, 5.8 s. **Hard boundary: median TTC 3.29 s [2.93, 3.65], spread 0.48 [0.41, 0.60]** (participant
+bootstrap); identified, unlike the per-press fits. On highD the two-boundary model (intervention on
+looming, JJ.10; hard on TTC, this fit) expects 11.0 hard interventions among 2,713 closing cut-ins;
+**the matching deceleration is 2.23 m/s^2 [1.97, 2.40]**. Predictions: boundary 3.5 to 4.5 s
+(slightly lower than predicted), matching 2.0 to 2.6 (inside).
+
+**The two boundaries, as they stand (judgment, jonas).**
+* gentle (the comfort zone): the video's intervention curve on looming, level 0.032 rad/s; in real
+  motorway traffic it corresponds to braking of **1.08 m/s^2** [0.97, 1.22] (NC.3h), about highD's
+  own 99th percentile of deceleration at these speeds;
+* hard: TTC 3.3 s at the clip level (a per-scenario judgment); in real traffic it corresponds to
+  **2.23 m/s^2** [1.97, 2.40], between highD's 99.9th percentile (1.8 to 2.2 at 90-130 km/h) and
+  the ITSC figure of 2.5.
+The released tau^-1 preference's floor (TTC 5 s) sits between the two: above the hard boundary
+(3.3 s), inside the region where participants already intervene gently. These are population
+statements from two different studies (study 2's intervention curve, study 1's hard split) joined
+by assumption.
+
+@NC3J.Q1(judgment, jonas): the matching decelerations (1.1 gentle, 2.2 hard) are what the video's
+responses are worth in real braking on German motorways at ~115-125 km/h. If Malin Svärd's 99th
+percentile at 110-130 km/h is near 1.1 m/s^2, the gentle boundary IS "the 1% tail of everyday
+braking"; if near 2.2, the hard boundary is. Either way her number now has a place in the model.

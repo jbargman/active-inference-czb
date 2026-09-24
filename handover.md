@@ -79,9 +79,16 @@ and the repository disagree, the repository wins, and you say so in your reply.*
 >    4 hard responses in 2,771 real closing cut-ins (0.14%); highD's own 99th percentile of
 >    deceleration is 1.07 m/s². The video curve expects about 112 interventions inside its looming
 >    range; 3 hard ones occurred. But the participants themselves answered "gently" for 59% of
->    their interventions: "hard" for 88% at the TTC 2 s clip, falling to 7% at 8 s, switching near
->    the released τ⁻¹ floor of 5 s. **Open, blocker for Jonas: NC3G.Q1, model a gentle boundary and
->    a hard boundary separately?**
+>    their interventions: "hard" for 88% at the TTC 2 s clip, falling to 7% at 8 s.
+> 6. **Two boundaries (NC.3h to NC.3j; Jonas: "go for two boundaries").** Gentle (the comfort
+>    zone): the video's intervention curve on looming; real motorway followers match it at braking
+>    of **1.08 m/s²** [0.97, 1.22], about highD's own 99th percentile of deceleration at these
+>    speeds. Hard: fitted per clip (per-press fits are not identified), **TTC 3.3 s** [2.9, 3.7];
+>    real followers match it at **2.23 m/s²** [1.97, 2.40], near the 2.5 m/s² Malin Svärd presented
+>    at ITSC. Ask her for the 99th percentile at **110–130 km/h**, over all driving samples, with
+>    the sampling rate and filtering (NC3H.Q1). highD at 110–130 km/h: 99th 0.87, 99.9th 1.77 m/s².
+>    The inverse-TTC axis question (NC3C.Q1) remains open; the hard boundary is on TTC, the gentle
+>    one still on looming.
 
 ## 1 Where the project stands: the free-energy account of the comfort-zone boundary
 
