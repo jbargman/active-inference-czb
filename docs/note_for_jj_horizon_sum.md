@@ -1,5 +1,12 @@
 # A note for JJ: what we found when we put the full active-inference stack on the cut-in data
 
+> **[2026-09-24, do not send as it stands.]** The naturalistic data arrived after this note was
+> drafted. On 2,208 real highD cut-ins the followers' braking responses are ordered by inverse TTC
+> better than by looming (cards NC.3, NC.3c), so this note's statement that "these participants
+> respond to optical expansion (Δv/gap²)" holds for the video study only. The horizon-sum argument
+> is unaffected; the gate is now measured on highD (card JJ.9). Revise with Jonas's answer to
+> query NC3C.Q1 before sending.
+
 *Draft, 2026-09-22, for Jonas to send when he chooses (his decision 2). One page. The colleague
 is JJ in every project document; this note names no one and no company. Every number is from a
 committed script with a tracked output in the project repository; the pointers are in brackets

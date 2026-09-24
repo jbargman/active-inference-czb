@@ -43,6 +43,35 @@ and the repository disagree, the repository wins, and you say so in your reply.*
    order, batch mode (`performing-research` skill §2): never block, raise queries, report card by
    card.
 
+> ## RESUME HERE — 2026-09-24: the naturalistic data arrived, and the first three results
+>
+> highD v1.0 and inD v1.1 are at `C:\JonasLocal\D_Data` (not in the repository; per-sample caches
+> in `C:\JonasLocal\D_Data_derived`; only aggregates are committed, the licence). One session
+> (Opus 5.5, about 1.5 hours) ran four pre-stated cards on highD; worklog entry "2026-09-24":
+>
+> 1. **JJ.9, the gate PREDICTED.** The lateral uncertainty of vehicles ahead in an adjacent lane,
+>    measured on 1.3 million highD samples and unconditioned on lane changes, gives a gate that,
+>    with nothing from the video, scores 0.1115 / 0.0340 on the second cut-in study (both rules
+>    hold; (a) by 0.0012). The circularity of §1 point 2 below is gone. But real traffic's
+>    uncertainty is smaller than the participants' (σ 0.125 against 0.33; pre-onset gate 0.006
+>    against G.1's 0.067): lab participants anticipate cut-ins about ten times more than a motorway
+>    warrants.
+> 2. **NC.0b + NC.3, the video curve TRANSFERS; its level within 21%.** Detector a_th 0.5 m/s²,
+>    T_min 0.3 s (false positives 2.6% on steady following). 2,208 closing cut-ins, 11.6% respond
+>    within 3 s. The video population's curve, nothing refitted, beats chance (0.065 against
+>    0.083); a highD refit's level is 0.0388 rad/s against the video's 0.0320. Holds at detector
+>    thresholds 0.5 and 1.0, not at 1.5 and 2.0 (NC.3b).
+> 3. **NC.3 + NC.3c, the AXIS does NOT carry over: inverse TTC beats looming on real cut-ins,**
+>    at every detector setting and in both gap ranges (AUC TTC 0.739, looming 0.713, gap 0.615;
+>    looming − TTC −0.026 [−0.043, −0.006]). **Query NC3C.Q1 (blocker, for Jonas):** is the video's
+>    button press or real braking the operationalisation of the comfort-zone boundary? Until that
+>    is answered, §1's "the boundary is a prior over *looming*" is a claim about the video data
+>    only, and `docs/note_for_jj_horizon_sum.md` carries a marker saying so (still not sent).
+>
+> The next card is written in §4 as **NC.5-tau**: the released model's own τ⁻¹ preference, read
+> pointwise (not summed), with JJ.9's gate, scored on highD and on the video cells. It is the
+> one construction that could make the released model's term the axis in real traffic.
+
 ## 1 Where the project stands: the free-energy account of the comfort-zone boundary
 
 *Written 2026-09-22 (day) at Jonas's request: "summarize where we are at with respect to a free
@@ -296,6 +325,22 @@ the coasting value the ego holds, and (iii) the brake test reading the whole pla
 below −1 m/s²), not step 0; three planner seeds; rule (e) on the seed spread. Then RE.4's two
 planner-side functionals rescored. Slow (the CEM planner over 378 cells × 3 seeds; hours);
 background with a log.
+
+### Card NC.5-tau — the released τ⁻¹ preference as the axis, pointwise, on highD and the video (after: nothing; first)
+
+NC.3 and NC.3c found inverse TTC orders real followers' responses better than looming. The
+released model already has a τ⁻¹ preference (one-sided Gaussian, mu 0.2 s⁻¹, sd 0.125;
+`aidriver.preferences`, card JJ.5), which failed on the video only when SUMMED over a horizon
+(JJ.5b, JJ.12). Pre-state and run: (1) on highD's closing cut-ins (`nc3_highd_cutins.py`'s cache
+and censoring, primary detector), the three-parameter curve on log τ⁻¹ held out by recording, and
+the released term's residual −log p_τ at the event as the axis, AUC and binned wRMSE against
+NC.3's looming and TTC rows; (2) the same pointwise term on the second cut-in study with JJ.9's
+empirical gate, against 0.1027. Rule, pre-state: the released τ⁻¹ term is the axis in real
+traffic if its AUC on highD is within 0.01 of TTC's (it is a monotone transform above mu, so it
+should be, except where it is floored below 5 s TTC's threshold); report where its one-sided
+floor (TTC > 5 s costs nothing) sits against highD's TTC distribution. An hour, on the caches.
+Also run inD's first card, **NC.1** (left turns), per `docs/naturalistic_data_plan.md` §3; its
+data are untouched.
 
 ### Card JJ.13 — the free energy with a memory: F accumulated over the past (after: JJ12.Q1)
 

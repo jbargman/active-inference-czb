@@ -5015,3 +5015,35 @@ control for the cutter's deceleration in the window is the obvious next confound
 @JJ9.Q1(judgment, review): the empirical gate passes (a) by 0.0012; the naturalistic lateral
 uncertainty (0.125 m/s) is well below the video-implied 0.33. The honest headline is "the gate's
 FORM is predicted; its size in the lab reflects anticipation about ten times real base rates".
+
+**Card NC.3c, the axis by range** (`nc3c_axis_by_range.py` -> `out/nc3c_axis_by_range.md`;
+NC3.Q1 run at once because the cache made it minutes). **TTC THROUGHOUT** on the pre-stated rule.
+Inside the video's looming range (>= 0.0036 rad/s, 404 events, 26% respond): AUC looming 0.573,
+gap 0.375, TTC 0.730, looming - TTC -0.157 [-0.207, -0.084]; outside it -0.014 [-0.044, +0.020].
+**Caveat stated here, not in the docstring (a design flaw of the split I saw only in the
+result):** S1 splits ON looming, which restricts looming's own range inside each subset and so
+lowers its AUC mechanically, and conditioning on looming >= 0.0036 induces a negative gap-dv
+relation (hence the gap's AUC below 0.5). S2 splits on the gap, which restricts neither axis's
+definition in that way: TTC still wins in both halves, -0.029 [-0.049, -0.007] at gaps <= 40 m
+and -0.019 [-0.037, -0.004] above. So the finding does not rest on S1. Prediction (UNDECIDED)
+wrong.
+
+**What this does to the account (judgment, jonas).** On real highway cut-ins, followers' braking
+responses are ordered by inverse TTC, not by optical expansion, at every gap range and every
+detector setting; the video study's looming result is not reproduced in real traffic. The level
+of the video curve transfers (NC.3: 1.21x); its axis does not. In free-energy terms the gate
+(JJ.9) and the level survive naturalistic data, and the preference's argument, which the video
+data said was looming, may be tau^-1 in real driving -- which is the released model's own
+looming term (card JJ.5), read pointwise rather than summed. Not tested here and the obvious next
+card (NC.5-tau): the video-fitted curve re-expressed on inverse TTC, and the released tau^-1
+preference (mu 0.2, sd 0.125) scored as the axis on highD, pointwise, with JJ.9's gate.
+
+RESOLVED NC3.Q1: (card NC.3c) the axis is not range-dependent on highD; TTC orders real responses
+better than looming inside and outside the video's range (the gap split, S2, is the fair one).
+
+@NC3C.Q1(blocker, jonas): the video says looming, real traffic says inverse TTC. Before the
+handbook, the deck or the note for JJ says "the boundary is a prior over looming", this needs your
+judgment: is the video's button press the right operationalisation of the comfort-zone boundary
+(then looming, and real braking is a different response), or is real braking the ground truth
+(then tau^-1, and the video design, one lead speed per clip, is what made looming win)? The note
+for JJ has been marked accordingly and NOT sent.
