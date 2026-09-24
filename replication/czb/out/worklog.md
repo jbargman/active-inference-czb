@@ -5236,3 +5236,44 @@ matching of NC.3j belongs to the OWN-action boundary (3.3 s) only.
 RESOLVED NC3K.Q1: (by card NC.3l, pending Jonas's confirmation of his analysis's definition) the
 1 s figure is the expected-vehicle-action question of the second study; the 3.3 s is the own-action
 question of the first study at the press. Two constructs, both reported.
+
+## 2026-09-25 — the two hard constructs within the same people: cards NC.3m, NC.3n; literature
+
+Jonas: "can we handle this somehow? Explain it specific in a paper?" (the 3.3 s against 1.64 s).
+
+**Card NC.3m** (`nc3m_two_hard_constructs.py`): the first study asked the SAME 43 participants
+both questions (expected vehicle action in the Random sessions, own action in the Button
+sessions); TTC from the traces the same way in both. Expect the car to brake hard: **3.04 s**
+[2.82, 3.29]; would brake hard themselves: **3.29 s** [2.90, 3.66]; own minus expected +0.078 in
+log TTC [-0.028, +0.170]: **NO DIFFERENCE WITHIN PEOPLE.** The statement of the previous session
+("people say they themselves would brake hard earlier than they judge the car must") is
+WITHDRAWN: the gap to NC.3l's 1.64 s is between STUDIES, not constructs. Prediction (construct
+difference) wrong.
+
+**Card NC.3n** (`nc3n_hard_on_looming.py`): the same boundaries in looming. Study 1 expect-hard
+**0.072 rad/s** [0.062, 0.084]; study 1 own-hard at the press 0.062 [0.049, 0.078]; study 2
+expect-hard **0.114** [0.100, 0.134]. Study 1 against study 2: ratio 0.63; on TTC 1.85. **Does NOT
+replicate on looming** by the pre-stated rule (|log ratio| 0.46 against 0.26), though the gap is
+halved in log terms. For contrast, the INTERVENTION (gentle) level replicates across the two
+studies on looming: 0.032 (study 2, JJ.10) against 0.0317 pooled / 0.034 first exposure (study 1,
+stage 1 and EX.2). So: the gentle boundary is the same in both studies; the hard boundary sits
+2.3x the gentle one in study 1 and 3.6x in study 2. Candidate reasons, untested: different
+participants (43 lab-recruited against 144 crowdsourced), different stimuli (study 2: one lead
+speed, dv 7 to 42 km/h, three lane-change durations), different response moments.
+
+**Literature on "judgments follow looming, real braking follows inverse TTC"** (searched
+2026-09-25; read as search summaries unless stated, so treat wording as UNVERIFIED): real braking
+modelled with tau^-1: Kiefer, LeBlanc & Flannagan (2005), Accid. Anal. Prev. (test-track
+last-second braking judgments, an inverse-TTC threshold decreasing with speed); Markkula et al.
+(2016), Accid. Anal. Prev. 95, 209-226 (naturalistic rear-end emergencies; brake onsets explained
+by accumulated looming, where "looming" is tau^-1); Xue et al. (2018), Accid. Anal. Prev. 118,
+114-124 (simulator; tau^-1 fitted better than theta_dot -- verified 2026-09-03, DECK.Q1).
+Judgments influenced by optical size: DeLucia's size-arrival effect (larger objects judged to
+arrive sooner, against tau; DeLucia 2005, and others). Judgment and action tasks may use
+different information: Tresilian (1995), Perception & Psychophysics. So the split has support in
+kind, not a direct test of this contrast.
+
+@NC3N.Q1(judgment, jonas): for the paper, the hard boundary is equal WITHIN people across the two
+questions (NC.3m) but differs BETWEEN studies even on looming (NC.3n), while the gentle boundary
+replicates. Report it that way; the between-study difference needs a candidate explanation tested
+(population or stimulus design) before any hard-boundary number is quoted as general.
