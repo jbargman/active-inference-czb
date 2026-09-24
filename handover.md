@@ -88,11 +88,13 @@ and the repository disagree, the repository wins, and you say so in your reply.*
 >    at ITSC. Ask her for the 99th percentile at **110–130 km/h**, over all driving samples, with
 >    the sampling rate and filtering (NC3H.Q1). highD at 110–130 km/h: 99th 0.87, 99.9th 1.77 m/s².
 >    The inverse-TTC axis question (NC3C.Q1) remains open; the hard boundary is on TTC, the gentle
->    one still on looming. **Two hard constructs (NC.3l):** the 3.3 s is the first study's OWN
->    action ("would you brake gently or hard?", at the press); the second study asked what the
->    participant EXPECTS THE CAR to do, and there half expect hard braking at **TTC 1.64 s** (80%
->    near 1 s, which matches Jonas's other analysis). That judgment follows looming, not TTC
->    (0.104 against 0.168). At 1.6 s the model expects about one hard event in all of highD: the
+>    one still on looming. **Hard boundary, corrected 2026-09-25 (NC.3l to NC.3n):** the second
+>    study asked what participants EXPECT THE CAR to do; half expect hard braking at **TTC 1.64 s**
+>    (80% near 1 s, Jonas's other analysis), a judgment that follows looming (0.104 against 0.168).
+>    Within the first study's own 43 participants, "expect the car" (3.04 s) and "I would"
+>    (3.29 s) do NOT differ (NC.3m), so the gap is between studies, not constructs; in looming it
+>    halves but remains (0.072 against 0.114 rad/s, NC.3n), while the gentle boundary replicates
+>    across studies (0.032 against 0.034). At 1.6 s the model expects about one hard event in all of highD: the
 >    hard boundary cannot be tested on highD. Exposure: the gentle match moves 1.08 → 1.13 m/s²
 >    at first exposure (NC.3k). Jonas (2026-09-24): work on looming, keep TTC alongside for now.
 
