@@ -94,7 +94,24 @@ and the repository disagree, the repository wins, and you say so in your reply.*
 >    Within the first study's own 43 participants, "expect the car" (3.04 s) and "I would"
 >    (3.29 s) do NOT differ (NC.3m), so the gap is between studies, not constructs; in looming it
 >    halves but remains (0.072 against 0.114 rad/s, NC.3n), while the gentle boundary replicates
->    across studies (0.032 against 0.034). At 1.6 s the model expects about one hard event in all of highD: the
+>    across studies (0.032 against 0.034).
+> 7. **Trust in the first study (AC.1, 2026-09-25).** Serial dependence, lag-1 residual
+>    correlation: Sequence +0.40 (excluded since 08-26), Button +0.32 within scenario, Random
+>    +0.12 within scenario (+0.03 overall), study 2 +0.05. **The Button paradigm is not a primary
+>    source** (decision 8, now measured): NC.3j, NC.3m, NC.3n rows A–B and JJ.4 are downgraded.
+>    Scope for the Random paradigm is query **AC1.Q1** (Jonas). **NC.3o (study 2 only): gentle
+>    and hard are two levels on ONE looming observation with one spread** (held out 0.1126 against
+>    two free boundaries' 0.1145; on TTC 0.162): expect gentle braking from 0.012 rad/s, hard
+>    from 0.124, the intervention level 0.032 between them.
+> 8. **The bedtime batch (Jonas: "run NM.1–3 when I say I go to bed"), in this order:**
+>    NM.2 (real following headways against the model's calibrated preferences; hours) → NC.0b's
+>    latency validation (synthetic onsets, the plan's §2; needed for any timing claim) → NM.3
+>    (response time against urgency in highD lead-braking events; the Nature paper's central
+>    validation) → NC.4 (highD responses between the cutter's lateral onset and the lane switch:
+>    the gate on real data) → NC.1 (inD left turns, the population boundary, and whether the
+>    cut-in looming level carries to it) → NM.1 (the released model behind replayed highD leads;
+>    machine time, last). Each pre-stated in its own commit. Then a draft email to Julian,
+>    NOT sent. At 1.6 s the model expects about one hard event in all of highD: the
 >    hard boundary cannot be tested on highD. Exposure: the gentle match moves 1.08 → 1.13 m/s²
 >    at first exposure (NC.3k). Jonas (2026-09-24): work on looming, keep TTC alongside for now.
 
