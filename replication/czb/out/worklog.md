@@ -4931,3 +4931,87 @@ car. Recorded so the two are not confused.
 slightly lower everywhere); the per-driver priors' 10th to 90th percentiles are 0.011 to 0.087
 rad/s. These are the numbers that would replace `out/stage1_looming.md`'s in handbook chapter 13
 if the active-inference wording is adopted there; not done, that is a handbook rewrite.
+
+## 2026-09-24 — the naturalistic data arrive: cards JJ.9, NC.0b + NC.3 (first pass), NC.3b
+
+Jonas: *"I now have the nds data ... C:\JonasLocal\D_Data. Do what you can with that as fast as
+possible now."* highD v1.0 (60 recordings, 25 Hz) and inD v1.1 are at `C:\JonasLocal\D_Data`;
+per-sample and per-event values are cached under `C:\JonasLocal\D_Data_derived` (outside the
+repository, the licence); the repository gets aggregates only. Session on Opus 5.5. Every card
+pre-stated in its own commit before the run.
+
+**Card JJ.9, the gate's lateral uncertainty measured on highD** (`jj9_highd_lateral.py` ->
+`out/jj9_highd_lateral.md`). 1,311,916 samples: every vehicle, every whole second, with a
+vehicle behind it in an adjacent lane (the cut-in geometry); the error of its constant-rate
+lateral projection over 3 s toward that follower's lane, UNCONDITIONED on whether it then changes
+lanes (the review's lesson from GM.1a). sd 0.374 m (sigma 0.125 m/s, against JJ.6e's 0.33 taken
+from G.1), robust sd 0.230 m, heavy tail: P(e > 1.6 m) = 0.0062. **The empirical highD gate,
+nothing from the video, scores 0.1115 / 0.0340 on the second cut-in study: PREDICTED** (rules (a)
+0.1127 and (b) 0.05 both hold). The circularity of JJ.6e is gone: the gate is a prediction of a
+generative model estimated on naturalistic driving. **Read with its nuance (judgment, review):**
+(a) holds by 0.0012 and the post-onset gain over no gate is small (0.1130 -> 0.1115); the gate's
+work is pre-onset (0.4832 -> 0.0340). Real traffic's lateral uncertainty is much SMALLER than the
+one the participants' gate implies: pre-onset gate 0.006 against G.1's 0.067, sigma 0.125 against
+0.33. That is Jonas's point about repeated trials, now with a number: participants who know a
+cut-in is coming act as if lane changes were about ten times likelier than on a German motorway,
+and the fitted gate (G.1, 0.1023) beats the naturalistic one post-onset because it carries that
+anticipation. Prediction check: sd, robust sd and P(e > 1.6) all inside or near the predicted
+ranges; verdict "LEVEL ONLY or a narrow PREDICTED" -- it was the narrow PREDICTED. The error DOES
+depend on the observed rate (a lane change in progress continues: P(e > 1 m) 0.13 at 0.2 to
+0.5 m/s toward, 0.004 at rest), so the single Gaussian-rate predictor is an approximation.
+
+**Cards NC.0b + NC.3, first pass** (`nc3_highd_cutins.py` -> `out/nc3_highd_cutins.md`,
+`_bins.csv`). Detector (the plan's rule, FP rate on 202,995 steady-following windows): primary
+**a_th 0.5 m/s^2, T_min 0.3 s** (FP 0.026); latency not validated, so no timing claims (the
+plan's stop rule). Census: 8,881 candidate cut-ins; 687 censored (follower already
+decelerating), 284 (follower changes lane); **2,208 closing cut-ins, 11.6% respond within 3 s**;
+5,702 opening cut-ins, 1.2%. Real cut-ins are gentle: median gap 68 m, dv 2.65 m/s, looming
+0.0011 rad/s (the video's cells start at 0.0036), so most of highD sits below the video level.
+Gate open at the event by construction (the cutter is half in the lane): this tests axis and
+level, not the gate.
+* **(a) The video curve TRANSFERS, nothing refitted**: binned wRMSE 0.0650 against chance 0.0832
+  (JJ.10's mixture, study 2). A highD refit held out by recording: 0.0152, level **0.0388 rad/s,
+  1.21 times the video's 0.0320**, spread 2.35 (the video's 1.29). The level carries over within
+  about 20%; the real curve is flatter. JJ.7's study-1 population (lapse 0) does not transfer
+  (0.1102): the lapse matters at these low looming values. Prediction check: I predicted the video
+  curve would OVERpredict by level and fail (a); it underpredicts in the middle deciles and
+  transfers. Wrong in direction.
+* **(b) The axis does NOT carry over**: AUC looming 0.713, gap 0.615, **TTC 0.739**; looming minus
+  gap +0.098 [+0.074, +0.122], looming minus TTC **-0.026 [-0.047, -0.005]**. On real highway
+  cut-ins inverse TTC orders the responses better than looming. Prediction ("looming beats TTC")
+  wrong.
+**NC.3b** (`nc3b_detector_sweep.py` -> `out/nc3b_detector_sweep.md`; added after the run because
+the plan requires the sweep beside every response-dependent result): (a) holds at a_th 0.5 and
+1.0 at every T_min, fails at 1.5 and 2.0 (responses 0.5 to 1.6%, where the video lapse alone
+overpredicts); **TTC beats looming at every one of the 12 settings** (AUC 0.74 to 0.90 against
+0.71 to 0.84); gap is worst everywhere.
+
+**Reading (judgment, review).** Three things from one afternoon of real data. The gate is now a
+prediction, and it shows the lab participants anticipate about ten times more than real traffic
+warrants. The video population's LEVEL carries to real followers within 20%. And the AXIS does not:
+on real highway cut-ins, at median gaps of 68 m and slow closing, inverse tau beats optical
+expansion, where on the video (gaps of 2 to 80 m, one lead speed, dv 7 to 42 km/h) looming beat
+TTC by 0.055. Candidate explanations, none tested: (i) looming thresholds are near the
+perceptual floor at 68 m (median 0.0011 rad/s, below reported detection thresholds), so drivers
+there use a tau-like estimate; (ii) the response here is a real deceleration, possibly to the
+cutter's own braking after entry, which TTC tracks; (iii) the design range differs. It bears
+directly on Jonas's inverse-tau question and on the note for JJ (the axis claim there is a VIDEO
+claim). Xue et al. (2018), cited in the deck, found tau^-1 better than theta_dot on their data.
+
+Queries:
+
+@NC3.Q1(blocker, jonas): the axis. Video says looming, highD says TTC (by 0.026 AUC, interval
+excluding zero, robust to the detector). Before anything is written: restrict highD to the
+video's range (looming above 0.0036 rad/s, gaps below 40 m) and redo (b) -- if looming wins there
+and TTC wins at long gaps, the axis is range-dependent, which is a finding in itself; if TTC wins
+there too, the video's looming result is a property of its design. Recommend that card next
+(NC.3c, an hour).
+
+@NC3.Q2(judgment, jonas): the response is a deceleration of 0.5 m/s^2 for 0.3 s within 3 s of
+the lane switch; the video's is a button press. The level transferring within 20% suggests the
+mapping is not crazy, but a response to the cutter's subsequent braking would inflate it; a
+control for the cutter's deceleration in the window is the obvious next confound to state.
+
+@JJ9.Q1(judgment, review): the empirical gate passes (a) by 0.0012; the naturalistic lateral
+uncertainty (0.125 m/s) is well below the video-implied 0.33. The honest headline is "the gate's
+FORM is predicted; its size in the lab reflects anticipation about ten times real base rates".
