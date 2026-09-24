@@ -5108,3 +5108,56 @@ needed.
 
 @NC3E.Q1(minor, jonas): the colleague's 99th percentile (2.5 m/s^2) is ~2.3x highD's (1.07); a
 reference for it, when available, belongs in the card's docstring.
+
+## 2026-09-24 (evening) — two boundaries and their matching decelerations: cards NC.3h, NC.3i
+
+Jonas: *"Can you estimate the deceleration that would make them match? OK, go for two boundaries
+then (NC3G.Q1). It was Malin Svärd that presented the 2.5 m/s^2 at the ITSC conference, but I
+actually think that you are right that the 2.5 m/s^2 was the average and that it was lower at
+higher speeds. If I should ask her, what speeds should I ask for?"* (The colleague may be named in
+the worklog: Jonas named her as the presenter of a public conference talk; the naming rule covers
+JJ only.)
+
+**Card NC.3h** (`nc3h_two_boundaries.py` -> `out/nc3h_two_boundaries.md`; highD re-extracted with,
+per event, the deepest deceleration sustained 0.32 s with onset within 3 s, and the deceleration at
+the switch). **The deceleration at which real followers match the video's intervention boundary:
+1.08 m/s^2 [0.97, 1.22]** (all 2,713 closing cut-ins, calibration in the large, no lapse; 0.93
+inside the video's looming range; 0.75 with the lapse; wRMSE-minimiser 0.95). As predicted
+(0.9 to 1.2). The hard boundary as pre-specified, P(hard | looming at the press), is NOT
+IDENTIFIED: median 0.81 rad/s, interval open to infinity, spread 4.5 log units; hard against
+gentle barely depends on the looming at the press. Its matching deceleration (1.92 [1.71, 2.12])
+therefore means "the deceleration exceeded by about as many events as a quarter of the
+interventions", not a boundary. Speeds: highD's closing cut-in followers median **122 km/h**
+(quartiles 110 to 131; 116 inside the video's range); the video's ego median 114 km/h. highD's own
+deceleration 99th percentile by speed band: 1.17 (70-90 km/h), 1.02 (90-110), 0.87 (110-130), 1.07
+(>130); 99.9th: 2.47, 2.17, 1.77, 1.92. Falling with speed to 130 km/h, as Jonas remembered of
+the ITSC figure.
+
+**Card NC.3i** (`nc3i_hard_on_ttc.py`): the hard boundary on TTC at the press instead. Also NOT
+IDENTIFIED per press (median 0.89 s, interval [0.00, 2.64], spread 2.3): within a clip, the moment
+of pressing does not predict hard against gentle. Between clips it is strongly graded (54% hard at
+the TTC 4 s label, median TTC at press 3.4 s; 31% at 4.4 s; 18% at 5.1 s; 12% at 5.7; 7% at 5.8), so
+participants appear to choose hard or gentle by the scenario, not by the instant. Matching
+deceleration for the hard boundary: **1.91 m/s^2 [1.70, 2.17]**, the same as NC.3h's, because both
+hard curves expect about 21 hard interventions on highD.
+
+**Reading (judgment, jonas).** The video's intervention corresponds in real motorway traffic to
+braking of about **1.1 m/s^2**, roughly highD's own 99th percentile of deceleration at these speeds
+(0.87 to 1.02); its hard component to about **1.9 m/s^2**, roughly highD's 99.9th percentile (1.77
+to 2.17). Neither is 2.5. On Jonas's satisficing worry: 1.1 m/s^2 sustained 0.3 s after a cut-in
+is exceeded in only 1% of motorway driving time, so it is not ordinary speed regulation, though it
+is not hard braking either. The hard boundary is best specified at the clip level (a
+per-SCENARIO judgment), which the two-boundary model should respect: next card, a cell-level fit
+of P(hard | intervene) on the clip's TTC, with the TTC 2 and 3 s clips included
+(`button_cutin_trials`), and on the second study if it has a comparable question (it asks the
+automation's expected action, not the participant's own: check before using).
+
+@NC3H.Q1(judgment, jonas): for Malin Svärd, ask for the 99th percentile of longitudinal
+deceleration at **110-130 km/h** (the band containing the video ego's 114 km/h and highD's cut-in
+followers' 122 km/h), computed over ALL driving time samples (not braking events only), and ask
+the sampling rate and filtering, because a 25 Hz unfiltered signal and a 10 Hz filtered one give
+different tails. highD at 110-130 km/h: 99th 0.87, 99.9th 1.77 m/s^2, to compare against.
+
+@NC3I.Q1(judgment, review): the hard boundary is not identified per press on either axis; the
+clip-level grading is strong. A per-driver hard boundary would need the button design's
+per-participant responses across clips (5 clips per participant): feasible, not yet done.
