@@ -5364,3 +5364,28 @@ rule, level right in direction.
 @NM3.Q1(judgment, jonas): NM.3 is descriptive for want of hard lead decelerations on the motorway
 (32 events of >= 3 m/s^2). exiD (applied for) or rounD would add some; the paper's relation is an
 emergency relation and highD rarely contains emergencies.
+
+**Cards NC.4, NC.4b, NC.4c, the gate on real traffic** (`nc4_pre_switch.py`, `nc4b_earlier.py`,
+`nc4c_isolated.py`). Do highD followers respond BEFORE the cutter crosses into their lane, and does
+card JJ.9's empirical lateral-motion gate predict which ones? Detector 1.0 m/s^2 / 0.12 s
+(timing-valid). NC.4 read the gate 1 s before the switch: SATURATED (mean 0.92 to 0.98, the cutter
+is mid-lane-change), no leverage -- a flaw of the moment chosen. NC.4b at 2 s and 3 s before: the
+gate is graded (mean 0.35 and 0.06) but does not predict early responses (AUC 0.488, 0.515), and
+multiplying looming by it LOWERS discrimination (-0.075 [-0.129, -0.027], -0.061 [-0.104, -0.020]).
+NC.4c rules out the follower's own leader (events where it is absent, or not closing and not
+braking: 1,710 of 1,878 at 2 s): on those isolated events looming to the cutter still predicts
+early responses well (**AUC 0.856**, so they are attributable to the cutter) and the gate still
+does not help (**-0.093 [-0.146, -0.046]**; at 3 s -0.068 [-0.122, -0.027]). The own-leader
+events carry 40% of the early responses at five to seven times the rate (16 to 20%).
+Reading (judgment, jonas): real followers begin braking for a closing car in the adjacent lane
+before its lateral motion makes a cut-in likely by JJ.9's forecast; the gate that describes the
+video participants (JJ.9 PREDICTED) does NOT describe real followers' early responses. They
+anticipate more than the lateral forecast warrants -- so the "lab participants anticipate ten
+times more than real traffic" reading of 2026-09-24 is QUALIFIED: real drivers also respond to
+the closing vehicle regardless of its lateral state, at a low rate (2.3% within 2 s). Few events
+(40 early responses among isolated); predictions wrong (I predicted the gate would contribute).
+
+@NC4C.Q1(judgment, jonas): what gates real anticipation, if not the lateral forecast? Candidates
+testable on highD: the adjacent lane's own traffic (the cutter closing on ITS leader, i.e. a reason
+to change lanes), turn signals (not in highD), lane-end geometry. The first is a cheap card: the
+cutter's own TTC to its leader at k as the gate.
