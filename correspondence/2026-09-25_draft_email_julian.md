@@ -69,6 +69,11 @@ Jonas
 
 ## Notes for Jonas (not part of the email)
 
+- **2026-09-26: point 4 is display-uncorrected.** Card DT.1 (the desktop-monitor transform,
+  `docs/display_transform.md`) lowers the video's looming level from about 0.03 to about 0.014
+  rad/s and the matching braking from about 1 to about 0.66 m/s². Rewrite point 4 once the display
+  parameters are confirmed (query DT1.Q1). Points 1–3 are unaffected (real data and the model only).
+
 - **Sources.** Point 1: `replication/czb/out/nm3_response_time.md` (card NM.3, DESCRIPTIVE ONLY
   by its own rule). Point 2: `out/nm2_following_preference.md` (NM.2, verdict MIXED by the letter
   of the rule). Point 3: `out/nm1_replayed_following.md` (NM.1) and `replication/causation/gz1/`,
