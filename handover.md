@@ -114,6 +114,20 @@ and the repository disagree, the repository wins, and you say so in your reply.*
 >    NOT sent. At 1.6 s the model expects about one hard event in all of highD: the
 >    hard boundary cannot be tested on highD. Exposure: the gentle match moves 1.08 → 1.13 m/s²
 >    at first exposure (NC.3k). Jonas (2026-09-24): work on looming, keep TTC alongside for now.
+> 9. **The batch's results (2026-09-25 night; worklog entry of that date).** **NM.2 MIXED:** the
+>    released braking margin fires in 1.7% of steady highD following; its boundary headway lies
+>    at or below the real 5th percentile in 4 of 5 speed bands — silent over ~98% of following.
+>    **NC.0b-lat:** timing claims only at a_th ≥ 1.0 m/s² (latency 0.24 s, FP 1.1%).
+>    **NM.3 DESCRIPTIVE ONLY:** log RT rises with log THW0 (+0.23 / +0.40 / +0.45 by lead severity,
+>    deposit +0.59); real RT 2.2–3.1 s against the model's 0.80 s. **NC.4–4c:** real followers'
+>    early responses (before the lane switch) follow looming to the cutter (AUC 0.856 on isolated
+>    events) and NOT JJ.9's lateral gate (gate × core − core −0.093 [−0.146, −0.046]).
+>    **NC.1 DESCRIPTIVE ONLY:** 93 inD gap decisions, 7 accepted; extraction biased; LTAP/OD transfer
+>    not tested on real data. **NM.1 DOES NOT HOLD:** behind replayed real leads in steady following the released model brakes
+>    ≥ 1 m/s² in 56% of runs (often −6 to −7 m/s², 2.5–5 s in), the humans in 0%; more at low
+>    speed (0.92 → 0.21). GZ.1/2's spontaneous braking is not a scripted-lead artefact (NM1.Q1). Draft email to Julian:
+>    `correspondence/2026-09-25_draft_email_julian.md` (NOT sent). New queries: NM3.Q1, NC4C.Q1,
+>    NC1.Q1.
 
 ## 1 Where the project stands: the free-energy account of the comfort-zone boundary
 

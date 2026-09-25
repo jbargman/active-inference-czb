@@ -5401,3 +5401,23 @@ LTAP/OD transfer of one driver's prior to another scenario is therefore NOT test
 @NC1.Q1(judgment, jonas): a better design anchors the decision on the oncoming vehicle's appearance
 or on the turner's stop line, and pools rounD/exiD if the licence arrives; worth a card only if
 LTAP/OD transfer stays on the paper's critical path.
+
+**Card NM.1, the released model behind replayed real highD leads** (`nm1_replayed_following.py`
+-> `out/nm1_replayed_following.md`; 67 min machine time). 18 steady-following episodes of 5 s
+(leader |a| < 0.5 m/s^2 throughout; 2 per speed x THW stratum from 326,291 candidates), the
+authors' model unmodified, staged exactly as GZ.2, 4 runs each. **The model brakes by at least
+1 m/s^2 in 56% of runs; the human followers in the same episodes in 0%** (their minimum
+acceleration -0.63 m/s^2). **DOES NOT HOLD real following, braking more** -- as predicted (50 to
+90%, 2 to 4 s in: median first brake 2.5 to 5.0 s). The brakes are not mild: mean minimum -1.8 to
+-7.3 m/s^2 in the strata that brake, emergency-level decelerations in episodes where nothing happens. The
+predicted headway gradient is weak (0.67 / 0.63 / 0.38 from short to long THW); the speed
+gradient is stronger and not predicted (0.92 / 0.54 / 0.21 from 60-80 to 95-108 km/h). Reading
+(judgment, review): GZ.1/GZ.2's spontaneous braking behind a scripted lead is not an artefact of
+the scripted lead; with real leads the released configuration cannot be run behind naturalistic
+following for more than ~2.5 s without inventing a hazard. Any NM card that runs the model on
+long real episodes needs the GZ.1 remedy (more perception noise) or a run-in, and must say so.
+Caveat: 18 episodes, a 5 s window (braking after 5 s is not counted), no run-in.
+
+@NM1.Q1(judgment, jonas): is the speed gradient (the model brakes more at 60-80 km/h) worth a card?
+It would say whether the spontaneous braking scales with the calibration's desired-speed offset
+(`find_parameters`), which would localise it.
