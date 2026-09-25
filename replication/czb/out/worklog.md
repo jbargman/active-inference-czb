@@ -5421,3 +5421,18 @@ Caveat: 18 episodes, a 5 s window (braking after 5 s is not counted), no run-in.
 @NM1.Q1(judgment, jonas): is the speed gradient (the model brakes more at 60-80 km/h) worth a card?
 It would say whether the spontaneous braking scales with the calibration's desired-speed offset
 (`find_parameters`), which would localise it.
+
+**Card NM.1b, figure and the calibration look** (`nm1b_figure.py` -> `figures/nm1b_released_model_following.png`,
+`out/nm1b_figure.md`). Four NM.1 episodes re-simulated with traces. The model's braking is a
+train of hard pulses (to -3 to -7.6 m/s^2, back to 0 or above) starting 2 to 4 s in, while the
+human follower in the same seconds stays within +/-0.6 m/s^2; at 68 km/h the model loses half its
+speed in 5 s (to 34 km/h) and opens the gap from 21 to 29 m behind a lead that does nothing. At
+107 km/h / 1.6 s headway, where the lead is slower and both close in (47 -> 25 m), the gap traces
+are alike and only the model brakes. **NM1.Q1 answered NO:** the authors' calibration
+(`find_parameters`) returns the SAME values in all 18 episodes -- desired-speed offset 0, assumed
+worst-case lead braking -8 m/s^2 (as in GZ.2) -- so it cannot explain the speed gradient (braking
+share against speed: Spearman -0.619, p 0.006; against headway -0.292). My expectation (the
+calibration's offset drives it) was wrong: v_diff is 0 throughout. The gradient's cause is open;
+a hypothesis only: at higher speed the same headway is a larger gap, where the looming signal and
+its noise are smaller. Not worth a card before the question whether the model can be run in long
+naturalistic following at all (GZ.1's remedy).
