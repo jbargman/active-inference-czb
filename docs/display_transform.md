@@ -142,7 +142,14 @@ whether they did is not known, so (b) is reported beside (a), never in its place
 - **Pre-registered scripts are not modified** (standing rule). New analyses that must hold for both
   take a geometry argument; DT.1 re-runs the existing ones by importing their functions.
 
-## 6 Open points for Jonas
+## 6 Results (card DT.1, 2026-09-26)
+
+`replication/czb/out/dt1_display_transform.md` and, over the parameters,
+`replication/czb/out/dt1b_display_sensitivity.md`; summary in `replication/czb/out/worklog.md`
+(2026-09-26). Within the video studies only the looming levels move (× 0.424); against real data the
+comparisons with Farewell's emergency level, highD's level and the matching deceleration reverse.
+
+## 7 Open points for Jonas
 
 - The parameters are the stated defaults; if the studies' logs carry screen resolution or window
   size, `image_width_fraction` is the one most likely to be below 1 (a video in a browser window).

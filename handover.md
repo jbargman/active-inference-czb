@@ -15,7 +15,7 @@ and the repository disagree, the repository wins, and you say so in your reply.*
    named for the task (§4). Do not read the papers, the handbook or `OthersWork/` unless the card
    says to.
 2. Run the suite exactly like this and confirm 31, 33, 40, 96, 62, 20, 28, 27, 16, 30, 33, 35, 24,
-   19, 24 and 9 passed (sixteen files; `pytest` is *not* the suite):
+   19, 24, 9 and 18 passed (seventeen files; `pytest` is *not* the suite):
    ```bash
    python tests/test_surprise.py
    python tests/test_comfortzone.py
@@ -33,6 +33,7 @@ and the repository disagree, the repository wins, and you say so in your reply.*
    python tests/test_admissible.py
    python tests/test_looming_pref.py
    python tests/test_comfort_fe.py
+   python tests/test_display.py
    ```
 3. `git status` and `git log --oneline -5`. The tree should be clean (four untracked `.log` files
    under `replication/czb/out/` are normal). If anything else is uncommitted, stop and report it.
@@ -128,6 +129,19 @@ and the repository disagree, the repository wins, and you say so in your reply.*
 >    speed (0.92 → 0.21). GZ.1/2's spontaneous braking is not a scripted-lead artefact (NM1.Q1). Draft email to Julian:
 >    `correspondence/2026-09-25_draft_email_julian.md` (NOT sent). New queries: NM3.Q1, NC4C.Q1,
 >    NC1.Q1.
+> 10. **The display transform (2026-09-26; Jonas: participants watched on a desktop monitor).**
+>    `docs/display_transform.md` (parameters in its YAML block), `src/comfortzone/display.py`,
+>    switch `CZB_DISPLAY_TRANSFORM=on`. A 90° rendering on a 23-inch screen at 60 cm has gain
+>    k = 0.424: what the viewer saw is the virtual world with distances and closing speeds × 2.36.
+>    **TTC is invariant; looming × 0.42.** Card DT.1: within the video studies nothing changes but
+>    the looming levels (intervention level 0.0320 → **0.0136 rad/s**); against real data three
+>    conclusions REVERSE: the comfort boundary lies **below** Farewell's emergency level (0.64×, not
+>    1.5×); highD's level is 2.9× the video's (not 1.21×); real followers match the gentle curve at
+>    **0.66 m/s²**, not 1.08. As a real-world TTC at the video's own closing speeds (convention b)
+>    the boundary moves × 1.53. DT.1b: the reversals hold for 50–70 cm and image 0.6–1.0 of the
+>    screen. **Every looming number quoted above for cross-domain comparisons (items 2, 6, and the
+>    §1 comparisons with Farewell and highD) is display-UNCORRECTED** until DT1.Q1 (blocker: confirm
+>    the parameters) and DT1.Q2 (make the corrected levels the default?) are answered.
 
 ## 1 Where the project stands: the free-energy account of the comfort-zone boundary
 

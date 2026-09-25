@@ -5436,3 +5436,55 @@ calibration's offset drives it) was wrong: v_diff is 0 throughout. The gradient'
 a hypothesis only: at higher speed the same headway is a larger gap, where the looming signal and
 its noise are smaller. Not worth a card before the question whether the model can be run in long
 naturalistic following at all (GZ.1's remedy).
+
+## 2026-09-26 (night) — the display transform (Jonas: the participants watched on a desktop monitor)
+
+**The transform** (`docs/display_transform.md`, parameters in its YAML block; `src/comfortzone/display.py`;
+`tests/test_display.py`, 18 checks). A 90 deg rendering shown on a 23-inch 16:9 screen at 60 cm
+fills 46.0 deg of the viewer's field: gain k = 0.4243. Exact geometry (flat screen, centred eye,
+square pixels, monocular): the viewer's optical array is that of an equivalent world with every
+distance along the line of sight divided by k -- distances and closing speeds x 2.36, lateral
+quantities and sizes unchanged, **TTC exactly invariant**, looming x k (exactly
+k (r^2 + W^2/4)/(r^2 + k^2 W^2/4), up to 1/k at contact). Consequence stated before any run: the
+transform does NOT by itself move boundaries to higher TTC; it lowers every looming level by
+~0.42. The "higher TTC" appears only when the perceived looming is carried to a real driver at the
+TRUE closing speed (convention (b)): TTC x 1/sqrt(k) = 1.54. Switch: env CZB_DISPLAY_TRANSFORM=on,
+or pass a geometry; "off" reproduces everything so far exactly (checked to 1e-15).
+
+**Card DT.1** (`dt1_display_transform.py` -> `out/dt1_display_transform.md`), each analysis off and
+on. **Within the second study nothing changes but the levels:** held-out scores within 0.001
+(looming 0.1130 -> 0.1131; JJ.10 mixture 0.1028 -> 0.1028, pre-onset 0.0462 -> 0.0452; NC.3o
+0.1126 -> 0.1130, still SUPPORTED); looming levels x 0.424 (**the intervention level 0.0320 ->
+0.0136 rad/s**; NC.3o gentle 0.0117 -> 0.0050, hard 0.124 -> 0.054); gap level 19.4 -> 45.8 m; TTC
+level 3.06 s both. **Against real traffic, three conclusions reverse:** (2) highD's refit level is
+2.86 times the corrected video level, not 1.21; (3) **the comfort boundary's 50% level falls BELOW
+Farewell's emergency-braking level** (1.50 -> 0.64 times 0.02 rad/s; the share of raters who would
+intervene at Farewell's level 0.38 -> 0.63) -- the order one would expect, the comfort zone
+reached before emergency braking begins; (4) **real followers match the corrected gentle curve at
+0.66 m/s^2** [0.61, 0.71], not 1.08. (1) the transfer (beats chance) stands and improves: the
+corrected curve predicts highD's response rate at the 0.5 m/s^2 detector exactly (0.116 against
+0.116; wRMSE 0.0647 -> 0.0449). That is NOT independent support for the transform: it is (4) seen
+from the other side -- the corrected curve matches braking of about 0.66 m/s^2, the uncorrected one
+about 1.08, and which braking counts as a comfort response is the open NC3C/NC3H question.
+Convention (b): the 50% boundary as real-world TTC at the study's closing speeds goes from 2.3-5.7 s
+to 3.6-8.7 s (x 1.53). Every TTC result is unchanged (the hard boundary on TTC, NC.3i/j/l); AUCs
+on highD and per-driver ranks are unchanged (monotone transform, highD not transformed).
+Predictions: A, B, C2, C3, C4 right; **C1 wrong** (I predicted over-prediction and failure; the
+uncorrected curve had UNDER-predicted, 0.067 against 0.116); my pre-stated axis ranking
+"looming < TTC < gap" was misremembered (gap has been second, TTC third, since EL.1) -- the
+ranking is identical off and on, so the label UNCHANGED stands.
+
+**Card DT.1b** (`dt1b_display_sensitivity.py`): over viewing distance 50-70 cm and image width
+0.6-1.0 of the screen, k runs 0.22-0.51; the intervention level 0.0070-0.0163 rad/s; its 50% level
+0.33-0.77 times Farewell's (below it everywhere on the grid); the matching deceleration 0.46-0.72
+m/s^2; the study's held-out score never moves (0.1028). Reversals (3) and (4) hold over the whole
+grid; the size of the shift depends on k, which the display parameters decide.
+
+@DT1.Q1(blocker, jonas): confirm the display parameters (viewing distance, screen size and aspect,
+whether the video filled the screen, the rendering's field of view and camera position). Every
+cross-domain looming number (the comparison with highD, Farewell, the test track, and the matching
+deceleration) depends on k; the within-study results and all TTC results do not.
+@DT1.Q2(judgment, jonas): should the display-corrected levels become the default for cross-domain
+comparisons? My recommendation: yes for looming (report both until DT1.Q1 is answered); the
+documents that quote "1.6-1.7 times Farewell", "within 21% of highD" and "matches at 1.08 m/s^2"
+are display-uncorrected and are marked so in the handover.
