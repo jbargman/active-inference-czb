@@ -44,6 +44,11 @@ video participants judged a distance-like quantity that the display does not dis
 distance, e.g. the oncoming's position against the intersection's own layout), or the track drivers
 judged time and the 50 km/h agreement is a coincidence -- the track's single speed cannot tell.
 
+FIXED AFTER THE FIRST RUN, 2026-09-26 (dated per standing rule 4): the first run read the
+first-exposure PET_50 from the wrong section of EX.2's output (the cut-in's session-term row, -3.38
+log rad/s, came first), so the observed value printed as 3.38 s. The reader now takes the left-turn
+section's row (2.42 s). Nothing else changes; the first run's output was not committed.
+
 Output: replication/czb/out/dt2_ltap_display.md
 Run:    python replication/czb/dt2_ltap_display.py
 """
@@ -69,6 +74,7 @@ def read_observed() -> dict:
     tt = (OUT / "ltapod_testtrack.md").read_text(encoding="utf-8")
     m = re.search(r"PET_50 track ([\d.]+) s \(SE ([\d.]+)\); PET_50 video ([\d.]+) s \(SE ([\d.]+)\)", tt)
     ex = (OUT / "ex2_first_exposure_levels.md").read_text(encoding="utf-8")
+    ex = ex[ex.index("### The left turn at 50 km/h"):]          # the left-turn section (fix, see docstring)
     m2 = re.search(r"session term \(primary\) \| -([\d.]+) \(([\d.]+)\)", ex)
     return {"track": float(m[1]), "track_se": float(m[2]), "pooled": float(m[3]), "pooled_se": float(m[4]),
             "first": float(m2[1]), "first_se": float(m2[2])}
