@@ -5520,3 +5520,14 @@ quantity or TTC. Side result: how much of the between-driver level spread is scr
 **Explanation document** `docs/display_transform_explained.md` (+ PDF, DOCX), with figures and a video
 (`figures/display_transform/`, made by `replication/czb/dt_media.py`): looming vs TTC, the monitor
 geometry, why TTC is invariant and looming is not, one study-2 clip frame by frame, DT.1 and DT.2.
+
+**2026-09-27: the left-turn write-up** (Jonas: "write them up as a word document with some figures").
+`docs/display_transform_explained.md` section 6 (+ DOCX with a table of contents, PDF), six figures by
+`replication/czb/dt_ltap_media.py` (numbers in `out/dt_ltap_media_numbers.md`). New beyond DT.2: the
+effective gain with the POOLED video boundary is 0.94 / 0.93 / 0.88 (egocentric distance, conflict-
+point distance, looming), still far from 0.42; on the monitor the oncoming car's looming at the track
+boundary was 0.0021 rad/s, at the released model's detection threshold (0.00215), and below it for all
+cells from PET 2.5 s up, where the answers still fall from 0.51 to 0.26 -- the participants' criterion
+there cannot have been the looming at their eye. In the views, the car's direction relative to the
+conflict point's is 0.146 for a driver and 0.143 on the monitor: scene-relative position survives the
+shrinking. Reading A (a scene-relative distance) favoured, marked as judgment.

@@ -1,8 +1,9 @@
 # The display transform, explained: looming, TTC and what the monitor did
 
-*Written 2026-09-26 for Jonas. A companion to the specification `docs/display_transform.md` (which
-holds the parameters and the exact formulas). The figures and the video are made by
-`replication/czb/dt_media.py`; the numbers come from cards DT.1, DT.1b and DT.2
+*Written 2026-09-26 for Jonas; extended 2026-09-27 with the left-turn chapter (section 6). A companion
+to the specification `docs/display_transform.md` (which holds the parameters and the exact formulas).
+The figures and the video are made by `replication/czb/dt_media.py` (sections 1-5) and
+`replication/czb/dt_ltap_media.py` (section 6); the numbers come from cards DT.1, DT.1b and DT.2
 (`replication/czb/out/dt1_display_transform.md`, `dt1b_display_sensitivity.md`, `dt2_ltap_display.md`).
 The video is `figures/display_transform/display_transform_clip.mp4` (about 20 s).*
 
@@ -24,7 +25,9 @@ The video is `figures/display_transform/display_transform_clip.mp4` (about 20 s)
   looming, not time; the test track (real optics) agrees with the video only if the display did
   *not* shrink the participants' criterion. The effective gain that reconciles them is 0.99 [0.84,
   1.05], not 0.42. The participants seem to have judged something the shrinking leaves intact, such
-  as the car's distance relative to the scene. Per-participant display data would settle it.
+  as the car's distance relative to the scene. On the monitor the oncoming car's looming near the
+  boundary was at the edge of visibility, yet the answers kept varying. Per-participant display data
+  would settle it (section 6 is the full account).
 
 ## 1 Looming and TTC: related, but not the same thing
 
@@ -133,44 +136,185 @@ Over viewing distances of 50–70 cm and a video filling 60–100% of the screen
 0.51, and the corrected level 0.0070 to 0.0163 rad/s (DT.1b). These numbers hold *if* the participants
 judged the looming their eyes received. Section 6 asks whether they did.
 
-## 6 The left turn: video against the test track (card DT.2)
+## 6 The left turn (LTAP/OD): video against the test track
 
-The test track is the one place where we have the same judgment made with real optics. In 2013,
-drivers on the track chose to turn or wait in front of an oncoming (balloon) car at 50 km/h; their
-comfort boundary was at PET 2.45 s (card TT.1). On video, participants' first-exposure boundary was
-at 2.42 s (card EX.2). Without the transform they agree, and times are not touched by the transform.
+*Numbers: cards TT.1 (`out/ltapod_testtrack.md`), EX.2 (`out/ex2_first_exposure_levels.md`), B.3.v2
+(`out/ltap_two_axis.md`), DT.2 (`out/dt2_ltap_display.md`) and the figure script's own numbers
+(`out/dt_ltap_media_numbers.md`). Figures 5 to 10 are made by `replication/czb/dt_ltap_media.py`.*
 
-But on video the left-turn answers follow the oncoming car's **distance** or **looming**, not its time
-(card B.3.v2: held out 0.056 and 0.054 against 0.112 for time; at 70 km/h the answers are closer to the 50 km/h
-ones at equal distance than at equal time, card B.3.v2's geometry check). On the monitor the oncoming car looked 2.36 times farther
-away and loomed 0.42 times as fast. If the video participants and the track drivers had judged the
-same *perceived* distance or looming, the video boundary should have moved far from the track's:
+The cut-in results in section 5 are all *if*s: they hold if the participants judged the optics that
+reached their eyes. For the cut-in there is no real-optics version of the same judgment to check
+against; highD records braking, not "would you intervene". For the left turn across the path of an
+oncoming car there is: the 2013 test-track study. This chapter uses it to ask whether the display
+actually acted on the participants' judgments.
 
-| criterion shared by track and video | video boundary predicted with the transform | observed | verdict | effective gain that would reconcile them |
-|---|---|---|---|---|
-| time to arrival | 2.45 s | 2.42 s | consistent | – (time is unaffected) |
-| distance to the oncoming car | −1.38 s (outside the design) | 2.42 s | inconsistent | 0.99 [0.92, 1.02] |
-| distance to the conflict point | −0.56 s | 2.42 s | inconsistent | 0.99 [0.90, 1.03] |
-| looming at the eye | 0.39 s | 2.42 s | inconsistent | 0.99 [0.84, 1.05] |
-| angular size | −1.38 s | 2.42 s | inconsistent | 0.99 [0.92, 1.02] |
+### 6.1 Two studies of the same decision
 
-![Figure 5. Left: the oncoming car's distance per design PET, as rendered (blue, which a track driver would see at the same moment) and as the participant's eye implied (red, × 2.36). With a shared perceived-distance boundary the video boundary would sit where red meets the dashed line, outside the design. Right: time to arrival is not changed by the display, and track and video agree on it.](../figures/display_transform/fig4_ltap.png)
+| | test track (2013) | crowd-sourced video (study 1, Random design) |
+|---|---|---|
+| who | 26 drivers, Vårgårda airfield (Bärgman, Smith & Werneke, 2015) | 43 participants on their own computers |
+| what they saw | the real world through a windscreen: real optics | the rendered scene on a desktop monitor: the picture shrunk to 0.42 |
+| the oncoming car | a self-propelled balloon car at 50 km/h | a rendered car at 50 and 70 km/h |
+| the task | actually turn in front of it, or wait (comfort runs) | at a frozen moment: would you intervene (yield)? |
+| the manipulation | SetPET, the post-encroachment time the reference turn would give | design PET 0 to 4 s in 0.5 s steps |
+| data | 218 comfort runs | 1,548 answers at 50 km/h |
+| comfort boundary, PET_50 | **2.45 s** (SE 0.04) | **2.42 s** at first exposure (SE 0.17); 2.18 s pooled over both sessions (SE 0.20) |
 
-So there are two readings, and the track cannot tell them apart because it ran at one speed only:
+The two boundaries agree within the video design's resolution (card TT.1; card EX.2 for the first
+exposure, the level comparable to the track drivers' single session). Figure 5 shows the two
+response curves side by side.
 
-- **(A) The participants judged a distance-like quantity that the display does not distort.** The
-  video's own evidence says distance or looming, not time, and the track agrees with the video as if
-  the display gain were 1 (0.99). What survives shrinking is anything measured *against the scene*:
-  the oncoming car's position relative to the intersection's layout, the lane markings, the size of a
-  familiar car. Those relations are unchanged in the equivalent world. The participants would then have
-  read the picture as a picture of a real place, as people usually do.
-- **(B) The track drivers judged time and the video participants distance,** and the agreement at
-  50 km/h is a coincidence of the design.
+![Figure 5. The left turn at 50 km/h. Green: the share of test-track runs in which the driver waited, per SetPET (dot size = number of runs; the bins at the ends hold few runs). Blue: the share of video participants who would intervene, per design PET. The two boundaries (dashed) lie 0.03 s apart.](../figures/display_transform/fig9_ltap_track_video.png)
 
-Reading A is the more economical: it explains both the video's distance dependence and the
-agreement with the track without a coincidence. **If A holds for the cut-ins too, the transform
-over-corrects them, and the untransformed comparisons of section 5 stand.** The left turn is, as
-far as I can see, the only direct evidence either way, and it points toward A.
+### 6.2 What the video participants responded to: distance, not time
+
+The video study ran the oncoming car at two speeds, which separates time from distance. At a
+given PET, the 70 km/h car is farther away than the 50 km/h car but arrives at the same time. If
+the participants judged time, the two speeds would give the same answers at the same time to
+arrival; if they judged distance, the same answers at the same distance. Figure 6 shows the answers
+against both. Against time the two speeds are far apart; against distance they lie much closer.
+Card B.3.v2 made the comparison formally (held-out error, lower is better): distance 0.056, the
+oncoming car's looming 0.054, time 0.112 (chance 0.288; the sampling-noise floor 0.033). **On the
+monitor, the participants' answers followed how far away the oncoming car was, or how fast its
+image grew, and not when it would arrive.**
+
+![Figure 6. The video's left-turn answers at 50 km/h (blue) and 70 km/h (orange), against the oncoming car's time to the conflict point (left) and its distance (right).](../figures/display_transform/fig8_ltap_video_axis.png)
+
+This matters because distance and looming are exactly what the monitor distorts, and time is
+exactly what it leaves alone (sections 2 and 3).
+
+### 6.3 What the monitor did to the scene
+
+Figure 7 is the scene at the decision moment for the design cell nearest both boundaries (PET
+2.5 s, 50 km/h). A driver in the car, or on the track, sees the oncoming car 95 m ahead. The
+monitor's picture puts it where a car 223 m ahead would be: 2.36 times farther along the line of
+sight.
+
+![Figure 7. The left turn from above at the decision moment. The ego's path and the oncoming car's path are the stimulus's own; the road layout is schematic (inferred from the paths). Blue: the oncoming car where it is; red: where the monitor's picture places it for the participant's eye.](../figures/display_transform/fig6_ltap_scene.png)
+
+Seen from the driver's seat (Figure 8) the oncoming car is 1.21° wide, 2.1° left of straight ahead.
+On the monitor it is 0.52° wide, 0.9° left. Its image grows (looms) at 0.0049 rad/s on the track at
+the track's boundary; on the monitor, at the same moment, at 0.0021 rad/s.
+
+![Figure 8. The same moment seen by a driver in the car (left) and by the participant's eye at the monitor (right), on the same angular scale. Everything on the monitor is shrunk by the same factor, so the car's position relative to the intersection is unchanged: the car lies at 0.146 of the conflict point's direction for the driver and at 0.143 on the monitor.](../figures/display_transform/fig7_ltap_views.png)
+
+Two things follow from Figure 8, and the rest of this chapter rests on them.
+
+1. **Everything the eye measures in absolute terms changed**: the car's angular size, its angular
+   distance from straight ahead, how fast it grows, and any distance the eye would infer from them
+   (from the car's familiar size, or from how far below the horizon it touches the road).
+2. **Everything measured against the scene itself did not**: where the car is relative to the
+   intersection, the lane markings or the side road; how big it is relative to the road; the order
+   of things. The whole picture was shrunk *together*, so the relations inside it survive.
+
+### 6.4 The test: could track and video share one perceived boundary?
+
+Suppose a video participant and a track driver make the same judgment about the same perceived
+quantity. The track driver's boundary, at PET 2.45 s, fixes the value of that quantity at the
+boundary under real optics. The video participant reaches that *perceived* value at some design
+PET, which is then the predicted video boundary. For time it is 2.45 s, whatever the display did.
+For distance, looming and angular size it depends on the display:
+
+| criterion shared by track and video | video boundary predicted with the monitor's shrinking | observed | verdict |
+|---|---|---|---|
+| time to arrival | 2.45 s | 2.42 s | consistent |
+| distance to the oncoming car | −1.38 s (outside the design) | 2.42 s | inconsistent |
+| distance to the conflict point | −0.56 s | 2.42 s | inconsistent |
+| looming at the eye | 0.39 s | 2.42 s | inconsistent |
+| angular size | −1.38 s | 2.42 s | inconsistent |
+
+To look as near as the track's 94 m, the car on the monitor would have had to be at 94 × 0.42 = 40 m.
+That is closer than any cell in the design. The participants would then have intervened at almost
+every PET, but they did not (Figure 9).
+
+![Figure 9. The oncoming car's distance per design PET: as rendered (blue, which a driver on the track would see at the same moment) and as the monitor's picture implied (red, × 2.36). With a shared perceived-distance boundary, the video boundary would be where the red curve meets the dashed track boundary. It never does inside the design; the video's actual boundary is where the blue curve meets it.](../figures/display_transform/fig4_ltap.png)
+
+The same comparison can be turned around: **which display gain would make the track and the video
+agree?** Figure 10 shows the predicted video boundary for every gain from 0.2 to 1.3. For every
+distance-like criterion the prediction crosses the observed video boundary at a gain of about 1.
+The effective gain is 0.99 for all three criteria with the first-exposure boundary (95% intervals
+0.92–1.02, 0.90–1.03 and 0.84–1.05), and 0.94, 0.93 and 0.88 with the pooled boundary. The
+monitor's geometric gain, 0.42, lies far outside every interval.
+
+![Figure 10. The video boundary each shared criterion predicts, as a function of the display gain acting on that criterion. The observed video boundary (blue band: first exposure with its 95% interval; dash-dot: pooled) is reached at a gain of about 1, not at the monitor's 0.42.](../figures/display_transform/fig10_ltap_gain.png)
+
+**The participants judged as if the monitor had not shrunk the scene at all.**
+
+### 6.5 A second clue: on the monitor the looming was at the edge of visibility
+
+At the track boundary the oncoming car's image grew at 0.0049 rad/s for the track driver, and at
+0.0021 rad/s for the participant at the monitor. The released model of the Nature paper uses
+0.00215 rad/s as the threshold below which looming is not detected (card PT.1's constant); published
+human thresholds are of the same order (to be checked before citing). On the monitor, then, the
+oncoming car's growth was at or below the edge of visibility near the boundary, and below it for
+all cells from PET 2.5 s up (0.0020 to 0.0015 rad/s; card DT.2's table). Yet the answers keep
+changing steadily over exactly those cells (from 0.51 to 0.26 who would intervene). Whatever the
+participants used there, it was not the growth of the image at their eye. What remains visible and
+changes with PET is the car's *position in the scene*.
+
+### 6.6 Two readings
+
+- **(A) The participants judged a scene-relative distance.** They read the oncoming car's distance
+  from where it was in the picture relative to the intersection, the road and the other cues, as
+  people normally read a picture of a real place. Such a judgment is immune to the shrinking,
+  which is why the effective gain is 1. It also explains the video's own distance dependence
+  (section 6.2) and why the answers keep varying where looming is invisible (section 6.5).
+- **(B) The two groups judged different things.** The track drivers judged time (which the display
+  does not touch) and the video participants judged distance, and the agreement at 50 km/h is a
+  coincidence of the design. The track ran at a single speed, so it cannot show which quantity its
+  drivers used.
+
+Reading A explains three observations with one assumption. Reading B needs a coincidence and says
+nothing about section 6.5. I would put the weight on A, and I mark this as a judgment, not a result.
+
+### 6.7 Caveats
+
+- **The track is mapped onto the video's geometry.** The 2013 protocol has no kinematics at the
+  decision moment, so the track driver is assumed to have seen the oncoming car where the video
+  stimulus puts it at the same PET (both follow the same reference turn at 50 km/h). If the track
+  drivers decided earlier or later in the turn, the distances shift, but a shift of that kind cannot
+  bridge a factor of 2.36.
+- **Act against judge.** The track drivers turned or waited; the participants said whether they
+  would intervene at a frozen moment. The agreement (TT.1) is the finding; why a judgment and an
+  action agree is not settled by it.
+- **Different people, different decades.** 26 employees in 2013; 43 crowd-sourced participants in
+  2026.
+- **One scenario.** The left turn's oncoming car is far away (55–110 m) and small, and the scene is
+  full of landmarks (an intersection). The cut-in happens closer, on a motorway with fewer
+  landmarks (the dashed lane markings are the main scale). Whether the cut-in participants also
+  judged scene-relative quantities is not shown here; it is suggested.
+- **The decision moment of the video** is an assumption (t = 13.5 s, card B.3.v2's query B3.Q1).
+
+### 6.8 What it means
+
+- **For the cut-in results.** If reading A carries over to the cut-in, the transform of section 5
+  over-corrects, and the untransformed comparisons stand: the video boundary above Farewell's
+  emergency level (1.5 times), highD's level within 21%, the gentle curve matched at 1.08 m/s². Until
+  it is tested, both versions are reported.
+- **For what "looming" means in the measurement model.** On the monitor the participants' judgments
+  follow looming *as computed in the virtual world*, not as it reached their eyes. The quantity in
+  the model is then the looming of the situation the participants *understood* themselves to be in:
+  an inferred property of the world, not a raw signal on the retina.
+- **For the active-inference account** (an opinion). This is what active inference would predict if
+  the driver's preferences are over inferred states of the world rather than raw sensations.
+  Perception inverts the generative model: from a shrunken picture of a familiar scene it recovers
+  the scene's real layout, because the scene's own cues (road widths, car sizes, lane markings)
+  outweigh the unfamiliar overall scale. A preference over the inferred state is then
+  display-invariant, as observed. A preference over the raw signal would not be.
+- **For the method.** A video study reproduces a test track here *because* people read pictures as
+  scenes. That is good news for crowd-sourced comfort-zone studies, but it rests on the scene
+  carrying enough scale cues. Minimal or abstract scenes might behave differently.
+
+### 6.9 How to settle it
+
+1. **The per-participant display data** (section 7): slope −1 if the display acted, 0 if it did not.
+   It applies to both scenarios and is the most direct test.
+2. **Real left turns at more than one speed.** Whether real drivers accept left-turn gaps by
+   distance or by time decides between readings A and B for the track side. The inD extraction
+   (card NC.1) was biased against accepted gaps. The redesign proposed in query NC1.Q1 (gaps timed
+   at the conflict point) would give real acceptance at a range of oncoming speeds.
+3. **A second track speed**, if the 2013 set-up or a successor could be rerun at 70 km/h (the video
+   already has it).
 
 ## 7 How to decide: the per-participant display data
 
@@ -199,7 +343,7 @@ distribution.
 - Parameters and formulas: `docs/display_transform.md` (YAML block at the top). Code:
   `src/comfortzone/display.py` (switch: `CZB_DISPLAY_TRANSFORM=on`); checks: `tests/test_display.py`.
 - Results: DT.1 (cut-in, with and without), DT.1b (over the parameters), DT.2 (left turn against the
-  track).
+  track); the left-turn figures' own numbers in `replication/czb/out/dt_ltap_media_numbers.md`.
 - Queries: DT1.Q1 (confirm the display parameters), DT1.Q2 (should the corrected levels be the default
   for cross-domain comparisons; after DT.2 my recommendation is: not yet, report both, and let the
   per-participant test decide).
