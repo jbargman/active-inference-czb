@@ -5488,3 +5488,35 @@ deceleration) depends on k; the within-study results and all TTC results do not.
 comparisons? My recommendation: yes for looming (report both until DT1.Q1 is answered); the
 documents that quote "1.6-1.7 times Farewell", "within 21% of highD" and "matches at 1.08 m/s^2"
 are display-uncorrected and are marked so in the handover.
+
+**Card DT.2, the display transform on the left turn** (`dt2_ltap_display.py` -> `out/dt2_ltap_display.md`).
+The test track (2013, real optics) and the video (minified) share a boundary at 50 km/h (track PET_50
+2.45 s, TT.1; video first exposure 2.42 s, EX.2). On video the left-turn answers follow distance or
+looming, not time (B.3.v2). With a shared PERCEIVED criterion and the transform on, the video
+boundary is predicted at 2.45 s for TIME (CONSISTENT) but at -1.38 s (egocentric distance), -0.56 s
+(conflict-point distance), 0.39 s (looming) and -1.38 s (angular size): all INCONSISTENT. The
+effective gain that reconciles each distance/looming criterion with the observed video boundary is
+**0.99** ([0.92, 1.02], [0.90, 1.03], [0.84, 1.05], [0.92, 1.02]) -- the participants behaved as if
+the display had NOT shrunk the scene; k = 0.42 is far outside every interval. Predictions right
+(all five verdicts, k_eff 0.7 to 1.4). Fixed after the first run, dated in the docstring: the
+reader took the cut-in's row of EX.2's output (3.38) instead of the left turn's (2.42); the first
+run's output was not committed. Mapping the track onto the video's stimulus geometry is an
+assumption (the protocol has no decision-moment kinematics).
+Reading (judgment, jonas): either (A) the video participants judged a distance-like quantity the
+display does not distort (the oncoming's position against the scene's own layout: an allocentric,
+scene-scaled distance), which explains both the video's distance dependence and the track agreement;
+or (B) the track drivers judged time and the video participants distance, and the 50 km/h agreement
+is a coincidence (the track ran at one speed). A is more economical. If A holds for the cut-ins,
+DT.1 over-corrects them and the untransformed cross-domain comparisons stand. **This changes my
+recommendation on DT1.Q2: do not make the corrected levels the default; report both until the
+per-participant display test (below) decides.**
+
+@DT2.Q1(blocker, jonas): the per-participant display data (screen or browser-window size in pixels,
+physical screen size, displayed video size, any viewing-distance information) for the subset that has
+it. Test: regress each participant's rendered-looming level (TR.1-style per-driver fit) on log k_i:
+slope -1 if they judged the looming at their eye (the transform), 0 if they judged a scene-relative
+quantity or TTC. Side result: how much of the between-driver level spread is screen size.
+
+**Explanation document** `docs/display_transform_explained.md` (+ PDF, DOCX), with figures and a video
+(`figures/display_transform/`, made by `replication/czb/dt_media.py`): looming vs TTC, the monitor
+geometry, why TTC is invariant and looming is not, one study-2 clip frame by frame, DT.1 and DT.2.

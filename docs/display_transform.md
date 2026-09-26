@@ -149,6 +149,15 @@ whether they did is not known, so (b) is reported beside (a), never in its place
 (2026-09-26). Within the video studies only the looming levels move (× 0.424); against real data the
 comparisons with Farewell's emergency level, highD's level and the matching deceleration reverse.
 
+**Card DT.2 (the left turn, 2026-09-26) qualifies this.** The test track (real optics) and the video
+agree (PET_50 2.45 against 2.42 s), and on video the left-turn answers follow distance or looming,
+not time. Under the transform a shared distance or looming criterion would put the video boundary
+outside the design (-1.4 to 0.4 s); the effective gain that reconciles track and video is 0.99
+[0.84, 1.05], not 0.42. The participants judged as if the display had not shrunk the scene: the
+transform, as applied to their criterion, may over-correct. Report cut-in cross-domain numbers both
+ways until the per-participant display test decides (query DT2.Q1). Plain-language account with
+figures and a video: `docs/display_transform_explained.md`.
+
 ## 7 Open points for Jonas
 
 - The parameters are the stated defaults; if the studies' logs carry screen resolution or window

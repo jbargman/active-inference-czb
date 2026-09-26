@@ -142,6 +142,12 @@ and the repository disagree, the repository wins, and you say so in your reply.*
 >    screen. **Every looming number quoted above for cross-domain comparisons (items 2, 6, and the
 >    §1 comparisons with Farewell and highD) is display-UNCORRECTED** until DT1.Q1 (blocker: confirm
 >    the parameters) and DT1.Q2 (make the corrected levels the default?) are answered.
+>    **DT.2 (left turn) qualifies it:** track (real optics) and video agree at 50 km/h, and the video
+>    answers follow distance/looming, not time; under the transform they could not agree (predicted
+>    video boundary −1.4 to 0.4 s against 2.42 s observed). Effective gain 0.99 [0.84, 1.05]: the
+>    participants judged as if the display had not shrunk the scene (a scene-relative distance?).
+>    So DT.1 may over-correct; report both. Deciding test: per-participant display data (DT2.Q1).
+>    Explanation with figures and a video: `docs/display_transform_explained.md`.
 
 ## 1 Where the project stands: the free-energy account of the comfort-zone boundary
 
