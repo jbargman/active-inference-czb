@@ -31,6 +31,17 @@ beliefs through a forced occlusion; the looming variable's performance on human 
 the Xue et al. (2018) caveat, verified against the paper's abstract; the near-conflict
 consequence of pre-conflict accumulator drift; the λ·g_C identifiability note.
 
+**Version of 2026-09-28 (not sent).** `aif_driver_model_handbook_2026-09-28.md` (with Word and
+PDF) is a newer version made from the 2026-09-03 edition, which is what the authors received and is
+left untouched. A notice at the top says it goes beyond their copy. Each of the five additions
+(items 1-5 of `review_2026-09-28.md`: sustained following, the response-time relation on highD, how
+often the preference terms act in real traffic, the naturalistic looming-vs-inverse-tau check, a softer
+reading of the 25 m/s road departures) is labeled "New in this version, 28 September 2026: not in the
+edition you received" and colored. The one reworded passage quotes the wording they received. Built by
+`make_version_2026_09_28.py`: regenerate with it, and do not edit the output by hand. Before sending,
+see "Before any addendum is sent" in the review note (Julian's reply on item 1; the authors'
+announced correction).
+
 **This edition does not track the internal handbook.** The internal handbook continues
 to evolve; this file is revised only when a review of the published model warrants it. If
 a wholly new shared edition is ever wanted, regenerate from the then-current internal

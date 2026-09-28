@@ -5551,3 +5551,11 @@ sent only after Julian answers the draft email; check the authors' announced Nat
 correction first.
 @HB.Q1(judgment, jonas): send an addendum to the authors' edition with items 1-5 of the review note
 (after Julian's reply), reissue the edition, or leave it?
+
+**Authors' edition, version of 2026-09-28** (Jonas: "create a new version of the authors handbook,
+clearly stating it is beyond what they got"). `docs/handbook_authors/aif_driver_model_handbook_2026-09-28.md`
+(+ DOCX, PDF), made by `make_version_2026_09_28.py` from the 2026-09-03 edition, which stays untouched.
+A notice at the top says it goes beyond their copy and lists the five additions. Each addition is
+labeled "New in this version, 28 September 2026: not in the edition you received" and colored (13
+paragraphs). The reworded road-departure sentence quotes the version they received. Not sent. HB.Q1
+stays open: when and whether to send it, after Julian's reply.
