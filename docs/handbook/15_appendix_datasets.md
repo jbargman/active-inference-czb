@@ -128,3 +128,42 @@ is the primary source: it samples the *cumulative* response-time distribution at
 truncation points and is the least contaminated of the three. The button-press data is used
 for validation rather than fitting, because of the satisficing bias. The Sequence data is not
 used for boundary estimation. Chapter 11 sets out the fitting scheme.
+
+{{R8}}**Serial dependence, measured (2026-09-25, card AC.1).** The lag-1 correlation of a
+participant's successive residuals is +0.40 in the Sequence design, +0.32 in the Button design
+within a scenario, and +0.12 in the Random design within a scenario (+0.03 overall). The Button
+data are therefore validation-only, as decided above, and results that rested on them are
+downgraded (chapter 18.5). How far to trust the Random design is query AC1.Q1.
+
+{{R8}}**The monitor.** Participants watched on their own screens (typically 23 inches at about 60
+cm), which shrank the rendered 90° view to about 46°. Every optical quantity computed from the
+traces is the rendered world's, not the participant's: looming shrinks by 0.42 and TTC is unchanged.
+Whether the participants' judgments were affected is open (chapter 18.8;
+`docs/display_transform.md`).
+
+## 15.5 The second cut-in study (added 2026-09-28)
+
+{{R8}}Crowd-sourced like study 1, with a design that breaks the gap–TTC collinearity: 378 clips (six
+closing speeds, 7–42 km/h; three lane-change durations; several starting TTCs; five frozen moments,
+CP1–CP5, the first before the lane change begins), 10–26 raters per clip. The answers used here: would you intervene, and what the participant
+expects *the car* to do (nothing, brake gently, brake hard). Serial dependence is small (+0.05, card AC.1), which makes it the
+project's reference data set. Cells and traces: `replication/czb/out/cutin2_cells.csv` and the
+study's `02_Kinematics` folder. The same monitor caveat applies.
+
+## 15.6 Naturalistic data: highD and inD (added 2026-09-28)
+
+{{R8}}**highD v1.0** (levelXdata): 60 drone recordings of German motorways at 25 Hz, positions,
+speeds, accelerations, lane and leader IDs for every vehicle. **inD v1.1**: 33 recordings at four
+German intersections. Both arrived on 2026-09-24 and sit at `C:\JonasLocal\D_Data`, outside the
+repository. Per-sample caches are in `C:\JonasLocal\D_Data_derived`. **Under the licence only
+aggregates are committed.** Conventions worth knowing: in highD, x and y are the top-left corner of
+the bounding box, "width" is the vehicle's length and "height" its width, and vehicles with
+drivingDirection 1 move toward −x.
+
+{{R8}}**The braking detector and its limits.** A response is a deceleration episode below a
+threshold for a minimum time. Timing claims need a threshold of 1.0 m/s² or more (card NC.0b-lat).
+Hard braking is rare: highD's 99th percentile of deceleration is 1.07 m/s², and 4 of 2,771 real
+closing cut-ins drew 2.5 m/s² or more. Over half of the motorway's lead decelerations are already
+under way when the vehicle enters the field of view, and they are lost to any onset-based analysis
+(card NM.3). In inD, oncoming vehicles are often not yet in view at a left-turner's decision moment
+(card NC.1). What was learned from the two datasets is in chapter 18.6 and 18.7.

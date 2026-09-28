@@ -110,3 +110,17 @@ TT.Q2). The two populations differ (Volvo and Autoliv employees in 2013 against 
 participants in 2026), the paper reports 22 usable drivers where the protocol holds 26
 (TT.Q3), and the balloon car is not a car. One scenario is one scenario; the cut-in, where
 the axis question was decided, has no real-driving counterpart yet.
+
+## 17.7 The monitor (added 2026-09-28)
+
+{{R8}}**The comparison survives the display correction, and says something about it.** The video
+participants watched on desktop monitors that shrank the rendered 90° view to about 46° of their
+field (gain 0.42): the oncoming car looked 2.36 times farther away and loomed 0.42 times as fast,
+while its time to arrival was unchanged. On video, the left-turn answers follow distance or looming,
+not time (card B.3.v2). So the track and the video could agree only if the participants' criterion
+was not shrunk. The display gain that reconciles them is 0.99 [0.84, 1.05] for every distance-like
+criterion (card DT.2). In addition, the oncoming car's looming on the monitor near the boundary was
+at the edge of visibility, yet the answers kept varying. Reading [Speculation]: the participants
+judged distance relative to the scene, which a uniform shrinking leaves intact. The full account,
+with figures, is section 6 of `docs/display_transform_explained.md`; chapter 18.8 gives what it
+implies for the cut-in.

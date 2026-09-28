@@ -51,6 +51,16 @@ technically-safe gap. It encodes "being close and closing feels wrong before it 
 dangerous", which the way we read it is the first appearance of a comfort-zone boundary
 inside the model, distinct from the safety margin [SI].
 
+{{R8}}**On real traffic both terms are nearly silent (2026-09-28).** Evaluated on about a
+million highD car-following samples, the calibrated safety-margin term fires in 1.7% of steady
+following, and its boundary headway lies at or below the real fifth percentile in four of five
+speed bands (card NM.2). The closing-rate (inverse-tau) term fires in 0.05%. It is one-sided at
+its floor of 0.2 s⁻¹, so it costs nothing at a TTC of 5 s or more, and that is where 99.5% of real
+closing cut-ins sit when the cutter enters the lane (card NC.5-tau). The reading above, "the first
+appearance of a comfort-zone boundary inside the model", therefore holds only for a boundary much
+closer than the one people show. The comfort zone the data measure lies well outside both terms
+(chapter 18).
+
 **The safety-margin term is a counterfactual, and its assumptions are the boundary's
 location.** It scores the present state by a what-if: *if* the lead braked at an assumed
 worst-case level *and* I responded only after an assumed reaction time, would ordinary

@@ -215,3 +215,37 @@ a quadratic form in two axes whose level set is the boundary, so that a worse va
 axis can be offset by a better one on the other (`docs/czb_ellipse_design_note.md`). On the
 cut-in the data preferred a straight line in the log plane (the linear rule), which is the
 looming rate; on the left turn the comparison is card B.3.v2.
+
+{{R8}}**Looming (θ̇), and why it is not TTC (added 2026-09-28).** Looming is how fast the other
+vehicle's image grows; TTC is the ratio of the image's size to that growth. So looming = angular
+size × (1/TTC). It carries how near the vehicle is as well as how soon contact would be, and the
+second cut-in study's answers follow it (chapter 18.2).
+
+{{R8}}**The gate as P(lead).** The probability, under the generative model's uncertainty about the
+other vehicle's sideways motion, that it will be in the driver's path within the anticipation
+horizon (3 s). The looming prior applies to a lead, and the gate says how likely the object is to
+become one (chapter 18.3).
+
+{{R8}}**Free energy of the present observation.** F = P(lead) × excess, where the excess is the
+one-sided penalty for looming above the driver's level. It is distinct from the *expected* free
+energy the released model sums over a planning horizon, which is ordered against the comfort
+judgments (chapter 18.3).
+
+{{R8}}**Gentle and hard boundary.** Two levels on the same looming axis, with one spread: the
+looming at which people expect the car to brake gently (about 0.012 rad/s) and hard (about 0.124
+rad/s) in the second cut-in study. The intervention level (0.032) lies between them (card NC.3o).
+
+{{R8}}**Timing-valid detector.** A braking-detection setting whose onsets can be used as times. On
+highD this means a threshold of 1.0 m/s² or more (card NC.0b-lat); lower thresholds can count
+responses but not time them.
+
+{{R8}}**Display gain (k) and the equivalent world.** A rendering with a 90° field of view, shown on
+a monitor that fills 46° of the viewer's field, shrinks every image by k = 0.42. What reaches the eye
+is the optics of an *equivalent world* with every distance along the line of sight × 1/k: looming ×
+k, TTC unchanged. **Effective gain:** the gain that would reconcile a video result with a
+real-optics one. On the left turn it is 0.99, as if the monitor had not shrunk what the participants
+judged (chapter 18.8).
+
+{{R8}}**Serial dependence.** The correlation between a participant's successive answers beyond what
+the stimuli explain. It is high in designs where the same clip recurs in sequence, and it disqualifies
+the Sequence and Button designs as primary sources (card AC.1).

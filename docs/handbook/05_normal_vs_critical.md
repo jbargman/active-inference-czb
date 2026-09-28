@@ -37,6 +37,15 @@ In steady following (chapter 02, t < 0.8 s), four things characterize the model'
   "driver-arriving-mid-cycle" half-threshold start over-corrects by a second
   (`docs/crash_causation_results.md` §5). The drift is a real property with small
   near-conflict consequences; designs with long benign run-ins are where it would bite.
+
+  {{R8}}**Observed, not extrapolated (2026-09-28).** It does bite. Behind a lead at constant
+  speed the released configuration starts braking after 3.2 s at a 1.5 s headway (4.6 s at
+  2.0 s), with or without gaze choice and with the authors' own scripted lead, sometimes to a
+  standstill; with perception noise × 100 it follows steadily (cards GZ.1, GZ.2). Behind real
+  highD leads in 18 five-second episodes where nothing happens, it brakes by at least 1 m/s²
+  in 56% of runs, often at −6 to −7 m/s², where the human followers never brake (card NM.1).
+  The cause is not established. Any use of the model on long naturalistic episodes needs a
+  remedy or a run-in, and must say which (chapter 18.7).
 - **Planning is incremental.** The plan is shifted and cheaply patched each step; the
   expensive candidate-generation machinery is dormant. Most timesteps of a normal drive
   never trigger a single full re-plan.

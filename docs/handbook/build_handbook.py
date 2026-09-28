@@ -45,7 +45,9 @@ REVISION_MARKS = {"{{R1}}": (0xB0, 0x00, 0x20),   # revision round -> RGB (round
                   "{{R3}}": (0x1B, 0x5E, 0x20),   # round 3: 2026-08-26, equivalence/ROPE
                   "{{R5}}": (0xB3, 0x5C, 0x00),   # round 5: 2026-08-29, gate R.2 status note
                   "{{R6}}": (0x00, 0x6B, 0x6B),   # round 6: 2026-09-02, external R_h appendix
-                  "{{R4}}": (0x6A, 0x1B, 0x9A)}   # round 4: 2026-08-27, lane entry + corrections
+                  "{{R4}}": (0x6A, 0x1B, 0x9A),   # round 4: 2026-08-27, lane entry + corrections
+                  "{{R7}}": (0x5D, 0x40, 0x37),   # round 7: 2026-09-03, authors'-edition code corrections
+                  "{{R8}}": (0xAD, 0x14, 0x57)}   # round 8: 2026-09-28, status chapter 18 and notes
                                                   #   calibration and the scenario-code deep dive
 
 

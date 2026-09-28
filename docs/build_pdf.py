@@ -93,7 +93,14 @@ _SUP = str.maketrans("⁻⁰¹²³⁴⁵⁶⁷⁸⁹", "-0123456789")
 _SUB = str.maketrans("₀₁₂₃₄₅₆₇₈₉ₙ", "0123456789n")
 
 
-REVISION_MARKS = {"{{R1}}": "#B00020"}   # revision round -> color (round 1: 2026-08-23)
+REVISION_MARKS = {"{{R1}}": "#B00020",   # revision round -> color (round 1: 2026-08-23);
+                  "{{R2}}": "#10308A",   # the same colors as docs/handbook/build_handbook.py
+                  "{{R3}}": "#1B5E20",
+                  "{{R4}}": "#6A1B9A",
+                  "{{R5}}": "#B35C00",
+                  "{{R6}}": "#006B6B",
+                  "{{R7}}": "#5D4037",
+                  "{{R8}}": "#AD1457"}
 
 
 def inline(text: str) -> str:

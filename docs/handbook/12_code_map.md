@@ -76,6 +76,10 @@ handbook's chapters keep returning to:
 | {{R2}}`src/equivalence/` | reusable Wu et al. (2026) binning/ROPE equivalence testing, reproduces the paper's worked θ example | property-tested |
 | {{R2}}`replication/causation/` | the study's runners: figure digitizer (`digitize_b24.py`), condition runner (`run_quadris.py`), tier-2 closed-loop adapter (`tier2_rear_end.py` — lead replay, forcible gaze schedule, checkpointing), arbiter analysis (`tier2_compare.py`) | outputs in `out/` and `tier2/` |
 | {{R2}}`tests/` | 103 property tests across the three suites (31 surprise, 33 comfort zone, 39 causation/equivalence) — the rung-0 suite | all passing |
+| {{R8}}`src/rollout/` | the free-energy reading of the boundary (chapter 18.3): `predictor.py` (sampled futures of the other vehicle), `efe.py` (expected free energy over policies), `looming_pref.py` (the looming preference and its gates), `belief.py` (intention filtering), `comfort_fe.py` (F = P(lead) × excess, the mixture and expected-looming responses), `admissible.py` (brake menus, admissibility) | property-tested |
+| {{R8}}`src/comfortzone/margin.py`, `display.py` | the demanded-deceleration margin (card S1.5); the display transform for the crowd-sourced clips (parameters read from `docs/display_transform.md`; switch `CZB_DISPLAY_TRANSFORM=on`) | property-tested |
+| {{R8}}`replication/czb/` | one script per card, pre-stated in its docstring and committed before it runs; outputs and the worklog in `out/`. Families: EL/G (the measurement model), JJ (the free-energy reading), RE/S/P (the released model's quantities), AC (serial dependence), NC/NM (naturalistic data, highD and inD), DT (the display transform) | outputs tracked; per-sample naturalistic caches outside the repository |
+| {{R8}}`tests/` (since 2026-09-28) | seventeen files, the full suite listed in `handover.md` §0 (31, 33, 40, 96, 62, 20, 28, 27, 16, 30, 33, 35, 24, 19, 24, 9 and 18 checks) | all passing |
 
 ## The data that goes with the code
 

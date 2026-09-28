@@ -39,6 +39,23 @@ comfort-zone level that is substantially shared across scenarios (~69% of the re
 per-driver signal). The full record is `docs/r2_gate_decisions.md`; the chapters carry
 short notes at the affected points. A proper revision round awaits Jonas's review.
 
+{{R8}}**Round 8 (2026-09-28): a status chapter and short notes.** A great deal happened after the
+last revision (2026-09-03). The account is gathered in one new chapter, **18: where the
+comfort-zone work stands**, and the chapters it changes carry short notes in this round's color
+(05, 07, 10, 11, 12, 13, 15, 17). In brief:
+- {{R8}}the working measurement model is a gated threshold on the other vehicle's looming, with an
+  active-inference reading of each part;
+- {{R8}}the released model's expected free energy is a collision-avoidance quantity, not a comfort-zone
+  one;
+- {{R8}}the naturalistic data (highD, inD) confirmed the gate's parameter and the video level, but real
+  braking follows inverse TTC slightly better than looming, and the released model does not hold
+  real steady following;
+- {{R8}}the crowd-sourced participants' monitors shrank the picture, and whether that affected their
+  judgments is open; the left turn against the test track suggests it did not.
+
+{{R8}}Earlier corrections of 2026-09-03 (the planner's elite set and iterations, the collision severity
+factor) are marked as round 7 in chapters 03 and 07.
+
 ## What this handbook is
 
 This handbook explains the active-inference driver model of Schumann et al. (2026, Nature
@@ -76,6 +93,7 @@ its provenance:
 | III Building on it | 09 Modify and validate | Recipes for changing the model, each with its validation ladder |
 | | 10 Calibration and parameter fitting | Where every number came from, how to set new ones, identifiability, and the dos and don'ts |
 | | 11 The path to comfort-zone boundaries | What exists, what has been tested, what human data would add |
+| | 18 Where the comfort-zone work stands | {{R8}}Status, September 2026: the measurement model, its free-energy reading, the naturalistic data, the released model on real traffic, the monitor question, and what is open |
 | IV Reference | 12 Code map | From concept to file, class, and parameter — with five first exercises |
 | | 13 Glossary | The same idea in three vocabularies, common misconceptions, and {{R6}}the measurement vocabulary (axis, level, gate, held out, noise floor, percentile, trait) in plain words |
 | | 14 Appendix: the deep end | The material deliberately kept out of the main text — the free-energy principle proper, variational inference, Markov blankets, the debate literature, the discrete-state formulation — for reference |
@@ -92,6 +110,7 @@ its provenance:
 - **"I want to change the code":** 03 → 04 → 12 → 09 → 10, keeping 13 open in a second
   window.
 - **"I care about comfort zones":** 01 → 02 → 07 → 11, then 10 before fitting anything.
+  {{R8}}Read chapter 18 before quoting anything from 11 or 17.
 
 ## How the math is layered
 
@@ -1017,6 +1036,15 @@ In steady following (chapter 02, t < 0.8 s), four things characterize the model'
   "driver-arriving-mid-cycle" half-threshold start over-corrects by a second
   (`docs/crash_causation_results.md` §5). The drift is a real property with small
   near-conflict consequences; designs with long benign run-ins are where it would bite.
+
+  {{R8}}**Observed, not extrapolated (2026-09-28).** It does bite. Behind a lead at constant
+  speed the released configuration starts braking after 3.2 s at a 1.5 s headway (4.6 s at
+  2.0 s), with or without gaze choice and with the authors' own scripted lead, sometimes to a
+  standstill; with perception noise × 100 it follows steadily (cards GZ.1, GZ.2). Behind real
+  highD leads in 18 five-second episodes where nothing happens, it brakes by at least 1 m/s²
+  in 56% of runs, often at −6 to −7 m/s², where the human followers never brake (card NM.1).
+  The cause is not established. Any use of the model on long naturalistic episodes needs a
+  remedy or a run-in, and must say which (chapter 18.7).
 - **Planning is incremental.** The plan is shifted and cheaply patched each step; the
   expensive candidate-generation machinery is dormant. Most timesteps of a normal drive
   never trigger a single full re-plan.
@@ -1376,6 +1404,16 @@ the article barely mentions it — but without it the model would happily sit at
 technically-safe gap. It encodes "being close and closing feels wrong before it is
 dangerous", which the way we read it is the first appearance of a comfort-zone boundary
 inside the model, distinct from the safety margin [SI].
+
+{{R8}}**On real traffic both terms are nearly silent (2026-09-28).** Evaluated on about a
+million highD car-following samples, the calibrated safety-margin term fires in 1.7% of steady
+following, and its boundary headway lies at or below the real fifth percentile in four of five
+speed bands (card NM.2). The closing-rate (inverse-tau) term fires in 0.05%. It is one-sided at
+its floor of 0.2 s⁻¹, so it costs nothing at a TTC of 5 s or more, and that is where 99.5% of real
+closing cut-ins sit when the cutter enters the lane (card NC.5-tau). The reading above, "the first
+appearance of a comfort-zone boundary inside the model", therefore holds only for a boundary much
+closer than the one people show. The comfort zone the data measure lies well outside both terms
+(chapter 18).
 
 **The safety-margin term is a counterfactual, and its assumptions are the boundary's
 location.** It scores the present state by a what-if: *if* the lead braked at an assumed
@@ -1976,6 +2014,15 @@ comfortable headways therefore pin down the assumption without touching any conf
 data. Calibrate on the quiet regime, predict the loud one — the same separation chapter
 05 describes behaviorally, used as an inference principle.
 
+{{R8}}**What the lookup returns on real following (2026-09-28).** Staged exactly as above for 18
+real highD steady-following episodes (60–108 km/h, headways 0.8–2.5 s), the lookup returned the
+same values every time: a desired-speed offset of 0 and an assumed worst-case lead braking of
+−8 m/s², whatever the speed and headway (card NM.1b; card GZ.2 found the same at 15 m/s). With
+those values the model brakes behind real leads that do nothing (chapter 05). So on real headways
+the table does not discriminate between episodes, and "calibrate on the quiet regime" has not yet
+been shown to work on quiet regimes from real data [Speculation]. Card NM.2 adds that the
+calibrated margin is silent over about 98% of real following.
+
 {{R2}}Two further provenance routes earned their place in the crash-causation study
 (2026-08-25). **Digitized** — a distribution extracted from a published figure when the
 underlying data are unshareable; legitimate only with an independent cross-check, and the
@@ -2194,6 +2241,17 @@ back as the primary comparator program. Full record and decisions:
 `docs/r2_gate_decisions.md`; the fits and tests: `replication/czb/out/`. The chapter
 below is kept as written — its framing argument is why the test was worth running — but
 its confident present tense about the field should be read as of 2026-08-22.
+
+{{R8}}**Status note, round 8 (2026-09-28): read chapter 18 first.** Since the note above, the
+program has a working measurement model: a gated threshold on the other vehicle's looming. It
+scores 0.103 held out on the second cut-in study, against the gap's 0.152. It has an
+active-inference reading in which each part was tested. It has been checked against naturalistic
+data (highD, inD) and, for the left turn, against the 2013 test track under a correction for the
+participants' monitors. The released model's own expected free energy turned out to be a
+collision-avoidance quantity, not a comfort-zone one. Chapter 18 gives the whole account, the
+review of 22 September and the open questions. This chapter's field-based program is superseded
+as a measurement route. Its argument for why an active-inference model is the right home for a
+comfort-zone boundary survives, in the form chapter 18.3 gives it.
 
 ## Why this model, for this problem
 
@@ -2567,6 +2625,10 @@ handbook's chapters keep returning to:
 | {{R2}}`src/equivalence/` | reusable Wu et al. (2026) binning/ROPE equivalence testing, reproduces the paper's worked θ example | property-tested |
 | {{R2}}`replication/causation/` | the study's runners: figure digitizer (`digitize_b24.py`), condition runner (`run_quadris.py`), tier-2 closed-loop adapter (`tier2_rear_end.py` — lead replay, forcible gaze schedule, checkpointing), arbiter analysis (`tier2_compare.py`) | outputs in `out/` and `tier2/` |
 | {{R2}}`tests/` | 103 property tests across the three suites (31 surprise, 33 comfort zone, 39 causation/equivalence) — the rung-0 suite | all passing |
+| {{R8}}`src/rollout/` | the free-energy reading of the boundary (chapter 18.3): `predictor.py` (sampled futures of the other vehicle), `efe.py` (expected free energy over policies), `looming_pref.py` (the looming preference and its gates), `belief.py` (intention filtering), `comfort_fe.py` (F = P(lead) × excess, the mixture and expected-looming responses), `admissible.py` (brake menus, admissibility) | property-tested |
+| {{R8}}`src/comfortzone/margin.py`, `display.py` | the demanded-deceleration margin (card S1.5); the display transform for the crowd-sourced clips (parameters read from `docs/display_transform.md`; switch `CZB_DISPLAY_TRANSFORM=on`) | property-tested |
+| {{R8}}`replication/czb/` | one script per card, pre-stated in its docstring and committed before it runs; outputs and the worklog in `out/`. Families: EL/G (the measurement model), JJ (the free-energy reading), RE/S/P (the released model's quantities), AC (serial dependence), NC/NM (naturalistic data, highD and inD), DT (the display transform) | outputs tracked; per-sample naturalistic caches outside the repository |
+| {{R8}}`tests/` (since 2026-09-28) | seventeen files, the full suite listed in `handover.md` §0 (31, 33, 40, 96, 62, 20, 28, 27, 16, 30, 33, 35, 24, 19, 24, 9 and 18 checks) | all passing |
 
 ## The data that goes with the code
 
@@ -2831,6 +2893,40 @@ a quadratic form in two axes whose level set is the boundary, so that a worse va
 axis can be offset by a better one on the other (`docs/czb_ellipse_design_note.md`). On the
 cut-in the data preferred a straight line in the log plane (the linear rule), which is the
 looming rate; on the left turn the comparison is card B.3.v2.
+
+{{R8}}**Looming (θ̇), and why it is not TTC (added 2026-09-28).** Looming is how fast the other
+vehicle's image grows; TTC is the ratio of the image's size to that growth. So looming = angular
+size × (1/TTC). It carries how near the vehicle is as well as how soon contact would be, and the
+second cut-in study's answers follow it (chapter 18.2).
+
+{{R8}}**The gate as P(lead).** The probability, under the generative model's uncertainty about the
+other vehicle's sideways motion, that it will be in the driver's path within the anticipation
+horizon (3 s). The looming prior applies to a lead, and the gate says how likely the object is to
+become one (chapter 18.3).
+
+{{R8}}**Free energy of the present observation.** F = P(lead) × excess, where the excess is the
+one-sided penalty for looming above the driver's level. It is distinct from the *expected* free
+energy the released model sums over a planning horizon, which is ordered against the comfort
+judgments (chapter 18.3).
+
+{{R8}}**Gentle and hard boundary.** Two levels on the same looming axis, with one spread: the
+looming at which people expect the car to brake gently (about 0.012 rad/s) and hard (about 0.124
+rad/s) in the second cut-in study. The intervention level (0.032) lies between them (card NC.3o).
+
+{{R8}}**Timing-valid detector.** A braking-detection setting whose onsets can be used as times. On
+highD this means a threshold of 1.0 m/s² or more (card NC.0b-lat); lower thresholds can count
+responses but not time them.
+
+{{R8}}**Display gain (k) and the equivalent world.** A rendering with a 90° field of view, shown on
+a monitor that fills 46° of the viewer's field, shrinks every image by k = 0.42. What reaches the eye
+is the optics of an *equivalent world* with every distance along the line of sight × 1/k: looming ×
+k, TTC unchanged. **Effective gain:** the gain that would reconcile a video result with a
+real-optics one. On the left turn it is 0.99, as if the monitor had not shrunk what the participants
+judged (chapter 18.8).
+
+{{R8}}**Serial dependence.** The correlation between a participant's successive answers beyond what
+the stimuli explain. It is high in designs where the same clip recurs in sequence, and it disqualifies
+the Sequence and Button designs as primary sources (card AC.1).
 
 
 ---
@@ -3097,6 +3193,45 @@ truncation points and is the least contaminated of the three. The button-press d
 for validation rather than fitting, because of the satisficing bias. The Sequence data is not
 used for boundary estimation. Chapter 11 sets out the fitting scheme.
 
+{{R8}}**Serial dependence, measured (2026-09-25, card AC.1).** The lag-1 correlation of a
+participant's successive residuals is +0.40 in the Sequence design, +0.32 in the Button design
+within a scenario, and +0.12 in the Random design within a scenario (+0.03 overall). The Button
+data are therefore validation-only, as decided above, and results that rested on them are
+downgraded (chapter 18.5). How far to trust the Random design is query AC1.Q1.
+
+{{R8}}**The monitor.** Participants watched on their own screens (typically 23 inches at about 60
+cm), which shrank the rendered 90° view to about 46°. Every optical quantity computed from the
+traces is the rendered world's, not the participant's: looming shrinks by 0.42 and TTC is unchanged.
+Whether the participants' judgments were affected is open (chapter 18.8;
+`docs/display_transform.md`).
+
+## 15.5 The second cut-in study (added 2026-09-28)
+
+{{R8}}Crowd-sourced like study 1, with a design that breaks the gap–TTC collinearity: 378 clips (six
+closing speeds, 7–42 km/h; three lane-change durations; several starting TTCs; five frozen moments,
+CP1–CP5, the first before the lane change begins), 10–26 raters per clip. The answers used here: would you intervene, and what the participant
+expects *the car* to do (nothing, brake gently, brake hard). Serial dependence is small (+0.05, card AC.1), which makes it the
+project's reference data set. Cells and traces: `replication/czb/out/cutin2_cells.csv` and the
+study's `02_Kinematics` folder. The same monitor caveat applies.
+
+## 15.6 Naturalistic data: highD and inD (added 2026-09-28)
+
+{{R8}}**highD v1.0** (levelXdata): 60 drone recordings of German motorways at 25 Hz, positions,
+speeds, accelerations, lane and leader IDs for every vehicle. **inD v1.1**: 33 recordings at four
+German intersections. Both arrived on 2026-09-24 and sit at `C:\JonasLocal\D_Data`, outside the
+repository. Per-sample caches are in `C:\JonasLocal\D_Data_derived`. **Under the licence only
+aggregates are committed.** Conventions worth knowing: in highD, x and y are the top-left corner of
+the bounding box, "width" is the vehicle's length and "height" its width, and vehicles with
+drivingDirection 1 move toward −x.
+
+{{R8}}**The braking detector and its limits.** A response is a deceleration episode below a
+threshold for a minimum time. Timing claims need a threshold of 1.0 m/s² or more (card NC.0b-lat).
+Hard braking is rare: highD's 99th percentile of deceleration is 1.07 m/s², and 4 of 2,771 real
+closing cut-ins drew 2.5 m/s² or more. Over half of the motorway's lead decelerations are already
+under way when the vehicle enters the field of view, and they are lost to any onset-based analysis
+(card NM.3). In inD, oncoming vehicles are often not yet in view at a left-turner's decision moment
+(card NC.1). What was learned from the two datasets is in chapter 18.6 and 18.7.
+
 
 ---
 
@@ -3328,3 +3463,282 @@ TT.Q2). The two populations differ (Volvo and Autoliv employees in 2013 against 
 participants in 2026), the paper reports 22 usable drivers where the protocol holds 26
 (TT.Q3), and the balloon car is not a car. One scenario is one scenario; the cut-in, where
 the axis question was decided, has no real-driving counterpart yet.
+
+## 17.7 The monitor (added 2026-09-28)
+
+{{R8}}**The comparison survives the display correction, and says something about it.** The video
+participants watched on desktop monitors that shrank the rendered 90° view to about 46° of their
+field (gain 0.42): the oncoming car looked 2.36 times farther away and loomed 0.42 times as fast,
+while its time to arrival was unchanged. On video, the left-turn answers follow distance or looming,
+not time (card B.3.v2). So the track and the video could agree only if the participants' criterion
+was not shrunk. The display gain that reconciles them is 0.99 [0.84, 1.05] for every distance-like
+criterion (card DT.2). In addition, the oncoming car's looming on the monitor near the boundary was
+at the edge of visibility, yet the answers kept varying. Reading [Speculation]: the participants
+judged distance relative to the scene, which a uniform shrinking leaves intact. The full account,
+with figures, is section 6 of `docs/display_transform_explained.md`; chapter 18.8 gives what it
+implies for the cut-in.
+
+
+---
+
+# Chapter 18 (status): where the comfort-zone work stands, September 2026
+
+*Part of the WaymoActiveInference handbook. Added 2026-09-28 (round 8). Chapters 00–17 describe
+the model and the program as of 2026-09-03. This chapter reports what happened after that, in the
+order a reader needs it. It is the chapter to read before quoting anything from chapter 11 or
+appendix 17. Every number comes from a committed script with a tracked output under
+`replication/czb/out/`; the cards are named so each result can be traced (the worklog,
+`replication/czb/out/worklog.md`, has the full record, and `handover.md` §1 the running summary).
+Readings, as opposed to results, are marked [Speculation] as elsewhere in the handbook.*
+
+## 18.1 The short version
+
+{{R8}}Six things changed between 3 and 28 September.
+
+{{R8}}1. **The comfort-zone boundary has a working measurement model**: a threshold on the looming
+(optical expansion rate) of the other vehicle, opened by a gate that says whether the vehicle is
+about to be in the driver's path. It fits the second cut-in study far better than the gap or TTC,
+and each driver's level is the same person's across scenarios.
+
+{{R8}}2. **Each part of that model has an active-inference reading, and each reading was tested
+rather than assumed.** The boundary is a prior over the looming of a lead vehicle. The gate is the
+generative model's uncertainty about whether the other vehicle will become one. What the released
+model computes, an expected free energy summed over a planning horizon, is a collision-avoidance
+quantity, not a comfort-zone one.
+
+{{R8}}3. **A review on 22 September withdrew several claims** made in the preceding days. Since then
+every analysis is pre-stated in its own commit before it runs.
+
+{{R8}}4. **The first study's Sequence and Button designs are not primary sources** (strong
+dependence between successive answers). The second study is the trusted one.
+
+{{R8}}5. **Naturalistic data arrived** (highD, inD, 24 September). The gate's key parameter was
+measured on real traffic and predicts the video data. The video's intervention curve transfers to
+real cut-ins in level. But real braking follows inverse TTC slightly better than looming, and the
+released model does not hold real steady following.
+
+{{R8}}6. **The participants watched on desktop monitors that shrank the picture.** Taken literally,
+this lowers every looming level by 0.42 and reverses three comparisons with real data. The left
+turn, checked against the 2013 test track, suggests the participants were not affected: they
+judged as if the scene had not been shrunk. This is unsettled and has a clear test.
+
+## 18.2 The measurement model
+
+{{R8}}On the second cut-in study (378 clips, 288 after the lane change has begun, rated by 10–26
+people each), the share who say they would intervene is described by
+
+> share = lapse + (1 − lapse) × GATE × Φ((log θ̇ − log θ̇₀) / σ)
+
+{{R8}}with θ̇ the cut-in vehicle's looming at the driver's eye (card EL.1b), θ̇₀ a level, σ a spread,
+and the GATE the probability that the vehicle's sideways clearance, projected 3 s ahead, falls below
+a minimum (card G.1). Scored out of sample (each starting-TTC level held out in turn), the gated
+looming rule scores 0.103, looming without the gate 0.113, the gap 0.152, TTC 0.168, chance 0.320;
+the sampling-noise floor is 0.118. Before the lane change begins, where only the gate can say "not
+yet", it scores 0.032. The fitted intervention curve (card JJ.10): lapse 0.037, level 0.0320 rad/s,
+spread 1.29 log units.
+
+{{R8}}**The per-driver level is a trait.** A driver's level on the cut-in ranks drivers the same way
+as their level on another scenario (Spearman +0.65, card TR.1; +0.64 [+0.40, +0.80] as a prior
+carried from one scenario to the other, card JJ.7). The population median prior on the cut-in is
+0.031 rad/s.
+
+## 18.3 The free-energy reading, and what the released model's machinery does not do
+
+{{R8}}The aim, in Jonas's words, was not to assume the framework fits but to probe whether a looming
+threshold can be *explained* in free-energy terms. Where it stands (cards JJ.6 to JJ.12,
+`docs/looming_as_free_energy.md`):
+
+{{R8}}- **The boundary is a prior over the looming of a lead:** a one-sided penalty on log looming
+above the driver's level. Additive sensory noise (a spread in looming rather than in log looming) is
+rejected (+0.023 held out, card JJ.8), so the spread is a spread of *levels* across moments and
+people, not of perception.
+{{R8}}- **The gate is the generative model's predictive uncertainty about the other's sideways
+motion.** Card G.1's fitted gate is, to machine precision, a Gaussian-rate predictor's probability
+that the other's body reaches the driver's lane within 3 s, with the sideways-speed uncertainty σ as
+its one parameter (card JJ.6e). A latent lane-change *intention* is not needed; the human gate grades
+on how soon the body arrives, not on whether it intends to (JJ.6 to JJ.6d).
+{{R8}}- **The two combine as the free energy of the present observation:** F = P(lead) × excess. Whether
+the gate multiplies the probability of responding or the looming judged cannot be told on this
+design (difference +0.003, card JJ.10). Nor can a reflex and a one-step decision reading (−0.0002,
+JJ.8); only the reflex reading gives the level a meaning.
+{{R8}}- **The one circularity is gone.** σ was first set from the fitted gate. Measured on real
+lane-keeping in highD it is 0.125 m/s. With that value and nothing fitted from the video, the gate
+still predicts the second study (0.112 held out, 0.034 before the lane change; card JJ.9). The lab
+participants' σ is 0.33, so they anticipate cut-ins far more than real motorway traffic warrants.
+{{R8}}- **What the released machinery does not do.** Any quantity that sums a one-sided preference
+over the planning horizon of a policy that drives on through the lead is ordered *against* the
+participants. A sum to contact of a cost that grows near contact is dominated by its value at
+contact, which scales with the closing speed; at equal TTC the nearer car closes more slowly, so the
+sum rates the farther, faster car as worse, where participants rate the nearer one as worse (cards
+JJ.2 to JJ.5b; JJ.12: the sum of inverse tau to contact correlates −0.86 with the share and +0.999
+with the gap). Removing
+the sum removes the inversion but leaves the released terms, which are braking and TTC quantities,
+not looming. A Farewell-style accumulator over the *past* goes the human way but scores worse than
+the instantaneous rule (0.128–0.133 against 0.113); its graded form is open (JJ12.Q1). The corrected
+released planner, rerun on the video cells, brakes and steers from the first step almost everywhere
+(card P.1, DROP). The "lateral factor" was retired: with a cyclist-sized collision box it scores 0.29
+against the clearance rule's 0.15 (card JJ.3b).
+
+{{R8}}**In one sentence** [Speculation]: the comfort-zone boundary is a prior over the looming of a
+lead, gated by the generative model's uncertainty about whether the object is one. The
+active-inference machinery supplies the gate and the words; the looming threshold supplies the fit.
+
+## 18.4 The review of 22 September, and the rule it left
+
+{{R8}}A review of the 18–22 September work (`docs/review_2026-09-22.md`) found that its central
+diagnosis, that the released model's safety probability is "inverted", did not follow from the
+evidence. Three cards (RE.4, JJ.2b, RE.1) were invalid as run. What stood is listed in that document.
+The standing rule since: **every analysis is pre-stated (models, folds, decision rule, predictions)
+in its own commit before it runs**, and anything changed afterwards is dated in the script. The note
+to JJ (`docs/note_for_jj_horizon_sum.md`, one page) is written but not sent, and carries a banner
+saying it should not be sent as it stands.
+
+## 18.5 Which video data to trust
+
+{{R8}}Serial dependence, measured as the lag-1 correlation of residuals within a participant (card
+AC.1), is +0.40 in the first study's Sequence design (excluded since August), +0.32 in its Button
+design within a scenario, +0.12 in its Random design within a scenario (+0.03 overall), and +0.05 in
+the second study. **The Button design is not a primary source**; results that rested on it (the hard
+boundary per clip, card NC.3j; part of NC.3m and NC.3n) are downgraded. How far to trust the Random
+design is Jonas's query AC1.Q1. The second study is the reference.
+
+## 18.6 Naturalistic data: highD and inD
+
+{{R8}}The two datasets (levelXdata; highD v1.0, 60 motorway recordings; inD v1.1, 33 intersection
+recordings) are at `C:\JonasLocal\D_Data`, outside the repository. Per-sample caches are in
+`C:\JonasLocal\D_Data_derived`; under the licence only aggregates are committed. Appendix 15 lists
+them.
+
+{{R8}}**The braking detector.** A response is a qualifying deceleration episode. At 0.5 m/s² for
+0.3 s the false-positive rate on steady following is 2.6% (card NC.0b). Timing claims are valid only
+at thresholds of 1.0 m/s² or more (latency 0.24 s, false positives 1.1%; card NC.0b-lat).
+
+{{R8}}**Cut-ins at the lane switch** (card NC.3; 2,208 closing cut-ins, 11.6% respond within 3 s).
+The video's intervention curve, with nothing refitted, predicts better than chance (binned error 0.065
+against 0.083). A refit on highD puts the level at 0.039 rad/s, 1.21 times the video's. But the
+*axis* does not carry over: whether a real follower brakes is predicted slightly better by inverse
+TTC than by looming (area under the curve 0.739 against 0.713; difference −0.026 [−0.043, −0.006]),
+at every detector setting and at short and long gaps alike (NC.3c). Query **NC3C.Q1** is the question
+this raises: is the video's button press or real braking the operationalisation of the comfort-zone
+boundary?
+
+{{R8}}**Hard braking is rare on the motorway.** Of 2,771 real closing cut-ins, 4 drew braking of
+2.5 m/s² or more. highD's own 99th percentile of deceleration is 1.07 m/s² (0.87 at 110–130 km/h).
+The released model's inverse-tau preference costs nothing at a TTC of 5 s or more, where 99.5% of
+real closing cut-ins sit (card NC.5-tau). Jonas's question for Malin Svärd (query NC3H.Q1): the 99th
+percentile of deceleration at 110–130 km/h, over all driving samples, with sampling rate and filter.
+
+{{R8}}**Two boundaries on one axis.** The second study also asked what participants expect *the car*
+to do (nothing, brake gently, brake hard). Gently and hard are two levels on the same looming axis
+with one spread (card NC.3o, supported: 0.113 against two free boundaries' 0.115; on TTC 0.162): expect
+gentle braking from about 0.012 rad/s, hard from 0.124, with the intervention level (0.032) between
+them. Half expect hard braking at a TTC of 1.64 s (card NC.3l). Real followers match the gentle
+(intervention) curve at braking of 1.08 m/s² [0.97, 1.22], about highD's own 99th percentile (card
+NC.3h). The kept sentence, Jonas's: *the hard-braking judgment does not depend on whether participants
+judge their own action or the vehicle's; the gentle (intervention) boundary replicates across
+studies, the hard boundary does not* (the first half rests on the Button design, NC.3m).
+
+{{R8}}**Before the lane switch** (cards NC.4 to NC.4c). Real followers sometimes start braking 2–3 s
+before the cutter reaches their lane. Looming to the cutter predicts which ones (0.856, with the
+follower's own leader ruled out), and the lateral gate of card JJ.9 does not help; it makes
+prediction worse (−0.093 [−0.146, −0.046]). Real drivers anticipate from something other than the
+cutter's sideways motion. The cutter closing on a slower car in its own lane is the cheap candidate
+(query NC4C.Q1).
+
+{{R8}}**Left turns in inD** (card NC.1): 93 gap decisions, 7 accepted; descriptive only. The
+extraction lost most accepted gaps, because the oncoming car was often not yet in view at the
+decision moment. A redesign timing gaps at the conflict point is query NC1.Q1.
+
+## 18.7 The released model on real traffic
+
+{{R8}}Three checks of the authors' model, unmodified, against highD (these also belong in chapters 05
+and 10, which carry short notes):
+
+{{R8}}- **Sustained following** (cards GZ.1, GZ.2, NM.1). Behind a lead at constant speed the released
+configuration starts braking after 3.2 s at a 1.5 s headway (4.6 s at 2.0 s), sometimes to a
+standstill; with perception noise × 100 it follows steadily. Behind real highD leads in 18
+five-second episodes where nothing happens, it brakes by at least 1 m/s² in 56% of runs, often at −6
+to −7 m/s², while the human followers in the same episodes never brake. The authors' calibration
+returns the same values for every episode, so it does not explain why braking is more frequent at
+low speed (NM.1b; figure `figures/nm1b_released_model_following.png`).
+{{R8}}- **The calibrated following preference** (card NM.2). The braking-margin term fires in 1.7% of
+steady real following. Its boundary headway lies at or below the real fifth percentile in four of
+five speed bands. It is silent over about 98% of real following and does not say where people choose
+to follow.
+{{R8}}- **The response-time relation** (card NM.3; descriptive only for want of hard events). On 1,033
+real lead-braking events the log response time rises with log headway, more steeply for harder lead
+braking (+0.23, +0.40, +0.45 against the model's +0.59). Real responses are about three times slower
+(2.2–3.1 s against 0.8 s), mostly because the data hold few emergencies.
+
+{{R8}}A draft email to Julian Schumann with these results is in
+`correspondence/2026-09-25_draft_email_julian.md`, **not sent**. Suggested changes to the authors'
+edition of this handbook are in `docs/handbook_authors/review_2026-09-28.md`.
+
+## 18.8 The monitor, and the left turn against the test track
+
+{{R8}}The crowd-sourced participants watched the clips on their own monitors: typically a 23-inch
+screen at about 60 cm, showing a rendering with a 90° field of view. The monitor fills only 46° of
+the viewer's field, so the picture is shrunk by k = 0.42. What reached the eye is exactly what a
+driver would see with every distance along the line of sight 2.36 times longer. **TTC is unchanged;
+looming shrinks by 0.42.** The transform is specified in `docs/display_transform.md` (parameters in a
+machine-readable block, code `src/comfortzone/display.py`, switch `CZB_DISPLAY_TRANSFORM=on`) and
+explained with figures and a video in `docs/display_transform_explained.md`.
+
+{{R8}}**If the participants judged the looming at their eye** (card DT.1), nothing within the video
+studies changes except the looming levels (the intervention level 0.032 → 0.0136 rad/s). Three
+comparisons with real data reverse: the boundary falls below Farewell's emergency-braking level (0.64
+times it, not 1.5); highD's level is 2.9 times the video's (not 1.21); and real followers match the
+gentle curve at 0.66 m/s², not 1.08. Over plausible displays (50–70 cm, the video filling 60–100% of
+the screen) the gain runs 0.22–0.51 and the reversals hold throughout (DT.1b).
+
+{{R8}}**But the left turn says they probably did not** (card DT.2). On video the left-turn answers
+follow the oncoming car's distance or looming, not its time. The 2013 test track, with real optics,
+agrees with the video (PET 2.45 against 2.42 s). A shared perceived distance or looming criterion
+would put the video boundary outside the design (−1.4 to 0.4 s). The display gain that reconciles
+track and video is 0.99 [0.84, 1.05], not 0.42. And on the monitor the oncoming car's looming near the
+boundary was at the edge of visibility, yet the answers kept varying. Reading [Speculation]: the
+participants judged distance *relative to the scene* (the intersection, the road, familiar car
+sizes), which a uniform shrinking leaves intact. If that holds for the cut-in too, DT.1
+over-corrects and the uncorrected comparisons stand. **Until it is tested, cross-domain looming
+numbers are reported both ways.**
+
+{{R8}}**The test** (query DT2.Q1). For participants whose screen or window size is known, compute each
+one's display gain and their own level. A slope of −1 of log level on log gain means the display
+acted on them; a slope of 0 means it did not. Jonas has display data for a subset of participants.
+
+## 18.9 What is open, and what the deliverable is waiting for
+
+{{R8}}The comfort-zone deliverable (a population distribution of boundary levels, card EL.2) is
+still blocked by query EL.Q4. The questions that decide the most, in the order I would take them:
+
+| query | the question | what it decides |
+|---|---|---|
+| DT2.Q1 | the per-participant display data | whether video looming levels can be put next to real-world ones |
+| NC3C.Q1 | the video button press or real braking as the operationalisation | whether the boundary is on looming or on TTC in real traffic |
+| AC1.Q1 | how far to trust the first study's Random design | which first-study results stand beside the second study |
+| NC3H.Q1 | Malin Svärd's 99th percentile of deceleration at 110–130 km/h | the anchor for "hard" braking |
+| EL.Q4 | (blocks the deliverable since 2026-09-03) | card EL.2 |
+| NC4C.Q1, NC1.Q1, NM1.Q1, JJ12.Q1 | the smaller follow-ups of 18.3, 18.6 and 18.7 | one card each |
+
+{{R8}}The register of all open questions is `replication/czb/out/query_register.md`; the next
+session's instructions are in `handover.md`.
+
+## Notes for the mathematically curious
+
+{{R8}}**The gate as a predictive probability.** With the other's edge-to-edge clearance l₀, its rate
+l̇ and a Gaussian sideways-speed uncertainty σ over the anticipation horizon T, P(lead) =
+Φ((−l₀ − l̇T)/(σT)); G.1's fitted gate is this with s_l = σT (JJ.6e). The free energy of the present
+observation under a one-sided log-looming prior is F = P(lead) × ½((log θ̇ − log θ̇₀)/σ_c)²₊ (JJ.10,
+`src/rollout/comfort_fe.py`).
+
+{{R8}}**The display.** A pinhole rendering with horizontal field of view HFOV, shown W cm wide at
+distance d, maps a direction α to a seen direction β with tan β = k tan α, k = (W/2)/(d tan(HFOV/2)).
+That is the optics of the scene with depth divided by k: range and closing speed × 1/k, looming
+k(r² + W²/4)/(r² + k²W²/4) ≈ k, TTC and inverse tau unchanged.
+
+{{R8}}**The horizon sum.** For a policy that holds speed toward a lead at gap g and closing speed v,
+the sum over steps of a one-sided cost c(τ⁻¹) up to contact is Σ_k c(v/(g − kvΔt)). Within a row
+of equal TTC, inverse tau is one number, so it cannot order the row; the sum is dominated by its last
+terms near contact, where the cost scales with the closing speed v, and at equal TTC the nearer car
+has the smaller v. So the sum ranks cells by gap within a row, the opposite of the participants. The
+closed forms are in card JJ.12 (`replication/czb/out/jj12_sums_future_past.md`).

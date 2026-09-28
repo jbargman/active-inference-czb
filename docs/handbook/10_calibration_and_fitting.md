@@ -56,6 +56,15 @@ comfortable headways therefore pin down the assumption without touching any conf
 data. Calibrate on the quiet regime, predict the loud one — the same separation chapter
 05 describes behaviorally, used as an inference principle.
 
+{{R8}}**What the lookup returns on real following (2026-09-28).** Staged exactly as above for 18
+real highD steady-following episodes (60–108 km/h, headways 0.8–2.5 s), the lookup returned the
+same values every time: a desired-speed offset of 0 and an assumed worst-case lead braking of
+−8 m/s², whatever the speed and headway (card NM.1b; card GZ.2 found the same at 15 m/s). With
+those values the model brakes behind real leads that do nothing (chapter 05). So on real headways
+the table does not discriminate between episodes, and "calibrate on the quiet regime" has not yet
+been shown to work on quiet regimes from real data [Speculation]. Card NM.2 adds that the
+calibrated margin is silent over about 98% of real following.
+
 {{R2}}Two further provenance routes earned their place in the crash-causation study
 (2026-08-25). **Digitized** — a distribution extracted from a published figure when the
 underlying data are unshareable; legitimate only with an independent cross-check, and the

@@ -30,6 +30,17 @@ back as the primary comparator program. Full record and decisions:
 below is kept as written — its framing argument is why the test was worth running — but
 its confident present tense about the field should be read as of 2026-08-22.
 
+{{R8}}**Status note, round 8 (2026-09-28): read chapter 18 first.** Since the note above, the
+program has a working measurement model: a gated threshold on the other vehicle's looming. It
+scores 0.103 held out on the second cut-in study, against the gap's 0.152. It has an
+active-inference reading in which each part was tested. It has been checked against naturalistic
+data (highD, inD) and, for the left turn, against the 2013 test track under a correction for the
+participants' monitors. The released model's own expected free energy turned out to be a
+collision-avoidance quantity, not a comfort-zone one. Chapter 18 gives the whole account, the
+review of 22 September and the open questions. This chapter's field-based program is superseded
+as a measurement route. Its argument for why an active-inference model is the right home for a
+comfort-zone boundary survives, in the form chapter 18.3 gives it.
+
 ## Why this model, for this problem
 
 Comfort-zone boundaries are quantified today per scenario, per indicator: a minimum-TTC

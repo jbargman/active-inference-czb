@@ -39,6 +39,23 @@ comfort-zone level that is substantially shared across scenarios (~69% of the re
 per-driver signal). The full record is `docs/r2_gate_decisions.md`; the chapters carry
 short notes at the affected points. A proper revision round awaits Jonas's review.
 
+{{R8}}**Round 8 (2026-09-28): a status chapter and short notes.** A great deal happened after the
+last revision (2026-09-03). The account is gathered in one new chapter, **18: where the
+comfort-zone work stands**, and the chapters it changes carry short notes in this round's color
+(05, 07, 10, 11, 12, 13, 15, 17). In brief:
+- {{R8}}the working measurement model is a gated threshold on the other vehicle's looming, with an
+  active-inference reading of each part;
+- {{R8}}the released model's expected free energy is a collision-avoidance quantity, not a comfort-zone
+  one;
+- {{R8}}the naturalistic data (highD, inD) confirmed the gate's parameter and the video level, but real
+  braking follows inverse TTC slightly better than looming, and the released model does not hold
+  real steady following;
+- {{R8}}the crowd-sourced participants' monitors shrank the picture, and whether that affected their
+  judgments is open; the left turn against the test track suggests it did not.
+
+{{R8}}Earlier corrections of 2026-09-03 (the planner's elite set and iterations, the collision severity
+factor) are marked as round 7 in chapters 03 and 07.
+
 ## What this handbook is
 
 This handbook explains the active-inference driver model of Schumann et al. (2026, Nature
@@ -76,6 +93,7 @@ its provenance:
 | III Building on it | 09 Modify and validate | Recipes for changing the model, each with its validation ladder |
 | | 10 Calibration and parameter fitting | Where every number came from, how to set new ones, identifiability, and the dos and don'ts |
 | | 11 The path to comfort-zone boundaries | What exists, what has been tested, what human data would add |
+| | 18 Where the comfort-zone work stands | {{R8}}Status, September 2026: the measurement model, its free-energy reading, the naturalistic data, the released model on real traffic, the monitor question, and what is open |
 | IV Reference | 12 Code map | From concept to file, class, and parameter — with five first exercises |
 | | 13 Glossary | The same idea in three vocabularies, common misconceptions, and {{R6}}the measurement vocabulary (axis, level, gate, held out, noise floor, percentile, trait) in plain words |
 | | 14 Appendix: the deep end | The material deliberately kept out of the main text — the free-energy principle proper, variational inference, Markov blankets, the debate literature, the discrete-state formulation — for reference |
@@ -92,6 +110,7 @@ its provenance:
 - **"I want to change the code":** 03 → 04 → 12 → 09 → 10, keeping 13 open in a second
   window.
 - **"I care about comfort zones":** 01 → 02 → 07 → 11, then 10 before fitting anything.
+  {{R8}}Read chapter 18 before quoting anything from 11 or 17.
 
 ## How the math is layered
 

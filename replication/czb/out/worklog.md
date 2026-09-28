@@ -5531,3 +5531,23 @@ cells from PET 2.5 s up, where the answers still fall from 0.51 to 0.26 -- the p
 there cannot have been the looming at their eye. In the views, the car's direction relative to the
 conflict point's is 0.146 for a driver and 0.143 on the monitor: scene-relative position survives the
 shrinking. Reading A (a scene-relative distance) favoured, marked as judgment.
+
+## 2026-09-28 — the handbooks
+
+**Internal handbook, round 8** (Jonas: "update my handbook with the latest information"). New chapter
+`docs/handbook/18_where_czb_stands.md` (status since 2026-09-03: the measurement model, the free-energy
+reading, the review of 09-22, which video data to trust, highD/inD, the released model on real traffic,
+the monitor and the left turn, what is open) and dated round-8 notes in chapters 00, 05, 07, 10, 11,
+12, 13, 15, 17. Colors for rounds 7 and 8 added to `build_handbook.py`; `docs/build_pdf.py` now colors
+rounds 2-8 (it printed their marks literally before). Rebuilt: per-chapter Word/PDF and the combined
+document (19 chapters, 58 PDF pages, no literal marks left).
+
+**Authors' edition: recommendations only, nothing changed** (`docs/handbook_authors/review_2026-09-28.md`).
+Five passages are overtaken: the sustained-following braking (GZ.1/GZ.2/NM.1, high), the
+response-time relation on highD (NM.3, high, positive), how rarely the margin and inverse-tau terms act
+on real traffic (NM.2, NC.5-tau), the naturalistic check of looming vs inverse tau (NC.3, which agrees
+with Xue et al.), and a softer reading of the 25 m/s road departures. Recommended: a short dated addendum,
+sent only after Julian answers the draft email; check the authors' announced Nature Communications
+correction first.
+@HB.Q1(judgment, jonas): send an addendum to the authors' edition with items 1-5 of the review note
+(after Julian's reply), reissue the edition, or leave it?
