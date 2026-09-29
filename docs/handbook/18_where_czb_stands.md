@@ -84,12 +84,14 @@ still predicts the second study (0.112 held out, 0.034 before the lane change; c
 participants' σ is 0.33, so they anticipate cut-ins far more than real motorway traffic warrants.
 {{R8}}- **What the released machinery does not do.** Any quantity that sums a one-sided preference
 over the planning horizon of a policy that drives on through the lead is ordered *against* the
-participants. A sum to contact of a cost that grows near contact is dominated by its value at
-contact, which scales with the closing speed; at equal TTC the nearer car closes more slowly, so the
-sum rates the farther, faster car as worse, where participants rate the nearer one as worse (cards
-JJ.2 to JJ.5b; JJ.12: the sum of inverse tau to contact correlates −0.86 with the share and +0.999
-with the gap). Removing
-the sum removes the inversion but leaves the released terms, which are braking and TTC quantities,
+participants, for two reasons that act at different scales. Across cells, the sum largely counts
+the steps before contact: the released braking-margin term summed over the 6 s horizon correlates
++0.920 with the TTC (the review of 22 September, §18.4). Within a row of equal TTC, a sum to contact
+of a cost that grows near contact is dominated by its value at contact, which scales with the
+closing speed. At equal TTC the nearer car closes more slowly, so the sum rates the farther, faster
+car as worse, where participants rate the nearer one as worse (cards JJ.2 to JJ.5b; JJ.12: the sum
+of inverse tau to contact correlates −0.86 with the share and +0.999 with the gap). Removing the sum
+removes the inversion but leaves the released terms, which are braking and TTC quantities,
 not looming. A Farewell-style accumulator over the *past* goes the human way but scores worse than
 the instantaneous rule (0.128–0.133 against 0.113); its graded form is open (JJ12.Q1). The corrected
 released planner, rerun on the video cells, brakes and steers from the first step almost everywhere

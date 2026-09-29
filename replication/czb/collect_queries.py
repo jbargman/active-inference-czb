@@ -40,12 +40,15 @@ RESOLVED = re.compile(r"^RESOLVED\s+([A-Z][\w.]*?)\.Q(\d+)\s*:\s*(.*)$", re.MULT
 
 
 def parse(text: str):
-    """Every query in the log, with its text running to the next query or heading."""
+    """Every query in the log, with its text running to the next query, heading or blank line.
+
+    The blank line ends a query (added 2026-09-29): queries are written as one paragraph, and
+    without it a paragraph written after the last query of an entry was absorbed into it."""
     out = []
     for m in re.finditer(r"@[A-Z][\w.]*?\.Q\d+\((?:blocker|judgment|minor)"
                          r"(?:,\s*(?:review|jonas))?\)", text):
         start = m.start()
-        nxt = re.search(r"\n@[A-Z][\w.]*?\.Q\d+\(|\n## |\nRESOLVED ", text[m.end():])
+        nxt = re.search(r"\n@[A-Z][\w.]*?\.Q\d+\(|\n## |\nRESOLVED |\n[ \t]*\n", text[m.end():])
         body = text[start:m.end() + (nxt.start() if nxt else len(text) - m.end())]
         q = QUERY.match(body)
         if q:

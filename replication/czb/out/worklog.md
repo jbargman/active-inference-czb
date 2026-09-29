@@ -5559,3 +5559,18 @@ A notice at the top says it goes beyond their copy and lists the five additions.
 labeled "New in this version, 28 September 2026: not in the edition you received" and colored (13
 paragraphs). The reworded road-departure sentence quotes the version they received. Not sent. HB.Q1
 stays open: when and whether to send it, after Julian's reply.
+
+## 2026-09-29 — handover housekeeping
+
+The query collector now ends a query at the first blank line (`collect_queries.py`, dated in its
+docstring): paragraphs written after the last query of an entry were being absorbed into it (DT2.Q1,
+NC3C.Q1). Counts unchanged, 161 open and 64 resolved before the two lines below. The skill mirror
+`docs/skills/performing-research.SKILL.md` synced to the live copy (v8). Two queries answered during
+the arc, recorded:
+
+RESOLVED NC3G.Q1: Jonas, 2026-09-24: "OK, go for two boundaries (NC3G.Q1)." Done in cards NC.3h to NC.3o; the gentle and hard levels share one looming axis and one spread in the second study (NC.3o, SUPPORTED).
+
+RESOLVED REV22.Q4: settled by card JJ.2c on 2026-09-22 night (DROP carries over to the released staging), as the 09-22 handover recorded.
+
+New standing `handover.md` written; the previous one kept as `handover_2026-09-28_standing_superseded.md`;
+the arc 2026-09-22 to 2026-09-29 in `handover_2026-09-29.md`.

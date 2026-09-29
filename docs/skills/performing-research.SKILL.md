@@ -1,6 +1,6 @@
 ---
 name: performing-research
-description: How research work is executed for Jonas Bärgman — the interruption budget and the two operating modes (interactive versus batch/overnight), the numbered-query convention (Qs, tagged by severity and audience) that lets a session continue instead of blocking, reproducibility rules (every quoted number from a committed script), verification and test discipline, the rule that every parameter value carries a motivation, replication of published results — the default when a component is built from a paper, opt-in and asked for when a paper is being reviewed, documentation and handover conventions, model-tier awareness for deciding who a question can be deferred to, and the statistical conventions. Use when executing any research or analysis task, when starting or ending a work session, when writing or reading a handover, when a result is about to be quoted, and when work passes between models or sessions.
+description: How research work is executed for Jonas Bärgman — the interruption budget and the two operating modes (interactive versus batch/overnight), the numbered-query convention (Qs, tagged by severity and audience) that lets a session continue instead of blocking, reproducibility rules (every quoted number from a committed script), verification and test discipline, the rule that every parameter value carries a motivation, replication of published results — the default when a component is built from a paper, opt-in and asked for when a paper is being reviewed, literature searches (read the source, label what each claim rests on, and ask for the papers that cannot be reached with full URLs), documentation and handover conventions, model-tier awareness for deciding who a question can be deferred to, and the statistical conventions. Use when executing any research or analysis task, when starting or ending a work session, when writing or reading a handover, when a result is about to be quoted, and when work passes between models or sessions.
 ---
 
 # Performing research with Jonas
@@ -191,6 +191,12 @@ could re-run it.
 - Store what a plot was drawn from, not just the plot.
 - Gitignored intermediates are fine if the regenerating command is committed and works.
 - When a document quotes a table, name the file it came from.
+- **Definitions live in one place and are imported, never retyped.** Task lists, code
+  groupings, locality groups and similar definitions are defined once (the analysis
+  script that produced the published numbers) and every other script imports or reads
+  them. A hand-copied list drifts: in DDI2026 the pooled acceptable-task odds ratio was
+  computed from a list typed from memory that differed from the analysis's list in eight
+  codes, and it had already reached a figure before anyone noticed.
 
 Follows Sandve et al. (2013), rules 1, 2, 4, 6, 7 and 9.
 
@@ -206,6 +212,13 @@ Follows Sandve et al. (2013), rules 1, 2, 4, 6, 7 and 9.
   Use it where a result is load-carrying or surprising.
 - **A result contradicting a documented finding is surfaced, never silently
   reconciled**: name the document, quote the disagreement, raise a query for `review`.
+- **A result that changes a message already in a talk, abstract or manuscript is
+  announced, never slipped in.** Say it first in the reply to Jonas, in plain words
+  (what the slide or sentence claims, what the new result says, the numbers), and mark
+  it in the file itself with a `FromLLM` comment on that slide or paragraph, even when
+  the request was about something else. Example: the task-alone odds ratios (DDI2026,
+  29 September 2026) removed the "elevated in urban traffic" result that a talk slide
+  and the talking abstract state.
 - Never loosen an acceptance criterion to make something pass. Record the failure —
   that is the finding.
 - Negative results are stated plainly and kept. Several of this project's most useful
@@ -295,7 +308,40 @@ Not a list of reasons to stop — a list of things that must not pass silently:
   scale of one analysis.
 - **Name the ensemble a claim is about**, and do not generalize past it.
 
-## 13 References
+## 13 Literature: read what can be reached, ask for what cannot
+
+When a question needs the literature (how earlier studies handled a method choice,
+whether a result has precedent, what a reviewer will expect), start from memory and then
+search online. Memory is where the search starts, not the evidence: a claim from memory
+stays marked as such until a source has been read.
+
+- **Read the source, not the search summary.** Fetch the full text where it is open
+  (arXiv, open-access publishers, agency reports) and take numbers and wording from it.
+  A search engine's summary may decide what to read; it is never the evidence.
+- **Label what each claim rests on**: read in full, read in part (abstract or one
+  table), from memory, or unverified. This is §7's provenance rule applied to sources.
+- **When a key source cannot be read** (paywall, a 403 or 404, a blocked host, a PDF
+  that will not parse), do not guess its content and do not stop. Answer with what could
+  be read, mark what rests on unread sources, and end with **one batched request** to
+  Jonas: for each paper the authors, year and venue, one line on why it matters for the
+  question, and the **full URL** of the PDF (or of the landing page when there is no
+  direct PDF link), plus the full path of the folder to put it in (the project's
+  gitignored background-material folder, e.g.
+  `C:\JonasLocal\<project>\OtherAssets\BackgroundMaterial`). When he says they are there,
+  read them and revise the answer, saying what changed.
+- **Ask only for what matters and cannot be reached.** Not for papers already read, not
+  one at a time during the search, and not for sources whose absence would not change
+  the recommendation.
+- **The recommendation says which parts rest on unread sources**, so it can be revised
+  when they are read. When an author has a known position in a debate, say so, and
+  judge the argument on its merits.
+
+Worked example (DDI2026, 2026-09-29, whether to use task-alone or as-coded odds
+ratios): Bálint et al. (2020) and Owens et al. (2018) were read in full; Young (2017),
+Dingus et al. (2016) and Guo et al. (2017) were blocked, so the answer marked them and
+ended with a download list with full URLs and the target folder.
+
+## 14 References
 
 Anthropic. (n.d.). *Skill authoring best practices*. Retrieved August 27, 2026, from
 https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices
@@ -323,7 +369,11 @@ from https://github.com/softaworks/agent-toolkit/tree/main/skills/session-handof
 treat their specific wording as unverified. The model line-up in §10 comes from the
 bundled `claude-api` skill, whose table was cached 2026-06-24.
 
-## 14 Revision history and open items
+## 15 Revision history and open items
+
+**v8, 2026-09-29 — definitions in one place (§7), changed messages announced (§8).** From the same DDI2026 session: a hand-copied task list had silently changed an odds ratio, and a new analysis (task-alone odds ratios) overturned a claim on a talk slide. Jonas: "you must be very clear to me when this happens, so that changes do not just appear (it should be marked with a comment in the pptx)."
+
+**v7, 2026-09-29 — literature searches (§13).** Jonas asked for a rule after a session answered a literature question (task-alone against as-coded odds ratios) by reading what was open, marking what rested on blocked sources, and ending with a batched download request with full URLs and the target folder: "when literature are sought and you cannot find it, you should prompt me in the way you did now." New §13; References and the revision history move to §14 and §15. Frontmatter description updated to match.
 
 **v6, 2026-08-29 — the mirror sync is not a carried follow-up.** The v5 edit was made
 from a directory without the project repository, leaving "update the mirror" as an open
@@ -374,7 +424,7 @@ recorded with a `RESOLVED` line so decisions stay on the record.
 
 **v3, 2026-08-27 — approved and made active.** Jonas endorsed the batch-mode carve-out
 for unauthorized irreversible actions as written. Added: APA style for all citations and
-reference lists (§9), applied to this file's own references (§13). Resolved: the skill
+reference lists (§9), applied to this file's own references (now §14). Resolved: the skill
 is mirrored into the project repository at `docs/skills/performing-research.SKILL.md`
 so revisions are versioned; the live user-level copy stays authoritative, and Jonas
 will say when he edits it.
